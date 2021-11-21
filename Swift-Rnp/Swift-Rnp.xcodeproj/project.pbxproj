@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
+		2A787CF9274AF17700997396 /* wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CF7274AF17700997396 /* wrapper.cpp */; };
+		2A787CFA274AF1B900997396 /* libjunkcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787CF3274AF13D00997396 /* libjunkcpp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,13 @@
 /* Begin PBXFileReference section */
 		2A787CD3274A9ED000997396 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		2A787CEF274AF13C00997396 /* Swift-Rnp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift-Rnp-Bridging-Header.h"; sourceTree = "<group>"; };
+		2A787CF0274AF13D00997396 /* junk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = junk.h; sourceTree = "<group>"; };
+		2A787CF1274AF13D00997396 /* junk.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = junk.o; sourceTree = "<group>"; };
+		2A787CF2274AF13D00997396 /* junk.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = junk.cpp; sourceTree = "<group>"; };
+		2A787CF3274AF13D00997396 /* libjunkcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libjunkcpp.a; sourceTree = "<group>"; };
+		2A787CF7274AF17700997396 /* wrapper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wrapper.cpp; sourceTree = "<group>"; };
+		2A787CF8274AF17700997396 /* wrapper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = wrapper.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A787CFA274AF1B900997396 /* libjunkcpp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,6 +68,13 @@
 			isa = PBXGroup;
 			children = (
 				2A787CD6274A9ED000997396 /* main.swift */,
+				2A787CF2274AF13D00997396 /* junk.cpp */,
+				2A787CF0274AF13D00997396 /* junk.h */,
+				2A787CF1274AF13D00997396 /* junk.o */,
+				2A787CF3274AF13D00997396 /* libjunkcpp.a */,
+				2A787CEF274AF13C00997396 /* Swift-Rnp-Bridging-Header.h */,
+				2A787CF7274AF17700997396 /* wrapper.cpp */,
+				2A787CF8274AF17700997396 /* wrapper.hpp */,
 			);
 			path = "Swift-Rnp";
 			sourceTree = "<group>";
@@ -94,6 +111,7 @@
 				TargetAttributes = {
 					2A787CD2274A9ED000997396 = {
 						CreatedOnToolsVersion = 13.1;
+						LastSwiftMigration = 1310;
 					};
 				};
 			};
@@ -121,6 +139,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A787CD7274A9ED000997396 /* main.swift in Sources */,
+				2A787CF9274AF17700997396 /* wrapper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,8 +264,20 @@
 		2A787CDB274A9ED000997396 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Swift-Rnp",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -254,8 +285,19 @@
 		2A787CDC274A9ED000997396 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Swift-Rnp",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

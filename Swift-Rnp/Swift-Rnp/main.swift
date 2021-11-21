@@ -8,4 +8,5 @@
 import Foundation
 
 print("Hello, World!")
+print("The integer from C++ is \(getIntFromCPP())")
 
