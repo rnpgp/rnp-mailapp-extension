@@ -8,4 +8,6 @@
 import Foundation
 
 print("Hello, World!")
+let result = ffi_generate()
+print("result \(result)")
 

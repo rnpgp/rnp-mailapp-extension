@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A2DABD2274D665A00F56F26 /* wrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD1274D665A00F56F26 /* wrapper.c */; };
+		2A2DABD8274E03C300F56F26 /* generate.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD3274DFB1F00F56F26 /* generate.c */; };
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
+		2A787D01274D3AFA00997396 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
+		2A787D02274D3BBB00997396 /* librnp.0.15.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -20,11 +24,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		2A787D03274D3BBB00997396 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2A787D02274D3BBB00997396 /* librnp.0.15.2.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift-Rnp-Bridging-Header.h"; sourceTree = "<group>"; };
+		2A2DABD0274D665A00F56F26 /* wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wrapper.h; sourceTree = "<group>"; };
+		2A2DABD1274D665A00F56F26 /* wrapper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = wrapper.c; sourceTree = "<group>"; };
+		2A2DABD3274DFB1F00F56F26 /* generate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = generate.c; sourceTree = "<group>"; };
+		2A2DABD6274DFD1D00F56F26 /* generate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generate.h; sourceTree = "<group>"; };
+		2A2DABD7274DFD7C00F56F26 /* rnp_shared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rnp_shared.h; sourceTree = "<group>"; };
 		2A787CD3274A9ED000997396 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		2A787CFC274AF3FB00997396 /* RNP_repo */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNP_repo; path = ../../RNP_repo; sourceTree = "<group>"; };
+		2A787CFD274D3AF900997396 /* rnp_export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_export.h; sourceTree = "<group>"; };
+		2A787CFE274D3AF900997396 /* rnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp.h; sourceTree = "<group>"; };
+		2A787CFF274D3AF900997396 /* rnp_err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_err.h; sourceTree = "<group>"; };
+		2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librnp.0.15.2.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,15 +58,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A787D01274D3AFA00997396 /* librnp.0.15.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A2DABD5274DFCF800F56F26 /* c_examples */ = {
+			isa = PBXGroup;
+			children = (
+				2A2DABD7274DFD7C00F56F26 /* rnp_shared.h */,
+				2A2DABD6274DFD1D00F56F26 /* generate.h */,
+				2A2DABD3274DFB1F00F56F26 /* generate.c */,
+			);
+			path = c_examples;
+			sourceTree = "<group>";
+		};
 		2A787CCA274A9ED000997396 = {
 			isa = PBXGroup;
 			children = (
+				2A787CFC274AF3FB00997396 /* RNP_repo */,
 				2A787CD5274A9ED000997396 /* Swift-Rnp */,
 				2A787CD4274A9ED000997396 /* Products */,
 			);
@@ -57,7 +95,15 @@
 		2A787CD5274A9ED000997396 /* Swift-Rnp */ = {
 			isa = PBXGroup;
 			children = (
+				2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */,
+				2A787CFF274D3AF900997396 /* rnp_err.h */,
+				2A787CFD274D3AF900997396 /* rnp_export.h */,
+				2A787CFE274D3AF900997396 /* rnp.h */,
+				2A2DABD0274D665A00F56F26 /* wrapper.h */,
+				2A2DABD1274D665A00F56F26 /* wrapper.c */,
+				2A2DABD5274DFCF800F56F26 /* c_examples */,
 				2A787CD6274A9ED000997396 /* main.swift */,
+				2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */,
 			);
 			path = "Swift-Rnp";
 			sourceTree = "<group>";
@@ -72,6 +118,7 @@
 				2A787CCF274A9ED000997396 /* Sources */,
 				2A787CD0274A9ED000997396 /* Frameworks */,
 				2A787CD1274A9ED000997396 /* CopyFiles */,
+				2A787D03274D3BBB00997396 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -94,6 +141,7 @@
 				TargetAttributes = {
 					2A787CD2274A9ED000997396 = {
 						CreatedOnToolsVersion = 13.1;
+						LastSwiftMigration = 1310;
 					};
 				};
 			};
@@ -121,6 +169,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A787CD7274A9ED000997396 /* main.swift in Sources */,
+				2A2DABD8274E03C300F56F26 /* generate.c in Sources */,
+				2A2DABD2274D665A00F56F26 /* wrapper.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,8 +295,20 @@
 		2A787CDB274A9ED000997396 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Swift-Rnp",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -254,8 +316,19 @@
 		2A787CDC274A9ED000997396 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Swift-Rnp",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
