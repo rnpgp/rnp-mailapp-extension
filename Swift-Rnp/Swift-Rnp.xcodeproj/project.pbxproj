@@ -46,7 +46,6 @@
 		2A2DABD7274DFD7C00F56F26 /* rnp_shared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rnp_shared.h; sourceTree = "<group>"; };
 		2A787CD3274A9ED000997396 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		2A787CFC274AF3FB00997396 /* RNP_repo */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNP_repo; path = ../../RNP_repo; sourceTree = "<group>"; };
 		2A787CFD274D3AF900997396 /* rnp_export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_export.h; sourceTree = "<group>"; };
 		2A787CFE274D3AF900997396 /* rnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp.h; sourceTree = "<group>"; };
 		2A787CFF274D3AF900997396 /* rnp_err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_err.h; sourceTree = "<group>"; };
@@ -78,7 +77,6 @@
 		2A787CCA274A9ED000997396 = {
 			isa = PBXGroup;
 			children = (
-				2A787CFC274AF3FB00997396 /* RNP_repo */,
 				2A787CD5274A9ED000997396 /* Swift-Rnp */,
 				2A787CD4274A9ED000997396 /* Products */,
 			);
