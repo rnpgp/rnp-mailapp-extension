@@ -7,7 +7,11 @@
 
 import Foundation
 
-print("Hello, World!")
-let result = ffi_generate()
-print("result \(result)")
+print("Check keys")
+if RnpFacade.hasKeys() {
+    print("Already has keys")
+} else {
+    print("Create keys")
+    RnpFacade.createKeys()
+}
 

@@ -8,6 +8,11 @@
 #ifndef generate_h
 #define generate_h
 
-int ffi_generate_keys(void);
+// TODO: Think about bool implementation
+//typedef enum { false, true } bool;
+
+int ffi_has_keys(const char *pub_format, const char *sec_format);
+int ffi_generate_keys(const char *pub_format, const char *sec_format);
+int ffi_output_keys(const char *pub_format, const char *sec_format);
 
 #endif /* generate_h */
