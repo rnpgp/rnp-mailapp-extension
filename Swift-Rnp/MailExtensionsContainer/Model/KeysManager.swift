@@ -12,6 +12,15 @@ class KeysManager: ObservableObject {
     
     init() {
         guard RnpFacade.hasKeys() else { return }
+            
+        // TODO: remove mock
+        self.items = KeyFile.mock
+    }
+    
+    func addKeys() {
+        RnpFacade.createKeys()
+        
+        // TODO: remove mock
         self.items = KeyFile.mock
     }
 }

@@ -25,6 +25,7 @@ class RnpFacade {
     /**
      Try to create keys files
      - returns:`true` in case of keys was created and files are saved succesfully
+     - warning: Keys will be created on ~/Library/Containers/**BuildID**/Data/, so for container app and the plugin **BuildID** should be the same
      */
     @discardableResult
     static func createKeys() -> Bool {
