@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct MailExtensionsContainerApp: App {
+    let keysManager = KeysManager()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(model: ContentViewModel(manager: keysManager))
         }
     }
 }
