@@ -6,6 +6,7 @@
 //
 
 import MailKit
+//import Swift_Rnp
 
 class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
@@ -67,7 +68,8 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         // let decodedMessage = MEDecodedMessage(data: decodedData, securityInformation: securityInfo, context: nil)
         
         // If the message doesn't need to be decoded, return nil.
-        // Otherwise return an MEDecodedMessage, as shown above. 
+        // Otherwise return an MEDecodedMessage, as shown above.
+        guard RnpFacade.hasKeys() else { return nil }
         return nil;
     }
  

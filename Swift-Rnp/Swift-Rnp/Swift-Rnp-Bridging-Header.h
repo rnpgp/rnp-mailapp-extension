@@ -3,3 +3,6 @@
 //
 
 #include "wrapper.h"
+
+#include "rnp.h"
+#include "rnp_err.h"

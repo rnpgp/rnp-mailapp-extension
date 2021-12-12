@@ -18,10 +18,25 @@
 		2A010A252756B871006CEF05 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2A010A002751125B006CEF05 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2A2DABD2274D665A00F56F26 /* wrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD1274D665A00F56F26 /* wrapper.c */; };
 		2A2DABD8274E03C300F56F26 /* generate.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD3274DFB1F00F56F26 /* generate.c */; };
-		2A33172E27510B0300B380EC /* rnp_facade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A33172D27510B0300B380EC /* rnp_facade.swift */; };
+		2A7484E227627D14002FC967 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
+		2A7484E327627D2C002FC967 /* RnpKeyStoreFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */; };
+		2A7484E427627D4A002FC967 /* wrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD1274D665A00F56F26 /* wrapper.c */; };
+		2A7484E527627D78002FC967 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
+		2A7484E627627D85002FC967 /* generate.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD3274DFB1F00F56F26 /* generate.c */; };
+		2A7484E727627F79002FC967 /* RnpResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E227596C0E00BA6E42 /* RnpResult.swift */; };
+		2A7484EB276688C0002FC967 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
+		2A7484EC276688C6002FC967 /* RnpKeyStoreFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */; };
+		2A7484ED276688C9002FC967 /* RnpResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E227596C0E00BA6E42 /* RnpResult.swift */; };
+		2A7484EE2766911D002FC967 /* generate.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD3274DFB1F00F56F26 /* generate.c */; };
+		2A7484EF2766913F002FC967 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
+		2A7484F02766914B002FC967 /* wrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD1274D665A00F56F26 /* wrapper.c */; };
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
 		2A787D01274D3AFA00997396 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
 		2A787D02274D3BBB00997396 /* librnp.0.15.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
+		2AD822E127596B4B00BA6E42 /* RnpKeyStoreFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */; };
+		2AD822E327596C0E00BA6E42 /* RnpResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E227596C0E00BA6E42 /* RnpResult.swift */; };
+		2AD822E52759767E00BA6E42 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
+		2AD822E8275D268500BA6E42 /* decrypt.c in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E6275D268500BA6E42 /* decrypt.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,13 +103,17 @@
 		2A2DABD3274DFB1F00F56F26 /* generate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = generate.c; sourceTree = "<group>"; };
 		2A2DABD6274DFD1D00F56F26 /* generate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generate.h; sourceTree = "<group>"; };
 		2A2DABD7274DFD7C00F56F26 /* rnp_shared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rnp_shared.h; sourceTree = "<group>"; };
-		2A33172D27510B0300B380EC /* rnp_facade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = rnp_facade.swift; sourceTree = "<group>"; };
 		2A787CD3274A9ED000997396 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		2A787CFD274D3AF900997396 /* rnp_export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_export.h; sourceTree = "<group>"; };
 		2A787CFE274D3AF900997396 /* rnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp.h; sourceTree = "<group>"; };
 		2A787CFF274D3AF900997396 /* rnp_err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_err.h; sourceTree = "<group>"; };
 		2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librnp.0.15.2.dylib; sourceTree = "<group>"; };
+		2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpKeyStoreFormat.swift; sourceTree = "<group>"; };
+		2AD822E227596C0E00BA6E42 /* RnpResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpResult.swift; sourceTree = "<group>"; };
+		2AD822E42759767E00BA6E42 /* RnpFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpFacade.swift; sourceTree = "<group>"; };
+		2AD822E6275D268500BA6E42 /* decrypt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = decrypt.c; sourceTree = "<group>"; };
+		2AD822E7275D268500BA6E42 /* decrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = decrypt.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +121,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A7484E527627D78002FC967 /* librnp.0.15.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +129,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A7484EF2766913F002FC967 /* librnp.0.15.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +190,8 @@
 				2A2DABD7274DFD7C00F56F26 /* rnp_shared.h */,
 				2A2DABD6274DFD1D00F56F26 /* generate.h */,
 				2A2DABD3274DFB1F00F56F26 /* generate.c */,
+				2AD822E7275D268500BA6E42 /* decrypt.h */,
+				2AD822E6275D268500BA6E42 /* decrypt.c */,
 			);
 			path = c_examples;
 			sourceTree = "<group>";
@@ -197,6 +220,7 @@
 		2A787CD5274A9ED000997396 /* Swift-Rnp */ = {
 			isa = PBXGroup;
 			children = (
+				2AD822DD27596B1C00BA6E42 /* Facade */,
 				2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */,
 				2A787CFF274D3AF900997396 /* rnp_err.h */,
 				2A787CFD274D3AF900997396 /* rnp_export.h */,
@@ -205,10 +229,27 @@
 				2A2DABD1274D665A00F56F26 /* wrapper.c */,
 				2A2DABD5274DFCF800F56F26 /* c_examples */,
 				2A787CD6274A9ED000997396 /* main.swift */,
-				2A33172D27510B0300B380EC /* rnp_facade.swift */,
 				2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */,
 			);
 			path = "Swift-Rnp";
+			sourceTree = "<group>";
+		};
+		2AD822DD27596B1C00BA6E42 /* Facade */ = {
+			isa = PBXGroup;
+			children = (
+				2AD822DF27596B3600BA6E42 /* Enum */,
+				2AD822E42759767E00BA6E42 /* RnpFacade.swift */,
+			);
+			path = Facade;
+			sourceTree = "<group>";
+		};
+		2AD822DF27596B3600BA6E42 /* Enum */ = {
+			isa = PBXGroup;
+			children = (
+				2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */,
+				2AD822E227596C0E00BA6E42 /* RnpResult.swift */,
+			);
+			path = Enum;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -335,7 +376,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A7484E227627D14002FC967 /* RnpFacade.swift in Sources */,
+				2A7484E727627F79002FC967 /* RnpResult.swift in Sources */,
+				2A7484E427627D4A002FC967 /* wrapper.c in Sources */,
+				2A7484E627627D85002FC967 /* generate.c in Sources */,
 				2A010A052751125B006CEF05 /* MessageSecurityHandler.swift in Sources */,
+				2A7484E327627D2C002FC967 /* RnpKeyStoreFormat.swift in Sources */,
 				2A010A032751125B006CEF05 /* MailExtension.swift in Sources */,
 				2A010A072751125B006CEF05 /* MessageSecurityViewController.swift in Sources */,
 			);
@@ -345,7 +391,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A7484EB276688C0002FC967 /* RnpFacade.swift in Sources */,
+				2A7484F02766914B002FC967 /* wrapper.c in Sources */,
+				2A7484EC276688C6002FC967 /* RnpKeyStoreFormat.swift in Sources */,
 				2A010A1A2756B865006CEF05 /* ContentView.swift in Sources */,
+				2A7484ED276688C9002FC967 /* RnpResult.swift in Sources */,
+				2A7484EE2766911D002FC967 /* generate.c in Sources */,
 				2A010A182756B865006CEF05 /* MailExtensionsContainerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -355,9 +406,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A787CD7274A9ED000997396 /* main.swift in Sources */,
+				2AD822E52759767E00BA6E42 /* RnpFacade.swift in Sources */,
 				2A2DABD8274E03C300F56F26 /* generate.c in Sources */,
-				2A33172E27510B0300B380EC /* rnp_facade.swift in Sources */,
+				2AD822E127596B4B00BA6E42 /* RnpKeyStoreFormat.swift in Sources */,
+				2AD822E8275D268500BA6E42 /* decrypt.c in Sources */,
 				2A2DABD2274D665A00F56F26 /* wrapper.c in Sources */,
+				2AD822E327596C0E00BA6E42 /* RnpResult.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +429,7 @@
 		2A010A0C2751125B006CEF05 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -388,12 +443,17 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Swift-Rnp",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container.MailPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -401,6 +461,7 @@
 		2A010A0D2751125B006CEF05 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -414,12 +475,17 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Swift-Rnp",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container.MailPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -440,6 +506,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Swift-Rnp",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
@@ -465,6 +535,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Swift-Rnp",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;

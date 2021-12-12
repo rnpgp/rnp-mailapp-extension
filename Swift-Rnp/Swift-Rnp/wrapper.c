@@ -6,20 +6,12 @@
 //
 
 #include "generate.h"
-#include <stdio.h>
+#include "decrypt.h"
 
-int ffi_generate(void) {
-    int res = ffi_generate_keys();
-    return res;
+int wHasKeys(const char *pub_format, const char *sec_format) {
+    return ffi_has_keys(pub_format, sec_format);
 }
 
-    //int
-    //main(int argc, char **argv)
-    //{
-    //    int res = ffi_generate_keys();
-    //    if (res) {
-    //        return res;
-    //    }
-    //    res = ffi_output_keys();
-    //    return res;
-    //}
+int wCreateKeys(const char *pub_format, const char *sec_format) {
+    return ffi_generate_keys(pub_format, sec_format);
+}

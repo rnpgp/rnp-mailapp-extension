@@ -35,6 +35,10 @@
 extern "C" {
 #endif
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wstrict-prototypes"
+#pragma clang diagnostic ignored "-Wdocumentation"
+
 /**
  * Function return type. 0 == SUCCESS, all other values indicate an error.
  */
@@ -2861,3 +2865,4 @@ RNP_API const char *rnp_backend_version();
 #define RNP_KEYSTORE_GPG21 ("GPG21")
 
 #endif
+#pragma clang diagnostic pop

@@ -8,6 +8,7 @@
 #ifndef wrapper_h
 #define wrapper_h
 
-int ffi_generate(void);
+int wHasKeys(const char *pub_format, const char *sec_format);
+int wCreateKeys(const char *pub_format, const char *sec_format);
 
 #endif /* wrapper_h */
