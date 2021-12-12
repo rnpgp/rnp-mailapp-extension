@@ -7,23 +7,8 @@
 
 import SwiftUI
 
-struct KeyFile: Identifiable {
-    let id = UUID()
-    let filename: String
-    let isPublic: Bool
-}
-
-extension KeyFile {
-    static var mock: [KeyFile] {
-        [
-            KeyFile(filename: "pubring.gpg", isPublic: true),
-            KeyFile(filename: "secring.gpg", isPublic: false)
-        ]
-    }
-}
-
 struct ContentView: View {
-    private let keyFiles = KeyFile.mock
+    var model: ContentViewModel
     
     var body: some View {
         VStack {
@@ -54,19 +39,15 @@ struct ContentView: View {
             }
             .padding()
             
-            Table {
-                TableColumn("Filename", value: \.filename)
-            } rows: {
-                ForEach(keyFiles) { value in
-                    TableRow(value)
-                }
-            }
+            KeysListView(model: model.listModel)
         }
     }
 }
 
+#if DEBUG
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(model: ContentViewModel(manager: KeysManager.mock))
     }
 }
+#endif

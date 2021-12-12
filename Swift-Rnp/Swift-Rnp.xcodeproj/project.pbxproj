@@ -30,6 +30,11 @@
 		2A7484EE2766911D002FC967 /* generate.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD3274DFB1F00F56F26 /* generate.c */; };
 		2A7484EF2766913F002FC967 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
 		2A7484F02766914B002FC967 /* wrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = 2A2DABD1274D665A00F56F26 /* wrapper.c */; };
+		2A7484F4276697FD002FC967 /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F3276697FD002FC967 /* KeysListView.swift */; };
+		2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F527669819002FC967 /* KeysListViewModel.swift */; };
+		2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F9276698B5002FC967 /* KeyFile.swift */; };
+		2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FB2766A081002FC967 /* KeysManager.swift */; };
+		2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FF2766A38B002FC967 /* ContentViewModel.swift */; };
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
 		2A787D01274D3AFA00997396 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
 		2A787D02274D3BBB00997396 /* librnp.0.15.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
@@ -103,6 +108,11 @@
 		2A2DABD3274DFB1F00F56F26 /* generate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = generate.c; sourceTree = "<group>"; };
 		2A2DABD6274DFD1D00F56F26 /* generate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generate.h; sourceTree = "<group>"; };
 		2A2DABD7274DFD7C00F56F26 /* rnp_shared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rnp_shared.h; sourceTree = "<group>"; };
+		2A7484F3276697FD002FC967 /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
+		2A7484F527669819002FC967 /* KeysListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListViewModel.swift; sourceTree = "<group>"; };
+		2A7484F9276698B5002FC967 /* KeyFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFile.swift; sourceTree = "<group>"; };
+		2A7484FB2766A081002FC967 /* KeysManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysManager.swift; sourceTree = "<group>"; };
+		2A7484FF2766A38B002FC967 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		2A787CD3274A9ED000997396 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		2A787CFD274D3AF900997396 /* rnp_export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_export.h; sourceTree = "<group>"; };
@@ -160,8 +170,9 @@
 		2A010A162756B865006CEF05 /* MailExtensionsContainer */ = {
 			isa = PBXGroup;
 			children = (
+				2A7484F8276698AB002FC967 /* Model */,
+				2A7484FE2766A351002FC967 /* View */,
 				2A010A172756B865006CEF05 /* MailExtensionsContainerApp.swift */,
-				2A010A192756B865006CEF05 /* ContentView.swift */,
 				2A010A1B2756B867006CEF05 /* Assets.xcassets */,
 				2A010A202756B867006CEF05 /* MailExtensionsContainer.entitlements */,
 				2A010A1D2756B867006CEF05 /* Preview Content */,
@@ -194,6 +205,42 @@
 				2AD822E6275D268500BA6E42 /* decrypt.c */,
 			);
 			path = c_examples;
+			sourceTree = "<group>";
+		};
+		2A7484F727669870002FC967 /* KeysList */ = {
+			isa = PBXGroup;
+			children = (
+				2A7484F3276697FD002FC967 /* KeysListView.swift */,
+				2A7484F527669819002FC967 /* KeysListViewModel.swift */,
+			);
+			path = KeysList;
+			sourceTree = "<group>";
+		};
+		2A7484F8276698AB002FC967 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2A7484F9276698B5002FC967 /* KeyFile.swift */,
+				2A7484FB2766A081002FC967 /* KeysManager.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2A7484FD2766A33F002FC967 /* ContentView */ = {
+			isa = PBXGroup;
+			children = (
+				2A010A192756B865006CEF05 /* ContentView.swift */,
+				2A7484FF2766A38B002FC967 /* ContentViewModel.swift */,
+			);
+			path = ContentView;
+			sourceTree = "<group>";
+		};
+		2A7484FE2766A351002FC967 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2A7484F727669870002FC967 /* KeysList */,
+				2A7484FD2766A33F002FC967 /* ContentView */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		2A787CCA274A9ED000997396 = {
@@ -391,10 +438,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A7484F4276697FD002FC967 /* KeysListView.swift in Sources */,
 				2A7484EB276688C0002FC967 /* RnpFacade.swift in Sources */,
 				2A7484F02766914B002FC967 /* wrapper.c in Sources */,
 				2A7484EC276688C6002FC967 /* RnpKeyStoreFormat.swift in Sources */,
 				2A010A1A2756B865006CEF05 /* ContentView.swift in Sources */,
+				2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */,
+				2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */,
+				2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */,
+				2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */,
 				2A7484ED276688C9002FC967 /* RnpResult.swift in Sources */,
 				2A7484EE2766911D002FC967 /* generate.c in Sources */,
 				2A010A182756B865006CEF05 /* MailExtensionsContainerApp.swift in Sources */,
