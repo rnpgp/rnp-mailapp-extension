@@ -8,5 +8,6 @@
 #ifndef decrypt_h
 #define decrypt_h
 
+int ffi_decrypt(const char *pub_format, const char *sec_format, int usekeys);
 
 #endif /* decrypt_h */

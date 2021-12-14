@@ -35,6 +35,8 @@
 		2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F9276698B5002FC967 /* KeyFile.swift */; };
 		2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FB2766A081002FC967 /* KeysManager.swift */; };
 		2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FF2766A38B002FC967 /* ContentViewModel.swift */; };
+		2A74850327694261002FC967 /* decrypt.c in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E6275D268500BA6E42 /* decrypt.c */; };
+		2A74850427694261002FC967 /* decrypt.c in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E6275D268500BA6E42 /* decrypt.c */; };
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
 		2A787D01274D3AFA00997396 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
 		2A787D02274D3BBB00997396 /* librnp.0.15.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
@@ -430,6 +432,7 @@
 				2A010A052751125B006CEF05 /* MessageSecurityHandler.swift in Sources */,
 				2A7484E327627D2C002FC967 /* RnpKeyStoreFormat.swift in Sources */,
 				2A010A032751125B006CEF05 /* MailExtension.swift in Sources */,
+				2A74850327694261002FC967 /* decrypt.c in Sources */,
 				2A010A072751125B006CEF05 /* MessageSecurityViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -443,6 +446,7 @@
 				2A7484F02766914B002FC967 /* wrapper.c in Sources */,
 				2A7484EC276688C6002FC967 /* RnpKeyStoreFormat.swift in Sources */,
 				2A010A1A2756B865006CEF05 /* ContentView.swift in Sources */,
+				2A74850427694261002FC967 /* decrypt.c in Sources */,
 				2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */,
 				2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */,
 				2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */,
