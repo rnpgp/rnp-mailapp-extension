@@ -15,3 +15,7 @@ int wHasKeys(const char *pub_format, const char *sec_format) {
 int wCreateKeys(const char *pub_format, const char *sec_format) {
     return ffi_generate_keys(pub_format, sec_format);
 }
+
+int wDecrypt(const char *pub_format, const char *sec_format, int usekeys) {
+    return ffi_decrypt(pub_format, sec_format, usekeys);
+}

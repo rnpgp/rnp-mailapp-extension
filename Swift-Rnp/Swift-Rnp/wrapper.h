@@ -11,4 +11,6 @@
 int wHasKeys(const char *pub_format, const char *sec_format);
 int wCreateKeys(const char *pub_format, const char *sec_format);
 
+int wDecrypt(const char *pub_format, const char *sec_format, int usekeys);
+
 #endif /* wrapper_h */

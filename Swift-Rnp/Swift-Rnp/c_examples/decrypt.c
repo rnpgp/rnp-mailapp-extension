@@ -50,8 +50,7 @@ example_pass_provider(rnp_ffi_t        ffi,
     return false;
 }
 
-static int
-ffi_decrypt(bool usekeys)
+int ffi_decrypt(const char *pub_format, const char *sec_format, int usekeys)
 {
     rnp_ffi_t    ffi = NULL;
     rnp_input_t  keyfile = NULL;
@@ -67,7 +66,7 @@ ffi_decrypt(bool usekeys)
     }
 
     /* check whether we want to use key or password for decryption */
-    if (usekeys) {
+    if (usekeys == 1) {
         /* load secret keyring, as it is required for public-key decryption. However, you may
          * need to load public keyring as well to validate key's signatures. */
         if (rnp_input_from_path(&keyfile, "secring.pgp") != RNP_SUCCESS) {
@@ -110,7 +109,7 @@ ffi_decrypt(bool usekeys)
     }
     fprintf(stdout,
             "Decrypted message (%s):\n%.*s\n",
-            usekeys ? "with key" : "with password",
+            usekeys == 1 ? "with key" : "with password",
             (int) buf_len,
             buf);
 
@@ -122,15 +121,3 @@ finish:
     rnp_ffi_destroy(ffi);
     return result;
 }
-
-//int
-//main(int argc, char **argv)
-//{
-//    int res;
-//    res = ffi_decrypt(true);
-//    if (res) {
-//        return res;
-//    }
-//    res = ffi_decrypt(false);
-//    return res;
-//}
