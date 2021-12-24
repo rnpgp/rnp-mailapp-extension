@@ -10,8 +10,10 @@ import Foundation
 print("Check keys")
 if RnpFacade.hasKeys() {
     print("Already has keys")
-    RnpFacade.decrypt(true)
+//    RnpFacade.decrypt(true)
 } else {
     print("Create keys")
     RnpFacade.createKeys()
 }
+
+_ = RnpObject.init(pubFormat: RnpKeyStoreFormat.gpg.rawValue, secFormat: RnpKeyStoreFormat.gpg.rawValue)
