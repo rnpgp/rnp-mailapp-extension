@@ -112,7 +112,7 @@ int ffi_has_keys(const char *pub_format, const char *sec_format)
     }
     
     /* actually, we may use 0 instead of RNP_LOAD_SAVE_PUBLIC_KEYS, to not check key types */
-    if (rnp_load_keys(ffi, "GPG", keyfile, RNP_LOAD_SAVE_PUBLIC_KEYS) != RNP_SUCCESS) {
+    if (rnp_load_keys(ffi, pub_format, keyfile, RNP_LOAD_SAVE_PUBLIC_KEYS) != RNP_SUCCESS) {
         fprintf(stdout, "failed to read pubring.pgp\n");
         goto finish;
     }
@@ -124,7 +124,7 @@ int ffi_has_keys(const char *pub_format, const char *sec_format)
         goto finish;
     }
     
-    if (rnp_load_keys(ffi, "GPG", keyfile, RNP_LOAD_SAVE_SECRET_KEYS) != RNP_SUCCESS) {
+    if (rnp_load_keys(ffi, sec_format, keyfile, RNP_LOAD_SAVE_SECRET_KEYS) != RNP_SUCCESS) {
         fprintf(stdout, "failed to read secring.pgp\n");
         goto finish;
     }
