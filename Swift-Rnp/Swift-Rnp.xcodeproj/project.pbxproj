@@ -40,6 +40,7 @@
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
 		2A787D01274D3AFA00997396 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
 		2A787D02274D3BBB00997396 /* librnp.0.15.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
+		2ABFE53E2775BE870015449E /* PrivateValueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABFE53D2775BE870015449E /* PrivateValueManager.swift */; };
 		2AD822E127596B4B00BA6E42 /* RnpKeyStoreFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */; };
 		2AD822E327596C0E00BA6E42 /* RnpResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E227596C0E00BA6E42 /* RnpResult.swift */; };
 		2AD822E52759767E00BA6E42 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
@@ -121,6 +122,7 @@
 		2A787CFE274D3AF900997396 /* rnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp.h; sourceTree = "<group>"; };
 		2A787CFF274D3AF900997396 /* rnp_err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_err.h; sourceTree = "<group>"; };
 		2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librnp.0.15.2.dylib; sourceTree = "<group>"; };
+		2ABFE53D2775BE870015449E /* PrivateValueManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateValueManager.swift; sourceTree = "<group>"; };
 		2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpKeyStoreFormat.swift; sourceTree = "<group>"; };
 		2AD822E227596C0E00BA6E42 /* RnpResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpResult.swift; sourceTree = "<group>"; };
 		2AD822E42759767E00BA6E42 /* RnpFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpFacade.swift; sourceTree = "<group>"; };
@@ -279,6 +281,7 @@
 				2A2DABD5274DFCF800F56F26 /* c_examples */,
 				2A787CD6274A9ED000997396 /* main.swift */,
 				2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */,
+				2ABFE53D2775BE870015449E /* PrivateValueManager.swift */,
 			);
 			path = "Swift-Rnp";
 			sourceTree = "<group>";
@@ -463,6 +466,7 @@
 			files = (
 				2A787CD7274A9ED000997396 /* main.swift in Sources */,
 				2AD822E52759767E00BA6E42 /* RnpFacade.swift in Sources */,
+				2ABFE53E2775BE870015449E /* PrivateValueManager.swift in Sources */,
 				2A2DABD8274E03C300F56F26 /* generate.c in Sources */,
 				2AD822E127596B4B00BA6E42 /* RnpKeyStoreFormat.swift in Sources */,
 				2AD822E8275D268500BA6E42 /* decrypt.c in Sources */,
