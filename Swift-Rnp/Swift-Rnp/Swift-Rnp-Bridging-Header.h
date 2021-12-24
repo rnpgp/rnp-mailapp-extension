@@ -6,3 +6,5 @@
 
 #include "rnp.h"
 #include "rnp_err.h"
+
+#import "RnpObject.h"
