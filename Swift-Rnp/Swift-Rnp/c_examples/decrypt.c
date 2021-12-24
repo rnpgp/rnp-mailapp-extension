@@ -61,7 +61,7 @@ int ffi_decrypt(const char *pub_format, const char *sec_format, int usekeys)
     int          result = 1;
 
     /* initialize FFI object */
-    if (rnp_ffi_create(&ffi, "GPG", "GPG") != RNP_SUCCESS) {
+    if (rnp_ffi_create(&ffi, pub_format, sec_format) != RNP_SUCCESS) {
         return result;
     }
 
@@ -75,7 +75,7 @@ int ffi_decrypt(const char *pub_format, const char *sec_format, int usekeys)
         }
 
         /* we may use RNP_LOAD_SAVE_SECRET_KEYS | RNP_LOAD_SAVE_PUBLIC_KEYS as well*/
-        if (rnp_load_keys(ffi, "GPG", keyfile, RNP_LOAD_SAVE_SECRET_KEYS) != RNP_SUCCESS) {
+        if (rnp_load_keys(ffi, sec_format, keyfile, RNP_LOAD_SAVE_SECRET_KEYS) != RNP_SUCCESS) {
             fprintf(stdout, "failed to read secring.pgp\n");
             goto finish;
         }
