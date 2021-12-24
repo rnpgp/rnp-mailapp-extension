@@ -43,29 +43,6 @@ bool pass_provider(rnp_ffi_t        ffi,
     return true;
 }
 
-const char *CURVE_25519_KEY_DESC_2 = "{\
-    'primary': {\
-        'type': 'EDDSA',\
-        'userid': 'sergeyvinogradov@icloud.com',\
-        'expiration': 0,\
-        'usage': ['sign'],\
-        'protection': {\
-            'cipher': 'AES256',\
-            'hash': 'SHA256'\
-        }\
-    },\
-    'sub': {\
-        'type': 'ECDH',\
-        'curve': 'Curve25519',\
-        'expiration': 15768000,\
-        'usage': ['encrypt'],\
-        'protection': {\
-            'cipher': 'AES256',\
-            'hash': 'SHA256'\
-        }\
-    }\
-}";
-
 - (instancetype)initWithPubFormat:(const char *)pub_format secFormat:(const char *)sec_format {
     self = [super init];
     if (self) {
@@ -82,7 +59,8 @@ const char *CURVE_25519_KEY_DESC_2 = "{\
     [PrivateValueManager.shared clearObjectFor:PrivateValueKeyPassword];
     
     char *       key_grips = NULL;
-    rnp_result_t res3 = rnp_generate_key_json(ffi, CURVE_25519_KEY_DESC_2, &key_grips);
+    const char *json = [[KeyDescriptionGenerator curve25519KeyWithUserId:@"user@host.com" expiration:KeyExpirationHalfYear] UTF8String];
+    rnp_result_t res3 = rnp_generate_key_json(ffi, json, &key_grips);
     
     return self;
 }
