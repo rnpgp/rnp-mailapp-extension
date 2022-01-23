@@ -7,7 +7,16 @@
 
 import Foundation
 
-class RnpFacade {
+protocol RnpFacadeProtocol {
+    // TODO: Cover whole functionality by protocol
+    // init(withFormats pub: String, sec: String)
+    var hasKeys: Bool { get }
+}
+
+class RnpFacade: RnpFacadeProtocol {
+    var hasKeys: Bool {
+        RnpFacade.hasKeys()
+    }
     
     /// By default you can use GPG
     private static let defaultKeysFormat = RnpKeyStoreFormat.gpg.rawValue
