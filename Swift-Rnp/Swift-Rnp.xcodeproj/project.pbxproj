@@ -41,6 +41,7 @@
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
 		2A787D01274D3AFA00997396 /* librnp.0.15.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
 		2A787D02274D3BBB00997396 /* librnp.0.15.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */; };
+		2A85CB0E27999C54006B36FC /* RnpConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A85CB0D27999C54006B36FC /* RnpConstants.swift */; };
 		2ABFE53E2775BE870015449E /* PrivateValueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABFE53D2775BE870015449E /* PrivateValueManager.swift */; };
 		2ABFE540277600B40015449E /* KeyDescriptionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABFE53F277600B40015449E /* KeyDescriptionGenerator.swift */; };
 		2ABFE542277655A10015449E /* RnpAlgorythm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABFE541277655A10015449E /* RnpAlgorythm.swift */; };
@@ -127,6 +128,7 @@
 		2A787CFE274D3AF900997396 /* rnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp.h; sourceTree = "<group>"; };
 		2A787CFF274D3AF900997396 /* rnp_err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rnp_err.h; sourceTree = "<group>"; };
 		2A787D00274D3AFA00997396 /* librnp.0.15.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librnp.0.15.2.dylib; sourceTree = "<group>"; };
+		2A85CB0D27999C54006B36FC /* RnpConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpConstants.swift; sourceTree = "<group>"; };
 		2ABFE53D2775BE870015449E /* PrivateValueManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateValueManager.swift; sourceTree = "<group>"; };
 		2ABFE53F277600B40015449E /* KeyDescriptionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDescriptionGenerator.swift; sourceTree = "<group>"; };
 		2ABFE541277655A10015449E /* RnpAlgorythm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpAlgorythm.swift; sourceTree = "<group>"; };
@@ -311,6 +313,7 @@
 				2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */,
 				2AD822E227596C0E00BA6E42 /* RnpResult.swift */,
 				2ABFE541277655A10015449E /* RnpAlgorythm.swift */,
+				2A85CB0D27999C54006B36FC /* RnpConstants.swift */,
 			);
 			path = Enum;
 			sourceTree = "<group>";
@@ -486,6 +489,7 @@
 				2ABFE540277600B40015449E /* KeyDescriptionGenerator.swift in Sources */,
 				2AD822E327596C0E00BA6E42 /* RnpResult.swift in Sources */,
 				2ABFE542277655A10015449E /* RnpAlgorythm.swift in Sources */,
+				2A85CB0E27999C54006B36FC /* RnpConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
