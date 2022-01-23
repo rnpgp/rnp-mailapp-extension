@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPubFormat:(NSString *)pub_format secFormat:(NSString *)sec_format;
 - (void)createKeys:(NSString *)userId password:(NSString *)password completion:(void (^)(BOOL)) completion;
-//- (NSString *)decrypt:(BOOL)useKeys;
+- (nullable NSString*)decryptUsingKeys:(BOOL)usekeys password:(nullable NSString *)password;
 
 @end
 
