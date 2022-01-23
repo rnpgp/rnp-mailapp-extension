@@ -8,8 +8,14 @@
 import Foundation
 
 var object = RnpObject.init(pubFormat: RnpKeyStoreFormat.gpg.rawValue, secFormat: RnpKeyStoreFormat.gpg.rawValue)
+// FIXME: Think about keychain
+let password = "userPass"
 if !object.hasKeys {
-    object.createKeys("userID@key", password: "userPass") { success in
+    object.createKeys("sergeyvinogradov@icloud.com", password: password) { success in
         print("Keys are \(success ? "generated" : "not generated")")
     }
+}
+
+if object.hasKeys, let message = object.decrypt(usingKeys: true, password: password) {
+    print(message)
 }
