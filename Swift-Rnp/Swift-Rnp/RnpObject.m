@@ -53,10 +53,6 @@ bool pass_provider(rnp_ffi_t        ffi,
     rnp_input_t keyfile = NULL;
     BOOL result = YES;
     
-//#pragma clang diagnostic push
-//#pragma clang diagnostic ignored "-Wnon-literal-null-conversion"
-//    const char *pubFilename = RnpConstantsPubFileName;
-//#pragma clang diagnostic pop
     /* load keyrings */
     if (result && rnp_input_from_path(&keyfile, "pubring.pgp") != RNP_SUCCESS) {
         fprintf(stdout, "failed to open pubring file\n");
@@ -74,10 +70,6 @@ bool pass_provider(rnp_ffi_t        ffi,
         keyfile = NULL;
     }
     
-//#pragma clang diagnostic push
-//#pragma clang diagnostic ignored "-Wnon-literal-null-conversion"
-//    const char *secFilename = RnpConstantsSecFileName;
-//#pragma clang diagnostic pop
     if (result && rnp_input_from_path(&keyfile, "secring.pgp") != RNP_SUCCESS) {
         fprintf(stdout, "failed to open secring file\n");
         result = NO;
