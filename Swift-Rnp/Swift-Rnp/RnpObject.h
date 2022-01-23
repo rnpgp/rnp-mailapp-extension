@@ -6,8 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#include "rnp.h"
-#include "rnp_err.h"
+#import "rnp_shared.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

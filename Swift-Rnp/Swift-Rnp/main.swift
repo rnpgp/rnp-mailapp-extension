@@ -11,7 +11,7 @@ var object = RnpObject.init(pubFormat: RnpKeyStoreFormat.gpg.rawValue, secFormat
 // FIXME: Think about keychain
 let password = "userPass"
 if !object.hasKeys {
-    object.createKeys("sergeyvinogradov@icloud.com", password: password) { success in
+    object.createKeys("userId@key", password: password) { success in
         print("Keys are \(success ? "generated" : "not generated")")
     }
 }
