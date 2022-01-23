@@ -6,7 +6,6 @@
 //
 
 #import "RnpObject.h"
-#import "rnp_err.h"
 #import "Swift_Rnp-Swift.h"
 
 #define kUDPassKey @"kPassword"

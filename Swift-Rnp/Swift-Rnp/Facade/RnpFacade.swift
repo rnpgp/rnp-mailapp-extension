@@ -44,8 +44,10 @@ class RnpFacade: RnpFacadeProtocol {
          wCreateKeys(RnpFacade.defaultKeysFormat, RnpFacade.defaultKeysFormat) == 1
     }
     */
+    /*
     @discardableResult
     static func decrypt(_ useKeys: Bool) -> Bool {
         wDecrypt(RnpFacade.defaultKeysFormat, RnpFacade.defaultKeysFormat, useKeys ? 1 : 0) == 1
     }
+     */
 }

@@ -10,6 +10,5 @@
 
 #include "rnp.h"
 #include "rnp_err.h"
-#include "wrapper.h"
 
 #endif /* rnp_shared_h */
