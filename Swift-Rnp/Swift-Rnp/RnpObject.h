@@ -13,7 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RnpObject : NSObject
 
-- (instancetype)initWithPubFormat:(const char *)pub_format secFormat:(const char *)sec_format;
+@property (nonatomic, assign) BOOL hasKeys;
+
+- (instancetype)initWithPubFormat:(NSString *)pub_format secFormat:(NSString *)sec_format;
+- (void)createKeys:(NSString *)userId password:(NSString *)password completion:(void (^)(BOOL)) completion;
+//- (NSString *)decrypt:(BOOL)useKeys;
 
 @end
 
