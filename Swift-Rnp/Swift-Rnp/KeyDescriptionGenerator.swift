@@ -89,7 +89,7 @@ class KeyDescriptionGenerator: NSObject {
         let secondary = KeyDescriptionPart(type: RnpAlgorythm.ecdh.rawValue,
                                            length: nil,
                                            userid: nil,
-                                           curve: nil,
+                                           curve: "Curve25519",
                                            expiration: expiration.rawValue,
                                            usage: [KeyUsage.encrypt.rawValue],
                                            protection: protection)
@@ -98,8 +98,9 @@ class KeyDescriptionGenerator: NSObject {
         let keyDesc = KeyDescription(primary: primary,
                                      sub: secondary)
         guard let jsonData = try? JSONEncoder().encode(keyDesc),
-              let result = String(data: jsonData, encoding: .utf8) else { return nil }
+              var result = String(data: jsonData, encoding: .utf8) else { return nil }
         
+        result = result.replacingOccurrences(of: "\"", with: "'")
         return result
     }
 }

@@ -7,13 +7,9 @@
 
 import Foundation
 
-print("Check keys")
-if RnpFacade.hasKeys() {
-    print("Already has keys")
-//    RnpFacade.decrypt(true)
-} else {
-    print("Create keys")
-    RnpFacade.createKeys()
+var object = RnpObject.init(pubFormat: RnpKeyStoreFormat.gpg.rawValue, secFormat: RnpKeyStoreFormat.gpg.rawValue)
+if !object.hasKeys {
+    object.createKeys("userID@key", password: "userPass") { success in
+        print("Keys are \(success ? "generated" : "not generated")")
+    }
 }
-
-_ = RnpObject.init(pubFormat: RnpKeyStoreFormat.gpg.rawValue, secFormat: RnpKeyStoreFormat.gpg.rawValue)
