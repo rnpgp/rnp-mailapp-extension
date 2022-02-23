@@ -16,8 +16,7 @@
 		2A010A1C2756B867006CEF05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A010A1B2756B867006CEF05 /* Assets.xcassets */; };
 		2A010A1F2756B867006CEF05 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A010A1E2756B867006CEF05 /* Preview Assets.xcassets */; };
 		2A010A252756B871006CEF05 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2A010A002751125B006CEF05 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		2A268ED827C6760300C0CB14 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AE2C83F27C542250090ACFD /* RNPFramework.xcframework */; };
-		2A268ED927C6760300C0CB14 /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2AE2C83F27C542250090ACFD /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2A268EDE27C6852000C0CB14 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2A268EDD27C6852000C0CB14 /* RNPFramework */; };
 		2A7484E227627D14002FC967 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
 		2A7484E327627D2C002FC967 /* RnpKeyStoreFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */; };
 		2A7484EB276688C0002FC967 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
@@ -55,17 +54,6 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A268EDA27C6760300C0CB14 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				2A268ED927C6760300C0CB14 /* RNPFramework.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		2A787CD1274A9ED000997396 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -91,6 +79,7 @@
 		2A010A1B2756B867006CEF05 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A010A1E2756B867006CEF05 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2A010A202756B867006CEF05 /* MailExtensionsContainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MailExtensionsContainer.entitlements; sourceTree = "<group>"; };
+		2A268EDC27C6851700C0CB14 /* RNPFrameworkLocal */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNPFrameworkLocal; path = ../../MailKitExtension/RNPFrameworkLocal; sourceTree = "<group>"; };
 		2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift-Rnp-Bridging-Header.h"; sourceTree = "<group>"; };
 		2A7484F3276697FD002FC967 /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
 		2A7484F527669819002FC967 /* KeysListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListViewModel.swift; sourceTree = "<group>"; };
@@ -124,7 +113,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A268ED827C6760300C0CB14 /* RNPFramework.xcframework in Frameworks */,
+				2A268EDE27C6852000C0CB14 /* RNPFramework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +162,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		2A268EDB27C6851700C0CB14 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				2A268EDC27C6851700C0CB14 /* RNPFrameworkLocal */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		2A7484F727669870002FC967 /* KeysList */ = {
 			isa = PBXGroup;
 			children = (
@@ -212,6 +209,7 @@
 		2A787CCA274A9ED000997396 = {
 			isa = PBXGroup;
 			children = (
+				2A268EDB27C6851700C0CB14 /* Packages */,
 				2A787CD5274A9ED000997396 /* Swift-Rnp */,
 				2A010A012751125B006CEF05 /* MailPlugin */,
 				2A010A162756B865006CEF05 /* MailExtensionsContainer */,
@@ -304,7 +302,6 @@
 				2A787CCF274A9ED000997396 /* Sources */,
 				2A787CD0274A9ED000997396 /* Frameworks */,
 				2A787CD1274A9ED000997396 /* CopyFiles */,
-				2A268EDA27C6760300C0CB14 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -312,6 +309,7 @@
 			);
 			name = "Swift-Rnp";
 			packageProductDependencies = (
+				2A268EDD27C6852000C0CB14 /* RNPFramework */,
 			);
 			productName = "Swift-Rnp";
 			productReference = 2A787CD3274A9ED000997396 /* Swift-Rnp */;
@@ -752,6 +750,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2A268EDD27C6852000C0CB14 /* RNPFramework */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RNPFramework;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2A787CCB274A9ED000997396 /* Project object */;
 }
