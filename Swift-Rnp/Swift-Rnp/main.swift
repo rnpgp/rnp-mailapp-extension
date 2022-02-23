@@ -7,7 +7,10 @@
 
 import Foundation
 
-var object = RnpObject.init(pubFormat: RnpKeyStoreFormat.gpg.rawValue, secFormat: RnpKeyStoreFormat.gpg.rawValue)
+// TODO: next flags check isn't work as well #if ARCHITECTURE_INTEL, because it happen in bridhging header
+// FIXME: For the moment only Intel lib is ready
+
+var object = RnpObject.init(pubFormat: "GPG"/*RnpKeyStoreFormat.gpg.rawValue*/, secFormat: "GPG"/*RnpKeyStoreFormat.gpg.rawValue*/)
 // FIXME: Think about keychain
 let password = "userPass"
 if !object.hasKeys {

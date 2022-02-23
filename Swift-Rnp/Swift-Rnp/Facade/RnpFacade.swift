@@ -20,7 +20,7 @@ class RnpFacade: RnpFacadeProtocol {
     }
     */
     /// By default you can use GPG
-    private static let defaultKeysFormat = RnpKeyStoreFormat.gpg.rawValue
+//    private static let defaultKeysFormat = RnpKeyStoreFormat.gpg.rawValue
     
     /**
      Check if keys files are presented
