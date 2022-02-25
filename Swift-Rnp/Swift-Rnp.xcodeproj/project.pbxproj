@@ -17,19 +17,12 @@
 		2A010A1F2756B867006CEF05 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A010A1E2756B867006CEF05 /* Preview Assets.xcassets */; };
 		2A010A252756B871006CEF05 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2A010A002751125B006CEF05 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2A268EDE27C6852000C0CB14 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2A268EDD27C6852000C0CB14 /* RNPFramework */; };
-		2A7484E227627D14002FC967 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
-		2A7484E327627D2C002FC967 /* RnpKeyStoreFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */; };
-		2A7484EB276688C0002FC967 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
-		2A7484EC276688C6002FC967 /* RnpKeyStoreFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */; };
 		2A7484F4276697FD002FC967 /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F3276697FD002FC967 /* KeysListView.swift */; };
 		2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F527669819002FC967 /* KeysListViewModel.swift */; };
 		2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F9276698B5002FC967 /* KeyFile.swift */; };
 		2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FB2766A081002FC967 /* KeysManager.swift */; };
 		2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FF2766A38B002FC967 /* ContentViewModel.swift */; };
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
-		2A85CB0E27999C54006B36FC /* RnpConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A85CB0D27999C54006B36FC /* RnpConstants.swift */; };
-		2AD822E127596B4B00BA6E42 /* RnpKeyStoreFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */; };
-		2AD822E52759767E00BA6E42 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD822E42759767E00BA6E42 /* RnpFacade.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,9 +81,6 @@
 		2A7484FF2766A38B002FC967 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		2A787CD3274A9ED000997396 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		2A85CB0D27999C54006B36FC /* RnpConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpConstants.swift; sourceTree = "<group>"; };
-		2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpKeyStoreFormat.swift; sourceTree = "<group>"; };
-		2AD822E42759767E00BA6E42 /* RnpFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpFacade.swift; sourceTree = "<group>"; };
 		2AE2C83F27C542250090ACFD /* RNPFramework.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RNPFramework.xcframework; path = ../../MailKitExtension/FrameworkOutput/RNPFramework.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -231,29 +221,10 @@
 		2A787CD5274A9ED000997396 /* Swift-Rnp */ = {
 			isa = PBXGroup;
 			children = (
-				2AD822DD27596B1C00BA6E42 /* Facade */,
 				2A787CD6274A9ED000997396 /* main.swift */,
 				2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */,
 			);
 			path = "Swift-Rnp";
-			sourceTree = "<group>";
-		};
-		2AD822DD27596B1C00BA6E42 /* Facade */ = {
-			isa = PBXGroup;
-			children = (
-				2AD822DF27596B3600BA6E42 /* Enum */,
-				2AD822E42759767E00BA6E42 /* RnpFacade.swift */,
-			);
-			path = Facade;
-			sourceTree = "<group>";
-		};
-		2AD822DF27596B3600BA6E42 /* Enum */ = {
-			isa = PBXGroup;
-			children = (
-				2AD822E027596B4B00BA6E42 /* RnpKeyStoreFormat.swift */,
-				2A85CB0D27999C54006B36FC /* RnpConstants.swift */,
-			);
-			path = Enum;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -382,9 +353,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A7484E227627D14002FC967 /* RnpFacade.swift in Sources */,
 				2A010A052751125B006CEF05 /* MessageSecurityHandler.swift in Sources */,
-				2A7484E327627D2C002FC967 /* RnpKeyStoreFormat.swift in Sources */,
 				2A010A032751125B006CEF05 /* MailExtension.swift in Sources */,
 				2A010A072751125B006CEF05 /* MessageSecurityViewController.swift in Sources */,
 			);
@@ -395,8 +364,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A7484F4276697FD002FC967 /* KeysListView.swift in Sources */,
-				2A7484EB276688C0002FC967 /* RnpFacade.swift in Sources */,
-				2A7484EC276688C6002FC967 /* RnpKeyStoreFormat.swift in Sources */,
 				2A010A1A2756B865006CEF05 /* ContentView.swift in Sources */,
 				2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */,
 				2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */,
@@ -411,9 +378,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A787CD7274A9ED000997396 /* main.swift in Sources */,
-				2AD822E52759767E00BA6E42 /* RnpFacade.swift in Sources */,
-				2AD822E127596B4B00BA6E42 /* RnpKeyStoreFormat.swift in Sources */,
-				2A85CB0E27999C54006B36FC /* RnpConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
