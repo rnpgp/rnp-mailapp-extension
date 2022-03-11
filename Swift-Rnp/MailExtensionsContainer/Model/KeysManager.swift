@@ -10,15 +10,17 @@ import Foundation
 class KeysManager: ObservableObject {
     @Published var items: [KeyFile] = []
     
-    init() {
-        guard RnpFacade.hasKeys() else { return }
+    private let rnp: RnpFacade
+    init(rnp: RnpFacade) {
+        self.rnp = rnp
+        guard rnp.hasKeys else { return }
             
         // TODO: remove mock
         self.items = KeyFile.mock
     }
     
     func addKeys() {
-        RnpFacade.createKeys()
+        rnp.createKeys()
         
         // TODO: remove mock
         self.items = KeyFile.mock
@@ -27,7 +29,7 @@ class KeysManager: ObservableObject {
 
 extension KeysManager {
     static var mock: KeysManager {
-        let manager = KeysManager()
+        let manager = KeysManager(rnp: RnpFacade.mock)
         manager.items = KeyFile.mock
         return manager
     }

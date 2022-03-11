@@ -9,11 +9,13 @@ import SwiftUI
 
 @main
 struct MailExtensionsContainerApp: App {
-    let keysManager = KeysManager()
+    var keysManager: KeysManager {
+        KeysManager(rnp: RnpFacade(pubFormat: .gpg, secFormat: .gpg))
+    }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(model: ContentViewModel(manager: keysManager))
+            ContentView(model: ContentViewModel(manager: self.keysManager))
         }
     }
 }

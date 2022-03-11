@@ -10,16 +10,15 @@ import Foundation
 // TODO: next flags check isn't work as well #if ARCHITECTURE_INTEL, because it happen in bridhging header
 // FIXME: For the moment only Intel lib is ready
 let format = RnpConstants.rnpKeyStoreFormat_(toString: .gpg)
-if let object = RnpObject.init(pubFormat: format, secFormat: format) {
-        // FIXME: Think about keychain
-    let password = "userPass"
-    if !object.hasKeys {
-        object.createKeys("userId@key", password: password) { success in
-            print("Keys are \(success ? "generated" : "not generated")")
-        }
+let object = RnpObject(pubFormat: format, secFormat: format)
+    // FIXME: Think about keychain
+let password = "userPass"
+if !object.hasKeys {
+    object.createKeys("userId@key", password: password) { success in
+        print("Keys are \(success ? "generated" : "not generated")")
     }
-    
-    if object.hasKeys, let message = object.decrypt(usingKeys: true, password: password) {
-        print(message)
-    }
+}
+
+if object.hasKeys, let message = object.decrypt(usingKeys: true, password: password) {
+    print(message)
 }
