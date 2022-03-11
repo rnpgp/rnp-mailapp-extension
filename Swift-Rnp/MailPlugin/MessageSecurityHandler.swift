@@ -11,6 +11,8 @@ import MailKit
 class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
     static let shared = MessageSecurityHandler()
+    
+    private let rnp = RnpFacade(pubFormat: .gpg, secFormat: .gpg)
 
     // MARK: - Encoding Messages
 
@@ -59,7 +61,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         // message. If an error occurs, create an NSError that describes the
         // failure, and specify it in the security information object. For example:
         //
-         let securityInfo = MEMessageSecurityInformation(signers: [], isEncrypted: false, signingError: nil, encryptionError: nil)
+//         let securityInfo = MEMessageSecurityInformation(signers: [], isEncrypted: false, signingError: nil, encryptionError: nil)
         //
         // Create a decoded message object that contains the decoded data and the
         // security information. For example:
@@ -69,8 +71,8 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         
         // If the message doesn't need to be decoded, return nil.
         // Otherwise return an MEDecodedMessage, as shown above.
-        guard RnpFacade.hasKeys() else {
-            RnpFacade.createKeys()
+        guard rnp.hasKeys else {
+            rnp.createKeys()
             return nil
         }
         return nil;
