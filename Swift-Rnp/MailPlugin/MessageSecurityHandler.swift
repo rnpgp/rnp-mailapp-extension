@@ -12,7 +12,13 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
     static let shared = MessageSecurityHandler()
     
-    private let rnp = RnpFacade(pubFormat: .gpg, secFormat: .gpg)
+    override init() {
+        rnp = RnpFacade(pubFormat: .gpg, secFormat: .gpg)
+        messageDecoder = RnpMessageDecoder(rnp: rnp)
+    }
+    
+    private var rnp: RnpFacade
+    private var messageDecoder: RnpMessageDecoder
 
     // MARK: - Encoding Messages
 
@@ -56,26 +62,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     // MARK: - Decoding Messages
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
-        // In this method, you decode the message data. Create an
-        // MEMessageSecurityInformation object to capture details about the decoded
-        // message. If an error occurs, create an NSError that describes the
-        // failure, and specify it in the security information object. For example:
-        //
-//         let securityInfo = MEMessageSecurityInformation(signers: [], isEncrypted: false, signingError: nil, encryptionError: nil)
-        //
-        // Create a decoded message object that contains the decoded data and the
-        // security information. For example:
-        //
-        // let decodedData = ... 
-        // let decodedMessage = MEDecodedMessage(data: decodedData, securityInformation: securityInfo, context: nil)
-        
-        // If the message doesn't need to be decoded, return nil.
-        // Otherwise return an MEDecodedMessage, as shown above.
-        guard rnp.hasKeys else {
-            rnp.createKeys()
-            return nil
-        }
-        return nil;
+        messageDecoder.decodedMessage(from: data)
     }
  
     // MARK: - Displaying Security Information

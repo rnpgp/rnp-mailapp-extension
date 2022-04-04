@@ -25,6 +25,13 @@
 		2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FB2766A081002FC967 /* KeysManager.swift */; };
 		2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FF2766A38B002FC967 /* ContentViewModel.swift */; };
 		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
+		2ACA9E5D27EBD1B100B43565 /* MimeParser in Frameworks */ = {isa = PBXBuildFile; productRef = 2ACA9E5C27EBD1B100B43565 /* MimeParser */; };
+		2ACA9E5E27ECBA6700B43565 /* KeyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F9276698B5002FC967 /* KeyFile.swift */; };
+		2ACA9E5F27ECBA7100B43565 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FB2766A081002FC967 /* KeysManager.swift */; };
+		2ACA9E6127F2299000B43565 /* RnpMessageDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6027F2299000B43565 /* RnpMessageDecoder.swift */; };
+		2ACA9E6527F74E9D00B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
+		2ACA9E6627F74E9D00B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
+		2ACA9E6827FA4EB800B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
 		2AD356EE27D5453B00F658D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD356ED27D5453B00F658D9 /* main.m */; };
 		2AD356F327D5455700F658D9 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2AD356F227D5455700F658D9 /* RNPFramework */; };
 		2AD356F927D901D400F658D9 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD356F827D901D300F658D9 /* RnpFacade.swift */; };
@@ -97,6 +104,8 @@
 		2A7484FF2766A38B002FC967 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		2A787CD3274A9ED000997396 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		2ACA9E6027F2299000B43565 /* RnpMessageDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpMessageDecoder.swift; sourceTree = "<group>"; };
+		2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		2AD356EB27D5453B00F658D9 /* ObjC-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ObjC-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AD356ED27D5453B00F658D9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2AD356F627D7E07400F658D9 /* ObjC-Rnp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ObjC-Rnp.entitlements"; sourceTree = "<group>"; };
@@ -110,6 +119,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A49BAD627DA021000204DC6 /* RNPFramework in Frameworks */,
+				2ACA9E5D27EBD1B100B43565 /* MimeParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +159,7 @@
 				2A010A082751125B006CEF05 /* MessageSecurityViewController.xib */,
 				2A010A0A2751125B006CEF05 /* Info.plist */,
 				2A010A0B2751125B006CEF05 /* MailPlugin.entitlements */,
+				2ACA9E6027F2299000B43565 /* RnpMessageDecoder.swift */,
 			);
 			path = MailPlugin;
 			sourceTree = "<group>";
@@ -273,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				2AD356F827D901D300F658D9 /* RnpFacade.swift */,
+				2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -295,6 +307,7 @@
 			name = MailPlugin;
 			packageProductDependencies = (
 				2A49BAD527DA021000204DC6 /* RNPFramework */,
+				2ACA9E5C27EBD1B100B43565 /* MimeParser */,
 			);
 			productName = MailPlugin;
 			productReference = 2A010A002751125B006CEF05 /* MailPlugin.appex */;
@@ -396,6 +409,9 @@
 				Base,
 			);
 			mainGroup = 2A787CCA274A9ED000997396;
+			packageReferences = (
+				2ACA9E5B27EBD1B100B43565 /* XCRemoteSwiftPackageReference "MimeParser" */,
+			);
 			productRefGroup = 2A787CD4274A9ED000997396 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -433,8 +449,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2ACA9E6127F2299000B43565 /* RnpMessageDecoder.swift in Sources */,
+				2ACA9E5E27ECBA6700B43565 /* KeyFile.swift in Sources */,
 				2A010A052751125B006CEF05 /* MessageSecurityHandler.swift in Sources */,
 				2A010A032751125B006CEF05 /* MailExtension.swift in Sources */,
+				2ACA9E6527F74E9D00B43565 /* UserDefaults.swift in Sources */,
+				2ACA9E5F27ECBA7100B43565 /* KeysManager.swift in Sources */,
 				2AD356FA27D901D400F658D9 /* RnpFacade.swift in Sources */,
 				2A010A072751125B006CEF05 /* MessageSecurityViewController.swift in Sources */,
 			);
@@ -449,6 +469,7 @@
 				2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */,
 				2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */,
 				2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */,
+				2ACA9E6627F74E9D00B43565 /* UserDefaults.swift in Sources */,
 				2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */,
 				2AD356FB27D901D400F658D9 /* RnpFacade.swift in Sources */,
 				2A010A182756B865006CEF05 /* MailExtensionsContainerApp.swift in Sources */,
@@ -461,6 +482,7 @@
 			files = (
 				2AD356F927D901D400F658D9 /* RnpFacade.swift in Sources */,
 				2A787CD7274A9ED000997396 /* main.swift in Sources */,
+				2ACA9E6827FA4EB800B43565 /* UserDefaults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -839,6 +861,17 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		2ACA9E5B27EBD1B100B43565 /* XCRemoteSwiftPackageReference "MimeParser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/miximka/MimeParser";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		2A268EDD27C6852000C0CB14 /* RNPFramework */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -851,6 +884,11 @@
 		2A49BAD727DA021F00204DC6 /* RNPFramework */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RNPFramework;
+		};
+		2ACA9E5C27EBD1B100B43565 /* MimeParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2ACA9E5B27EBD1B100B43565 /* XCRemoteSwiftPackageReference "MimeParser" */;
+			productName = MimeParser;
 		};
 		2AD356F227D5455700F658D9 /* RNPFramework */ = {
 			isa = XCSwiftPackageProductDependency;
