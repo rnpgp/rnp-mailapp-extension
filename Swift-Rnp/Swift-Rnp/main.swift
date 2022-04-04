@@ -12,13 +12,18 @@ import Foundation
 let format = RnpConstants.rnpKeyStoreFormat_(toString: .gpg)
 let object = RnpObject(pubFormat: format, secFormat: format)
     // FIXME: Think about keychain
+let userId = "userId@key"
 let password = "userPass"
-if !object.hasKeys {
-    object.createKeys("userId@key", password: password) { success in
+if !object.hasOwnKeys {
+    object.createKeys(userId, password: password) { success in
         print("Keys are \(success ? "generated" : "not generated")")
     }
 }
 
-if object.hasKeys, let message = object.decrypt(usingKeys: true, password: password) {
-    print(message)
+let text: String = "What a day!"
+if object.hasOwnKeys,
+   let message = object.encryptString(text, userId: userId, password: password),
+   let data: Data = message.data(using: .utf8),
+   let message = object.decryptData(data, usingKeys: false, password: password) {
+    print("encoded and decoded - \(message)")
 }

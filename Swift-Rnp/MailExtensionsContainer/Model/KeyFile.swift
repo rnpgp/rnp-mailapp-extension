@@ -9,6 +9,7 @@ import Foundation
 
 struct KeyFile: Identifiable {
     let id = UUID()
+    let userId: String
     let filename: String
     let isPublic: Bool
 }
@@ -16,8 +17,8 @@ struct KeyFile: Identifiable {
 extension KeyFile {
     static var mock: [KeyFile] {
         [
-            KeyFile(filename: "pubring.gpg", isPublic: true),
-            KeyFile(filename: "secring.gpg", isPublic: false)
+            KeyFile(userId: "john@doe.com", filename: "pubring.gpg", isPublic: true),
+            KeyFile(userId: "ben@appleseed.com", filename: "secring.gpg", isPublic: false)
         ]
     }
 }

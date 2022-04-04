@@ -20,7 +20,7 @@ class KeysManager: ObservableObject {
     }
     
     func addKeys() {
-        rnp.createKeys()
+//        rnp.createKeys()
         
         // TODO: remove mock
         self.items = KeyFile.mock

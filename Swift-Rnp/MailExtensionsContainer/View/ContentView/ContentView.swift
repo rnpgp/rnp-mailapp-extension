@@ -21,7 +21,7 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: "plus.circle")
                     }
-                    .disabled(model.hasKeys)
+                    .disabled(model.hasOwnKeys)
                     
                     Button {} label: {
                         Image(systemName: "minus.circle")
