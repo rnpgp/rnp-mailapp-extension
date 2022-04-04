@@ -11,7 +11,7 @@ import Foundation
 // FIXME: For the moment only Intel lib is ready
 let format = RnpConstants.rnpKeyStoreFormat_(toString: .gpg)
 let object = RnpObject(pubFormat: format, secFormat: format)
-    // FIXME: Think about keychain
+
 let userId = "userId@key"
 let password = "userPass"
 if !object.hasOwnKeys {
