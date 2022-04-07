@@ -90,7 +90,11 @@ final class RnpMessageDecoder {
             return result
         }
 
-        // In case we don't have the key we should check if it attached to the image
+        /**
+         * In case we don't have the key we should check if it attached to the image.
+         * But if after it we still can't find one then it can be related to try checking by wrong key
+         */
+        // TODO: Inplement validation by "being used" after implement the same functionality in SPM
         var haveKeys = checkKeyPresentFor(sender)
         if !haveKeys {
             checkMimeForKeys(parsed)
@@ -98,20 +102,16 @@ final class RnpMessageDecoder {
             haveKeys = checkKeyPresentFor(sender)
         }
         
-        // We can't decode it
-        guard haveKeys else {
-            let encrypted = contentType.subtype == "encrypted"
-            let error = MessageSecurityError.unverifiedEmails(emailAdresses: [sender])
-            // FIXME: In case if message signed then we should show signers without key stored locally
-            let info = MEMessageSecurityInformation(signers: [], isEncrypted: encrypted, signingError: nil, encryptionError: error)
-                // it show banner only if data is nil
-            let banner = MEDecodedMessageBanner(title: error.errorReason, primaryActionTitle: "Ok", dismissable: false)
-            return MEDecodedMessage(data: encrypted ? nil : data, securityInformation: info, context: nil, banner: banner)
-        }
-        
         // TODO: We don't need just bool answer here - we need decrypted message. Checked for signed and encrypted statuses
         guard checkMimeForEncodedParts(parsed) else { return nil }
         
+        var encoded: String? = message
+        // TODO: Collect signers in next row method
+        performDecodeMime(parsed, message: &encoded)
+        
+        guard let decodedMessage = encoded else { return nil }
+        
+        // TODO: check signers and validate it somehow
         let signed = false
         var signers = [MEMessageSigner]()
         if signed {
@@ -122,16 +122,41 @@ final class RnpMessageDecoder {
             signers.append(signer)
         }
         
-        let info = MEMessageSecurityInformation( signers: signers,
-                                                 isEncrypted: false,
-                                                 signingError: nil,
-                                                 encryptionError: nil)
+        let info = MEMessageSecurityInformation(signers: signers,
+                                                isEncrypted: false,
+                                                signingError: nil,
+                                                encryptionError: nil)
         
         let decoded =  MEDecodedMessage(data: data,
                                         securityInformation: info,
                                         context: nil)
         
         return decoded
+    }
+    
+    /// Perform needed operation on message and set message to nil in not-sucessful cases
+    ///
+    /// - parameter mime: parsed message Mime to analyze & decoding/sign checking
+    /// - parameter message: optional **inout** origin message. Will set to nil if we can't decode.
+    private func performDecodeMime(_ mime: Mime, message: inout String?) {
+        switch mime.content {
+        case .mixed(let mimesList):
+            for item in mimesList {
+                self.performDecodeMime(item, message: &message)
+            }
+        case .body(let mimeBody):
+            print(mimeBody)
+            if mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encBegin.rawValue) != .none,
+               mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encEnd.rawValue) != .none {
+                let decrypted = rnp.decryptMessage(message: mimeBody.raw)
+                // TODO: Complete implementation
+            } else if mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signBegin.rawValue) != .none,
+                      mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signEnd.rawValue) != .none {
+                
+            }
+        case .alternative(let mimeList):
+            print("curious")
+        }
     }
     
     private func checkMimeForKeys(_ mime: Mime) {
