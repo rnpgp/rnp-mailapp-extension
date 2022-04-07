@@ -28,13 +28,19 @@ enum MessageSecurityError: Error {
 
 final class RnpMessageDecoder {
     
-    enum PGPBlocks:String, CaseIterable {
+    enum PGPBlocks: String, CaseIterable {
         case pubKeyBegin = "BEGIN PGP PUBLIC KEY BLOCK"
         case pubKeyEnd = "END PGP PUBLIC KEY BLOCK"
         case signBegin = "BEGIN PGP SIGNATURE"
         case signEnd = "END PGP SIGNATURE"
         case encBegin = "BEGIN PGP MESSAGE"
         case encEnd = "END PGP MESSAGE"
+    }
+    
+    enum MimeSubtypes: String {
+        case signed = "signed"
+        case encrypted = "encrypted"
+        case keys = "pgp-keys"
     }
     
     private var rnp: RnpFacade
@@ -61,7 +67,11 @@ final class RnpMessageDecoder {
         // Check if message is signed or encrypted
         // FIXME: Add check for public keys here and return nil as fast as we can
         guard let contentType = parsed.header.contentType,
-              contentType.subtype == "signed" || contentType.subtype == "encrypted" else { return nil }
+              contentType.subtype == MimeSubtypes.signed.rawValue ||
+                contentType.subtype == MimeSubtypes.encrypted.rawValue else {
+                  
+                  return nil
+}
         
         // Need to check if we already have keys
         let senderList = parsed.header.other.filter({ $0.name == "From" || $0.name == "from" })
