@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 class ContentViewModel: ObservableObject {
-    @Published var hasKeys: Bool = false
+    @Published var hasOwnKeys: Bool = false
     
     var listModel: KeysListViewModel {
         KeysListViewModel(manager: self.manager)
@@ -27,7 +27,7 @@ class ContentViewModel: ObservableObject {
         manager
             .$items
             .map{ !$0.isEmpty }
-            .assign(to: \.hasKeys, on: self)
+            .assign(to: \.hasOwnKeys, on: self)
             .store(in: &cancellables)
     }
     
