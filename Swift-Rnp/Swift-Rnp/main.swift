@@ -15,15 +15,18 @@ let object = RnpObject(pubFormat: format, secFormat: format)
 let userId = "userId@key"
 let password = "userPass"
 if !object.hasOwnKeys {
-    object.createKeys(userId, password: password) { success in
-        print("Keys are \(success ? "generated" : "not generated")")
+    do {
+        try object.createKeys(userId, password: password)
+        print("Keys are generated")
+    } catch {
+        print("Keys aren't generated \(error.localizedDescription)")
     }
 }
 
 let text: String = "What a day!"
 if object.hasOwnKeys,
-   let message = object.encryptString(text, userId: userId, password: password),
+   let message = try? object.encryptString(text, userId: userId, password: password),
    let data: Data = message.data(using: .utf8),
-   let message = object.decryptData(data, usingKeys: false, password: password) {
-    print("encoded and decoded - \(message)")
+   let decrypted = try? object.decryptData(data, password: password) {
+    print("encoded and decoded - \(decrypted)")
 }
