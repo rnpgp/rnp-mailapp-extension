@@ -6,7 +6,6 @@
 //
 
 import MailKit
-//import Swift_Rnp
 
 class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
@@ -14,63 +13,35 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     
     override init() {
         rnp = RnpFacade(pubFormat: .gpg, secFormat: .gpg)
+        
         messageDecoder = RnpMessageDecoder(rnp: rnp)
+        messageEncoder = RnpMessageEncoder(rnp: rnp)
     }
     
     private var rnp: RnpFacade
     private var messageDecoder: RnpMessageDecoder
+    private var messageEncoder: RnpMessageEncoder
 
     // MARK: - Encoding Messages
 
     func getEncodingStatus(for message: MEMessage, composeContext: MEComposeContext, completionHandler: @escaping (MEOutgoingMessageEncodingStatus) -> Void) {
-        // Indicate whether you support signing, encrypting, or both. If the
-        // message contains recipients that you can't sign or encrypt for,
-        // specify an error and include the addresses in the
-        // addressesFailingEncryption array parameter. Update this code with
-        // the options your extension supports.
-        let status = MEOutgoingMessageEncodingStatus(canSign:false, canEncrypt:false, securityError:nil, addressesFailingEncryption:[])
-
-        // Call the completion handler with the message status.
-        completionHandler(status)
+        completionHandler(messageEncoder.encodingStatus(for: message, composeContext: composeContext))
     }
 
     func encode(_ message: MEMessage, composeContext: MEComposeContext, completionHandler: @escaping (MEMessageEncodingResult) -> Void) {
-        // The result of the encoding operation. This object contains
-        // the encoded message or an error to indicate what failed.
-        let result: MEMessageEncodingResult
-        
-        // Add code here to sign and/or encrypt the message.
-        //
-        // If the encoding is successful, you create an instance
-        // of MEEncodedOutgoingMessage that contains the encoded data and
-        // indications whether the data is signed and/or encrypted.
-        // For example:
-        //
-        // encodedMessage = MEEncodedOutgoingMessage(rawData:encodedData, isSigned:true, isEncrypted:true)
-        //
-        // Finally, create an MEMessageEncodingResult that includes the
-        // MEEncodedOutgoingMessage or errors to indicate why the encoding
-        // failed. If the message doesn't need to be encoded, pass nil,
-        // otherwise pass an MEEncodedOutgoingMessage as shown above.
-        result = MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil)
-      
-        // Call the completion handler with the result, or nil if
-        // the extension didn't attempt to encode the message at all.
-        completionHandler(result);
+        completionHandler(messageEncoder.encode(message, composeContext: composeContext))
     }
 
     // MARK: - Decoding Messages
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
-        messageDecoder.decodedMessage(from: data)
+        return messageDecoder.decodedMessage(from: data)
     }
  
     // MARK: - Displaying Security Information
 
     func extensionViewController(signers messageSigners: [MEMessageSigner]) -> MEExtensionViewController? {
-        // Return a view controller that shows details about the encoded message.
-        return MessageSecurityViewController(nibName: "MessageSecurityViewController", bundle: Bundle.main
-        )
+        return MessageSecurityViewController(nibName: "MessageSecurityViewController", bundle: Bundle.main)
     }
 
     // MARK: mark - Displaying Additional Context

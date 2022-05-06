@@ -19,6 +19,15 @@
 		2A268EDE27C6852000C0CB14 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2A268EDD27C6852000C0CB14 /* RNPFramework */; };
 		2A49BAD627DA021000204DC6 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2A49BAD527DA021000204DC6 /* RNPFramework */; };
 		2A49BAD827DA021F00204DC6 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2A49BAD727DA021F00204DC6 /* RNPFramework */; };
+		2A4BE49B281C72CC00564B25 /* quotedprintable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4BE49A281C72CC00564B25 /* quotedprintable.swift */; };
+		2A4BE49C281C72CC00564B25 /* quotedprintable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4BE49A281C72CC00564B25 /* quotedprintable.swift */; };
+		2A4BE49D281C72CC00564B25 /* quotedprintable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4BE49A281C72CC00564B25 /* quotedprintable.swift */; };
+		2A6A06292807627700E1D1CF /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A06282807627700E1D1CF /* Result.swift */; };
+		2A6A062A2807627700E1D1CF /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A06282807627700E1D1CF /* Result.swift */; };
+		2A6A062B2807627700E1D1CF /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A06282807627700E1D1CF /* Result.swift */; };
+		2A6A062D28076D4700E1D1CF /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A062C28076D4700E1D1CF /* Error.swift */; };
+		2A6A062E28076D4700E1D1CF /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A062C28076D4700E1D1CF /* Error.swift */; };
+		2A6A062F28076D4700E1D1CF /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A062C28076D4700E1D1CF /* Error.swift */; };
 		2A7484F4276697FD002FC967 /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F3276697FD002FC967 /* KeysListView.swift */; };
 		2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F527669819002FC967 /* KeysListViewModel.swift */; };
 		2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F9276698B5002FC967 /* KeyFile.swift */; };
@@ -32,6 +41,11 @@
 		2ACA9E6527F74E9D00B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
 		2ACA9E6627F74E9D00B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
 		2ACA9E6827FA4EB800B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
+		2AD2523B280073260010AEF8 /* RnpMessageEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523A280073260010AEF8 /* RnpMessageEncoder.swift */; };
+		2AD2523D28008BD80010AEF8 /* MessageSecurityError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523C28008BD80010AEF8 /* MessageSecurityError.swift */; };
+		2AD2523F280334790010AEF8 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523E280334790010AEF8 /* String.swift */; };
+		2AD25240280334790010AEF8 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523E280334790010AEF8 /* String.swift */; };
+		2AD25241280334790010AEF8 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523E280334790010AEF8 /* String.swift */; };
 		2AD356EE27D5453B00F658D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD356ED27D5453B00F658D9 /* main.m */; };
 		2AD356F327D5455700F658D9 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2AD356F227D5455700F658D9 /* RNPFramework */; };
 		2AD356F927D901D400F658D9 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD356F827D901D300F658D9 /* RnpFacade.swift */; };
@@ -97,6 +111,9 @@
 		2A010A202756B867006CEF05 /* MailExtensionsContainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MailExtensionsContainer.entitlements; sourceTree = "<group>"; };
 		2A268EDC27C6851700C0CB14 /* RNPFrameworkLocal */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNPFrameworkLocal; path = ../../MailKitExtension/RNPFrameworkLocal; sourceTree = "<group>"; };
 		2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift-Rnp-Bridging-Header.h"; sourceTree = "<group>"; };
+		2A4BE49A281C72CC00564B25 /* quotedprintable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = quotedprintable.swift; sourceTree = "<group>"; };
+		2A6A06282807627700E1D1CF /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		2A6A062C28076D4700E1D1CF /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		2A7484F3276697FD002FC967 /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
 		2A7484F527669819002FC967 /* KeysListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListViewModel.swift; sourceTree = "<group>"; };
 		2A7484F9276698B5002FC967 /* KeyFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFile.swift; sourceTree = "<group>"; };
@@ -106,6 +123,9 @@
 		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		2ACA9E6027F2299000B43565 /* RnpMessageDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpMessageDecoder.swift; sourceTree = "<group>"; };
 		2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		2AD2523A280073260010AEF8 /* RnpMessageEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpMessageEncoder.swift; sourceTree = "<group>"; };
+		2AD2523C28008BD80010AEF8 /* MessageSecurityError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityError.swift; sourceTree = "<group>"; };
+		2AD2523E280334790010AEF8 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		2AD356EB27D5453B00F658D9 /* ObjC-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ObjC-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AD356ED27D5453B00F658D9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2AD356F627D7E07400F658D9 /* ObjC-Rnp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ObjC-Rnp.entitlements"; sourceTree = "<group>"; };
@@ -159,7 +179,9 @@
 				2A010A082751125B006CEF05 /* MessageSecurityViewController.xib */,
 				2A010A0A2751125B006CEF05 /* Info.plist */,
 				2A010A0B2751125B006CEF05 /* MailPlugin.entitlements */,
+				2AD2523C28008BD80010AEF8 /* MessageSecurityError.swift */,
 				2ACA9E6027F2299000B43565 /* RnpMessageDecoder.swift */,
+				2AD2523A280073260010AEF8 /* RnpMessageEncoder.swift */,
 			);
 			path = MailPlugin;
 			sourceTree = "<group>";
@@ -199,6 +221,18 @@
 				2A268EDC27C6851700C0CB14 /* RNPFrameworkLocal */,
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		2A6A06272807625D00E1D1CF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				2A4BE49A281C72CC00564B25 /* quotedprintable.swift */,
+				2AD2523E280334790010AEF8 /* String.swift */,
+				2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */,
+				2A6A06282807627700E1D1CF /* Result.swift */,
+				2A6A062C28076D4700E1D1CF /* Error.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		2A7484F727669870002FC967 /* KeysList */ = {
@@ -283,8 +317,8 @@
 		2AD356F727D901A000F658D9 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				2A6A06272807625D00E1D1CF /* Extensions */,
 				2AD356F827D901D300F658D9 /* RnpFacade.swift */,
-				2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -450,11 +484,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				2ACA9E6127F2299000B43565 /* RnpMessageDecoder.swift in Sources */,
+				2A4BE49C281C72CC00564B25 /* quotedprintable.swift in Sources */,
+				2AD25240280334790010AEF8 /* String.swift in Sources */,
 				2ACA9E5E27ECBA6700B43565 /* KeyFile.swift in Sources */,
+				2A6A062E28076D4700E1D1CF /* Error.swift in Sources */,
 				2A010A052751125B006CEF05 /* MessageSecurityHandler.swift in Sources */,
 				2A010A032751125B006CEF05 /* MailExtension.swift in Sources */,
+				2AD2523D28008BD80010AEF8 /* MessageSecurityError.swift in Sources */,
+				2A6A062A2807627700E1D1CF /* Result.swift in Sources */,
 				2ACA9E6527F74E9D00B43565 /* UserDefaults.swift in Sources */,
 				2ACA9E5F27ECBA7100B43565 /* KeysManager.swift in Sources */,
+				2AD2523B280073260010AEF8 /* RnpMessageEncoder.swift in Sources */,
 				2AD356FA27D901D400F658D9 /* RnpFacade.swift in Sources */,
 				2A010A072751125B006CEF05 /* MessageSecurityViewController.swift in Sources */,
 			);
@@ -466,13 +506,17 @@
 			files = (
 				2A7484F4276697FD002FC967 /* KeysListView.swift in Sources */,
 				2A010A1A2756B865006CEF05 /* ContentView.swift in Sources */,
+				2AD25241280334790010AEF8 /* String.swift in Sources */,
+				2A4BE49D281C72CC00564B25 /* quotedprintable.swift in Sources */,
 				2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */,
+				2A6A062F28076D4700E1D1CF /* Error.swift in Sources */,
 				2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */,
 				2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */,
 				2ACA9E6627F74E9D00B43565 /* UserDefaults.swift in Sources */,
 				2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */,
 				2AD356FB27D901D400F658D9 /* RnpFacade.swift in Sources */,
 				2A010A182756B865006CEF05 /* MailExtensionsContainerApp.swift in Sources */,
+				2A6A062B2807627700E1D1CF /* Result.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -481,7 +525,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				2AD356F927D901D400F658D9 /* RnpFacade.swift in Sources */,
+				2A4BE49B281C72CC00564B25 /* quotedprintable.swift in Sources */,
+				2A6A06292807627700E1D1CF /* Result.swift in Sources */,
 				2A787CD7274A9ED000997396 /* main.swift in Sources */,
+				2AD2523F280334790010AEF8 /* String.swift in Sources */,
+				2A6A062D28076D4700E1D1CF /* Error.swift in Sources */,
 				2ACA9E6827FA4EB800B43565 /* UserDefaults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
