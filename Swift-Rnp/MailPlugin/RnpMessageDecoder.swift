@@ -9,23 +9,6 @@ import Foundation
 import MailKit
 import MimeParser
 
-enum MessageSecurityError: Error {
-    case unverifiedEmails(emailAdresses: [MEEmailAddress])
-    case noEncodableData
-    case parserFails
-    
-    var errorReason: String {
-        switch self {
-        case .unverifiedEmails(let emailAdresses):
-            return "Invalid email addresses detected.\n\(emailAdresses.map { $0.rawString })"
-        case .noEncodableData:
-            return "No encodable data found."
-        case .parserFails:
-            return "Message can't being parsed"
-        }
-    }
-}
-
 final class RnpMessageDecoder {
     
     enum PGPBlocks: String, CaseIterable {
@@ -36,6 +19,16 @@ final class RnpMessageDecoder {
         case encBegin = "BEGIN PGP MESSAGE"
         case encEnd = "END PGP MESSAGE"
     }
+    /* https://datatracker.ietf.org/doc/html/rfc4880#section-6.2
+    BEGIN PGP PRIVATE KEY BLOCK // Used for armoring private keys.
+    
+    BEGIN PGP MESSAGE, PART X/Y // Used for multi-part messages, where the armor is split amongst Y
+    parts, and this is the Xth part out of Y.
+    
+    BEGIN PGP MESSAGE, PART X //Used for multi-part messages, where this is the Xth part of an
+    unspecified number of parts.  Requires the MESSAGE-ID Armor
+    Header to be used.
+    */
     
     enum MimeSubtypes: String {
         case signed = "signed"
@@ -66,70 +59,54 @@ final class RnpMessageDecoder {
         
         // Check if message is signed or encrypted
         // FIXME: Add check for public keys here and return nil as fast as we can
-        guard let contentType = parsed.header.contentType,
-              contentType.subtype == MimeSubtypes.signed.rawValue ||
-                contentType.subtype == MimeSubtypes.encrypted.rawValue else {
-                  
-                  return nil
-}
+        guard let contentType = parsed.header.contentType?.subtype,
+              contentType == MimeSubtypes.signed.rawValue ||
+                contentType == MimeSubtypes.encrypted.rawValue else { return nil }
         
         // Need to check if we already have keys
-        let senderList = parsed.header.other.filter({ $0.name == "From" || $0.name == "from" })
+        let filters = ["From", "from", "X-Google-Original-From"]
+        let senderList = parsed.header.other
+            .filter({ filters.contains($0.name) && !$0.body.isEmpty })
+            .map { MEEmailAddress(rawString: $0.body) }
         
         // TODO: Think about requirement of any notification with MEDecodedMessageBanner about it
-        guard !senderList.isEmpty,
-              !senderList[0].body.isEmpty else { return nil }
-        let sender = MEEmailAddress(rawString: senderList[0].body)
-        
-        // Usually, the pgp client add exactly raw string as user id
-        func checkKeyPresentFor(_ mailAddress: MEEmailAddress) -> Bool {
-            var result = rnp.checkKeyPresenceFor(mailAddress.rawString)
-            if !result, let email = mailAddress.addressString {
-                result = rnp.checkKeyPresenceFor(email)
-            }
-            return result
-        }
+        guard !senderList.isEmpty else { return nil }
 
         /**
          * In case we don't have the key we should check if it attached to the image.
          * But if after it we still can't find one then it can be related to try checking by wrong key
          */
         // TODO: Inplement validation by "being used" after implement the same functionality in SPM
-        var haveKeys = checkKeyPresentFor(sender)
-        if !haveKeys {
-            checkMimeForKeys(parsed)
+        var aSender: MEEmailAddress? = RnpMessageDecoder.checkKeyPresentFor(senderList, rnp: rnp)
+        if aSender == nil {
+            RnpMessageDecoder.checkMimeForKeys(parsed, rnp: rnp)
             
-            haveKeys = checkKeyPresentFor(sender)
+            aSender = RnpMessageDecoder.checkKeyPresentFor(senderList, rnp: rnp)
         }
         
         // TODO: We don't need just bool answer here - we need decrypted message. Checked for signed and encrypted statuses
-        guard checkMimeForEncodedParts(parsed) else { return nil }
+        guard RnpMessageDecoder.checkMimeForEncodedParts(parsed),
+              let sender = aSender else { return nil }
         
         var encoded: String? = message
-        // TODO: Collect signers in next row method
-        performDecodeMime(parsed, message: &encoded)
+        var signers: [MEMessageSigner] = [MEMessageSigner(emailAddresses: [sender],
+                                                          signatureLabel: sender.rawString,
+                                                          context: "Some useful data".data(using: .utf8))]
+        var signingError: Error?
+        var encryptionError: Error?
+        performDecodeMime(parsed, boundary: parsed.header.boundaryParameter, message: &encoded, signers: &signers, signingError: &signingError, encryptionError: &encryptionError)
         
-        guard let decodedMessage = encoded else { return nil }
-        
-        // TODO: check signers and validate it somehow
-        let signed = false
-        var signers = [MEMessageSigner]()
-        if signed {
-                // TODO: possible to have more than one signer
-            let signer = MEMessageSigner(emailAddresses: [sender],
-                                         signatureLabel: sender.rawString,
-                                         context: nil)
-            signers.append(signer)
-        }
+        guard let decodedMessage = encoded,
+              !signers.isEmpty else { return nil }
         
         let info = MEMessageSecurityInformation(signers: signers,
                                                 isEncrypted: false,
-                                                signingError: nil,
-                                                encryptionError: nil)
+                                                signingError: signingError,
+                                                encryptionError: encryptionError)
         
-        let decoded =  MEDecodedMessage(data: data,
+        let decoded =  MEDecodedMessage(data: decodedMessage.data(using: .utf8),
                                         securityInformation: info,
-                                        context: nil)
+                                        context: "MEDecodedMessage's context. Should be received in custom VC".data(using: .utf8))
         
         return decoded
     }
@@ -138,38 +115,62 @@ final class RnpMessageDecoder {
     ///
     /// - parameter mime: parsed message Mime to analyze & decoding/sign checking
     /// - parameter message: optional **inout** origin message. Will set to nil if we can't decode.
-    private func performDecodeMime(_ mime: Mime, message: inout String?) {
+    private func performDecodeMime(_ mime: Mime, boundary: String?, message: inout String?, signers: inout [MEMessageSigner], signingError: inout Error?, encryptionError: inout Error?) {
         switch mime.content {
         case .mixed(let mimesList):
             for item in mimesList {
-                self.performDecodeMime(item, message: &message)
+                self.performDecodeMime(item, boundary: boundary, message: &message, signers: &signers, signingError: &signingError, encryptionError: &encryptionError)
             }
         case .body(let mimeBody):
             print(mimeBody)
             if mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encBegin.rawValue) != .none,
                mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encEnd.rawValue) != .none {
                 let decrypted = rnp.decryptMessage(message: mimeBody.raw)
-                // TODO: Complete implementation
             } else if mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signBegin.rawValue) != .none,
-                      mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signEnd.rawValue) != .none {
+                      mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signEnd.rawValue) != .none,
+                      var signed = RnpMessageDecoder.extractInboundariedString(boundary, string: message) {
                 
+                signed = signed
+                    .replacingOccurrences(of: "\n", with: "\r\n")// LF -> CRLF
+                switch rnp.verifyMessageString(signed,
+                                               detachedSign: mimeBody.raw) {
+                case .success(): break
+                    // TODO: As soon as we just check if plain text signed with the right person, then no need eny decode. But anyway possible to clear any signed-related content
+                    /*
+                    guard let parsed = try? MimeParser().parse(signed) else { return }
+                    message = RnpMessageDecoder.plainTextFrom(parsed)
+                     */
+                case .failure(let error):
+                    signingError = error
+                }
             }
         case .alternative(let mimeList):
             print("curious")
         }
     }
+}
+
+/// Static private methods
+extension RnpMessageDecoder {
     
-    private func checkMimeForKeys(_ mime: Mime) {
+    static private func checkMimeForKeys(_ mime: Mime, rnp: RnpFacade) {
         switch mime.content {
         case .mixed(let mimesList):
             for item in mimesList {
-                self.checkMimeForKeys(item)
+                self.checkMimeForKeys(item, rnp: rnp)
             }
         case .body(let mimeBody):
             // Assume mimeBody.encoding == MimeParser.ContentTransferEncoding.quotedPrintable
             guard mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.pubKeyBegin.rawValue) != .none,
                   mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.pubKeyEnd.rawValue) != .none else { return }
-            rnp.importKeyString(mimeBody.raw)
+            let filename = RnpMessageDecoder.checkMimeForFilename(mime)
+            var keyString = mimeBody.raw
+            switch mime.header.contentTransferEncoding {
+            case .quotedPrintable:
+                keyString = QuotedPrintable.decode(string: keyString)
+            default: break
+            }
+            rnp.importKeyString(keyString, filename: filename)
         case .alternative(let mimeList):
             print("curious")
         }
@@ -177,7 +178,7 @@ final class RnpMessageDecoder {
     
     /// Return yes if mime has encoded parts
     @discardableResult
-    private func checkMimeForEncodedParts(_ mime: Mime) -> Bool {
+    static private func checkMimeForEncodedParts(_ mime: Mime) -> Bool {
         var result = false
         switch mime.content {
         case .mixed(let mimesList):
@@ -189,13 +190,100 @@ final class RnpMessageDecoder {
             }
         case .body(let mimeBody):
             if !result,
-               mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encBegin.rawValue) != .none,
-               mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encEnd.rawValue) != .none {
+               (mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encBegin.rawValue) != .none &&
+                mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encEnd.rawValue) != .none ||
+                mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signBegin.rawValue) != .none &&
+                mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signEnd.rawValue) != .none) {
                 result = true
             }
         case .alternative(let mimeList):
             print("curious")
         }
+        return result
+    }
+    
+    /// Usually, the pgp client add exactly raw string as user id
+    static private func checkKeyPresentFor(_ mailAddreses: [MEEmailAddress], rnp: RnpFacade) -> MEEmailAddress? {
+        var result: MEEmailAddress?
+        for item in mailAddreses {
+            if rnp.checkKeyPresenceFor(item.rawString) {
+                result = item
+                break
+            } else if let email = item.addressString,
+                      rnp.checkKeyPresenceFor(email) {
+                result = item
+                break
+            }
+        }
+        return result
+    }
+    
+    /// Check header for filename
+    static private func checkMimeForFilename(_ mime: Mime) -> String? {
+        guard let disp = mime.header.contentDisposition,
+              let filename = disp.filename else { return nil }
+        return filename
+    }
+    
+    static private func extractInboundariedString(_ boudary: String?, string: String?) -> String? {
+        guard let theBoundary = boudary,
+              let body = string,
+              let begin = body.range(of: "--" + theBoundary) else { return nil }
+        var result = body.suffix(from: begin.upperBound)
+        if result.hasPrefix("\n") {
+            result = result.suffix(result.count - 1)
+        }
+
+        guard let end = result.range(of: "--" + theBoundary) else { return nil }
+        result = result.prefix(upTo: end.lowerBound)
+        if result.hasSuffix("\n") {
+            result = result.prefix(result.count - 1)
+        }
+        
+        return String(result)
+    }
+    
+    static private func plainTextFrom(_ mime: Mime) -> String? {
+        var result: String?
+        switch mime.content {
+        case .mixed(let mimesList):
+            for item in mimesList {
+                result = RnpMessageDecoder.plainTextFrom(item)
+                if result != nil { break }
+            }
+        case .body(let mimeBody):
+            guard mime.header.contentType?.type ==  "text",
+                  mime.header.contentType?.subtype == "plain" else { return nil }
+            
+            let body = mimeBody.raw
+            switch mimeBody.encoding {
+            case .base64:
+                guard let decodedData = Data(base64Encoded: body),
+                      let decodedString = String(data: decodedData, encoding: .utf8) else { return nil }
+                    
+                return decodedString
+            default:
+                break
+            }
+        case .alternative(let mimeList):
+            print("curious")
+        }
+        
+        return result
+    }
+}
+
+extension MimeHeader {
+    var boundaryParameter: String? {
+        guard let contentType = self.contentType else { return nil }
+        
+        var result: String?
+        for (key, value) in contentType.parameters {
+            guard key == "boundary" else { continue }
+            result = value
+            break
+        }
+        
         return result
     }
 }
