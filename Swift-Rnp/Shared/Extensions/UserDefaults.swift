@@ -30,7 +30,7 @@ struct UserDefault <Value> {
 extension UserDefaults {
     enum Keys: String {
         case keysList = "keysFilenamesList"
-        
+        case password = "keysPassword"
     }
 }
 
@@ -48,4 +48,7 @@ extension UserDefaults {
      */
     @UserDefault(key: Keys.keysList, defaultValue: [])
     static var keysList: [String]
+    
+    @UserDefault(key: Keys.password, defaultValue: "")
+    static var password: String
 }
