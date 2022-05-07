@@ -125,7 +125,14 @@ final class RnpMessageDecoder {
             print(mimeBody)
             if mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encBegin.rawValue) != .none,
                mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.encEnd.rawValue) != .none {
-                let decrypted = rnp.decryptMessage(message: mimeBody.raw)
+                // "This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)"
+                switch rnp.decryptMessage(message: mimeBody.raw) {
+                case .success(let decrypted):
+                    message = message?.replacingOccurrences(of: mimeBody.raw, with: decrypted)
+                case .failure(let error):
+                    signers.removeAll()
+                    encryptionError = error
+                }
             } else if mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signBegin.rawValue) != .none,
                       mimeBody.raw.range(of: RnpMessageDecoder.PGPBlocks.signEnd.rawValue) != .none,
                       var signed = RnpMessageDecoder.extractInboundariedString(boundary, string: message) {
@@ -141,6 +148,7 @@ final class RnpMessageDecoder {
                     message = RnpMessageDecoder.plainTextFrom(parsed)
                      */
                 case .failure(let error):
+                    signers.removeAll()
                     signingError = error
                 }
             }

@@ -87,9 +87,13 @@ class RnpFacade: ObservableObject {
         }
     }
     
-    func decryptMessage(message: String) -> String? {
-        guard let decrypted = try? object.decryptString(message, password: password) else { return nil }
-        return decrypted
+    func decryptMessage(message: String) -> Result<String, Error> {
+        do {
+            let string = try object.decryptString(message, password: password)
+            return .success(string)
+        } catch {
+            return .failure(error)
+        }
     }
     
     @discardableResult
