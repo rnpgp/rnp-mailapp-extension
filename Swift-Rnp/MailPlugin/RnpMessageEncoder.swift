@@ -36,21 +36,22 @@ final class RnpMessageEncoder {
         }
         
         // FIXME: return filtering, possible we should try encode right after import and in success case we can receive key's userId on performing encode_op
-        /*
         let invalidRecipients = message.allRecipientAddresses.filter({ address in
             guard let email = address.addressString else { return true }
-            return !rnp.checkKeyPresenceFor(email)
+            return rnp.checkKeyPresenceFor(email)
         })
+        
+        print(">>> \(message.allRecipientAddresses.compactMap{ $0.addressString })")
         
         guard invalidRecipients.isEmpty else {
             // error eliminated bacause of top described issue
             /*let error = MessageSecurityError.missedPublicKeysEmails(emailAdresses: invalidRecipients)*/
-            return MEOutgoingMessageEncodingStatus(canSign: false,
+            return MEOutgoingMessageEncodingStatus(canSign: canSign,
                                                    canEncrypt: false,
                                                    securityError: nil,
                                                    addressesFailingEncryption: [])
         }
-        */
+        
         return MEOutgoingMessageEncodingStatus(canSign: canSign,
                                                canEncrypt: true,
                                                securityError: nil,
@@ -62,10 +63,14 @@ final class RnpMessageEncoder {
         
         /// Let encrypt only messages which ready to send but not encrypted yet
         guard message.state == .sending,
-              message.encryptionState != .encrypted else { return defaultResult }
+              message.encryptionState != .encrypted else { return defaultResult } // should return useful error
         
-        // If message don't require sign or/and encrypt then we shouldn't perform any operation
-        guard composeContext.shouldSign || composeContext.shouldEncrypt else { return defaultResult }
+        // ATM we support only embedded and detached, so sign is required
+        guard composeContext.shouldSign else {
+            return MEMessageEncodingResult(encodedMessage: nil,
+                                           signingError: RnpFacadeError.signIsRequired,
+                                           encryptionError: nil)
+        }
         
         var signedEncryptedData: Data?
         let userId = message.fromAddress.rawString
@@ -74,20 +79,6 @@ final class RnpMessageEncoder {
         // Opposite sign then encrypt - only recipient can decrypt and after can validate the sign.
         var isSigned = false
         var signingError: Error?
-        if composeContext.shouldSign,
-           let data = message.rawData {
-            switch rnp.signMessageData(data, userId: userId) {
-            case .success(let signed):
-                signedEncryptedData = signed
-                isSigned = true
-            case .failure(let error):
-                signingError = error
-#if DEBUG
-                let errorCase = RnpFacade.errorCodeCase(error: error as NSError)
-                print(errorCase)
-#endif
-            }
-        }
         
 // FIXME: Here we should check key's presence (as we did it on decoder)
         
@@ -105,6 +96,21 @@ final class RnpMessageEncoder {
                 let errorCase = RnpFacade.errorCodeCase(error: error as NSError)
                 print(errorCase)
 #endif
+            }
+        } else {
+            if composeContext.shouldSign,
+               let data = message.rawData {
+                switch rnp.signDetachedData(data, userId: userId) {
+                case .success(let signed):
+                    signedEncryptedData = signed
+                    isSigned = true
+                case .failure(let error):
+                    signingError = error
+#if DEBUG
+                    let errorCase = RnpFacade.errorCodeCase(error: error as NSError)
+                    print(errorCase)
+#endif
+                }
             }
         }
         
