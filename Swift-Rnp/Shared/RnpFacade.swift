@@ -65,6 +65,21 @@ class RnpFacade: ObservableObject {
         }
     }
     
+    func signDetachedData(_ messageData: Data, userId: String) -> Result<Data, Error> {
+        do {
+            guard let message = String(bytes: messageData, encoding: .utf8) else {
+                return .failure(RnpFacadeError.signedMessageIsEmpty)
+            }
+            let string = try object.signDetachedString(message, userId: userId, password: password)
+            guard let data = string.data(using: .utf8) else {
+                return .failure(RnpFacadeError.signedMessageIsEmpty)
+            }
+            return .success(data)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
     // TODO: return any signers info (into result) to deliver/check on upper level
     func verifyMessageString(_ signedMessage: String, detachedSign: String) -> Result<Void, Error> {
         do {
