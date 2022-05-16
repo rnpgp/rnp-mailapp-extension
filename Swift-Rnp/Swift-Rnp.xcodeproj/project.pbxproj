@@ -552,7 +552,7 @@
 				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MailPlugin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RNP plugin";
@@ -567,7 +567,7 @@
 					"$(PROJECT_DIR)/Swift-Rnp",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -584,7 +584,7 @@
 				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MailPlugin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RNP plugin";
@@ -599,7 +599,7 @@
 					"$(PROJECT_DIR)/Swift-Rnp",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -617,7 +617,7 @@
 				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/MailExtensionsContainer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -630,7 +630,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Swift-Rnp",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -647,7 +647,7 @@
 				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/MailExtensionsContainer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -660,7 +660,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Swift-Rnp",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
