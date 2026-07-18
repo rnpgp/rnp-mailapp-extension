@@ -1,0 +1,5 @@
+module CRnp {
+    umbrella header "shim.h"
+    link "rnp"
+    export *
+}
