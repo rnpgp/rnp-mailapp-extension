@@ -1,0 +1,81 @@
+name: test
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+    tags: [ v* ]
+  repository_dispatch:
+    types: [ 'rnp update' ]
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+    - name: Setup test matrix
+      id: matrix
+      run: |
+        if [ "${{ github.event.client_payload }}" != "" ]; then
+          echo "matrix=[ '${{ github.event.client_payload.tag }}' ]" >> $GITHUB_OUTPUT
+        else
+          echo "matrix=[ 'v0.18.1', '' ]" >> $GITHUB_OUTPUT
+        fi
+
+  build-and-test:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        rnp: ${{ fromJson(needs.prepare.outputs.matrix) }}
+
+    # macOS-only for now: the Swift toolchain is preinstalled on GHA macOS
+    # runners, while a Linux leg would require an unverified Swift install
+    # step. See README.md.
+    runs-on: macos-latest
+    steps:
+    - name: Install packages MacOS
+#     Already installed on GHA: cmake make pkg-config
+      run: brew install botan json-c
+
+    - name: Checkout rnp
+      uses: actions/checkout@v4
+      with:
+        repository: rnpgp/rnp
+        path: rnp
+        submodules: true
+        ref: ${{ matrix.rnp }}
+
+    # Homebrew botan is Botan 3, hence CRYPTO_BACKEND=botan3.
+    - name: Configure rnp
+      run: >
+        cmake -B rnp/build -DCRYPTO_BACKEND=botan3 -DBUILD_TESTING=OFF
+        -DENABLE_DOC=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release rnp
+
+    - name: Build rnp
+      run:  cmake --build rnp/build --parallel
+
+    - name: Install rnp
+      run:  sudo cmake --install rnp/build
+
+    - name: Checkout swift-rnp
+      uses: actions/checkout@v4
+
+    - name: Build swift-rnp
+      run:  swift build
+      env:
+        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+
+    # An explicit rpath is passed because the Xcode test runner binaries are
+    # signed with the hardened runtime, which makes dyld ignore
+    # DYLD_LIBRARY_PATH.
+    - name: Test
+      run:  swift test -Xlinker -rpath -Xlinker /usr/local/lib
+      env:
+        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
