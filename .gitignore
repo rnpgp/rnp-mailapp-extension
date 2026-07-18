@@ -89,3 +89,13 @@ fastlane/test_output
 
 iOSInjectionProject/
 Package.resolved
+
+# macOS
+.DS_Store
+
+# Xcode user state & build products
+Build/
+*.xcuserstate
+
+# SwiftPM
+.swiftpm/
