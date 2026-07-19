@@ -31,12 +31,11 @@ struct LicensesView: View {
 }
 
 extension LicensesView {
-    /// Loads the dependency summary shipped at `Vendor/SOURCES.md`.
+    /// Loads the dependency summary bundled with the app (copied from `Vendor/SOURCES.md`).
     static func loadSources() -> String {
         let candidates: [URL] = [
             Bundle.main.url(forResource: "SOURCES", withExtension: "md"),
-            Bundle.main.url(forResource: "Vendor/SOURCES", withExtension: "md"),
-            URL(fileURLWithPath: "Vendor/SOURCES.md")
+            Bundle.main.url(forResource: "Vendor/SOURCES", withExtension: "md")
         ].compactMap { $0 }
 
         for url in candidates {

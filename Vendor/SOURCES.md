@@ -11,6 +11,6 @@ Built by `scripts/build-rnp-framework.sh` from:
 | json-c | json-c-0.18-20240915 | `3112c1f25d39eca661fe3fc663431e130cc6e2f900c081738317fba49d29e298` | MIT | https://github.com/json-c/json-c |
 | sexpp | c641a2f36520bab783657a58650d9fda548b9dec | N/A (git submodule) | BSD-2-Clause | https://github.com/rnpgp/sexpp |
 
-See [`docs/DEPENDENCIES.md`](../docs/DEPENDENCIES.md) for the dependency update policy, CVE response process, and CODEOWNERS review rules.
+See [`docs/DEPENDENCIES.md`](../docs/DEPENDENCIES.md) for the dependency update policy, CVE response process, and review rules.
 
-Full license texts are bundled in the application About/Licenses view.
+A dependency summary is bundled in the application About → Licenses view. Full license texts must be added to the target's bundle resources before binary distribution to satisfy the licenses of the vendored components.
