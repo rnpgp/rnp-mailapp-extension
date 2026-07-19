@@ -13,19 +13,16 @@
 		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
 		5D19619FE8621311F0402F37 /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
+		73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */; };
 		AA1000000000000000000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000001 /* main.swift */; };
 		AA1000000000000000000002 /* MailExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000003 /* MailExtension.swift */; };
 		AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000004 /* MessageSecurityHandler.swift */; };
 		AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000005 /* MessageSecurityViewController.swift */; };
-		AA1000000000000000000005 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000010 /* AppGroup.swift */; };
-		AA1000000000000000000006 /* KeychainPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000011 /* KeychainPassphraseStore.swift */; };
 		AA1000000000000000000007 /* MailExtensionsContainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000008 /* MailExtensionsContainerApp.swift */; };
 		AA1000000000000000000008 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000009 /* KeysManager.swift */; };
 		AA1000000000000000000009 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000A /* ContentView.swift */; };
 		AA100000000000000000000A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000B /* ContentViewModel.swift */; };
 		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
-		AA100000000000000000000C /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000010 /* AppGroup.swift */; };
-		AA100000000000000000000D /* KeychainPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000011 /* KeychainPassphraseStore.swift */; };
 		AA100000000000000000000E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* Assets.xcassets */; };
 		AA100000000000000000000F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000E /* Preview Assets.xcassets */; };
 		AA1000000000000000000010 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -35,6 +32,7 @@
 		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
 		AA1000000000000000000015 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000005 /* MailSecurityEngine */; };
 		BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
+		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +85,7 @@
 		08B0CCA210850092A9DCB536 /* Direct.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Direct.xcconfig; path = Config/Direct.xcconfig; sourceTree = "<group>"; };
 		218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
 		2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UniformTypeIdentifiers.framework; sourceTree = "<group>"; };
 		3EDEA75247AF59D64D6E4190 /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
 		5A5F6629466BFE8ADAFAD979 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
@@ -104,8 +103,8 @@
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA200000000000000000000E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
-		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPassphraseStore.swift; sourceTree = "<group>"; };
+		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppGroup.swift; path = ../../Sources/MailSecurityEngine/AppGroup.swift; sourceTree = "<group>"; };
+		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainPassphraseStore.swift; path = ../../Sources/MailSecurityEngine/KeychainPassphraseStore.swift; sourceTree = "<group>"; };
 		AA5000000000000000000001 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5000000000000000000002 /* MailPlugin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailPlugin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5000000000000000000003 /* Ribose container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ribose container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,12 +143,22 @@
 				AA1000000000000000000014 /* Rnp in Frameworks */,
 				AA1000000000000000000015 /* MailSecurityEngine in Frameworks */,
 				7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */,
+				C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */,
+				73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		83D422EEE84562769B515115 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		AA3000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
@@ -161,6 +170,7 @@
 				AA3000000000000000000002 /* Products */,
 				DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */,
 				D1FD6E190D06FD101DB4D932 /* Config */,
+				83D422EEE84562769B515115 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -338,6 +348,7 @@
 			packageProductDependencies = (
 				AAC000000000000000000004 /* Rnp */,
 				AAC000000000000000000005 /* MailSecurityEngine */,
+				F7F139FFDED467A772241EBC /* RnpMailUI */,
 			);
 			productName = "Ribose container";
 			productReference = AA5000000000000000000003 /* Ribose container.app */;
@@ -425,8 +436,6 @@
 				AA1000000000000000000002 /* MailExtension.swift in Sources */,
 				AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */,
 				AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */,
-				AA1000000000000000000005 /* AppGroup.swift in Sources */,
-				AA1000000000000000000006 /* KeychainPassphraseStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,8 +448,6 @@
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
-				AA100000000000000000000C /* AppGroup.swift in Sources */,
-				AA100000000000000000000D /* KeychainPassphraseStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1030,6 +1037,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
 			productName = MailSecurityEngine;
+		};
+		F7F139FFDED467A772241EBC /* RnpMailUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			productName = RnpMailUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

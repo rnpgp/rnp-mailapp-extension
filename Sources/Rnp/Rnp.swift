@@ -145,7 +145,7 @@ public final class Rnp {
     /// encryption subkey, both protected by the passphrase provider.
     ///
     /// `bits` defaults to 3072, the librnp 0.18 default RSA key length.
-    public static func rsaKeyGenJSON(userid: String, bits: Int = 3072) -> String {
+    public static func rsaKeyGenJSON(userid: String, bits: Int = 3072, expirationSeconds: UInt32 = 0) -> String {
         """
         {
             "primary": {
@@ -153,12 +153,14 @@ public final class Rnp {
                 "length": \(bits),
                 "userid": "\(userid)",
                 "usage": ["sign"],
+                "expiration": \(expirationSeconds),
                 "protection": { "cipher": "AES256", "hash": "SHA256" }
             },
             "sub": {
                 "type": "RSA",
                 "length": \(bits),
                 "usage": ["encrypt"],
+                "expiration": \(expirationSeconds),
                 "protection": { "cipher": "AES256", "hash": "SHA256" }
             }
         }
@@ -168,7 +170,7 @@ public final class Rnp {
     /// JSON description of an ECDSA P-256 primary key (signing) with an
     /// ECDH P-256 encryption subkey, both protected by the passphrase
     /// provider.
-    public static func ecdsaP256KeyGenJSON(userid: String) -> String {
+    public static func ecdsaP256KeyGenJSON(userid: String, expirationSeconds: UInt32 = 0) -> String {
         """
         {
             "primary": {
@@ -176,12 +178,38 @@ public final class Rnp {
                 "curve": "NIST P-256",
                 "userid": "\(userid)",
                 "usage": ["sign"],
+                "expiration": \(expirationSeconds),
                 "protection": { "cipher": "AES256", "hash": "SHA256" }
             },
             "sub": {
                 "type": "ECDH",
                 "curve": "NIST P-256",
                 "usage": ["encrypt"],
+                "expiration": \(expirationSeconds),
+                "protection": { "cipher": "AES256", "hash": "SHA256" }
+            }
+        }
+        """
+    }
+
+    /// JSON description of an Ed25519 primary signing key with a
+    /// Curve25519 encryption subkey, both protected by the passphrase
+    /// provider.
+    public static func ed25519KeyGenJSON(userid: String, expirationSeconds: UInt32 = 0) -> String {
+        """
+        {
+            "primary": {
+                "type": "EDDSA",
+                "userid": "\(userid)",
+                "usage": ["sign"],
+                "expiration": \(expirationSeconds),
+                "protection": { "cipher": "AES256", "hash": "SHA256" }
+            },
+            "sub": {
+                "type": "ECDH",
+                "curve": "Curve25519",
+                "usage": ["encrypt"],
+                "expiration": \(expirationSeconds),
                 "protection": { "cipher": "AES256", "hash": "SHA256" }
             }
         }

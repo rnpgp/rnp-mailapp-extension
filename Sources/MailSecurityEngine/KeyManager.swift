@@ -20,6 +20,8 @@ public enum KeyAlgorithm: String, CaseIterable {
     case rsa = "RSA"
     /// ECDSA P-256 signing primary with an ECDH P-256 encryption subkey.
     case ecdsa = "ECDSA"
+    /// Ed25519 signing primary with a Curve25519 encryption subkey.
+    case ed25519 = "Ed25519"
 }
 
 /// A snapshot description of one primary key in the keyring.
@@ -76,6 +78,48 @@ public struct KeyInfo: Equatable, Identifiable {
     public var daysUntilExpiry: Int? {
         guard let expiration = expirationDate else { return nil }
         return Calendar.current.dateComponents([.day], from: Date(), to: expiration).day
+    }
+}
+
+/// A snapshot description of one subkey.
+public struct SubkeyInfo: Equatable, Identifiable {
+    public let fingerprint: String
+    public let keyID: String
+    public let algorithm: String
+    public let bits: Int
+    public let curve: String?
+    public let creationDate: Date
+    public let expirationDate: Date?
+    public let capabilities: [String]
+
+    public init(
+        fingerprint: String,
+        keyID: String,
+        algorithm: String,
+        bits: Int,
+        curve: String? = nil,
+        creationDate: Date,
+        expirationDate: Date? = nil,
+        capabilities: [String] = []
+    ) {
+        self.fingerprint = fingerprint
+        self.keyID = keyID
+        self.algorithm = algorithm
+        self.bits = bits
+        self.curve = curve
+        self.creationDate = creationDate
+        self.expirationDate = expirationDate
+        self.capabilities = capabilities
+    }
+
+    public var id: String { fingerprint }
+
+    /// User-facing label like "RSA-3072" or "Ed25519".
+    public var algorithmLabel: String {
+        if let curve = curve, !curve.isEmpty {
+            return "\(algorithm) \(curve)"
+        }
+        return bits > 0 ? "\(algorithm)-\(bits)" : algorithm
     }
 }
 
@@ -206,12 +250,28 @@ public final class KeyManager {
     // MARK: - Generation
 
     /// Generates a new key pair and persists the keyrings.
+    ///
+    /// - Parameters:
+    ///   - userID: the OpenPGP user ID for the primary key.
+    ///   - algorithm: the key algorithm to generate.
+    ///   - expirationSeconds: seconds until the primary key and subkey expire,
+    ///     or `0` for keys that do not expire.
     @discardableResult
-    public func generateKey(userID: String, algorithm: KeyAlgorithm = .rsa) throws -> KeyInfo {
+    public func generateKey(
+        userID: String,
+        algorithm: KeyAlgorithm = .rsa,
+        expirationSeconds: UInt32 = 0
+    ) throws -> KeyInfo {
         try withRnp { rnp in
-            let json = algorithm == .rsa
-                ? Rnp.rsaKeyGenJSON(userid: userID)
-                : Rnp.ecdsaP256KeyGenJSON(userid: userID)
+            let json: String
+            switch algorithm {
+            case .rsa:
+                json = Rnp.rsaKeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
+            case .ecdsa:
+                json = Rnp.ecdsaP256KeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
+            case .ed25519:
+                json = Rnp.ed25519KeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
+            }
             try rnp.generateKey(json: json)
             let key = try rnp.requireKey(userID)
             let info = try makeKeyInfo(key: key, primaryUserID: userID)
@@ -271,6 +331,59 @@ public final class KeyManager {
             try rnp.remove(key: key)
             try persist(rnp)
         }
+    }
+
+    // MARK: - Detail
+
+    /// Returns a snapshot of the subkeys belonging to the key with the given
+    /// fingerprint.
+    public func subkeys(for fingerprint: String) throws -> [SubkeyInfo] {
+        try withRnp { rnp in
+            let key = try rnp.requireKey(fingerprint, type: .fingerprint)
+            return try key.subkeys.map(makeSubkeyInfo)
+        }
+    }
+
+    private func makeSubkeyInfo(key: RnpKey) throws -> SubkeyInfo {
+        let fingerprint = try key.fingerprint
+        let expirationSeconds = try key.expirationSeconds
+        let expirationDate: Date? = expirationSeconds > 0
+            ? try key.creationDate.addingTimeInterval(TimeInterval(expirationSeconds))
+            : nil
+        return SubkeyInfo(
+            fingerprint: fingerprint,
+            keyID: (try? key.keyID) ?? "",
+            algorithm: (try? key.algorithm) ?? "",
+            bits: (try? key.bits) ?? 0,
+            curve: try? key.curve,
+            creationDate: (try? key.creationDate) ?? Date(timeIntervalSince1970: 0),
+            expirationDate: expirationDate,
+            capabilities: (try? key.capabilities) ?? []
+        )
+    }
+
+    // MARK: - Revocation certificate
+
+    /// Exports an armored revocation certificate for the given fingerprint.
+    public func exportRevocationCertificate(fingerprint: String) throws -> Data {
+        try withRnp { rnp in
+            try rnp.requireKey(fingerprint, type: .fingerprint)
+                .exportRevocation()
+        }
+    }
+
+    /// Writes an armored revocation certificate for the given fingerprint to
+    /// the keyring directory.
+    ///
+    /// - Returns: the URL of the saved certificate.
+    @discardableResult
+    public func saveRevocationCertificate(fingerprint: String) throws -> URL {
+        let data = try exportRevocationCertificate(fingerprint: fingerprint)
+        let url = directory
+            .appendingPathComponent("\(fingerprint)-revocation")
+            .appendingPathExtension("asc")
+        try data.write(to: url, options: .atomic)
+        return url
     }
 
     // MARK: - Key resolution

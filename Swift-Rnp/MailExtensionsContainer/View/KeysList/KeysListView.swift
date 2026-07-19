@@ -11,6 +11,7 @@ import SwiftUI
 struct KeysListView: View {
     let keys: [KeyInfo]
     @Binding var selection: KeyInfo.ID?
+    var onDoubleTap: ((KeyInfo) -> Void)?
 
     var body: some View {
         Table(keys, selection: $selection) {
@@ -29,6 +30,9 @@ struct KeysListView: View {
                             Badge(text: "Expires in \(days)d", color: .orange)
                         }
                     }
+                }
+                .onTapGesture(count: 2) {
+                    onDoubleTap?(key)
                 }
             }
             TableColumn("Fingerprint") { key in

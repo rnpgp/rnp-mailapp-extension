@@ -684,4 +684,103 @@ final class MailSecurityEngineTests: XCTestCase {
 
         XCTAssertNotNil(try manager.secretKey(forUserID: Self.aliceEmail))
     }
+
+    // MARK: - Key metadata round-trip
+
+    func testKeyInfoMetadataForRSA() throws {
+        let engine = try makeEngine()
+        let manager = engine.keyManager
+
+        let info = try manager.generateKey(
+            userID: Self.alice,
+            algorithm: .rsa,
+            expirationSeconds: 63072000 // 2 years
+        )
+
+        XCTAssertEqual(info.primaryUserID, Self.alice)
+        XCTAssertTrue(info.hasSecret)
+        XCTAssertEqual(info.algorithm, "RSA")
+        XCTAssertEqual(info.bits, 3072)
+        XCTAssertFalse(info.isRevoked)
+        XCTAssertEqual(info.subkeyCount, 1)
+        XCTAssertNotNil(info.expirationDate)
+
+        let subkeys = try manager.subkeys(for: info.fingerprint)
+        XCTAssertEqual(subkeys.count, 1)
+        XCTAssertEqual(subkeys.first?.algorithm, "RSA")
+
+        // Export and re-import; metadata must survive.
+        let publicData = try manager.exportKey(fingerprint: info.fingerprint)
+        let fresh = try makeEngine()
+        let imported = try fresh.keyManager.importKeys(publicData)
+        XCTAssertEqual(imported.first?.fingerprint, info.fingerprint)
+        XCTAssertEqual(imported.first?.algorithm, "RSA")
+        XCTAssertEqual(imported.first?.bits, 3072)
+        XCTAssertEqual(imported.first?.subkeyCount, 1)
+        XCTAssertFalse(imported.first?.hasSecret ?? true)
+    }
+
+    func testKeyInfoMetadataForEd25519() throws {
+        let engine = try makeEngine()
+        let manager = engine.keyManager
+
+        let info = try manager.generateKey(
+            userID: Self.bob,
+            algorithm: .ed25519,
+            expirationSeconds: 31536000 // 1 year
+        )
+
+        XCTAssertEqual(info.primaryUserID, Self.bob)
+        XCTAssertTrue(info.hasSecret)
+        XCTAssertEqual(info.algorithm, "EDDSA")
+        XCTAssertEqual(info.bits, 255)
+        XCTAssertEqual(info.subkeyCount, 1)
+        XCTAssertNotNil(info.expirationDate)
+
+        let subkeys = try manager.subkeys(for: info.fingerprint)
+        XCTAssertEqual(subkeys.count, 1)
+        XCTAssertEqual(subkeys.first?.algorithm, "ECDH")
+        XCTAssertEqual(subkeys.first?.curve, "Curve25519")
+    }
+
+    func testRevocationCertificateIsSaved() throws {
+        let engine = try makeEngine()
+        let manager = engine.keyManager
+
+        let info = try manager.generateKey(userID: Self.alice, algorithm: .rsa)
+        let url = try manager.saveRevocationCertificate(fingerprint: info.fingerprint)
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+        let data = try Data(contentsOf: url)
+        // librnp armors revocation signatures inside a public-key block.
+        XCTAssertTrue(utf8(data).contains("BEGIN PGP"))
+    }
+
+    // MARK: - Keychain passphrase storage
+
+    func testKeychainStoresAndRetrievesPassphrase() {
+        KeychainPassphraseStore.reset()
+        let passphrase = KeychainPassphraseStore.sharedPassphrase()
+        XCTAssertFalse(passphrase.isEmpty)
+
+        let second = KeychainPassphraseStore.sharedPassphrase()
+        XCTAssertEqual(second, passphrase)
+    }
+
+    func testKeychainBiometryFallbackReturnsWarningOrNil() {
+        KeychainPassphraseStore.reset()
+        let (biometricPassphrase, warning) = KeychainPassphraseStore.sharedPassphrase(requiresBiometry: true)
+        // On Macs without Touch ID the fallback path returns a warning; on
+        // machines that support it, storage succeeds and the warning is nil.
+        // Either outcome is acceptable for this test.
+        if let warning = warning {
+            XCTAssertFalse(warning.message.isEmpty)
+        }
+
+        // The two-item design keeps the passphrase readable from the plain
+        // item even when biometric storage falls back.
+        let passphrase = KeychainPassphraseStore.sharedPassphrase()
+        XCTAssertFalse(passphrase.isEmpty)
+        XCTAssertEqual(passphrase, biometricPassphrase)
+    }
 }
