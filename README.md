@@ -221,6 +221,38 @@ Release](https://github.com/rnpgp/rnp-mailapp-extension/releases).
 > distributed outside the Mac App Store. Control-click the app and choose
 > **Open** to approve it.
 
+### Trust model
+
+RnpMail uses a deliberately simple trust model focused on clarity and
+actionable warnings:
+
+- **Trust on first use (TOFU).** The first time a public key is seen for an
+  email address, it is recorded as *unverified* and can be used normally. This
+  matches how most users actually behave: they install a key and start sending
+  mail.
+- **Manual fingerprint verification.** Users who want stronger assurance can
+  open a key's detail sheet, compare the fingerprint in person or over a
+  trusted channel (the sheet shows the full fingerprint and supports copying
+  it), and click **Mark as verified**. A verified key is shown with a green
+  badge in the key list and in Mail's signature banner.
+- **Key-change warnings and conflicts.** If a different fingerprint is later
+  imported or fetched for the same email address, the new key is marked
+  *problem* and a conflict is raised. The container app shows an orange banner
+  listing the affected address, and encryption to that address is blocked with
+  a `trustConflict` error until the user verifies the new fingerprint. This
+  prevents silent key-substitution attacks.
+- **No web-of-trust / ownertrust UI.** GnuPG-style ownertrust, trust
+  signatures, and the web-of-trust are intentionally out of scope. They add
+  significant UX complexity and are not required for the "verify the key once,
+  warn on change" model used here. This is a deliberate scope cut, not a
+  missing feature.
+
+The trust database is persisted as signed JSON (`trust.json` + detached
+Ed25519 signature `trust.json.sig`) in the shared app-group container. The
+signature is verified on load; if either file is tampered with, the store
+resets to empty (fail-closed to unverified) rather than trusting corrupted
+data.
+
 ### Limitations
 
 - **MailKit requires proper signing.** Mail.app refuses to load extensions
