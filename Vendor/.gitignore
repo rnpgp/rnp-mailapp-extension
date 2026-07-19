@@ -1,0 +1,6 @@
+# Ignore everything except the pkg-config file and SOURCES.md.
+*
+!pkgconfig/
+!pkgconfig/*
+!SOURCES.md
+!.gitignore

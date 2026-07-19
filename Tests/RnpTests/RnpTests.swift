@@ -165,4 +165,47 @@ final class RnpTests: XCTestCase {
         let loaded = try destination.requireKey(fingerprint, type: .fingerprint)
         XCTAssertEqual(try loaded.fingerprint, fingerprint)
     }
+
+    // MARK: - Key metadata
+
+    func testRSAKeyMetadata() throws {
+        let rnp = try Rnp(password: Self.password)
+        try rnp.generateKey(json: Rnp.rsaKeyGenJSON(userid: Self.userid))
+        let key = try rnp.requireKey(Self.userid)
+
+        XCTAssertEqual(try key.algorithm, "RSA")
+        XCTAssertEqual(try key.bits, 3072)
+        XCTAssertNil(try key.curve)
+        XCTAssertFalse(try key.isRevoked)
+        XCTAssertNil(try key.revocationReason)
+
+        let subs = try key.subkeys
+        XCTAssertEqual(subs.count, 1)
+        XCTAssertEqual(try subs[0].algorithm, "RSA")
+
+        let creation = try key.creationDate
+        let validTill = try key.validTill
+        XCTAssertGreaterThan(validTill.timeIntervalSince1970, creation.timeIntervalSince1970)
+    }
+
+    func testECDSAKeyMetadata() throws {
+        let rnp = try Rnp(password: Self.password)
+        try rnp.generateKey(json: Rnp.ecdsaP256KeyGenJSON(userid: Self.userid))
+        let key = try rnp.requireKey(Self.userid)
+
+        XCTAssertEqual(try key.algorithm, "ECDSA")
+        XCTAssertEqual(try key.bits, 256)
+        XCTAssertEqual(try key.curve, "NIST P-256")
+    }
+
+    func testKeyRevocation() throws {
+        let rnp = try makeRnpWithRSAKey()
+        let key = try rnp.requireKey(Self.userid)
+
+        let revocation = try key.exportRevocation(code: .retired, reason: "No longer used")
+        XCTAssertTrue(String(decoding: revocation, as: UTF8.self).contains("BEGIN PGP PUBLIC KEY BLOCK"))
+
+        // In-memory key is not yet revoked until the revocation signature is imported.
+        XCTAssertFalse(try key.isRevoked)
+    }
 }

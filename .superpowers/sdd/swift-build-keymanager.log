@@ -1,0 +1,17 @@
+[0/1] Planning build
+Building for debugging...
+[1/2] Compiling MailSecurityEngine KeyManager.swift
+/Users/mulgogi/src/rnp/swift-rnp/Sources/MailSecurityEngine/KeyManager.swift:196:24: error: property access can throw but is not marked with 'try'
+            hasSecret: key.hasSecret,
+                       ^
+/Users/mulgogi/src/rnp/swift-rnp/Sources/MailSecurityEngine/KeyManager.swift:196:24: note: did you mean to use 'try'?
+            hasSecret: key.hasSecret,
+                       ^
+/Users/mulgogi/src/rnp/swift-rnp/Sources/MailSecurityEngine/KeyManager.swift:196:24: note: did you mean to handle error as optional value?
+            hasSecret: key.hasSecret,
+                       ^
+/Users/mulgogi/src/rnp/swift-rnp/Sources/MailSecurityEngine/KeyManager.swift:196:24: note: did you mean to disable error propagation?
+            hasSecret: key.hasSecret,
+                       ^
+[2/2] Emitting module MailSecurityEngine
+error: fatalError

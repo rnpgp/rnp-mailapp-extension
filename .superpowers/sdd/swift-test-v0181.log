@@ -1,0 +1,105 @@
+Building for debugging...
+Build complete! (0.21s)
+Test Suite 'All tests' started at 2026-07-19 16:55:44.020.
+Test Suite 'swift-rnpPackageTests.xctest' started at 2026-07-19 16:55:44.021.
+Test Suite 'MailSecurityEngineTests' started at 2026-07-19 16:55:44.021.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testAttachmentRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testAttachmentRoundtrip]' passed (0.818 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testEncodingStatus]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testEncodingStatus]' passed (0.785 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineArmorInsideMultipartDecoded]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineArmorInsideMultipartDecoded]' passed (0.518 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineEncryptRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineEncryptRoundtrip]' passed (0.818 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineMultipartMessageRejected]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineMultipartMessageRejected]' passed (0.379 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineQuotedPrintableBodyRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineQuotedPrintableBodyRoundtrip]' passed (0.503 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineSignEncryptRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineSignEncryptRoundtrip]' passed (0.792 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineSignRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testInlineSignRoundtrip]' passed (0.550 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testKeyManagerGenerateListExportDelete]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testKeyManagerGenerateListExportDelete]' passed (2.712 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testKeyManagerImportPublicThenSecret]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testKeyManagerImportPublicThenSecret]' passed (2.723 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testKeyManagerPersistenceAcrossInstances]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testKeyManagerPersistenceAcrossInstances]' passed (0.635 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testMissingRecipientKeyThrows]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testMissingRecipientKeyThrows]' passed (0.394 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testMultiRecipientEncryption]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testMultiRecipientEncryption]' passed (1.780 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testNonASCIIBodyRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testNonASCIIBodyRoundtrip]' passed (0.866 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testNoSecretKeyForSenderThrows]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testNoSecretKeyForSenderThrows]' passed (0.378 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimeEncryptRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimeEncryptRoundtrip]' passed (0.798 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimePreservesBase64BodyByteExact]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimePreservesBase64BodyByteExact]' passed (0.628 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimeSignEncryptRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimeSignEncryptRoundtrip]' passed (1.140 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimeSignEncryptRSAKeys]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimeSignEncryptRSAKeys]' passed (6.243 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimeSignRoundtrip]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testPGPMimeSignRoundtrip]' passed (0.314 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testRecipientResolutionByEmail]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testRecipientResolutionByEmail]' passed (0.258 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testTamperedCiphertextFailsDecryption]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testTamperedCiphertextFailsDecryption]' passed (0.361 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testTamperedSignatureFailsVerification]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testTamperedSignatureFailsVerification]' passed (0.325 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testUnknownSignerReported]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testUnknownSignerReported]' passed (0.574 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testUnsignedMessageReturnsNil]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testUnsignedMessageReturnsNil]' passed (0.262 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testWrongPassphraseFailsDecryption]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testWrongPassphraseFailsDecryption]' passed (0.440 seconds).
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testWrongPassphraseFailsSigning]' started.
+Test Case '-[MailSecurityEngineTests.MailSecurityEngineTests testWrongPassphraseFailsSigning]' passed (0.338 seconds).
+Test Suite 'MailSecurityEngineTests' passed at 2026-07-19 16:56:10.355.
+	 Executed 27 tests, with 0 failures (0 unexpected) in 26.331 (26.334) seconds
+Test Suite 'MimeMessageTests' started at 2026-07-19 16:56:10.355.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testBase64BodyDecoding]' started.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testBase64BodyDecoding]' passed (0.000 seconds).
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testCRLFNormalization]' started.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testCRLFNormalization]' passed (0.000 seconds).
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testHeaderParsing]' started.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testHeaderParsing]' passed (0.000 seconds).
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testLFOnlyMessage]' started.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testLFOnlyMessage]' passed (0.000 seconds).
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testMessageWithoutHeaders]' started.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testMessageWithoutHeaders]' passed (0.000 seconds).
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testMultipartSplitPreservesBytes]' started.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testMultipartSplitPreservesBytes]' passed (0.000 seconds).
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testNestedMultipart]' started.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testNestedMultipart]' passed (0.000 seconds).
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testQuotedPrintableDecoding]' started.
+Test Case '-[MailSecurityEngineTests.MimeMessageTests testQuotedPrintableDecoding]' passed (0.000 seconds).
+Test Suite 'MimeMessageTests' passed at 2026-07-19 16:56:10.356.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'RnpTests' started at 2026-07-19 16:56:10.356.
+Test Case '-[RnpTests.RnpTests testEncryptDecryptRoundtrip]' started.
+Test Case '-[RnpTests.RnpTests testEncryptDecryptRoundtrip]' passed (1.080 seconds).
+Test Case '-[RnpTests.RnpTests testExportImportRoundtrip]' started.
+Test Case '-[RnpTests.RnpTests testExportImportRoundtrip]' passed (1.759 seconds).
+Test Case '-[RnpTests.RnpTests testGenerateECDSAKey]' started.
+Test Case '-[RnpTests.RnpTests testGenerateECDSAKey]' passed (0.258 seconds).
+Test Case '-[RnpTests.RnpTests testGenerateRSAKey]' started.
+Test Case '-[RnpTests.RnpTests testGenerateRSAKey]' passed (1.051 seconds).
+Test Case '-[RnpTests.RnpTests testSaveLoadKeyrings]' started.
+Test Case '-[RnpTests.RnpTests testSaveLoadKeyrings]' passed (1.700 seconds).
+Test Case '-[RnpTests.RnpTests testSignVerifyDetached]' started.
+Test Case '-[RnpTests.RnpTests testSignVerifyDetached]' passed (1.432 seconds).
+Test Case '-[RnpTests.RnpTests testSignVerifyEmbedded]' started.
+Test Case '-[RnpTests.RnpTests testSignVerifyEmbedded]' passed (1.163 seconds).
+Test Case '-[RnpTests.RnpTests testTamperedMessageFailsVerification]' started.
+Test Case '-[RnpTests.RnpTests testTamperedMessageFailsVerification]' passed (1.563 seconds).
+Test Case '-[RnpTests.RnpTests testVersionString]' started.
+Test Case '-[RnpTests.RnpTests testVersionString]' passed (0.000 seconds).
+Test Suite 'RnpTests' passed at 2026-07-19 16:56:20.363.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 10.006 (10.006) seconds
+Test Suite 'swift-rnpPackageTests.xctest' passed at 2026-07-19 16:56:20.363.
+	 Executed 44 tests, with 0 failures (0 unexpected) in 36.338 (36.342) seconds
+Test Suite 'All tests' passed at 2026-07-19 16:56:20.363.
+	 Executed 44 tests, with 0 failures (0 unexpected) in 36.338 (36.343) seconds

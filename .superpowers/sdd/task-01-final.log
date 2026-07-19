@@ -1,0 +1,29 @@
+Cloning into '/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/src/libsexpp'...
+Note: switching to 'c641a2f36520bab783657a58650d9fda548b9dec'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at c641a2f Update version.txt to match the latest release.
+Botan arm64 already built; skipping
+json-c arm64 already built; skipping
+rnp arm64 already built; skipping
+Botan x86_64 already built; skipping
+json-c x86_64 already built; skipping
+rnp x86_64 already built; skipping
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/source/RNPFramework.framework: replacing existing signature
+xcframework successfully written out to: /Users/mulgogi/src/rnp/swift-rnp/Vendor/RNPFramework.xcframework
+Wrote /Users/mulgogi/src/rnp/swift-rnp/Vendor/RNPFramework.xcframework
+Wrote /Users/mulgogi/src/rnp/swift-rnp/Vendor/pkgconfig/librnp.pc

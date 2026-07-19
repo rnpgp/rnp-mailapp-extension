@@ -1,0 +1,5 @@
+Building for debugging...
+[1/2] Emitting module MailSecurityEngine
+[2/2] Compiling MailSecurityEngine KeyManager.swift
+[3/3] Compiling MailSecurityEngine MailSecurityEngine.swift
+Build complete! (1.69s)

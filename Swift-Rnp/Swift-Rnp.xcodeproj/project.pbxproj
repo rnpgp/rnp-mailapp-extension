@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04EC615718EE893F2D8F7D8C /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1EA4CD8D67D36E8FCC08669A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */; };
+		28F770227CACA2BDEC4D0190 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
+		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
+		5D19619FE8621311F0402F37 /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		AA1000000000000000000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000001 /* main.swift */; };
 		AA1000000000000000000002 /* MailExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000003 /* MailExtension.swift */; };
 		AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000004 /* MessageSecurityHandler.swift */; };
@@ -28,6 +34,7 @@
 		AA1000000000000000000013 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000003 /* MailSecurityEngine */; };
 		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
 		AA1000000000000000000015 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000005 /* MailSecurityEngine */; };
+		BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +48,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		232B06F813EBB91858CB876E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				04EC615718EE893F2D8F7D8C /* RNPFramework.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA6000000000000000000009 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -52,16 +70,33 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D95CD644CD44761316187E70 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				5D19619FE8621311F0402F37 /* RNPFramework.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		08B0CCA210850092A9DCB536 /* Direct.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Direct.xcconfig; path = Config/Direct.xcconfig; sourceTree = "<group>"; };
+		218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
+		2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		3EDEA75247AF59D64D6E4190 /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
+		5A5F6629466BFE8ADAFAD979 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
+		8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA2000000000000000000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		AA2000000000000000000002 /* librnp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = librnp.xcconfig; sourceTree = "<group>"; };
 		AA2000000000000000000003 /* MailExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtension.swift; sourceTree = "<group>"; };
 		AA2000000000000000000004 /* MessageSecurityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityHandler.swift; sourceTree = "<group>"; };
 		AA2000000000000000000005 /* MessageSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityViewController.swift; sourceTree = "<group>"; };
 		AA2000000000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AA2000000000000000000007 /* MailPlugin.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MailPlugin.entitlements; sourceTree = "<group>"; };
 		AA2000000000000000000008 /* MailExtensionsContainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtensionsContainerApp.swift; sourceTree = "<group>"; };
 		AA2000000000000000000009 /* KeysManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysManager.swift; sourceTree = "<group>"; };
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -69,12 +104,17 @@
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA200000000000000000000E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		AA200000000000000000000F /* MailExtensionsContainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MailExtensionsContainer.entitlements; sourceTree = "<group>"; };
 		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
 		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPassphraseStore.swift; sourceTree = "<group>"; };
 		AA5000000000000000000001 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5000000000000000000002 /* MailPlugin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailPlugin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5000000000000000000003 /* Ribose container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ribose container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD1480B5CAD3FF9C8EC9FB44 /* Version.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Version.xcconfig; path = Config/Version.xcconfig; sourceTree = "<group>"; };
+		B7393B9F8268ACF79B23A289 /* AppStore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = AppStore.xcconfig; path = Config/AppStore.xcconfig; sourceTree = "<group>"; };
+		CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNPFramework.xcconfig; sourceTree = "<group>"; };
+		DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcframework; name = RNPFramework.xcframework; path = ../Vendor/RNPFramework.xcframework; sourceTree = "<group>"; };
+		EF97ABD297996C4EA5033642 /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
+		F1B5C106AE83671ABFEEFD4A /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +123,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA1000000000000000000011 /* Rnp in Frameworks */,
+				28F770227CACA2BDEC4D0190 /* RNPFramework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,6 +133,7 @@
 			files = (
 				AA1000000000000000000012 /* Rnp in Frameworks */,
 				AA1000000000000000000013 /* MailSecurityEngine in Frameworks */,
+				BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +143,7 @@
 			files = (
 				AA1000000000000000000014 /* Rnp in Frameworks */,
 				AA1000000000000000000015 /* MailSecurityEngine in Frameworks */,
+				7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,6 +159,8 @@
 				AA3000000000000000000004 /* MailPlugin */,
 				AA3000000000000000000005 /* MailExtensionsContainer */,
 				AA3000000000000000000002 /* Products */,
+				DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */,
+				D1FD6E190D06FD101DB4D932 /* Config */,
 			);
 			sourceTree = "<group>";
 		};
@@ -144,7 +189,9 @@
 				AA2000000000000000000004 /* MessageSecurityHandler.swift */,
 				AA2000000000000000000005 /* MessageSecurityViewController.swift */,
 				AA2000000000000000000006 /* Info.plist */,
-				AA2000000000000000000007 /* MailPlugin.entitlements */,
+				3EDEA75247AF59D64D6E4190 /* Direct.entitlements */,
+				EF97ABD297996C4EA5033642 /* AppStore.entitlements */,
+				8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */,
 			);
 			path = MailPlugin;
 			sourceTree = "<group>";
@@ -156,8 +203,11 @@
 				AA3000000000000000000007 /* View */,
 				AA2000000000000000000008 /* MailExtensionsContainerApp.swift */,
 				AA200000000000000000000D /* Assets.xcassets */,
-				AA200000000000000000000F /* MailExtensionsContainer.entitlements */,
 				AA300000000000000000000A /* Preview Content */,
+				F1B5C106AE83671ABFEEFD4A /* Direct.entitlements */,
+				218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */,
+				2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */,
+				5A5F6629466BFE8ADAFAD979 /* Info.plist */,
 			);
 			path = MailExtensionsContainer;
 			sourceTree = "<group>";
@@ -209,8 +259,20 @@
 			children = (
 				AA2000000000000000000010 /* AppGroup.swift */,
 				AA2000000000000000000011 /* KeychainPassphraseStore.swift */,
+				CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */,
+				77171E1123EB570168AF4541 /* IDs.xcconfig */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		D1FD6E190D06FD101DB4D932 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				08B0CCA210850092A9DCB536 /* Direct.xcconfig */,
+				B7393B9F8268ACF79B23A289 /* AppStore.xcconfig */,
+				AD1480B5CAD3FF9C8EC9FB44 /* Version.xcconfig */,
+			);
+			name = Config;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -242,6 +304,7 @@
 				AA6000000000000000000003 /* Sources */,
 				AA6000000000000000000004 /* Frameworks */,
 				AA6000000000000000000005 /* Resources */,
+				232B06F813EBB91858CB876E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -264,6 +327,7 @@
 				AA6000000000000000000007 /* Frameworks */,
 				AA6000000000000000000008 /* Resources */,
 				AA6000000000000000000009 /* Embed App Extensions */,
+				D95CD644CD44761316187E70 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -311,7 +375,7 @@
 			);
 			mainGroup = AA3000000000000000000001;
 			packageReferences = (
-				AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */,
+				AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = AA3000000000000000000002 /* Products */;
 			projectDirPath = "";
@@ -329,6 +393,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EA4CD8D67D36E8FCC08669A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,6 +403,7 @@
 			files = (
 				AA100000000000000000000F /* Preview Assets.xcassets in Resources */,
 				AA100000000000000000000E /* Assets.xcassets in Resources */,
+				4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,8 +455,144 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1A4E8564AF6AA6F80100963D /* Direct */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = MailPlugin/Direct.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MailPlugin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RNPMAIL_BUNDLE_ID_EXTENSION)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Direct;
+		};
+		1EFE3883392AEE6D159EB242 /* Direct */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/Direct.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MailExtensionsContainer/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RNPMAIL_BUNDLE_ID_CONTAINER)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Direct;
+		};
+		2518961D477068B77FC00BC8 /* Direct */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Direct;
+		};
+		51AF907481105A1AE23C17DA /* Direct */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 08B0CCA210850092A9DCB536 /* Direct.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Direct;
+		};
+		78E7508BB0ADD4F1EF4A859F /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = AppStore;
+		};
 		AA8000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AD1480B5CAD3FF9C8EC9FB44 /* Version.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -452,6 +654,7 @@
 		};
 		AA8000000000000000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AD1480B5CAD3FF9C8EC9FB44 /* Version.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -506,16 +709,15 @@
 		};
 		AA8000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
+			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				LD_RUNPATH_SEARCH_PATHS = (
+				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
 				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -524,16 +726,15 @@
 		};
 		AA8000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
+			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				LD_RUNPATH_SEARCH_PATHS = (
+				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
 				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
@@ -541,25 +742,22 @@
 		};
 		AA8000000000000000000005 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
+			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MailPlugin/Direct.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MailPlugin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
-				);
-				MARKETING_VERSION = 0.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.ribose.swift-rnp.container.MailPlugin";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RNPMAIL_BUNDLE_ID_EXTENSION)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -569,25 +767,22 @@
 		};
 		AA8000000000000000000006 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
+			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MailPlugin/Direct.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MailPlugin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
-				);
-				MARKETING_VERSION = 0.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.ribose.swift-rnp.container.MailPlugin";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RNPMAIL_BUNDLE_ID_EXTENSION)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -597,26 +792,25 @@
 		};
 		AA8000000000000000000007 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
+			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/MailExtensionsContainer.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/Direct.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MailExtensionsContainer/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
-				);
-				MARKETING_VERSION = 0.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.ribose.swift-rnp.container";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RNPMAIL_BUNDLE_ID_CONTAINER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -625,31 +819,135 @@
 		};
 		AA8000000000000000000008 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
+			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/MailExtensionsContainer.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/Direct.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MailExtensionsContainer/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
-				);
-				MARKETING_VERSION = 0.2;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.ribose.swift-rnp.container";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RNPMAIL_BUNDLE_ID_CONTAINER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
+		};
+		B319BD4BBFB02890BB17C816 /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = MailPlugin/AppStore.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MailPlugin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RNPMAIL_BUNDLE_ID_EXTENSION)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = AppStore;
+		};
+		E0D878249195D085A48A5653 /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B7393B9F8268ACF79B23A289 /* AppStore.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = AppStore;
+		};
+		EDFE0BFC0B52510C474B9D61 /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/AppStore.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RNPFRAMEWORK_SEARCH_PATHS)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MailExtensionsContainer/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RNPMAIL_BUNDLE_ID_CONTAINER)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = AppStore;
 		};
 /* End XCBuildConfiguration section */
 
@@ -659,6 +957,8 @@
 			buildConfigurations = (
 				AA8000000000000000000001 /* Debug */,
 				AA8000000000000000000002 /* Release */,
+				51AF907481105A1AE23C17DA /* Direct */,
+				E0D878249195D085A48A5653 /* AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -668,6 +968,8 @@
 			buildConfigurations = (
 				AA8000000000000000000003 /* Debug */,
 				AA8000000000000000000004 /* Release */,
+				2518961D477068B77FC00BC8 /* Direct */,
+				78E7508BB0ADD4F1EF4A859F /* AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -677,6 +979,8 @@
 			buildConfigurations = (
 				AA8000000000000000000005 /* Debug */,
 				AA8000000000000000000006 /* Release */,
+				1A4E8564AF6AA6F80100963D /* Direct */,
+				B319BD4BBFB02890BB17C816 /* AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -686,6 +990,8 @@
 			buildConfigurations = (
 				AA8000000000000000000007 /* Debug */,
 				AA8000000000000000000008 /* Release */,
+				1EFE3883392AEE6D159EB242 /* Direct */,
+				EDFE0BFC0B52510C474B9D61 /* AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -693,7 +999,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */ = {
+		AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ..;
 		};
@@ -702,27 +1008,27 @@
 /* Begin XCSwiftPackageProductDependency section */
 		AAC000000000000000000001 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
 			productName = Rnp;
 		};
 		AAC000000000000000000002 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
 			productName = Rnp;
 		};
 		AAC000000000000000000003 /* MailSecurityEngine */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
 			productName = MailSecurityEngine;
 		};
 		AAC000000000000000000004 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
 			productName = Rnp;
 		};
 		AAC000000000000000000005 /* MailSecurityEngine */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
 			productName = MailSecurityEngine;
 		};
 /* End XCSwiftPackageProductDependency section */

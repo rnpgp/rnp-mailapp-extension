@@ -79,4 +79,177 @@ public final class RnpKey {
         try rnpCheck(rnp_key_export(handle, output.handle, flags), operation: "key export")
         return try output.readData()
     }
+
+    // MARK: - Metadata
+
+    /// The key's algorithm name, e.g. "RSA" or "ECDSA".
+    public var algorithm: String {
+        get throws {
+            var alg: UnsafeMutablePointer<CChar>?
+            try rnpCheck(rnp_key_get_alg(handle, &alg), operation: "key algorithm")
+            return try rnpTakeString(alg, operation: "key algorithm")
+        }
+    }
+
+    /// The number of bits in the key (or the curve size for EC-based keys).
+    public var bits: Int {
+        get throws {
+            var value: UInt32 = 0
+            try rnpCheck(rnp_key_get_bits(handle, &value), operation: "key bits")
+            return Int(value)
+        }
+    }
+
+    /// The curve name for EC-based keys, e.g. "NIST P-256"; `nil` for RSA/DSA.
+    public var curve: String? {
+        get throws {
+            var curve: UnsafeMutablePointer<CChar>?
+            let status = rnp_key_get_curve(handle, &curve)
+            guard status == rnpStatusSuccess else {
+                return nil
+            }
+            return try? rnpTakeString(curve, operation: "key curve")
+        }
+    }
+
+    /// The key's creation date.
+    public var creationDate: Date {
+        get throws {
+            var seconds: UInt32 = 0
+            try rnpCheck(rnp_key_get_creation(handle, &seconds), operation: "key creation")
+            return Date(timeIntervalSince1970: TimeInterval(seconds))
+        }
+    }
+
+    /// The key's expiration time in seconds from creation, or `0` if it does not expire.
+    public var expirationSeconds: UInt32 {
+        get throws {
+            var value: UInt32 = 0
+            try rnpCheck(rnp_key_get_expiration(handle, &value), operation: "key expiration")
+            return value
+        }
+    }
+
+    /// The timestamp until which the key is considered valid, taking into account
+    /// expiration and revocation.
+    public var validTill: Date {
+        get throws {
+            var seconds: UInt64 = 0
+            try rnpCheck(rnp_key_valid_till64(handle, &seconds), operation: "key valid till")
+            return Date(timeIntervalSince1970: TimeInterval(seconds))
+        }
+    }
+
+    /// Whether the key has been revoked.
+    public var isRevoked: Bool {
+        get throws {
+            var result = false
+            try rnpCheck(rnp_key_is_revoked(handle, &result), operation: "key is revoked")
+            return result
+        }
+    }
+
+    /// Human-readable revocation reason, if the key is revoked.
+    public var revocationReason: String? {
+        get throws {
+            var reason: UnsafeMutablePointer<CChar>?
+            let status = rnp_key_get_revocation_reason(handle, &reason)
+            guard status == rnpStatusSuccess, reason != nil else {
+                return nil
+            }
+            return try rnpTakeString(reason, operation: "key revocation reason")
+        }
+    }
+
+    /// The key's subkeys.
+    public var subkeys: [RnpKey] {
+        get throws {
+            var count = 0
+            try rnpCheck(rnp_key_get_subkey_count(handle, &count), operation: "subkey count")
+            return try (0 ..< count).map { index in
+                var subkey: rnp_key_handle_t?
+                try rnpCheck(
+                    rnp_key_get_subkey_at(handle, index, &subkey),
+                    operation: "subkey at index \(index)"
+                )
+                guard let subkey else {
+                    throw RnpError.ffiFailed(
+                        operation: "subkey at index \(index)",
+                        code: rnpStatusSuccess,
+                        message: "unexpected NULL subkey handle"
+                    )
+                }
+                return RnpKey(handle: subkey)
+            }
+        }
+    }
+
+    // MARK: - Lifecycle
+
+    /// Revokes the key, adding a revocation signature to the keyring.
+    ///
+    /// - Parameters:
+    ///   - code: revocation reason code (`no`, `superseded`, `compromised`, `retired`).
+    ///   - reason: optional free-form revocation reason text.
+    ///   - hash: hash algorithm used for the revocation signature; `nil` selects the default.
+    public func revoke(
+        code: RevocationCode = .noReason,
+        reason: String = "",
+        hash: String? = nil
+    ) throws {
+        let codeString = code.rawValue
+        let reasonString = reason.isEmpty ? nil : reason
+        let hashString = hash
+        try rnpCheck(
+            rnp_key_revoke(
+                handle,
+                0,
+                hashString,
+                codeString,
+                reasonString
+            ),
+            operation: "key revoke"
+        )
+    }
+
+    /// Exports an armored revocation signature for this key.
+    ///
+    /// - Parameters:
+    ///   - code: revocation reason code.
+    ///   - reason: optional free-form revocation reason text.
+    ///   - hash: hash algorithm used for the revocation signature; `nil` selects the default.
+    /// - Returns: the armored revocation signature.
+    public func exportRevocation(
+        code: RevocationCode = .noReason,
+        reason: String = "",
+        hash: String? = nil
+    ) throws -> Data {
+        let output = try MemoryOutput()
+        let codeString = code.rawValue
+        let reasonString = reason.isEmpty ? nil : reason
+        try rnpCheck(
+            rnp_key_export_revocation(
+                handle,
+                output.handle,
+                RNP_KEY_EXPORT_ARMORED,
+                hash,
+                codeString,
+                reasonString
+            ),
+            operation: "export revocation"
+        )
+        return try output.readData()
+    }
+}
+
+/// Reason codes for key revocation.
+public enum RevocationCode: String {
+    /// No reason specified.
+    case noReason = "no"
+    /// The key has been superseded.
+    case superseded = "superseded"
+    /// The key material has been compromised.
+    case compromised = "compromised"
+    /// The key is no longer used.
+    case retired = "retired"
 }

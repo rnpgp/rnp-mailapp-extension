@@ -21,6 +21,19 @@ enum KeychainPassphraseStore {
     private static let service = "RNP Mail Extension keyring"
     private static let account = "keyring-passphrase"
 
+    /// Keychain access group shared by the container app and the Mail
+    /// extension. Driven by the `RNPMAILKeychainAccessGroup` Info.plist key;
+    /// `nil` for unsigned local builds where no access group is provisioned.
+    private static let accessGroup: String? = {
+        guard let value = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String,
+              !value.isEmpty,
+              !value.hasPrefix("$(")
+        else {
+            return nil
+        }
+        return value
+    }()
+
     /// The shared passphrase, creating and storing a random one on first
     /// use.
     static func sharedPassphrase() -> String {
@@ -34,24 +47,30 @@ enum KeychainPassphraseStore {
 
     /// Deletes the stored passphrase (e.g. when wiping the keyring).
     static func reset() {
-        let query: [CFString: Any] = [
+        var query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
             kSecAttrAccount: account,
         ]
+        if let accessGroup {
+            query[kSecAttrAccessGroup] = accessGroup
+        }
         SecItemDelete(query as CFDictionary)
     }
 
     // MARK: - Private
 
     private static func read() -> String? {
-        let query: [CFString: Any] = [
+        var query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
             kSecAttrAccount: account,
             kSecReturnData: true,
             kSecMatchLimit: kSecMatchLimitOne,
         ]
+        if let accessGroup {
+            query[kSecAttrAccessGroup] = accessGroup
+        }
         var item: CFTypeRef?
         guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
               let data = item as? Data
@@ -63,11 +82,14 @@ enum KeychainPassphraseStore {
 
     private static func store(_ passphrase: String) throws {
         let data = Data(passphrase.utf8)
-        let query: [CFString: Any] = [
+        var query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
             kSecAttrAccount: account,
         ]
+        if let accessGroup {
+            query[kSecAttrAccessGroup] = accessGroup
+        }
         let attributes: [CFString: Any] = [kSecValueData: data]
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         if status == errSecItemNotFound {
