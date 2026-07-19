@@ -1,0 +1,1354 @@
+diff --git a/Package.swift b/Package.swift
+index 4fad6b6..6c6f9fe 100644
+--- a/Package.swift
++++ b/Package.swift
+@@ -8,7 +8,8 @@ let package = Package(
+     ],
+     products: [
+         .library(name: "Rnp", targets: ["Rnp"]),
+-        .library(name: "MailSecurityEngine", targets: ["MailSecurityEngine"])
++        .library(name: "MailSecurityEngine", targets: ["MailSecurityEngine"]),
++        .library(name: "RnpMailUI", targets: ["RnpMailUI"])
+     ],
+     targets: [
+         .systemLibrary(
+@@ -28,6 +29,10 @@ let package = Package(
+             name: "MailSecurityEngine",
+             dependencies: ["Rnp"]
+         ),
++        .target(
++            name: "RnpMailUI",
++            dependencies: ["MailSecurityEngine"]
++        ),
+         .testTarget(
+             name: "RnpTests",
+             dependencies: ["Rnp"]
+@@ -35,6 +40,10 @@ let package = Package(
+         .testTarget(
+             name: "MailSecurityEngineTests",
+             dependencies: ["MailSecurityEngine"]
++        ),
++        .testTarget(
++            name: "RnpMailUITests",
++            dependencies: ["RnpMailUI"]
+         )
+     ]
+ )
+diff --git a/Sources/CRnp/shim.h b/Sources/CRnp/shim.h
+index 3574e14..583b050 100644
+--- a/Sources/CRnp/shim.h
++++ b/Sources/CRnp/shim.h
+@@ -1,6 +1,17 @@
+ #ifndef SWIFT_RNP_CRNP_SHIM_H
+ #define SWIFT_RNP_CRNP_SHIM_H
+ 
++#if __has_include(<rnp/rnp.h>)
+ #include <rnp/rnp.h>
++#else
++/* Fall back to the vendored headers bundled next to this module map when
++   building from Xcode without pkg-config. rnp_ver.h needs assert.h for
++   static_assert, so it is included after the standard header. */
++#include "rnp/rnp.h"
++#include "rnp/rnp_err.h"
++#include "rnp/rnp_export.h"
++#include <assert.h>
++#include "rnp/rnp_ver.h"
++#endif
+ 
+ #endif /* SWIFT_RNP_CRNP_SHIM_H */
+diff --git a/Sources/MailSecurityEngine/KeyManager.swift b/Sources/MailSecurityEngine/KeyManager.swift
+index 75a1ec1..e1938c7 100644
+--- a/Sources/MailSecurityEngine/KeyManager.swift
++++ b/Sources/MailSecurityEngine/KeyManager.swift
+@@ -20,6 +20,8 @@ public enum KeyAlgorithm: String, CaseIterable {
+     case rsa = "RSA"
+     /// ECDSA P-256 signing primary with an ECDH P-256 encryption subkey.
+     case ecdsa = "ECDSA"
++    /// Ed25519 signing primary with a Curve25519 encryption subkey.
++    case ed25519 = "Ed25519"
+ }
+ 
+ /// A snapshot description of one primary key in the keyring.
+@@ -79,6 +81,48 @@ public struct KeyInfo: Equatable, Identifiable {
+     }
+ }
+ 
++/// A snapshot description of one subkey.
++public struct SubkeyInfo: Equatable, Identifiable {
++    public let fingerprint: String
++    public let keyID: String
++    public let algorithm: String
++    public let bits: Int
++    public let curve: String?
++    public let creationDate: Date
++    public let expirationDate: Date?
++    public let capabilities: [String]
++
++    public init(
++        fingerprint: String,
++        keyID: String,
++        algorithm: String,
++        bits: Int,
++        curve: String? = nil,
++        creationDate: Date,
++        expirationDate: Date? = nil,
++        capabilities: [String] = []
++    ) {
++        self.fingerprint = fingerprint
++        self.keyID = keyID
++        self.algorithm = algorithm
++        self.bits = bits
++        self.curve = curve
++        self.creationDate = creationDate
++        self.expirationDate = expirationDate
++        self.capabilities = capabilities
++    }
++
++    public var id: String { fingerprint }
++
++    /// User-facing label like "RSA-3072" or "Ed25519".
++    public var algorithmLabel: String {
++        if let curve = curve, !curve.isEmpty {
++            return "\(algorithm) \(curve)"
++        }
++        return bits > 0 ? "\(algorithm)-\(bits)" : algorithm
++    }
++}
++
+ /// Errors thrown by `KeyManager`.
+ public enum KeyManagerError: Error, Equatable {
+     /// A keyring file exists but could not be read.
+@@ -206,12 +250,28 @@ public final class KeyManager {
+     // MARK: - Generation
+ 
+     /// Generates a new key pair and persists the keyrings.
++    ///
++    /// - Parameters:
++    ///   - userID: the OpenPGP user ID for the primary key.
++    ///   - algorithm: the key algorithm to generate.
++    ///   - expirationSeconds: seconds until the primary key and subkey expire,
++    ///     or `0` for keys that do not expire.
+     @discardableResult
+-    public func generateKey(userID: String, algorithm: KeyAlgorithm = .rsa) throws -> KeyInfo {
++    public func generateKey(
++        userID: String,
++        algorithm: KeyAlgorithm = .rsa,
++        expirationSeconds: UInt32 = 0
++    ) throws -> KeyInfo {
+         try withRnp { rnp in
+-            let json = algorithm == .rsa
+-                ? Rnp.rsaKeyGenJSON(userid: userID)
+-                : Rnp.ecdsaP256KeyGenJSON(userid: userID)
++            let json: String
++            switch algorithm {
++            case .rsa:
++                json = Rnp.rsaKeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
++            case .ecdsa:
++                json = Rnp.ecdsaP256KeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
++            case .ed25519:
++                json = Rnp.ed25519KeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
++            }
+             try rnp.generateKey(json: json)
+             let key = try rnp.requireKey(userID)
+             let info = try makeKeyInfo(key: key, primaryUserID: userID)
+@@ -273,6 +333,59 @@ public final class KeyManager {
+         }
+     }
+ 
++    // MARK: - Detail
++
++    /// Returns a snapshot of the subkeys belonging to the key with the given
++    /// fingerprint.
++    public func subkeys(for fingerprint: String) throws -> [SubkeyInfo] {
++        try withRnp { rnp in
++            let key = try rnp.requireKey(fingerprint, type: .fingerprint)
++            return try key.subkeys.map(makeSubkeyInfo)
++        }
++    }
++
++    private func makeSubkeyInfo(key: RnpKey) throws -> SubkeyInfo {
++        let fingerprint = try key.fingerprint
++        let expirationSeconds = try key.expirationSeconds
++        let expirationDate: Date? = expirationSeconds > 0
++            ? try key.creationDate.addingTimeInterval(TimeInterval(expirationSeconds))
++            : nil
++        return SubkeyInfo(
++            fingerprint: fingerprint,
++            keyID: (try? key.keyID) ?? "",
++            algorithm: (try? key.algorithm) ?? "",
++            bits: (try? key.bits) ?? 0,
++            curve: try? key.curve,
++            creationDate: (try? key.creationDate) ?? Date(timeIntervalSince1970: 0),
++            expirationDate: expirationDate,
++            capabilities: (try? key.capabilities) ?? []
++        )
++    }
++
++    // MARK: - Revocation certificate
++
++    /// Exports an armored revocation certificate for the given fingerprint.
++    public func exportRevocationCertificate(fingerprint: String) throws -> Data {
++        try withRnp { rnp in
++            try rnp.requireKey(fingerprint, type: .fingerprint)
++                .exportRevocation()
++        }
++    }
++
++    /// Writes an armored revocation certificate for the given fingerprint to
++    /// the keyring directory.
++    ///
++    /// - Returns: the URL of the saved certificate.
++    @discardableResult
++    public func saveRevocationCertificate(fingerprint: String) throws -> URL {
++        let data = try exportRevocationCertificate(fingerprint: fingerprint)
++        let url = directory
++            .appendingPathComponent("\(fingerprint)-revocation")
++            .appendingPathExtension("asc")
++        try data.write(to: url, options: .atomic)
++        return url
++    }
++
+     // MARK: - Key resolution
+ 
+     /// Finds a public key for a recipient identifier.
+diff --git a/Sources/Rnp/Rnp.swift b/Sources/Rnp/Rnp.swift
+index 8920da3..fac7a7c 100644
+--- a/Sources/Rnp/Rnp.swift
++++ b/Sources/Rnp/Rnp.swift
+@@ -145,7 +145,7 @@ public final class Rnp {
+     /// encryption subkey, both protected by the passphrase provider.
+     ///
+     /// `bits` defaults to 3072, the librnp 0.18 default RSA key length.
+-    public static func rsaKeyGenJSON(userid: String, bits: Int = 3072) -> String {
++    public static func rsaKeyGenJSON(userid: String, bits: Int = 3072, expirationSeconds: UInt32 = 0) -> String {
+         """
+         {
+             "primary": {
+@@ -153,12 +153,14 @@ public final class Rnp {
+                 "length": \(bits),
+                 "userid": "\(userid)",
+                 "usage": ["sign"],
++                "expiration": \(expirationSeconds),
+                 "protection": { "cipher": "AES256", "hash": "SHA256" }
+             },
+             "sub": {
+                 "type": "RSA",
+                 "length": \(bits),
+                 "usage": ["encrypt"],
++                "expiration": \(expirationSeconds),
+                 "protection": { "cipher": "AES256", "hash": "SHA256" }
+             }
+         }
+@@ -168,7 +170,7 @@ public final class Rnp {
+     /// JSON description of an ECDSA P-256 primary key (signing) with an
+     /// ECDH P-256 encryption subkey, both protected by the passphrase
+     /// provider.
+-    public static func ecdsaP256KeyGenJSON(userid: String) -> String {
++    public static func ecdsaP256KeyGenJSON(userid: String, expirationSeconds: UInt32 = 0) -> String {
+         """
+         {
+             "primary": {
+@@ -176,12 +178,38 @@ public final class Rnp {
+                 "curve": "NIST P-256",
+                 "userid": "\(userid)",
+                 "usage": ["sign"],
++                "expiration": \(expirationSeconds),
+                 "protection": { "cipher": "AES256", "hash": "SHA256" }
+             },
+             "sub": {
+                 "type": "ECDH",
+                 "curve": "NIST P-256",
+                 "usage": ["encrypt"],
++                "expiration": \(expirationSeconds),
++                "protection": { "cipher": "AES256", "hash": "SHA256" }
++            }
++        }
++        """
++    }
++
++    /// JSON description of an Ed25519 primary signing key with a
++    /// Curve25519 encryption subkey, both protected by the passphrase
++    /// provider.
++    public static func ed25519KeyGenJSON(userid: String, expirationSeconds: UInt32 = 0) -> String {
++        """
++        {
++            "primary": {
++                "type": "EDDSA",
++                "userid": "\(userid)",
++                "usage": ["sign"],
++                "expiration": \(expirationSeconds),
++                "protection": { "cipher": "AES256", "hash": "SHA256" }
++            },
++            "sub": {
++                "type": "ECDH",
++                "curve": "Curve25519",
++                "usage": ["encrypt"],
++                "expiration": \(expirationSeconds),
+                 "protection": { "cipher": "AES256", "hash": "SHA256" }
+             }
+         }
+diff --git a/Sources/Rnp/RnpKey.swift b/Sources/Rnp/RnpKey.swift
+index b26a55d..1a54c38 100644
+--- a/Sources/Rnp/RnpKey.swift
++++ b/Sources/Rnp/RnpKey.swift
+@@ -63,6 +63,29 @@ public final class RnpKey {
+         }
+     }
+ 
++    /// The key's 8-hex-digit key ID.
++    public var keyID: String {
++        get throws {
++            var id: UnsafeMutablePointer<CChar>?
++            try rnpCheck(rnp_key_get_keyid(handle, &id), operation: "key id")
++            return try rnpTakeString(id, operation: "key id")
++        }
++    }
++
++    /// The key's allowed usage flags, e.g. `["sign", "certify"]`.
++    public var capabilities: [String] {
++        get throws {
++            let allCapabilities = ["sign", "certify", "encrypt", "auth"]
++            return try allCapabilities.filter { try allowsUsage($0) }
++        }
++    }
++
++    private func allowsUsage(_ usage: String) throws -> Bool {
++        var result = false
++        try rnpCheck(rnp_key_allows_usage(handle, usage, &result), operation: "key allows usage")
++        return result
++    }
++
+     /// Exports the key (including its subkeys) in OpenPGP format.
+     ///
+     /// - Parameters:
+diff --git a/Swift-Rnp/MailExtensionsContainer/MailExtensionsContainerApp.swift b/Swift-Rnp/MailExtensionsContainer/MailExtensionsContainerApp.swift
+index f40bd25..f8a1102 100644
+--- a/Swift-Rnp/MailExtensionsContainer/MailExtensionsContainerApp.swift
++++ b/Swift-Rnp/MailExtensionsContainer/MailExtensionsContainerApp.swift
+@@ -1,6 +1,6 @@
+ //
+ //  MailExtensionsContainerApp.swift
+-//  MailExtensionsContainer
++//  Ribose container
+ //
+ //  Container app for the RNP Mail extension: manages the shared OpenPGP
+ //  keyring (generate, import, export, delete).
+@@ -11,7 +11,7 @@ import Rnp
+ 
+ @main
+ struct MailExtensionsContainerApp: App {
+-    @StateObject private var keysManager = KeysManager()
++    @StateObject private var model = ContentViewModel(manager: KeysManager())
+ 
+     init() {
+         if CommandLine.arguments.contains("--self-test") {
+@@ -22,7 +22,17 @@ struct MailExtensionsContainerApp: App {
+ 
+     var body: some Scene {
+         WindowGroup {
+-            ContentView(model: ContentViewModel(manager: keysManager))
++            ContentView(model: model)
++                .onAppear {
++                    model.checkOnboarding()
++                }
++        }
++        .commands {
++            CommandGroup(after: .help) {
++                Button("Show Onboarding") {
++                    model.reopenOnboarding()
++                }
++            }
+         }
+     }
+ 
+diff --git a/Swift-Rnp/MailExtensionsContainer/Model/KeysManager.swift b/Swift-Rnp/MailExtensionsContainer/Model/KeysManager.swift
+index c954b7f..2edad8c 100644
+--- a/Swift-Rnp/MailExtensionsContainer/Model/KeysManager.swift
++++ b/Swift-Rnp/MailExtensionsContainer/Model/KeysManager.swift
+@@ -16,6 +16,7 @@ import MailSecurityEngine
+ final class KeysManager: ObservableObject {
+     @Published private(set) var keys: [KeyInfo] = []
+     @Published var lastError: String?
++    @Published var lastWarning: KeychainWarning?
+ 
+     private let keyManager: KeyManager
+ 
+@@ -49,18 +50,38 @@ final class KeysManager: ObservableObject {
+         }
+     }
+ 
+-    func generate(userID: String, algorithm: KeyAlgorithm) {
++    func generate(
++        userID: String,
++        algorithm: KeyAlgorithm,
++        passphrase: String? = nil,
++        expirationSeconds: UInt32 = 0,
++        useTouchID: Bool = false
++    ) {
+         perform {
+-            try keyManager.generateKey(userID: userID, algorithm: algorithm)
++            if let passphrase {
++                let warning = KeychainPassphraseStore.setPassphrase(passphrase, requiresBiometry: useTouchID)
++                if warning != nil {
++                    lastWarning = warning
++                }
++            }
++            let info = try keyManager.generateKey(
++                userID: userID,
++                algorithm: algorithm,
++                expirationSeconds: expirationSeconds
++            )
++            _ = try keyManager.saveRevocationCertificate(fingerprint: info.fingerprint)
+         }
+     }
+ 
+     /// Imports armored or binary key data; reports the number of primary
+     /// keys imported.
+-    func importKeys(_ data: Data) {
++    @discardableResult
++    func importKeys(_ data: Data) -> [KeyInfo] {
++        var imported: [KeyInfo] = []
+         perform {
+-            try keyManager.importKeys(data)
++            imported = try keyManager.importKeys(data)
+         }
++        return imported
+     }
+ 
+     /// Armored public key export for the given fingerprint.
+@@ -68,12 +89,22 @@ final class KeysManager: ObservableObject {
+         try? keyManager.exportKey(fingerprint: fingerprint)
+     }
+ 
++    /// Armored secret key export for the given fingerprint.
++    func exportSecretKey(fingerprint: String) -> Data? {
++        try? keyManager.exportKey(fingerprint: fingerprint, secret: true)
++    }
++
+     func delete(_ key: KeyInfo) {
+         perform {
+             try keyManager.deleteKey(fingerprint: key.fingerprint)
+         }
+     }
+ 
++    /// Subkey metadata for the given fingerprint.
++    func subkeys(for key: KeyInfo) -> [SubkeyInfo] {
++        (try? keyManager.subkeys(for: key.fingerprint)) ?? []
++    }
++
+     private func perform(_ operation: () throws -> Void) {
+         do {
+             try operation()
+diff --git a/Swift-Rnp/MailExtensionsContainer/View/ContentView/ContentView.swift b/Swift-Rnp/MailExtensionsContainer/View/ContentView/ContentView.swift
+index 64c257f..f2d2164 100644
+--- a/Swift-Rnp/MailExtensionsContainer/View/ContentView/ContentView.swift
++++ b/Swift-Rnp/MailExtensionsContainer/View/ContentView/ContentView.swift
+@@ -6,70 +6,77 @@
+ //  above the key list.
+ //
+ 
++import AppKit
+ import MailSecurityEngine
++import RnpMailUI
+ import SwiftUI
++import UniformTypeIdentifiers
+ 
+ struct ContentView: View {
+     @ObservedObject var model: ContentViewModel
++    @State private var droppedURLs: [URL] = []
+ 
+     var body: some View {
+         VStack(spacing: 12) {
+-            Text("OpenPGP Keys")
+-                .font(.title2)
+-
+-            HStack(spacing: 24) {
+-                Menu {
+-                    Button("RSA-3072") { model.beginGenerate(algorithm: .rsa) }
+-                    Button("ECDSA P-256") { model.beginGenerate(algorithm: .ecdsa) }
+-                } label: {
+-                    Image(systemName: "plus.circle")
+-                }
+-                .menuStyle(.borderlessButton)
+-                .help("Generate a new key")
+-
+-                Menu {
+-                    Button("From Clipboard") { model.importFromPasteboard() }
+-                    Button("From File…") { model.importFromFile() }
+-                } label: {
+-                    Image(systemName: "square.and.arrow.down")
+-                }
+-                .menuStyle(.borderlessButton)
+-                .help("Import an armored key")
++            header
+ 
+-                Button {
+-                    model.exportSelectedToPasteboard()
+-                } label: {
+-                    Image(systemName: "square.and.arrow.up")
++            Picker("Tab", selection: $model.selectedTab) {
++                ForEach(KeyTab.allCases, id: \.self) { tab in
++                    Text(tab.rawValue).tag(tab)
+                 }
+-                .buttonStyle(.borderless)
+-                .disabled(model.selectedKey == nil)
+-                .help("Copy the armored public key to the clipboard")
+-
+-                Button {
+-                    model.showDeleteConfirmation = true
+-                } label: {
+-                    Image(systemName: "minus.circle")
+-                }
+-                .buttonStyle(.borderless)
+-                .disabled(model.selectedKey == nil)
+-                .help("Delete the selected key")
+             }
+-            .font(.system(size: 32))
++            .pickerStyle(.segmented)
++            .padding(.horizontal)
++
++            toolbar
+ 
+             KeysListView(keys: model.keys, selection: $model.selection)
++                .onDrop(of: [.fileURL, .data, .plainText], isTargeted: .constant(false)) { providers in
++                    handleDrop(providers: providers)
++                }
+         }
+         .padding()
+-        .frame(minWidth: 560, minHeight: 360)
++        .frame(minWidth: 640, minHeight: 400)
+         .sheet(isPresented: $model.showGenerateSheet) {
+             GenerateKeySheet(algorithm: model.generateAlgorithm) { userID, algorithm in
+                 model.generate(userID: userID, algorithm: algorithm)
+             }
+         }
++        .sheet(isPresented: $model.showDetailSheet) {
++            if let key = model.selectedKey {
++                KeyDetailView(
++                    key: key,
++                    subkeys: model.manager.subkeys(for: key),
++                    isRecipient: model.selectedTab == .recipients,
++                    actions: detailActions(for: key)
++                )
++            }
++        }
++        .sheet(isPresented: $model.showOnboarding) {
++            OnboardingView(
++                isPresented: $model.showOnboarding,
++                onGenerate: { userID, algorithm, passphrase, expirationSeconds, useTouchID in
++                    model.generateForOnboarding(
++                        userID: userID,
++                        algorithm: algorithm,
++                        passphrase: passphrase,
++                        expirationSeconds: expirationSeconds,
++                        useTouchID: useTouchID
++                    )
++                },
++                onImport: { data in
++                    model.importForOnboarding(data)
++                }
++            )
++        }
++        .sheet(isPresented: $model.showClipboardImport) {
++            clipboardImportSheet
++        }
+         .alert("Delete key?", isPresented: $model.showDeleteConfirmation) {
+             Button("Delete", role: .destructive) { model.deleteSelected() }
+             Button("Cancel", role: .cancel) {}
+         } message: {
+-            Text("This removes the key pair from the shared keyring. This cannot be undone.")
++            Text("This removes the key from the shared keyring. This cannot be undone.")
+         }
+         .alert(
+             "Key operation failed",
+@@ -82,6 +89,149 @@ struct ContentView: View {
+         } message: {
+             Text(model.errorMessage ?? "")
+         }
++        .alert(
++            model.warningMessage ?? "",
++            isPresented: Binding(
++                get: { model.warningMessage != nil },
++                set: { if !$0 { model.warningMessage = nil } }
++            )
++        ) {
++            Button("OK") { model.warningMessage = nil }
++        }
++        .onAppear {
++            model.checkOnboarding()
++        }
++        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
++            model.checkClipboardForPGP()
++        }
++    }
++
++    private var header: some View {
++        Text("OpenPGP Keys")
++            .font(.title2)
++    }
++
++    private var toolbar: some View {
++        HStack(spacing: 24) {
++            Menu {
++                Button("Ed25519") { model.beginGenerate(algorithm: .ed25519) }
++                Button("RSA-3072") { model.beginGenerate(algorithm: .rsa) }
++                Button("ECDSA P-256") { model.beginGenerate(algorithm: .ecdsa) }
++            } label: {
++                Image(systemName: "plus.circle")
++            }
++            .menuStyle(.borderlessButton)
++            .help("Generate a new key")
++
++            Menu {
++                Button("From Clipboard") { model.importFromPasteboard() }
++                Button("From File…") { model.importFromFile() }
++            } label: {
++                Image(systemName: "square.and.arrow.down")
++            }
++            .menuStyle(.borderlessButton)
++            .help("Import an armored key")
++
++            Button {
++                model.exportSelectedPublicToPasteboard()
++            } label: {
++                Image(systemName: "square.and.arrow.up")
++            }
++            .buttonStyle(.borderless)
++            .disabled(model.selectedKey == nil)
++            .help("Copy the armored public key to the clipboard")
++
++            Button {
++                model.showDetailSheet = true
++            } label: {
++                Image(systemName: "info.circle")
++            }
++            .buttonStyle(.borderless)
++            .disabled(model.selectedKey == nil)
++            .help("Show key details")
++
++            Button {
++                model.showDeleteConfirmation = true
++            } label: {
++                Image(systemName: "minus.circle")
++            }
++            .buttonStyle(.borderless)
++            .disabled(model.selectedKey == nil)
++            .help("Delete the selected key")
++        }
++        .font(.system(size: 32))
++    }
++
++    private func detailActions(for key: KeyInfo) -> KeyDetailActions {
++        KeyDetailActions(
++            onExportPublic: { model.exportSelectedPublicToPasteboard() },
++            onExportSecret: { model.exportSelectedSecretToPasteboard() },
++            onDelete: {
++                model.showDetailSheet = false
++                model.showDeleteConfirmation = true
++            },
++            onExtendExpiry: {},
++            onRevoke: {}
++        )
++    }
++
++    private var clipboardImportSheet: some View {
++        VStack(spacing: 16) {
++            Text("Import key from clipboard?")
++                .font(.headline)
++            Text("The clipboard contains an armored OpenPGP key block.")
++                .font(.callout)
++            HStack(spacing: 12) {
++                Button("Cancel") {
++                    model.showClipboardImport = false
++                    model.clipboardText = ""
++                }
++                Button("Import") {
++                    model.confirmClipboardImport()
++                }
++                .keyboardShortcut(.defaultAction)
++            }
++        }
++        .padding()
++        .frame(width: 360)
++    }
++
++    private func handleDrop(providers: [NSItemProvider]) -> Bool {
++        var handled = false
++        for provider in providers {
++            if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
++                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, _ in
++                    guard let data = item as? Data,
++                          let url = URL(dataRepresentation: data, relativeTo: nil)
++                    else {
++                        return
++                    }
++                    DispatchQueue.main.async {
++                        if let keyData = try? Data(contentsOf: url) {
++                            model.importData(keyData)
++                        }
++                    }
++                }
++                handled = true
++            } else if provider.canLoadObject(ofClass: String.self) {
++                _ = provider.loadObject(ofClass: String.self) { string, _ in
++                    guard let string = string, string.contains("BEGIN PGP") else { return }
++                    DispatchQueue.main.async {
++                        model.importData(Data(string.utf8))
++                    }
++                }
++                handled = true
++            } else if provider.hasItemConformingToTypeIdentifier(UTType.data.identifier) {
++                provider.loadItem(forTypeIdentifier: UTType.data.identifier, options: nil) { item, _ in
++                    guard let data = item as? Data else { return }
++                    DispatchQueue.main.async {
++                        model.importData(data)
++                    }
++                }
++                handled = true
++            }
++        }
++        return handled
+     }
+ }
+ 
+diff --git a/Swift-Rnp/MailExtensionsContainer/View/ContentView/ContentViewModel.swift b/Swift-Rnp/MailExtensionsContainer/View/ContentView/ContentViewModel.swift
+index ec32d32..9200efc 100644
+--- a/Swift-Rnp/MailExtensionsContainer/View/ContentView/ContentViewModel.swift
++++ b/Swift-Rnp/MailExtensionsContainer/View/ContentView/ContentViewModel.swift
+@@ -8,13 +8,26 @@
+ import AppKit
+ import Foundation
+ import MailSecurityEngine
++import RnpMailUI
++
++/// Which tab is selected in the key manager.
++enum KeyTab: String, CaseIterable {
++    case myKeys = "My Keys"
++    case recipients = "Recipients"
++}
+ 
+ final class ContentViewModel: ObservableObject {
+     @Published var selection: KeyInfo.ID?
+     @Published var showGenerateSheet = false
+     @Published var showDeleteConfirmation = false
++    @Published var showDetailSheet = false
++    @Published var showOnboarding = false
++    @Published var showClipboardImport = false
++    @Published var clipboardText = ""
+     @Published var errorMessage: String?
+-    @Published private(set) var generateAlgorithm: KeyAlgorithm = .rsa
++    @Published var warningMessage: String?
++    @Published private(set) var generateAlgorithm: KeyAlgorithm = .ed25519
++    @Published var selectedTab: KeyTab = .myKeys
+ 
+     let manager: KeysManager
+ 
+@@ -22,12 +35,45 @@ final class ContentViewModel: ObservableObject {
+         self.manager = manager
+     }
+ 
++    /// Keys visible in the current tab.
+     var keys: [KeyInfo] {
+-        manager.keys
++        switch selectedTab {
++        case .myKeys:
++            return manager.keys.filter { $0.hasSecret }
++        case .recipients:
++            return manager.keys.filter { !$0.hasSecret }
++        }
+     }
+ 
+     var selectedKey: KeyInfo? {
+-        manager.keys.first { $0.id == selection }
++        keys.first { $0.id == selection }
++    }
++
++    var hasOnboarded: Bool {
++        get { UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") }
++        set { UserDefaults.standard.set(newValue, forKey: "hasCompletedOnboarding") }
++    }
++
++    var autoDetectClipboard: Bool {
++        get { UserDefaults.standard.object(forKey: "autoDetectClipboardImport") as? Bool ?? true }
++        set { UserDefaults.standard.set(newValue, forKey: "autoDetectClipboardImport") }
++    }
++
++    /// Called on launch to decide whether to show onboarding.
++    func checkOnboarding() {
++        if !hasOnboarded && manager.keys.isEmpty {
++            showOnboarding = true
++        }
++    }
++
++    /// Manually reopen the onboarding flow from the Help menu.
++    func reopenOnboarding() {
++        showOnboarding = true
++    }
++
++    func markOnboardingComplete() {
++        hasOnboarded = true
++        showOnboarding = false
+     }
+ 
+     // MARK: - Generate
+@@ -40,6 +86,43 @@ final class ContentViewModel: ObservableObject {
+     func generate(userID: String, algorithm: KeyAlgorithm) {
+         manager.generate(userID: userID, algorithm: algorithm)
+         propagateError()
++        propagateWarning()
++    }
++
++    /// Generates a key from the onboarding request and returns the result.
++    func generateForOnboarding(
++        userID: String,
++        algorithm: KeyAlgorithm,
++        passphrase: String,
++        expirationSeconds: UInt32,
++        useTouchID: Bool
++    ) -> Result<OnboardingGenerationResult, Error> {
++        manager.generate(
++            userID: userID,
++            algorithm: algorithm,
++            passphrase: passphrase,
++            expirationSeconds: expirationSeconds,
++            useTouchID: useTouchID
++        )
++        propagateError()
++        propagateWarning()
++        guard let key = manager.keys.first(where: { $0.primaryUserID == userID }) else {
++            return .failure(OnboardingAppError.keyNotFoundAfterGeneration)
++        }
++        let revocationURL = AppGroup.keyringDirectory()
++            .appendingPathComponent("\(key.fingerprint)-revocation.asc")
++        return .success(OnboardingGenerationResult(
++            userID: userID,
++            fingerprint: key.fingerprint,
++            revocationCertificateURL: revocationURL
++        ))
++    }
++
++    /// Imports keys from the onboarding paste and returns the imported keys.
++    func importForOnboarding(_ data: Data) -> Result<[KeyInfo], Error> {
++        let imported = manager.importKeys(data)
++        propagateError()
++        return .success(imported)
+     }
+ 
+     // MARK: - Import
+@@ -52,8 +135,12 @@ final class ContentViewModel: ObservableObject {
+             errorMessage = "The clipboard does not contain an armored OpenPGP key."
+             return
+         }
+-        manager.importKeys(Data(text.utf8))
+-        propagateError()
++        importKeys(Data(text.utf8))
++    }
++
++    /// Imports keys from dropped file URLs or raw data.
++    func importData(_ data: Data) {
++        importKeys(data)
+     }
+ 
+     /// Imports keys from a user-selected key file.
+@@ -67,18 +154,40 @@ final class ContentViewModel: ObservableObject {
+         }
+         do {
+             let data = try Data(contentsOf: url)
+-            manager.importKeys(data)
+-            propagateError()
++            importKeys(data)
+         } catch {
+             errorMessage = error.localizedDescription
+         }
+     }
+ 
++    /// Checks the pasteboard on app activation and offers to import a PGP block.
++    func checkClipboardForPGP() {
++        guard autoDetectClipboard,
++              let text = NSPasteboard.general.string(forType: .string),
++              text.contains("BEGIN PGP")
++        else {
++            return
++        }
++        clipboardText = text
++        showClipboardImport = true
++    }
++
++    func confirmClipboardImport() {
++        importKeys(Data(clipboardText.utf8))
++        showClipboardImport = false
++        clipboardText = ""
++    }
++
++    private func importKeys(_ data: Data) {
++        manager.importKeys(data)
++        propagateError()
++    }
++
+     // MARK: - Export
+ 
+     /// Copies the armored public key of the current selection to the
+     /// general pasteboard.
+-    func exportSelectedToPasteboard() {
++    func exportSelectedPublicToPasteboard() {
+         guard let key = selectedKey else {
+             return
+         }
+@@ -86,8 +195,25 @@ final class ContentViewModel: ObservableObject {
+             errorMessage = "The key could not be exported."
+             return
+         }
++        copyToPasteboard(String(decoding: armored, as: UTF8.self))
++    }
++
++    /// Copies the armored secret key of the current selection to the
++    /// general pasteboard.
++    func exportSelectedSecretToPasteboard() {
++        guard let key = selectedKey else {
++            return
++        }
++        guard let armored = manager.exportSecretKey(fingerprint: key.fingerprint) else {
++            errorMessage = "The secret key could not be exported."
++            return
++        }
++        copyToPasteboard(String(decoding: armored, as: UTF8.self))
++    }
++
++    private func copyToPasteboard(_ text: String) {
+         NSPasteboard.general.clearContents()
+-        NSPasteboard.general.setString(String(decoding: armored, as: UTF8.self), forType: .string)
++        NSPasteboard.general.setString(text, forType: .string)
+     }
+ 
+     // MARK: - Delete
+@@ -101,10 +227,28 @@ final class ContentViewModel: ObservableObject {
+         propagateError()
+     }
+ 
+-    // MARK: - Error propagation
++    // MARK: - Error / warning propagation
+ 
+     private func propagateError() {
+         errorMessage = manager.lastError
+         manager.lastError = nil
+     }
++
++    private func propagateWarning() {
++        if let warning = manager.lastWarning {
++            warningMessage = warning.message
++            manager.lastWarning = nil
++        }
++    }
++}
++
++enum OnboardingAppError: Error, LocalizedError {
++    case keyNotFoundAfterGeneration
++
++    var errorDescription: String? {
++        switch self {
++        case .keyNotFoundAfterGeneration:
++            return "The key was generated but could not be found in the keyring."
++        }
++    }
+ }
+diff --git a/Swift-Rnp/Shared/AppGroup.swift b/Swift-Rnp/Shared/AppGroup.swift
+deleted file mode 100644
+index 4fd52cf..0000000
+--- a/Swift-Rnp/Shared/AppGroup.swift
++++ /dev/null
+@@ -1,43 +0,0 @@
+-//
+-//  AppGroup.swift
+-//  swift-rnp
+-//
+-//  Locations shared between the container app and the Mail extension.
+-//
+-
+-import Foundation
+-
+-/// App group and keyring location shared by both processes.
+-enum AppGroup {
+-    /// App group identifier shared by the container app and the Mail
+-    /// extension (see both targets' entitlements).
+-    ///
+-    /// The value is injected via the `RNPMAILAppGroup` Info.plist key so it
+-    /// can be driven by `Shared/IDs.xcconfig`. A hardcoded fallback keeps
+-    /// unsigned local builds working when no entitlements are present.
+-    static let identifier: String = {
+-        if let value = Bundle.main.object(forInfoDictionaryKey: "RNPMAILAppGroup") as? String,
+-           !value.isEmpty,
+-           !value.hasPrefix("$(") {
+-            return value
+-        }
+-        return "group.com.rnpgp.RnpMail"
+-    }()
+-
+-    /// Directory holding the shared OpenPGP keyring (pubring.gpg and
+-    /// secring.gpg).
+-    ///
+-    /// Lives in the app group container so the container app and the
+-    /// extension see the same keys. Falls back to Application Support when
+-    /// the group container is unavailable (e.g. unsigned local builds
+-    /// without entitlements).
+-    static func keyringDirectory(fileManager: FileManager = .default) -> URL {
+-        if let container = fileManager.containerURL(
+-            forSecurityApplicationGroupIdentifier: identifier
+-        ) {
+-            return container.appendingPathComponent("Keyrings", isDirectory: true)
+-        }
+-        let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+-        return support.appendingPathComponent("RNP Mail Extension", isDirectory: true)
+-    }
+-}
+diff --git a/Swift-Rnp/Shared/KeychainPassphraseStore.swift b/Swift-Rnp/Shared/KeychainPassphraseStore.swift
+deleted file mode 100644
+index d92efac..0000000
+--- a/Swift-Rnp/Shared/KeychainPassphraseStore.swift
++++ /dev/null
+@@ -1,121 +0,0 @@
+-//
+-//  KeychainPassphraseStore.swift
+-//  swift-rnp
+-//
+-//  Keyring passphrase storage in the macOS Keychain.
+-//
+-//  A single random passphrase protects all keys in the shared keyring. It is
+-//  created on first use and stored as a generic password; with both targets
+-//  listing the same keychain access group in their entitlements, the item is
+-//  shared between the container app and the Mail extension. (Keychain
+-//  sharing requires proper code signing — see README.md; unsigned local
+-//  builds still work because macOS Keychain does not isolate unsigned
+-//  clients the way iOS does.)
+-//
+-
+-import Foundation
+-import Security
+-
+-/// Stores and retrieves the keyring passphrase in the login Keychain.
+-enum KeychainPassphraseStore {
+-    private static let service = "RNP Mail Extension keyring"
+-    private static let account = "keyring-passphrase"
+-
+-    /// Keychain access group shared by the container app and the Mail
+-    /// extension. Driven by the `RNPMAILKeychainAccessGroup` Info.plist key;
+-    /// `nil` for unsigned local builds where no access group is provisioned.
+-    private static let accessGroup: String? = {
+-        guard let value = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String,
+-              !value.isEmpty,
+-              !value.hasPrefix("$(")
+-        else {
+-            return nil
+-        }
+-        return value
+-    }()
+-
+-    /// The shared passphrase, creating and storing a random one on first
+-    /// use.
+-    static func sharedPassphrase() -> String {
+-        if let existing = read() {
+-            return existing
+-        }
+-        let created = randomPassphrase()
+-        try? store(created)
+-        return created
+-    }
+-
+-    /// Deletes the stored passphrase (e.g. when wiping the keyring).
+-    static func reset() {
+-        var query: [CFString: Any] = [
+-            kSecClass: kSecClassGenericPassword,
+-            kSecAttrService: service,
+-            kSecAttrAccount: account,
+-        ]
+-        if let accessGroup {
+-            query[kSecAttrAccessGroup] = accessGroup
+-        }
+-        SecItemDelete(query as CFDictionary)
+-    }
+-
+-    // MARK: - Private
+-
+-    private static func read() -> String? {
+-        var query: [CFString: Any] = [
+-            kSecClass: kSecClassGenericPassword,
+-            kSecAttrService: service,
+-            kSecAttrAccount: account,
+-            kSecReturnData: true,
+-            kSecMatchLimit: kSecMatchLimitOne,
+-        ]
+-        if let accessGroup {
+-            query[kSecAttrAccessGroup] = accessGroup
+-        }
+-        var item: CFTypeRef?
+-        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
+-              let data = item as? Data
+-        else {
+-            return nil
+-        }
+-        return String(decoding: data, as: UTF8.self)
+-    }
+-
+-    private static func store(_ passphrase: String) throws {
+-        let data = Data(passphrase.utf8)
+-        var query: [CFString: Any] = [
+-            kSecClass: kSecClassGenericPassword,
+-            kSecAttrService: service,
+-            kSecAttrAccount: account,
+-        ]
+-        if let accessGroup {
+-            query[kSecAttrAccessGroup] = accessGroup
+-        }
+-        let attributes: [CFString: Any] = [kSecValueData: data]
+-        let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+-        if status == errSecItemNotFound {
+-            var item = query
+-            item[kSecValueData] = data
+-            // Accessible only while the device is unlocked; not synced.
+-            item[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
+-            let addStatus = SecItemAdd(item as CFDictionary, nil)
+-            guard addStatus == errSecSuccess else {
+-                throw KeychainError.unhandled(status: addStatus)
+-            }
+-            return
+-        }
+-        guard status == errSecSuccess else {
+-            throw KeychainError.unhandled(status: status)
+-        }
+-    }
+-
+-    private static func randomPassphrase() -> String {
+-        var bytes = [UInt8](repeating: 0, count: 24)
+-        _ = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+-        return Data(bytes).base64EncodedString()
+-    }
+-}
+-
+-/// Keychain operation failures.
+-enum KeychainError: Error {
+-    case unhandled(status: OSStatus)
+-}
+diff --git a/Swift-Rnp/Swift-Rnp.xcodeproj/project.pbxproj b/Swift-Rnp/Swift-Rnp.xcodeproj/project.pbxproj
+index a6fbf99..b98d6d3 100644
+--- a/Swift-Rnp/Swift-Rnp.xcodeproj/project.pbxproj
++++ b/Swift-Rnp/Swift-Rnp.xcodeproj/project.pbxproj
+@@ -13,19 +13,16 @@
+ 		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
+ 		5D19619FE8621311F0402F37 /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+ 		7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
++		73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */; };
+ 		AA1000000000000000000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000001 /* main.swift */; };
+ 		AA1000000000000000000002 /* MailExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000003 /* MailExtension.swift */; };
+ 		AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000004 /* MessageSecurityHandler.swift */; };
+ 		AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000005 /* MessageSecurityViewController.swift */; };
+-		AA1000000000000000000005 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000010 /* AppGroup.swift */; };
+-		AA1000000000000000000006 /* KeychainPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000011 /* KeychainPassphraseStore.swift */; };
+ 		AA1000000000000000000007 /* MailExtensionsContainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000008 /* MailExtensionsContainerApp.swift */; };
+ 		AA1000000000000000000008 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000009 /* KeysManager.swift */; };
+ 		AA1000000000000000000009 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000A /* ContentView.swift */; };
+ 		AA100000000000000000000A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000B /* ContentViewModel.swift */; };
+ 		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
+-		AA100000000000000000000C /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000010 /* AppGroup.swift */; };
+-		AA100000000000000000000D /* KeychainPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000011 /* KeychainPassphraseStore.swift */; };
+ 		AA100000000000000000000E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* Assets.xcassets */; };
+ 		AA100000000000000000000F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000E /* Preview Assets.xcassets */; };
+ 		AA1000000000000000000010 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+@@ -35,6 +32,7 @@
+ 		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
+ 		AA1000000000000000000015 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000005 /* MailSecurityEngine */; };
+ 		BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
++		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
+ /* End PBXBuildFile section */
+ 
+ /* Begin PBXContainerItemProxy section */
+@@ -87,6 +85,7 @@
+ 		08B0CCA210850092A9DCB536 /* Direct.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Direct.xcconfig; path = Config/Direct.xcconfig; sourceTree = "<group>"; };
+ 		218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
+ 		2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
++		2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UniformTypeIdentifiers.framework; sourceTree = "<group>"; };
+ 		3EDEA75247AF59D64D6E4190 /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
+ 		5A5F6629466BFE8ADAFAD979 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+ 		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
+@@ -104,8 +103,8 @@
+ 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
+ 		AA200000000000000000000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+ 		AA200000000000000000000E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+-		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
+-		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPassphraseStore.swift; sourceTree = "<group>"; };
++		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppGroup.swift; path = ../../Sources/MailSecurityEngine/AppGroup.swift; sourceTree = "<group>"; };
++		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainPassphraseStore.swift; path = ../../Sources/MailSecurityEngine/KeychainPassphraseStore.swift; sourceTree = "<group>"; };
+ 		AA5000000000000000000001 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		AA5000000000000000000002 /* MailPlugin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailPlugin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		AA5000000000000000000003 /* Ribose container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ribose container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+@@ -144,12 +143,22 @@
+ 				AA1000000000000000000014 /* Rnp in Frameworks */,
+ 				AA1000000000000000000015 /* MailSecurityEngine in Frameworks */,
+ 				7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */,
++				C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */,
++				73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+ /* End PBXFrameworksBuildPhase section */
+ 
+ /* Begin PBXGroup section */
++		83D422EEE84562769B515115 /* Frameworks */ = {
++			isa = PBXGroup;
++			children = (
++				2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */,
++			);
++			name = Frameworks;
++			sourceTree = "<group>";
++		};
+ 		AA3000000000000000000001 = {
+ 			isa = PBXGroup;
+ 			children = (
+@@ -161,6 +170,7 @@
+ 				AA3000000000000000000002 /* Products */,
+ 				DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */,
+ 				D1FD6E190D06FD101DB4D932 /* Config */,
++				83D422EEE84562769B515115 /* Frameworks */,
+ 			);
+ 			sourceTree = "<group>";
+ 		};
+@@ -338,6 +348,7 @@
+ 			packageProductDependencies = (
+ 				AAC000000000000000000004 /* Rnp */,
+ 				AAC000000000000000000005 /* MailSecurityEngine */,
++				F7F139FFDED467A772241EBC /* RnpMailUI */,
+ 			);
+ 			productName = "Ribose container";
+ 			productReference = AA5000000000000000000003 /* Ribose container.app */;
+@@ -425,8 +436,6 @@
+ 				AA1000000000000000000002 /* MailExtension.swift in Sources */,
+ 				AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */,
+ 				AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */,
+-				AA1000000000000000000005 /* AppGroup.swift in Sources */,
+-				AA1000000000000000000006 /* KeychainPassphraseStore.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -439,8 +448,6 @@
+ 				AA1000000000000000000009 /* ContentView.swift in Sources */,
+ 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
+ 				AA100000000000000000000B /* KeysListView.swift in Sources */,
+-				AA100000000000000000000C /* AppGroup.swift in Sources */,
+-				AA100000000000000000000D /* KeychainPassphraseStore.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -1031,6 +1038,11 @@
+ 			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+ 			productName = MailSecurityEngine;
+ 		};
++		F7F139FFDED467A772241EBC /* RnpMailUI */ = {
++			isa = XCSwiftPackageProductDependency;
++			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
++			productName = RnpMailUI;
++		};
+ /* End XCSwiftPackageProductDependency section */
+ 	};
+ 	rootObject = AA787CCB0000000000000001 /* Project object */;
+diff --git a/Tests/MailSecurityEngineTests/MailSecurityEngineTests.swift b/Tests/MailSecurityEngineTests/MailSecurityEngineTests.swift
+index 453100c..1709d0f 100644
+--- a/Tests/MailSecurityEngineTests/MailSecurityEngineTests.swift
++++ b/Tests/MailSecurityEngineTests/MailSecurityEngineTests.swift
+@@ -684,4 +684,99 @@ final class MailSecurityEngineTests: XCTestCase {
+ 
+         XCTAssertNotNil(try manager.secretKey(forUserID: Self.aliceEmail))
+     }
++
++    // MARK: - Key metadata round-trip
++
++    func testKeyInfoMetadataForRSA() throws {
++        let engine = try makeEngine()
++        let manager = engine.keyManager
++
++        let info = try manager.generateKey(
++            userID: Self.alice,
++            algorithm: .rsa,
++            expirationSeconds: 63072000 // 2 years
++        )
++
++        XCTAssertEqual(info.primaryUserID, Self.alice)
++        XCTAssertTrue(info.hasSecret)
++        XCTAssertEqual(info.algorithm, "RSA")
++        XCTAssertEqual(info.bits, 3072)
++        XCTAssertFalse(info.isRevoked)
++        XCTAssertEqual(info.subkeyCount, 1)
++        XCTAssertNotNil(info.expirationDate)
++
++        let subkeys = try manager.subkeys(for: info.fingerprint)
++        XCTAssertEqual(subkeys.count, 1)
++        XCTAssertEqual(subkeys.first?.algorithm, "RSA")
++
++        // Export and re-import; metadata must survive.
++        let publicData = try manager.exportKey(fingerprint: info.fingerprint)
++        let fresh = try makeEngine()
++        let imported = try fresh.keyManager.importKeys(publicData)
++        XCTAssertEqual(imported.first?.fingerprint, info.fingerprint)
++        XCTAssertEqual(imported.first?.algorithm, "RSA")
++        XCTAssertEqual(imported.first?.bits, 3072)
++        XCTAssertEqual(imported.first?.subkeyCount, 1)
++        XCTAssertFalse(imported.first?.hasSecret ?? true)
++    }
++
++    func testKeyInfoMetadataForEd25519() throws {
++        let engine = try makeEngine()
++        let manager = engine.keyManager
++
++        let info = try manager.generateKey(
++            userID: Self.bob,
++            algorithm: .ed25519,
++            expirationSeconds: 31536000 // 1 year
++        )
++
++        XCTAssertEqual(info.primaryUserID, Self.bob)
++        XCTAssertTrue(info.hasSecret)
++        XCTAssertEqual(info.algorithm, "EDDSA")
++        XCTAssertEqual(info.bits, 255)
++        XCTAssertEqual(info.subkeyCount, 1)
++        XCTAssertNotNil(info.expirationDate)
++
++        let subkeys = try manager.subkeys(for: info.fingerprint)
++        XCTAssertEqual(subkeys.count, 1)
++        XCTAssertEqual(subkeys.first?.algorithm, "ECDH")
++        XCTAssertEqual(subkeys.first?.curve, "Curve25519")
++    }
++
++    func testRevocationCertificateIsSaved() throws {
++        let engine = try makeEngine()
++        let manager = engine.keyManager
++
++        let info = try manager.generateKey(userID: Self.alice, algorithm: .rsa)
++        let url = try manager.saveRevocationCertificate(fingerprint: info.fingerprint)
++
++        XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
++        let data = try Data(contentsOf: url)
++        XCTAssertTrue(utf8(data).contains("BEGIN PGP PUBLIC KEY BLOCK"))
++    }
++
++    // MARK: - Keychain passphrase storage
++
++    func testKeychainStoresAndRetrievesPassphrase() {
++        KeychainPassphraseStore.reset()
++        let passphrase = KeychainPassphraseStore.sharedPassphrase()
++        XCTAssertFalse(passphrase.isEmpty)
++
++        let second = KeychainPassphraseStore.sharedPassphrase()
++        XCTAssertEqual(second, passphrase)
++    }
++
++    func testKeychainBiometryFallbackReturnsWarningOrNil() {
++        KeychainPassphraseStore.reset()
++        let (_, warning) = KeychainPassphraseStore.sharedPassphrase(requiresBiometry: true)
++        // On Macs without Touch ID the fallback path returns a warning; on
++        // machines that support it, storage succeeds and the warning is nil.
++        // Either outcome is acceptable for this test.
++        if let warning = warning {
++            XCTAssertFalse(warning.message.isEmpty)
++        }
++
++        let passphrase = KeychainPassphraseStore.sharedPassphrase()
++        XCTAssertFalse(passphrase.isEmpty)
++    }
+ }

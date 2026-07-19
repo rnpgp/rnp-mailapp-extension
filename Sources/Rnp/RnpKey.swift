@@ -63,6 +63,29 @@ public final class RnpKey {
         }
     }
 
+    /// The key's 8-hex-digit key ID.
+    public var keyID: String {
+        get throws {
+            var id: UnsafeMutablePointer<CChar>?
+            try rnpCheck(rnp_key_get_keyid(handle, &id), operation: "key id")
+            return try rnpTakeString(id, operation: "key id")
+        }
+    }
+
+    /// The key's allowed usage flags, e.g. `["sign", "certify"]`.
+    public var capabilities: [String] {
+        get throws {
+            let allCapabilities = ["sign", "certify", "encrypt", "auth"]
+            return try allCapabilities.filter { try allowsUsage($0) }
+        }
+    }
+
+    private func allowsUsage(_ usage: String) throws -> Bool {
+        var result = false
+        try rnpCheck(rnp_key_allows_usage(handle, usage, &result), operation: "key allows usage")
+        return result
+    }
+
     /// Exports the key (including its subkeys) in OpenPGP format.
     ///
     /// - Parameters:
