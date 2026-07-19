@@ -59,13 +59,13 @@ public struct OnboardingView: View {
         }
         .frame(minWidth: 480, minHeight: 360)
         .alert(
-            "Could not continue",
+            "error.onboarding.title",
             isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
                 set: { if !$0 { viewModel.errorMessage = nil } }
             )
         ) {
-            Button("OK") { viewModel.errorMessage = nil }
+            Button("button.ok") { viewModel.errorMessage = nil }
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
@@ -73,15 +73,16 @@ public struct OnboardingView: View {
 
     private var welcomePage: some View {
         VStack(spacing: 20) {
-            Text("Welcome to Swift-Rnp")
+            Text("onboarding.welcome.title")
                 .font(.title)
-            Text("A simple OpenPGP key manager for Apple Mail.")
+            Text("onboarding.welcome.subtitle")
                 .font(.body)
                 .multilineTextAlignment(.center)
-            Button("Get started") {
+            Button("onboarding.welcome.button") {
                 viewModel.continueFromWelcome()
             }
             .controlSize(.large)
+            .accessibilityIdentifier("onboarding.welcome.continue")
         }
         .padding()
         .frame(maxWidth: 360)
@@ -89,19 +90,21 @@ public struct OnboardingView: View {
 
     private var createOrImportPage: some View {
         VStack(spacing: 20) {
-            Text("Set up your keyring")
+            Text("onboarding.setup.title")
                 .font(.title2)
-            Text("Create a new key pair or import an existing one.")
+            Text("onboarding.setup.subtitle")
                 .multilineTextAlignment(.center)
             HStack(spacing: 16) {
-                Button("Create new key") {
+                Button("onboarding.createKey") {
                     viewModel.chooseCreate()
                 }
                 .controlSize(.large)
-                Button("Import existing key") {
+                .accessibilityIdentifier("onboarding.create")
+                Button("onboarding.importKey") {
                     viewModel.chooseImport()
                 }
                 .controlSize(.large)
+                .accessibilityIdentifier("onboarding.import")
             }
         }
         .padding()
@@ -110,29 +113,32 @@ public struct OnboardingView: View {
 
     private func donePage(revocationURL: URL?) -> some View {
         VStack(spacing: 16) {
-            Text("You're all set")
+            Text("onboarding.done.title")
                 .font(.title2)
 
             if let url = revocationURL {
-                Text("A revocation certificate was saved to:")
+                Text("onboarding.done.revocationLabel")
                 Text(url.path)
                     .font(.system(.caption, design: .monospaced))
                     .lineLimit(2)
                     .truncationMode(.middle)
-                Text("Keep it somewhere safe. You will need it if you ever lose access to your key.")
+                    .accessibilityIdentifier("onboarding.done.revocation-path")
+                Text("onboarding.done.revocationHint")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
 
-            Button("Publish public key (task 06)") {}
+            Button("onboarding.done.publishPlaceholder") {}
                 .disabled(true)
+                .accessibilityIdentifier("onboarding.done.publish")
 
-            Button("Done") {
+            Button("button.done") {
                 onComplete()
                 isPresented = false
             }
             .controlSize(.large)
+            .accessibilityIdentifier("onboarding.done.finish")
         }
         .padding()
         .frame(maxWidth: 420)

@@ -86,26 +86,26 @@ public struct KeyDetailView: View {
             .padding()
         }
         .frame(minWidth: 520, minHeight: 420)
-        .alert("Delete key?", isPresented: $showDeleteConfirmation) {
-            Button("Delete", role: .destructive) { actions.onDelete() }
-            Button("Cancel", role: .cancel) {}
+        .alert("detail.delete.title", isPresented: $showDeleteConfirmation) {
+            Button("button.delete", role: .destructive) { actions.onDelete() }
+            Button("button.cancel", role: .cancel) {}
         } message: {
-            Text("This removes the key from the shared keyring. This cannot be undone.")
+            Text("detail.delete.message")
         }
         .alert(
-            "Export secret key?",
+            "detail.exportSecret.title",
             isPresented: $showSecretExportConfirmation
         ) {
-            Button("Export", role: .destructive) { actions.onExportSecret() }
-            Button("Cancel", role: .cancel) {}
+            Button("button.export", role: .destructive) { actions.onExportSecret() }
+            Button("button.cancel", role: .cancel) {}
         } message: {
-            Text("The secret key will be exported as an armored, passphrase-protected block. Keep it safe.")
+            Text("detail.exportSecret.message")
         }
         .alert(
-            "Coming soon",
+            "alert.comingSoon.title",
             isPresented: $showNotImplementedAlert
         ) {
-            Button("OK") {}
+            Button("button.ok") {}
         } message: {
             Text(notImplementedMessage)
         }
@@ -125,9 +125,9 @@ public struct KeyDetailView: View {
                             .stroke(Color.secondary, lineWidth: 1)
                     )
                 if key.isRevoked {
-                    Badge(text: "Revoked", color: .red)
+                    Badge(text: "badge.revoked".localized, color: .red)
                 } else if key.isExpired {
-                    Badge(text: "Expired", color: .red)
+                    Badge(text: "badge.expired".localized, color: .red)
                 } else if isRecipient {
                     Badge(text: trustBadgeText, color: trustBadgeColor)
                 }
@@ -137,7 +137,7 @@ public struct KeyDetailView: View {
 
     private var fingerprintSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Fingerprint")
+            Text("detail.fingerprint")
                 .font(.headline)
             HStack(spacing: 8) {
                 Text(key.fingerprint.groupedFingerprintFull)
@@ -149,14 +149,16 @@ public struct KeyDetailView: View {
                     Image(systemName: "doc.on.doc")
                 }
                 .buttonStyle(.borderless)
-                .help("Copy full fingerprint")
+                .help("detail.copyFingerprint.help")
+                .accessibilityIdentifier("keydetail.copy-fingerprint")
+                .accessibilityLabel("detail.copyFingerprint.help")
             }
         }
     }
 
     private var userIDsSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("User IDs")
+            Text("detail.userIDs")
                 .font(.headline)
             ForEach(key.userIDs, id: \.self) { userID in
                 Text(userID)
@@ -167,23 +169,23 @@ public struct KeyDetailView: View {
 
     private var subkeysSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Subkeys (\(subkeys.count))")
+            Text(String(format: "detail.subkeys.title".localized, subkeys.count))
                 .font(.headline)
             Table(subkeys) {
-                TableColumn("Algorithm") { subkey in
+                TableColumn("detail.subkeys.algorithm") { subkey in
                     Text(subkey.algorithmLabel)
                 }
-                TableColumn("Created") { subkey in
+                TableColumn("detail.subkeys.created") { subkey in
                     Text(subkey.creationDate, style: .date)
                 }
-                TableColumn("Expires") { subkey in
+                TableColumn("detail.subkeys.expires") { subkey in
                     if let date = subkey.expirationDate {
                         Text(date, style: .date)
                     } else {
-                        Text("Never")
+                        Text("detail.subkeys.never")
                     }
                 }
-                TableColumn("Capabilities") { subkey in
+                TableColumn("detail.subkeys.capabilities") { subkey in
                     Text(subkey.capabilities.joined(separator: ", ").capitalized)
                 }
             }
@@ -193,26 +195,35 @@ public struct KeyDetailView: View {
 
     private var actionsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Actions")
+            Text("detail.actions.title")
                 .font(.headline)
             HStack(spacing: 12) {
-                Button("Export public key") { actions.onExportPublic() }
-                Button("Export secret key…") { showSecretExportConfirmation = true }
-                Button("Delete key") { showDeleteConfirmation = true }
-                Button("Publish public key") { actions.onPublish() }
+                Button("detail.exportPublic") { actions.onExportPublic() }
+                    .accessibilityIdentifier("keydetail.export-public")
+                Button("detail.exportSecret") { showSecretExportConfirmation = true }
+                    .accessibilityIdentifier("keydetail.export-secret")
+                Button("detail.deleteKey") { showDeleteConfirmation = true }
+                    .accessibilityIdentifier("keydetail.delete")
+                Button("detail.publish") { actions.onPublish() }
+                    .accessibilityIdentifier("keydetail.publish")
             }
             HStack(spacing: 12) {
-                Button("Extend expiry…") { actions.onExtendExpiry() }
-                Button("Revoke…") { actions.onRevoke() }
+                Button("detail.extendExpiry") { actions.onExtendExpiry() }
+                    .accessibilityIdentifier("keydetail.extend-expiry")
+                Button("detail.revoke") { actions.onRevoke() }
+                    .accessibilityIdentifier("keydetail.revoke")
             }
             HStack(spacing: 12) {
-                Button("Rotate encryption subkey") { actions.onRotateEncryption() }
-                Button("Rotate signing subkey") { actions.onRotateSigning() }
+                Button("detail.rotateEncryption") { actions.onRotateEncryption() }
+                    .accessibilityIdentifier("keydetail.rotate-encryption")
+                Button("detail.rotateSigning") { actions.onRotateSigning() }
+                    .accessibilityIdentifier("keydetail.rotate-signing")
             }
             if isRecipient && trustState != .verified {
-                Button("Mark as verified") { actions.onMarkVerified() }
+                Button("detail.markVerified") { actions.onMarkVerified() }
                     .buttonStyle(.borderedProminent)
                     .tint(trustState == .problem ? .red : .orange)
+                    .accessibilityIdentifier("keydetail.mark-verified")
             }
         }
     }
@@ -220,11 +231,11 @@ public struct KeyDetailView: View {
     private var trustBadgeText: String {
         switch trustState {
         case .verified:
-            return "Verified"
+            return "trust.verified".localized
         case .problem:
-            return "Conflict"
+            return "trust.conflict".localized
         case .unverified:
-            return "Unverified"
+            return "trust.unverified".localized
         }
     }
 

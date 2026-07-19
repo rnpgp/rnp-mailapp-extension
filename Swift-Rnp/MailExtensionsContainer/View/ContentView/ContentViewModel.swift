@@ -17,6 +17,15 @@ import TrustStore
 enum KeyTab: String, CaseIterable {
     case myKeys = "My Keys"
     case recipients = "Recipients"
+
+    var localizedName: String {
+        switch self {
+        case .myKeys:
+            return "tab.myKeys".localized
+        case .recipients:
+            return "tab.recipients".localized
+        }
+    }
 }
 
 final class ContentViewModel: ObservableObject {
@@ -186,7 +195,7 @@ final class ContentViewModel: ObservableObject {
         guard let text = NSPasteboard.general.string(forType: .string),
               text.contains("BEGIN PGP")
         else {
-            errorMessage = "The clipboard does not contain an armored OpenPGP key."
+            errorMessage = "error.clipboardNoKey".localized
             return
         }
         importKeys(Data(text.utf8))
@@ -202,7 +211,7 @@ final class ContentViewModel: ObservableObject {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.data, .text]
         panel.allowsMultipleSelection = false
-        panel.message = "Choose an OpenPGP key file to import"
+        panel.message = "import.filePanelMessage".localized
         guard panel.runModal() == .OK, let url = panel.url else {
             return
         }
@@ -260,7 +269,7 @@ final class ContentViewModel: ObservableObject {
             return
         }
         guard let armored = manager.exportKey(fingerprint: key.fingerprint) else {
-            errorMessage = "The key could not be exported."
+            errorMessage = "error.exportPublicFailed".localized
             return
         }
         copyToPasteboard(String(decoding: armored, as: UTF8.self))
@@ -273,7 +282,7 @@ final class ContentViewModel: ObservableObject {
             return
         }
         guard let armored = manager.exportSecretKey(fingerprint: key.fingerprint) else {
-            errorMessage = "The secret key could not be exported."
+            errorMessage = "error.exportSecretFailed".localized
             return
         }
         copyToPasteboard(String(decoding: armored, as: UTF8.self))
@@ -318,7 +327,7 @@ final class ContentViewModel: ObservableObject {
     func revokeSelected() {
         guard let key = selectedKey else { return }
         guard revokeFingerprintInput.compare(key.fingerprint, options: .caseInsensitive) == .orderedSame else {
-            errorMessage = "The fingerprint you entered does not match the selected key."
+            errorMessage = "error.fingerprintMismatch".localized
             return
         }
         manager.revoke(key, code: .noReason, reason: revokeReason)
@@ -340,7 +349,7 @@ final class ContentViewModel: ObservableObject {
             await MainActor.run {
                 switch result {
                 case .success(let receipt):
-                    publishMessage = receipt.message ?? "Key uploaded. Check your email to confirm publication."
+                    publishMessage = receipt.message ?? "publish.success.fallback".localized
                 case .failure(let error):
                     errorMessage = error.localizedDescription
                 }
@@ -401,7 +410,7 @@ enum OnboardingAppError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .keyNotFoundAfterGeneration:
-            return "The key was generated but could not be found in the keyring."
+            return "error.keyNotFoundAfterGeneration".localized
         case .keyringError(let message):
             return message
         }

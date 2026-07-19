@@ -29,11 +29,11 @@ public enum PassphraseStrength: Comparable {
     /// User-facing label for the current strength.
     public var label: String {
         switch self {
-        case .veryWeak: return "Very weak"
-        case .weak: return "Weak"
-        case .fair: return "Fair"
-        case .strong: return "Strong"
-        case .veryStrong: return "Very strong"
+        case .veryWeak: return "passphrase.veryWeak".localized
+        case .weak: return "passphrase.weak".localized
+        case .fair: return "passphrase.fair".localized
+        case .strong: return "passphrase.strong".localized
+        case .veryStrong: return "passphrase.veryStrong".localized
         }
     }
 
