@@ -100,7 +100,7 @@ public final class OnboardingViewModel: ObservableObject {
         using generate: (String, KeyAlgorithm, String, UInt32, Bool) -> Result<OnboardingGenerationResult, Error>
     ) {
         guard canGenerate else {
-            errorMessage = "Please fill in all fields and choose a passphrase of at least 8 characters."
+            errorMessage = "onboarding.error.incompleteForm".localized
             return
         }
         isWorking = true
@@ -124,7 +124,7 @@ public final class OnboardingViewModel: ObservableObject {
         using importKeys: (Data) -> Result<[KeyInfo], Error>
     ) {
         guard canImport else {
-            errorMessage = "Paste an armored OpenPGP key block first."
+            errorMessage = "onboarding.error.emptyImport".localized
             return
         }
         isWorking = true
@@ -146,6 +146,6 @@ public final class OnboardingViewModel: ObservableObject {
             return description
         }
         let text = error.localizedDescription
-        return text.isEmpty ? "Something went wrong. Please try again." : text
+        return text.isEmpty ? "error.generic".localized : text
     }
 }

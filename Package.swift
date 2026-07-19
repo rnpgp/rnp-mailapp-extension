@@ -54,7 +54,10 @@ let package = Package(
         ),
         .testTarget(
             name: "MailSecurityEngineTests",
-            dependencies: ["MailSecurityEngine"]
+            dependencies: ["MailSecurityEngine"],
+            resources: [
+                .copy("Fixtures")
+            ]
         ),
         .testTarget(
             name: "KeyLifecycleTests",
