@@ -4,7 +4,7 @@
 //
 //  Thin MailKit adapter: all OpenPGP and MIME work lives in the
 //  MailSecurityEngine Swift package; this class only translates between
-//  MailKit types and engine types.
+//  MailKit types and the package's protocol abstractions.
 //
 
 import Foundation
@@ -14,49 +14,41 @@ import Rnp
 
 class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
-    /// Context attached to each `MEMessageSigner` so the extension view
-    /// controller can look up trust state without re-running verification.
-    struct SignerContext: Codable {
-        let fingerprint: String?
-        let status: String
-    }
-
     static let shared = MessageSecurityHandler()
 
-    private let engine: MailSecurityEngine?
+    private let core: MessageSecurityCore?
 
     override init() {
-        engine = MessageSecurityHandler.makeEngine()
+        core = MessageSecurityHandler.makeCore()
         super.init()
     }
 
     /// Engine on the shared keyring directory, with passphrases from the
-    /// Keychain. Falls back to a temporary directory when the keyring is
-    /// unavailable, so the extension can never fail to launch. Returns `nil`
-    /// only if both the shared keyring and the temporary fallback fail to
-    /// open, in which case the handler degrades to pass-through behavior.
-    private static func makeEngine() -> MailSecurityEngine? {
+    /// Keychain. Returns `nil` when the keyring is unavailable so the
+    /// extension can still launch and degrade gracefully.
+    private static func makeCore() -> MessageSecurityCore? {
         let provider: (String) -> String? = { _ in KeychainPassphraseStore.sharedPassphrase() }
         if let engine = try? MailSecurityEngine(
             directory: AppGroup.keyringDirectory(),
             passphraseProvider: provider
         ) {
-            return engine
+            return MessageSecurityCore(engine: engine)
         }
-        // The keyring directory could not be read; degrade to an empty
-        // in-memory keyring rather than crashing the extension.
         let fallback = FileManager.default.temporaryDirectory
             .appendingPathComponent("rnp-mail-extension-fallback")
-        return try? MailSecurityEngine(
+        guard let engine = try? MailSecurityEngine(
             directory: fallback,
             passphraseProvider: provider
-        )
+        ) else {
+            return nil
+        }
+        return MessageSecurityCore(engine: engine)
     }
 
     // MARK: - Encoding Messages
 
     func getEncodingStatus(for message: MEMessage, composeContext: MEComposeContext, completionHandler: @escaping (MEOutgoingMessageEncodingStatus) -> Void) {
-        guard let engine = engine else {
+        guard let core = core else {
             completionHandler(MEOutgoingMessageEncodingStatus(
                 canSign: false,
                 canEncrypt: false,
@@ -65,101 +57,59 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
             ))
             return
         }
-        let status = (try? engine.encodingStatus(
-            sender: message.fromAddress.rawString,
-            recipients: message.allRecipientAddresses.map(\.rawString)
-        )) ?? EncodingStatus(canSign: false, canEncrypt: false, missingRecipientKeys: [])
+        let status = core.getEncodingStatus(
+            for: MailKitMessage(message),
+            composeContext: MailKitComposeContext(composeContext)
+        )
         completionHandler(MEOutgoingMessageEncodingStatus(
             canSign: status.canSign,
             canEncrypt: status.canEncrypt,
-            securityError: nil,
-            addressesFailingEncryption: status.missingRecipientKeys.map { MEEmailAddress(rawString: $0) }
+            securityError: status.securityError,
+            addressesFailingEncryption: status.addressesFailingEncryption.map { MEEmailAddress(rawString: $0) }
         ))
     }
 
     func encode(_ message: MEMessage, composeContext: MEComposeContext, completionHandler: @escaping (MEMessageEncodingResult) -> Void) {
-        let noEncoding = MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil)
-
-        // Only act on messages being sent that the user asked to protect.
-        guard let engine = engine,
-              message.state == .sending,
-              composeContext.shouldSign || composeContext.shouldEncrypt,
-              let rawData = message.rawData
-        else {
-            completionHandler(noEncoding)
+        guard let core = core else {
+            completionHandler(MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil))
             return
         }
-
-        let request = EncodingRequest(
-            message: rawData,
-            sender: message.fromAddress.rawString,
-            recipients: message.allRecipientAddresses.map(\.rawString),
-            sign: composeContext.shouldSign,
-            encrypt: composeContext.shouldEncrypt
+        let result = core.encode(
+            MailKitMessage(message),
+            composeContext: MailKitComposeContext(composeContext)
         )
-        do {
-            let encoded = try engine.encode(request)
-            let outgoing = MEEncodedOutgoingMessage(
-                rawData: encoded.rawData,
-                isSigned: encoded.isSigned,
-                isEncrypted: encoded.isEncrypted
+        let outgoing = result.encodedMessage.map {
+            MEEncodedOutgoingMessage(
+                rawData: $0.rawData,
+                isSigned: $0.isSigned,
+                isEncrypted: $0.isEncrypted
             )
-            completionHandler(MEMessageEncodingResult(
-                encodedMessage: outgoing,
-                signingError: nil,
-                encryptionError: nil
-            ))
-        } catch {
-            // Attribute the failure to the side Mail should blame: key
-            // resolution errors map to their natural side, crypto failures
-            // to the requested operation.
-            var signingError: Error?
-            var encryptionError: Error?
-            switch error {
-            case MailSecurityError.noSecretKeyForSender:
-                signingError = error
-            case MailSecurityError.missingRecipientKeys:
-                encryptionError = error
-            default:
-                if composeContext.shouldEncrypt {
-                    encryptionError = error
-                } else {
-                    signingError = error
-                }
-            }
-            completionHandler(MEMessageEncodingResult(
-                encodedMessage: nil,
-                signingError: signingError,
-                encryptionError: encryptionError
-            ))
         }
+        completionHandler(MEMessageEncodingResult(
+            encodedMessage: outgoing,
+            signingError: result.signingError,
+            encryptionError: result.encryptionError
+        ))
     }
 
     // MARK: - Decoding Messages
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
-        guard let engine = engine,
-              let decoded = try? engine.decode(data) else {
-            // No OpenPGP content: Mail displays the message untouched.
+        guard let core = core, let decoded = core.decodedMessage(forMessageData: data) else {
             return nil
         }
-        let signers = decoded.security.signers.map { signer in
-            let context = SignerContext(
-                fingerprint: signer.fingerprint,
-                status: signer.status.rawValue
-            )
-            let contextData = (try? JSONEncoder().encode(context)) ?? Data()
-            return MEMessageSigner(
-                emailAddresses: signer.userID.map { [MEEmailAddress(rawString: $0)] } ?? [],
-                signatureLabel: signer.userID ?? signer.fingerprint ?? "Unknown signer",
-                context: contextData
+        let signers = decoded.securityInformation.signers.map { info in
+            MEMessageSigner(
+                emailAddresses: info.emailAddresses.map { MEEmailAddress(rawString: $0) },
+                signatureLabel: info.signatureLabel,
+                context: info.context
             )
         }
         let information = MEMessageSecurityInformation(
             signers: signers,
-            isEncrypted: decoded.security.isEncrypted,
-            signingError: decoded.security.signingError,
-            encryptionError: decoded.security.encryptionError
+            isEncrypted: decoded.securityInformation.isEncrypted,
+            signingError: decoded.securityInformation.signingError,
+            encryptionError: decoded.securityInformation.encryptionError
         )
         return MEDecodedMessage(
             data: decoded.data,
@@ -171,14 +121,16 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     // MARK: - Displaying Security Information
 
     func extensionViewController(signers messageSigners: [MEMessageSigner]) -> MEExtensionViewController? {
+        guard let core = core else {
+            return nil
+        }
         let contexts: [SignerContext?] = messageSigners.map { signer in
-            guard !signer.context.isEmpty else { return nil }
-            return try? JSONDecoder().decode(SignerContext.self, from: signer.context)
+            core.signerContext(for: MailKitSigner(signer))
         }
         return MessageSecurityViewController(
             signers: messageSigners,
             contexts: contexts,
-            trustStore: engine?.keyManager.trustStore
+            trustStore: core.trustStore
         )
     }
 
@@ -191,4 +143,46 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     func primaryActionClicked(forMessageContext context: Data, completionHandler: @escaping (MEExtensionViewController?) -> Void) {
         completionHandler(nil)
     }
+}
+
+// MARK: - MailKit wrappers
+
+/// Wraps `MEMessage` so the core can treat it as a `MailMessage` without
+/// requiring the MailKit class to conform to the protocol directly.
+private struct MailKitMessage: MailMessage {
+    private let message: MEMessage
+
+    init(_ message: MEMessage) {
+        self.message = message
+    }
+
+    var rawData: Data? { message.rawData }
+    var fromAddress: String { message.fromAddress.rawString }
+    var recipientAddresses: [String] { message.allRecipientAddresses.map(\.rawString) }
+    var isSending: Bool { message.state == .sending }
+}
+
+/// Wraps `MEComposeContext`.
+private struct MailKitComposeContext: MailComposeContext {
+    private let context: MEComposeContext
+
+    init(_ context: MEComposeContext) {
+        self.context = context
+    }
+
+    var shouldSign: Bool { context.shouldSign }
+    var shouldEncrypt: Bool { context.shouldEncrypt }
+}
+
+/// Wraps `MEMessageSigner`.
+private struct MailKitSigner: MailMessageSigner {
+    private let signer: MEMessageSigner
+
+    init(_ signer: MEMessageSigner) {
+        self.signer = signer
+    }
+
+    var signerEmailAddresses: [String] { signer.emailAddresses.map(\.rawString) }
+    var signerLabel: String { signer.label }
+    var context: Data { signer.context }
 }
