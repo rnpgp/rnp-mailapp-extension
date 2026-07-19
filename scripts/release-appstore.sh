@@ -16,6 +16,14 @@
 
 set -euo pipefail
 
+DRY_RUN=0
+for arg in "$@"; do
+    case "${arg}" in
+        --dry-run) DRY_RUN=1 ;;
+        *) echo "Unknown argument: ${arg}" >&2; exit 2 ;;
+    esac
+done
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
@@ -136,8 +144,26 @@ fi
 # ------------------------------------------------------------------
 FRAMEWORK="${REPO_ROOT}/Vendor/RNPFramework.xcframework"
 if [[ ! -d "${FRAMEWORK}" ]]; then
-    echo "Vendored framework missing; building it now..."
-    RNP_REF="${RNP_REF}" "${REPO_ROOT}/scripts/build-rnp-framework.sh"
+    if [[ "${DRY_RUN}" -eq 1 ]]; then
+        echo "DRY-RUN: vendored framework missing; would run RNP_REF=${RNP_REF} scripts/build-rnp-framework.sh"
+    else
+        echo "Vendored framework missing; building it now..."
+        RNP_REF="${RNP_REF}" "${REPO_ROOT}/scripts/build-rnp-framework.sh"
+    fi
+fi
+
+if [[ "${DRY_RUN}" -eq 1 ]]; then
+    echo "DRY-RUN: would archive scheme '${SCHEME}' configuration '${CONFIG}' to ${ARCHIVE_PATH}"
+    echo "DRY-RUN: would export archive to ${EXPORT_PATH} using Config/ExportAppStore.plist"
+    if [[ -n "${SKIP_UPLOAD}" ]]; then
+        echo "DRY-RUN: SKIP_UPLOAD set; would skip App Store Connect upload"
+    elif has_asc_secrets; then
+        echo "DRY-RUN: would upload exported .pkg to App Store Connect with ASC API credentials"
+    else
+        echo "DRY-RUN: ASC secrets not set; would skip upload"
+    fi
+    echo "DRY-RUN: complete"
+    exit 0
 fi
 
 # ------------------------------------------------------------------
