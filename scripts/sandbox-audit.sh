@@ -13,11 +13,20 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-BUILD_DIR="${BUILD_DIR:-${REPO_ROOT}/Swift-Rnp/Build/Products/Debug}"
-APP_BUNDLE="${BUILD_DIR}/Ribose container.app"
+DEFAULT_BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build/Products/Debug"
+APP_BUNDLE="${AUDIT_APP_PATH:-${BUILD_DIR:-${DEFAULT_BUILD_DIR}}/Ribose container.app}"
 APP_BIN="${APP_BUNDLE}/Contents/MacOS/Ribose container"
-APPEX_BUNDLE="${APP_BUNDLE}/Contents/PlugIns/MailPlugin.appex"
-APPEX_BIN="${APPEX_BUNDLE}/Contents/MacOS/MailPlugin"
+
+# Discover the embedded Mail extension automatically.
+APPEX_BUNDLE=""
+if [[ -d "${APP_BUNDLE}/Contents/PlugIns" ]]; then
+    APPEX_BUNDLE="$(find "${APP_BUNDLE}/Contents/PlugIns" -maxdepth 1 -name '*.appex' | head -n1)"
+fi
+if [[ -z "${APPEX_BUNDLE}" ]]; then
+    APPEX_BUNDLE="${APP_BUNDLE}/Contents/PlugIns/MailPlugin.appex"
+fi
+APPEX_NAME="$(basename "${APPEX_BUNDLE}" .appex)"
+APPEX_BIN="${APPEX_BUNDLE}/Contents/MacOS/${APPEX_NAME}"
 
 ENTITLEMENTS_CONTAINER="${REPO_ROOT}/Swift-Rnp/MailExtensionsContainer/AppStore.entitlements"
 ENTITLEMENTS_APPEX="${REPO_ROOT}/Swift-Rnp/MailPlugin/AppStore.entitlements"
@@ -85,7 +94,7 @@ resolve_rpath_lib() {
     local candidates=(
         "${binary_dir}/../Frameworks/${rel}"
         "${bundle_root}/Contents/Frameworks/${rel}"
-        "${bundle_root}/Contents/PlugIns/MailPlugin.appex/Contents/Frameworks/${rel}"
+        "${APPEX_BUNDLE}/Contents/Frameworks/${rel}"
     )
     for candidate in "${candidates[@]}"; do
         candidate="$(cd "$(dirname "${candidate}")" 2>/dev/null && pwd -P)/$(basename "${candidate}")" || true
