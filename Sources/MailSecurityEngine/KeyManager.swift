@@ -157,10 +157,14 @@ public final class KeyManager {
     ///   - passphraseProvider: callback supplying passphrases for secret keys.
     ///   - trustStore: optional trust store; if omitted, one is created in the
     ///     same directory.
+    ///   - keychainAccessGroup: Keychain access group used when creating the
+    ///     default trust store. Defaults to the `RNPMAILKeychainAccessGroup`
+    ///     value from `Bundle.main`.
     public init(
         directory: URL,
         passphraseProvider: @escaping Rnp.PassphraseProvider,
-        trustStore: TrustStore? = nil
+        trustStore: TrustStore? = nil,
+        keychainAccessGroup: String? = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String
     ) throws {
         self.directory = directory
         try FileManager.default.createDirectory(
@@ -170,7 +174,10 @@ public final class KeyManager {
         if let trustStore {
             self.trustStore = trustStore
         } else {
-            self.trustStore = try TrustStore(directory: directory)
+            self.trustStore = try TrustStore(
+                directory: directory,
+                keychainAccessGroup: keychainAccessGroup
+            )
         }
         rnp = try Rnp(passphraseProvider: passphraseProvider)
         try loadKeyring(publicKeyringURL, public: true, secret: false)
@@ -314,7 +321,9 @@ public final class KeyManager {
     /// Imports keys (armored or binary) and persists the keyrings.
     ///
     /// After a successful import, each imported primary key is reported to the
-    /// trust store so key-change conflicts can be detected.
+    /// trust store so key-change conflicts can be detected. If the trust store
+    /// cannot record a seen key or a key-change conflict, the import fails and
+    /// the error is propagated.
     ///
     /// - Returns: snapshots of the imported primary keys.
     @discardableResult
@@ -335,7 +344,7 @@ public final class KeyManager {
             for info in infos {
                 for userID in info.userIDs {
                     if let email = Self.emailAddress(from: userID) {
-                        try? trustStore.noteSeen(email: email, fingerprint: info.fingerprint)
+                        try trustStore.noteSeen(email: email, fingerprint: info.fingerprint)
                     }
                 }
             }

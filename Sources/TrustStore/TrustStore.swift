@@ -80,11 +80,16 @@ public final class TrustStore {
     /// Convenience initializer that uses a per-install Ed25519 signing key
     /// stored in the Keychain.
     ///
-    /// If no key exists, one is generated and saved. Keychain failures fall
-    /// back to an ephemeral in-memory key, which still provides tamper
-    /// detection within the process but will not survive relaunch.
-    public convenience init(directory: URL) throws {
-        let key = try Self.loadOrCreateSigningKey()
+    /// If no key exists, one is generated and saved. If reading an existing
+    /// key from the Keychain fails, or if a newly generated key cannot be
+    /// saved, the initializer throws `TrustStoreError.persistenceFailed`.
+    /// This prevents an ephemeral in-process key from silently breaking
+    /// cross-process trust verification.
+    public convenience init(
+        directory: URL,
+        keychainAccessGroup: String? = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String
+    ) throws {
+        let key = try Self.loadOrCreateSigningKey(keychainAccessGroup: keychainAccessGroup)
         try self.init(directory: directory, privateKey: key)
     }
 
@@ -285,21 +290,26 @@ public final class TrustStore {
     private static let keychainService = "RNP Mail Extension trust signing"
     private static let keychainAccount = "trust-signing-key"
 
-    private static func loadOrCreateSigningKey() throws -> Curve25519.Signing.PrivateKey {
-        if let data = readKeychainData(service: keychainService, account: keychainAccount),
-           let key = try? Curve25519.Signing.PrivateKey(rawRepresentation: data) {
+    private static func loadOrCreateSigningKey(keychainAccessGroup: String?) throws -> Curve25519.Signing.PrivateKey {
+        let data = try readKeychainData(
+            service: keychainService,
+            account: keychainAccount,
+            accessGroup: keychainAccessGroup
+        )
+        if let data = data {
+            guard let key = try? Curve25519.Signing.PrivateKey(rawRepresentation: data) else {
+                throw TrustStoreError.persistenceFailed("Trust signing key in Keychain is corrupt")
+            }
             return key
         }
+
         let key = Curve25519.Signing.PrivateKey()
-        let saved = storeKeychainData(
+        try storeKeychainData(
             key.rawRepresentation,
             service: keychainService,
-            account: keychainAccount
+            account: keychainAccount,
+            accessGroup: keychainAccessGroup
         )
-        if !saved {
-            Logger(subsystem: "com.rnpgp.RnpMail", category: "TrustStore")
-                .warning("Could not persist trust signing key in Keychain; using ephemeral key")
-        }
         return key
     }
 
@@ -312,7 +322,10 @@ public final class TrustStore {
 
 // MARK: - Keychain helpers
 
-private func readKeychainData(service: String, account: String) -> Data? {
+/// Reads a single generic-password item from the Keychain.
+/// - Returns: the stored data, or `nil` if no item exists.
+/// - Throws: `TrustStoreError.persistenceFailed` if the Keychain query fails.
+private func readKeychainData(service: String, account: String, accessGroup: String?) throws -> Data? {
     var query: [CFString: Any] = [
         kSecClass: kSecClassGenericPassword,
         kSecAttrService: service,
@@ -320,26 +333,32 @@ private func readKeychainData(service: String, account: String) -> Data? {
         kSecReturnData: true,
         kSecMatchLimit: kSecMatchLimitOne,
     ]
-    if let accessGroup = trustKeychainAccessGroup() {
+    if let accessGroup = accessGroup {
         query[kSecAttrAccessGroup] = accessGroup
     }
     var item: CFTypeRef?
-    guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
-          let data = item as? Data
-    else {
+    let status = SecItemCopyMatching(query as CFDictionary, &item)
+    if status == errSecItemNotFound {
         return nil
+    }
+    guard status == errSecSuccess else {
+        throw TrustStoreError.persistenceFailed("Keychain read failed (status \(status))")
+    }
+    guard let data = item as? Data else {
+        throw TrustStoreError.persistenceFailed("Keychain read succeeded but returned no data")
     }
     return data
 }
 
-@discardableResult
-private func storeKeychainData(_ data: Data, service: String, account: String) -> Bool {
+/// Stores a generic-password item in the Keychain, replacing any existing item.
+/// - Throws: `TrustStoreError.persistenceFailed` if the Keychain write fails.
+private func storeKeychainData(_ data: Data, service: String, account: String, accessGroup: String?) throws {
     var deleteQuery: [CFString: Any] = [
         kSecClass: kSecClassGenericPassword,
         kSecAttrService: service,
         kSecAttrAccount: account,
     ]
-    if let accessGroup = trustKeychainAccessGroup() {
+    if let accessGroup = accessGroup {
         deleteQuery[kSecAttrAccessGroup] = accessGroup
     }
     SecItemDelete(deleteQuery as CFDictionary)
@@ -351,18 +370,11 @@ private func storeKeychainData(_ data: Data, service: String, account: String) -
         kSecValueData: data,
         kSecAttrAccessible: kSecAttrAccessibleWhenUnlocked,
     ]
-    if let accessGroup = trustKeychainAccessGroup() {
+    if let accessGroup = accessGroup {
         item[kSecAttrAccessGroup] = accessGroup
     }
-    return SecItemAdd(item as CFDictionary, nil) == errSecSuccess
-}
-
-private func trustKeychainAccessGroup() -> String? {
-    guard let value = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String,
-          !value.isEmpty,
-          !value.hasPrefix("$(")
-    else {
-        return nil
+    let status = SecItemAdd(item as CFDictionary, nil)
+    guard status == errSecSuccess else {
+        throw TrustStoreError.persistenceFailed("Keychain write failed (status \(status))")
     }
-    return value
 }
