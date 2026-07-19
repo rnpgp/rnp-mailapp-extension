@@ -13,6 +13,7 @@
 
 import Foundation
 import Rnp
+import TrustStore
 
 /// Key generation algorithms supported by `KeyManager.generateKey`.
 public enum KeyAlgorithm: String, CaseIterable {
@@ -142,18 +143,35 @@ public final class KeyManager {
 
     /// Directory holding the keyring files.
     public let directory: URL
+    /// Trust store that records seen keys and conflicts for recipient keys.
+    public let trustStore: TrustStore
 
     private let lock = NSRecursiveLock()
     private let rnp: Rnp
 
     /// Creates a manager, creating the directory and loading any existing
     /// keyring files.
-    public init(directory: URL, passphraseProvider: @escaping Rnp.PassphraseProvider) throws {
+    ///
+    /// - Parameters:
+    ///   - directory: directory holding `pubring.gpg` / `secring.gpg`.
+    ///   - passphraseProvider: callback supplying passphrases for secret keys.
+    ///   - trustStore: optional trust store; if omitted, one is created in the
+    ///     same directory.
+    public init(
+        directory: URL,
+        passphraseProvider: @escaping Rnp.PassphraseProvider,
+        trustStore: TrustStore? = nil
+    ) throws {
         self.directory = directory
         try FileManager.default.createDirectory(
             at: directory,
             withIntermediateDirectories: true
         )
+        if let trustStore {
+            self.trustStore = trustStore
+        } else {
+            self.trustStore = try TrustStore(directory: directory)
+        }
         rnp = try Rnp(passphraseProvider: passphraseProvider)
         try loadKeyring(publicKeyringURL, public: true, secret: false)
         try loadKeyring(secretKeyringURL, public: false, secret: true)
@@ -295,6 +313,9 @@ public final class KeyManager {
 
     /// Imports keys (armored or binary) and persists the keyrings.
     ///
+    /// After a successful import, each imported primary key is reported to the
+    /// trust store so key-change conflicts can be detected.
+    ///
     /// - Returns: snapshots of the imported primary keys.
     @discardableResult
     public func importKeys(_ data: Data) throws -> [KeyInfo] {
@@ -303,7 +324,7 @@ public final class KeyManager {
             try persist(rnp)
             // The results JSON lists every imported key packet, including
             // subkeys; keep primary keys (those carrying user IDs) only.
-            return Self.importedFingerprints(fromJSON: results).compactMap { fingerprint in
+            let infos = Self.importedFingerprints(fromJSON: results).compactMap { fingerprint -> KeyInfo? in
                 guard let key = try? rnp.locateKey(fingerprint, type: .fingerprint),
                       let userIDs = try? key.userIDs, !userIDs.isEmpty
                 else {
@@ -311,6 +332,14 @@ public final class KeyManager {
                 }
                 return try? makeKeyInfo(key: key, primaryUserID: userIDs[0])
             }
+            for info in infos {
+                for userID in info.userIDs {
+                    if let email = Self.emailAddress(from: userID) {
+                        try? trustStore.noteSeen(email: email, fingerprint: info.fingerprint)
+                    }
+                }
+            }
+            return infos
         }
     }
 
@@ -339,7 +368,8 @@ public final class KeyManager {
     public func deleteKey(fingerprint: String) throws {
         try withRnp { rnp in
             let key = try rnp.requireKey(fingerprint, type: .fingerprint)
-            try rnp.remove(key: key)
+            let hasSecret = (try? key.hasSecret) ?? false
+            try rnp.remove(key: key, public: true, secret: hasSecret, subkeys: true)
             try persist(rnp)
         }
     }
