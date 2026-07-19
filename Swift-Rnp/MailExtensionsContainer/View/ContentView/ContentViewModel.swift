@@ -11,6 +11,7 @@ import Foundation
 import KeyLifecycle
 import MailSecurityEngine
 import RnpMailUI
+import TrustStore
 
 /// Which tab is selected in the key manager.
 enum KeyTab: String, CaseIterable {
@@ -42,6 +43,7 @@ final class ContentViewModel: ObservableObject {
     @Published var revokeFingerprintInput = ""
     @Published var revokeReason = ""
     @Published var extendExpiryDate = Date().addingTimeInterval(365 * 24 * 60 * 60)
+    @Published var pendingReviewFingerprint: String?
 
     let manager: KeysManager
     private var lastClipboardHash: String?
@@ -49,6 +51,35 @@ final class ContentViewModel: ObservableObject {
     init(manager: KeysManager) {
 
         self.manager = manager
+    }
+
+    /// Opens the key detail sheet for the given fingerprint, switching to the
+    /// Recipients tab and selecting the matching key.
+    func openReview(fingerprint: String) {
+        pendingReviewFingerprint = fingerprint
+        if let key = manager.keys.first(where: { $0.fingerprint.compare(fingerprint, options: .caseInsensitive) == .orderedSame }) {
+            selectedTab = key.hasSecret ? .myKeys : .recipients
+            selection = key.id
+            showDetailSheet = true
+            pendingReviewFingerprint = nil
+        }
+    }
+
+    /// Trust state for a key in the current list.
+    func trustState(for key: KeyInfo) -> TrustState {
+        manager.trustState(forFpr: key.fingerprint)
+    }
+
+    /// All unresolved key-change conflicts.
+    var trustConflicts: [TrustConflict] {
+        manager.trustConflicts()
+    }
+
+    /// Marks the selected key as verified.
+    func markSelectedVerified() {
+        guard let key = selectedKey else { return }
+        manager.markVerified(fingerprint: key.fingerprint)
+        propagateError()
     }
 
     /// Keys visible in the current tab.

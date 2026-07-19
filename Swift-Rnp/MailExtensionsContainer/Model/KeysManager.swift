@@ -10,6 +10,7 @@ import Foundation
 import KeyLifecycle
 import MailSecurityEngine
 import Rnp
+import TrustStore
 
 /// Observable wrapper around the engine's `KeyManager`.
 ///
@@ -243,6 +244,36 @@ final class KeysManager: ObservableObject {
             return []
         }
         return (try? keyManager.subkeys(for: key.fingerprint)) ?? []
+    }
+
+    /// Trust state for the given fingerprint.
+    func trustState(forFpr fingerprint: String) -> TrustState {
+        guard let keyManager else {
+            return .unverified
+        }
+        return keyManager.trustStore.state(forFpr: fingerprint)
+    }
+
+    /// All unresolved key-change conflicts.
+    func trustConflicts() -> [TrustConflict] {
+        guard let keyManager else {
+            return []
+        }
+        return keyManager.trustStore.conflicts()
+    }
+
+    /// Marks the fingerprint as verified and resolves any related conflict.
+    func markVerified(fingerprint: String) {
+        guard let keyManager else {
+            lastError = "Could not open the keyring."
+            return
+        }
+        do {
+            try keyManager.trustStore.markVerified(fingerprint: fingerprint)
+            reload()
+        } catch {
+            lastError = error.localizedDescription
+        }
     }
 
     private func perform(_ operation: () throws -> Void) {
