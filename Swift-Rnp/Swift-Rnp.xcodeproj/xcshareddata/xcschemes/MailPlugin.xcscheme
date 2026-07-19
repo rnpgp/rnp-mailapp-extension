@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1310"
+   LastUpgradeVersion = "1500"
    wasCreatedForAppExtension = "YES"
    version = "2.0">
    <BuildAction
@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2A0109FF2751125B006CEF05"
+               BlueprintIdentifier = "AA4000000000000000000002"
                BuildableName = "MailPlugin.appex"
                BlueprintName = "MailPlugin"
                ReferencedContainer = "container:Swift-Rnp.xcodeproj">
@@ -29,7 +29,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2A010A142756B865006CEF05"
+               BlueprintIdentifier = "AA4000000000000000000003"
                BuildableName = "Ribose container.app"
                BlueprintName = "Ribose container"
                ReferencedContainer = "container:Swift-Rnp.xcodeproj">
@@ -65,25 +65,12 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2A0109FF2751125B006CEF05"
+            BlueprintIdentifier = "AA4000000000000000000002"
             BuildableName = "MailPlugin.appex"
             BlueprintName = "MailPlugin"
             ReferencedContainer = "container:Swift-Rnp.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "RNP_LOG_CONSOLE=1"
-            isEnabled = "NO">
-         </CommandLineArgument>
-      </CommandLineArguments>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "RNP_LOG_CONSOLE"
-            value = "1"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -96,7 +83,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2A010A142756B865006CEF05"
+            BlueprintIdentifier = "AA4000000000000000000003"
             BuildableName = "Ribose container.app"
             BlueprintName = "Ribose container"
             ReferencedContainer = "container:Swift-Rnp.xcodeproj">
