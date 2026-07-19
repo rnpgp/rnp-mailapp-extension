@@ -10,8 +10,16 @@
 import Foundation
 import MailKit
 import MailSecurityEngine
+import Rnp
 
 class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
+
+    /// Context attached to each `MEMessageSigner` so the extension view
+    /// controller can look up trust state without re-running verification.
+    struct SignerContext: Codable {
+        let fingerprint: String?
+        let status: String
+    }
 
     static let shared = MessageSecurityHandler()
 
@@ -122,15 +130,18 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
             // No OpenPGP content: Mail displays the message untouched.
             return nil
         }
-        let signers = decoded.security.signers
-            .filter { $0.status == .valid }
-            .map { signer in
-                MEMessageSigner(
-                    emailAddresses: signer.userID.map { [MEEmailAddress(rawString: $0)] } ?? [],
-                    signatureLabel: signer.userID ?? signer.fingerprint ?? "Unknown signer",
-                    context: nil
-                )
-            }
+        let signers = decoded.security.signers.map { signer in
+            let context = SignerContext(
+                fingerprint: signer.fingerprint,
+                status: signer.status.rawValue
+            )
+            let contextData = (try? JSONEncoder().encode(context)) ?? Data()
+            return MEMessageSigner(
+                emailAddresses: signer.userID.map { [MEEmailAddress(rawString: $0)] } ?? [],
+                signatureLabel: signer.userID ?? signer.fingerprint ?? "Unknown signer",
+                context: contextData
+            )
+        }
         let information = MEMessageSecurityInformation(
             signers: signers,
             isEncrypted: decoded.security.isEncrypted,
@@ -147,7 +158,15 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     // MARK: - Displaying Security Information
 
     func extensionViewController(signers messageSigners: [MEMessageSigner]) -> MEExtensionViewController? {
-        MessageSecurityViewController(signers: messageSigners)
+        let contexts: [SignerContext?] = messageSigners.map { signer in
+            guard !signer.context.isEmpty else { return nil }
+            return try? JSONDecoder().decode(SignerContext.self, from: signer.context)
+        }
+        return MessageSecurityViewController(
+            signers: messageSigners,
+            contexts: contexts,
+            trustStore: engine.keyManager.trustStore
+        )
     }
 
     // MARK: - Displaying Additional Context
