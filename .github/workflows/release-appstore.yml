@@ -98,7 +98,7 @@ jobs:
         security import "${CERTIFICATE_PATH}" -P "${MACOS_CERTIFICATE_P12_PASSWORD}" -A -t cert -f pkcs12 -k "${KEYCHAIN_PATH}"
         security list-keychain -d user -s "${KEYCHAIN_PATH}"
 
-    - name: Build and upload to App Store
+    - name: Build and export App Store archive
       if: startsWith(env.TAG, 'v')
       env:
         DEVELOPMENT_TEAM: ${{ secrets.TEAM_ID }}
@@ -107,6 +107,23 @@ jobs:
         ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         BUILD_NUMBER: ${{ github.run_number }}
         TAG: ${{ env.TAG }}
+        SKIP_UPLOAD: 1
+      run: ./scripts/release-appstore.sh
+
+    - name: Sandbox audit
+      if: startsWith(env.TAG, 'v')
+      env:
+        AUDIT_APP_PATH: ${{ github.workspace }}/Swift-Rnp/Build/RnpMail-AppStore.xcarchive/Products/Applications/Ribose container.app
+      run: ./scripts/sandbox-audit.sh
+
+    - name: Upload to App Store
+      if: startsWith(env.TAG, 'v')
+      env:
+        DEVELOPMENT_TEAM: ${{ secrets.TEAM_ID }}
+        ASC_API_KEY_P8: "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8"
+        ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        UPLOAD_ONLY: 1
       run: ./scripts/release-appstore.sh
 
     - name: Clean up keychain
