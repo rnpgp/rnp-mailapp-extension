@@ -1,0 +1,101 @@
+# Security Model
+
+This document describes the security model of the RnpMail Apple Mail OpenPGP extension and its companion container app. It is intended for security reviewers, downstream packagers, and users who want to understand what the project protects and what it does not protect.
+
+## Scope
+
+RnpMail provides OpenPGP signing, encryption, and key management for Apple Mail on macOS. It is built on top of:
+
+- **librnp** (`v0.18.1` or later) — OpenPGP implementation.
+- **Botan** — cryptographic backend used by librnp.
+- **json-c** — JSON parsing used by librnp.
+- **Apple Mail / MailKit** — host application and extension runtime.
+- **macOS** — operating system, keychain, sandbox, and app-group containers.
+
+## Assets
+
+| Asset | Location | Sensitivity |
+|---|---|---|
+| OpenPGP secret keys | Shared app-group keyring (`pubring.gpg`, `secring.gpg`) | Critical: loss or extraction allows decryption and impersonation. |
+| Keyring passphrase | macOS Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RnpMail`) | Critical: protects secret key material in the keyring. |
+| Trust database | Shared app-group container (`trust.json` + `trust.json.sig`) | High: tampering can downgrade a key from verified to unverified or cause denial of service. |
+| Revocation certificates | Shared app-group container (`<fingerprint>-revocation.asc`) | High: loss prevents future revocation of the corresponding key. |
+| Public keys / recipient keys | Shared app-group keyring | Medium: disclosure reveals contact metadata but not message content. |
+| Mail message bodies | Mail.app process memory and extension `MEMessage` objects | High: the extension reads and writes plaintext during encode/decode. |
+| Network traffic to keyservers | `KeyServerClient` over HTTPS | Medium: queries reveal which keys or email addresses are being looked up. |
+
+## Trust Boundaries
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        User / macOS                             │
+│  ┌─────────────────┐    ┌─────────────────────────────────────┐ │
+│  │   Ribose app    │    │           Apple Mail                │ │
+│  │  (key manager)  │◄──►│  MailPlugin.appex                   │ │
+│  └────────┬────────┘    │  (encode/decode signatures,         │ │
+│           │             │   decrypt, verify)                  │ │
+│           │             └─────────────────────────────────────┘ │
+│           │                          │                          │
+│           ▼                          ▼                          │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │      Shared App Group Container                         │   │
+│  │  (keyring, trust database, revocation certs)            │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                          │                                      │
+│                          ▼                                      │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │      macOS Keychain (keyring passphrase)                │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+                           │
+                           ▼ HTTPS
+                  ┌─────────────────┐
+                  │  keys.openpgp.org │
+                  │  (default SKS/KS) │
+                  └─────────────────┘
+```
+
+### Boundary notes
+
+- **Apple Mail is trusted.** MailKit controls the plaintext message handed to the extension. RnpMail assumes the `MEMessage` input is produced by Mail.app and does not attempt to sanitize the host application.
+- **App group container is shared.** Both the container app and the Mail extension run with the same app-group identifier. Any process with access to that group could read public keys and the trust database. Secret keys remain encrypted by the keyring passphrase.
+- **Keychain is the root of trust for the passphrase.** The keyring passphrase is stored in the user's default keychain via `KeychainPassphraseStore`. It is never written to UserDefaults, preferences files, or logs.
+- **Keyserver network boundary.** Key upload, discovery, and revocation-check queries travel over HTTPS to the configured keyserver (default: `keys.openpgp.org`). No other network calls are made.
+
+## What Is Protected
+
+- **Message confidentiality:** PGP/MIME encrypted messages can only be decrypted by holders of the recipient's secret key.
+- **Message integrity / authenticity:** PGP/MIME signed messages are verified against the sender's public key; the signature status is surfaced in Mail's banner.
+- **Secret key confidentiality at rest:** Secret key material is stored in librnp's GPG-compatible keyring and encrypted with the keyring passphrase, which is stored in the Keychain.
+- **Trust-state tamper detection:** The trust database is signed with an Ed25519 key derived at first launch. If `trust.json` or `trust.json.sig` is modified or deleted, the store resets to empty (fail-closed to unverified).
+- **Key-substitution detection:** If a new key is imported or fetched for an already-known email address with a different fingerprint, the address is marked as a conflict and encryption is blocked until the user verifies the new fingerprint.
+
+## What Is NOT Protected
+
+- **Host compromise.** If an attacker controls the macOS kernel or the Mail.app process, they can observe plaintext while the extension processes messages.
+- **Metadata inside Mail.app.** Subject, headers, recipients, and message size are visible to Mail.app before encryption and after decryption.
+- **Keyserver availability or correctness.** The default keyserver can be unavailable or return attacker-controlled keys. Users must verify fingerprints out-of-band.
+- **Side channels.** RnpMail does not implement constant-time protections above those provided by librnp/Botan.
+- **Phishing / UI spoofing.** MailKit renders the security banner; RnpMail supplies status text but cannot guarantee that a malicious Mail.app build will display it faithfully.
+- **Backup security.** If the user backs up the app-group container without the Keychain, the secret keyring becomes unrecoverable. If the Keychain is backed up separately, restore it together with the keyring.
+
+## Memory Hygiene
+
+- **No force-unwraps in library code.** Swift library targets avoid `!` and use explicit error handling.
+- **Sensitive buffers are released when Swift objects are deallocated.** The underlying librnp C types (`rnp_ffi_t`, `rnp_key_handle_t`, etc.) are wrapped in Swift classes with `deinit` calls to `rnp_ffi_destroy` / `rnp_key_handle_destroy`.
+- **Passphrases in Swift strings.** Passphrases collected in the UI travel through Swift `String` values. Swift strings are reference-counted and zeroed by the runtime when no longer referenced; we do not perform explicit `memset_s` scrubbing. This matches standard Swift practice but is weaker than a dedicated secrets allocator.
+- **Keychain items.** Keychain-stored passphrases use the generic password item class and are not marked `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` by default; Touch ID / biometry is requested when the user opts in during onboarding.
+- **Clipboard exports.** Exported public and secret keys are placed on the general pasteboard. Other apps can read the pasteboard. Secret-key export is gated by a confirmation alert.
+
+## Sandboxing
+
+- The container app and Mail extension use macOS app sandbox entitlements:
+  - `com.apple.security.app-sandbox`
+  - `com.apple.security.application-groups`
+  - `com.apple.security.network.client` (keyserver queries)
+  - `com.apple.security.files.user-selected.read-only` (key file import)
+- The sandbox does not grant arbitrary file-system access. Keyring storage is limited to the app-group container and the temporary fallback directory.
+
+## Reporting Security Issues
+
+See [`SECURITY.md`](SECURITY.md) for disclosure instructions and supported versions.
