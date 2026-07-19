@@ -2,7 +2,7 @@
 //  String+Localization.swift
 //  swift-rnp
 //
-//  Convenience accessor for strings stored in the RnpMailUI String Catalog.
+//  Convenience accessor for strings stored in the main bundle's String Catalog.
 //
 
 import Foundation
