@@ -79,3 +79,20 @@ jobs:
       run:  swift test -Xlinker -rpath -Xlinker /usr/local/lib
       env:
         PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+
+    # The Xcode project must build from a fresh clone: the Mail extension
+    # scheme and the container app scheme. Signing is disabled for CI; see
+    # README.md for how to sign for real use.
+    - name: Build MailPlugin scheme
+      run: >
+        xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
+        -scheme MailPlugin build CODE_SIGNING_ALLOWED=NO
+      env:
+        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+
+    - name: Build container app scheme
+      run: >
+        xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
+        -scheme "Ribose container" build CODE_SIGNING_ALLOWED=NO
+      env:
+        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
