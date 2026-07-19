@@ -1,0 +1,9 @@
+// Shared build settings for locating the vendored RNPFramework.
+//
+// The framework is linked through the Swift package's CRnp system-library
+// target, which reads pkg-config from Vendor/pkgconfig. Xcode still needs
+// to know where to find the xcframework for embedding.
+
+RNPFRAMEWORK_SEARCH_PATHS = $(PROJECT_DIR)/../Vendor
+
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/../Frameworks @loader_path/../Frameworks

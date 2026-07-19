@@ -14,7 +14,23 @@ struct KeysListView: View {
 
     var body: some View {
         Table(keys, selection: $selection) {
-            TableColumn("User ID", value: \.primaryUserID)
+            TableColumn("User ID") { key in
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(key.primaryUserID)
+                    HStack(spacing: 6) {
+                        Text(key.algorithmLabel)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if key.isRevoked {
+                            Badge(text: "Revoked", color: .red)
+                        } else if key.isExpired {
+                            Badge(text: "Expired", color: .red)
+                        } else if let days = key.daysUntilExpiry, days < 60 {
+                            Badge(text: "Expires in \(days)d", color: .orange)
+                        }
+                    }
+                }
+            }
             TableColumn("Fingerprint") { key in
                 Text(key.fingerprint.groupedFingerprint)
                     .font(.system(.body, design: .monospaced))
@@ -23,6 +39,23 @@ struct KeysListView: View {
                 Text(key.hasSecret ? "Key pair" : "Public only")
             }
         }
+    }
+}
+
+private struct Badge: View {
+    let text: String
+    let color: Color
+
+    var body: some View {
+        Text(text)
+            .font(.caption2.bold())
+            .padding(.horizontal, 5)
+            .padding(.vertical, 1)
+            .foregroundStyle(color)
+            .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(color, lineWidth: 1)
+            )
     }
 }
 

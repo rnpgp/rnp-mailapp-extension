@@ -28,15 +28,55 @@ public struct KeyInfo: Equatable, Identifiable {
     public let primaryUserID: String
     public let userIDs: [String]
     public let hasSecret: Bool
+    public let algorithm: String
+    public let bits: Int
+    public let creationDate: Date
+    public let expirationDate: Date?
+    public let isRevoked: Bool
+    public let subkeyCount: Int
 
-    public init(fingerprint: String, primaryUserID: String, userIDs: [String], hasSecret: Bool) {
+    public init(
+        fingerprint: String,
+        primaryUserID: String,
+        userIDs: [String],
+        hasSecret: Bool,
+        algorithm: String = "",
+        bits: Int = 0,
+        creationDate: Date = Date(timeIntervalSince1970: 0),
+        expirationDate: Date? = nil,
+        isRevoked: Bool = false,
+        subkeyCount: Int = 0
+    ) {
         self.fingerprint = fingerprint
         self.primaryUserID = primaryUserID
         self.userIDs = userIDs
         self.hasSecret = hasSecret
+        self.algorithm = algorithm
+        self.bits = bits
+        self.creationDate = creationDate
+        self.expirationDate = expirationDate
+        self.isRevoked = isRevoked
+        self.subkeyCount = subkeyCount
     }
 
     public var id: String { fingerprint }
+
+    /// Short, user-facing label like "RSA-3072" or "ECDSA P-256".
+    public var algorithmLabel: String {
+        algorithm.isEmpty ? "OpenPGP" : bits > 0 ? "\(algorithm)-\(bits)" : algorithm
+    }
+
+    /// Whether the key has expired.
+    public var isExpired: Bool {
+        guard let expiration = expirationDate else { return false }
+        return expiration < Date()
+    }
+
+    /// Days until expiry; `nil` for non-expiring keys.
+    public var daysUntilExpiry: Int? {
+        guard let expiration = expirationDate else { return nil }
+        return Calendar.current.dateComponents([.day], from: Date(), to: expiration).day
+    }
 }
 
 /// Errors thrown by `KeyManager`.
@@ -126,20 +166,41 @@ public final class KeyManager {
                         fingerprint: existing.fingerprint,
                         primaryUserID: existing.primaryUserID,
                         userIDs: existing.userIDs + [userID],
-                        hasSecret: existing.hasSecret
+                        hasSecret: existing.hasSecret,
+                        algorithm: existing.algorithm,
+                        bits: existing.bits,
+                        creationDate: existing.creationDate,
+                        expirationDate: existing.expirationDate,
+                        isRevoked: existing.isRevoked,
+                        subkeyCount: existing.subkeyCount
                     )
                 } else {
                     order.append(fingerprint)
-                    infos[fingerprint] = try KeyInfo(
-                        fingerprint: fingerprint,
-                        primaryUserID: (try? key.primaryUserID) ?? userID,
-                        userIDs: [userID],
-                        hasSecret: key.hasSecret
-                    )
+                    infos[fingerprint] = try makeKeyInfo(key: key, primaryUserID: userID)
                 }
             }
             return order.compactMap { infos[$0] }
         }
+    }
+
+    private func makeKeyInfo(key: RnpKey, primaryUserID: String) throws -> KeyInfo {
+        let fingerprint = try key.fingerprint
+        let expirationSeconds = try key.expirationSeconds
+        let expirationDate: Date? = expirationSeconds > 0
+            ? try key.creationDate.addingTimeInterval(TimeInterval(expirationSeconds))
+            : nil
+        return KeyInfo(
+            fingerprint: fingerprint,
+            primaryUserID: (try? key.primaryUserID) ?? primaryUserID,
+            userIDs: (try? key.userIDs) ?? [],
+            hasSecret: (try? key.hasSecret) ?? false,
+            algorithm: (try? key.algorithm) ?? "",
+            bits: (try? key.bits) ?? 0,
+            creationDate: (try? key.creationDate) ?? Date(timeIntervalSince1970: 0),
+            expirationDate: expirationDate,
+            isRevoked: (try? key.isRevoked) ?? false,
+            subkeyCount: (try? key.subkeys.count) ?? 0
+        )
     }
 
     // MARK: - Generation
@@ -153,12 +214,7 @@ public final class KeyManager {
                 : Rnp.ecdsaP256KeyGenJSON(userid: userID)
             try rnp.generateKey(json: json)
             let key = try rnp.requireKey(userID)
-            let info = try KeyInfo(
-                fingerprint: key.fingerprint,
-                primaryUserID: (try? key.primaryUserID) ?? userID,
-                userIDs: key.userIDs,
-                hasSecret: key.hasSecret
-            )
+            let info = try makeKeyInfo(key: key, primaryUserID: userID)
             try persist(rnp)
             return info
         }
@@ -182,12 +238,7 @@ public final class KeyManager {
                 else {
                     return nil
                 }
-                return try? KeyInfo(
-                    fingerprint: key.fingerprint,
-                    primaryUserID: (try? key.primaryUserID) ?? userIDs[0],
-                    userIDs: userIDs,
-                    hasSecret: key.hasSecret
-                )
+                return try? makeKeyInfo(key: key, primaryUserID: userIDs[0])
             }
         }
     }

@@ -13,6 +13,9 @@ concurrency:
   group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
   cancel-in-progress: true
 
+env:
+  RNP_REF: v0.18.1
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -28,7 +31,7 @@ jobs:
           echo "matrix=[ 'v0.18.1', '' ]" >> $GITHUB_OUTPUT
         fi
 
-  build-and-test:
+  swift-test:
     needs: prepare
     strategy:
       fail-fast: false
@@ -80,19 +83,33 @@ jobs:
       env:
         PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
 
-    # The Xcode project must build from a fresh clone: the Mail extension
-    # scheme and the container app scheme. Signing is disabled for CI; see
-    # README.md for how to sign for real use.
+  xcodebuild:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout swift-rnp
+      uses: actions/checkout@v4
+
+    - name: Cache RNPFramework.xcframework
+      id: framework-cache
+      uses: actions/cache@v4
+      with:
+        path: Vendor/RNPFramework.xcframework
+        key: rnp-${{ env.RNP_REF }}-framework-${{ hashFiles('scripts/build-rnp-framework.sh', 'Vendor/SOURCES.md') }}
+
+    - name: Build RNPFramework.xcframework
+      if: steps.framework-cache.outputs.cache-hit != 'true'
+      run: ./scripts/build-rnp-framework.sh
+
     - name: Build MailPlugin scheme
       run: >
         xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
-        -scheme MailPlugin build CODE_SIGNING_ALLOWED=NO
+        -scheme MailPlugin -configuration Direct build CODE_SIGNING_ALLOWED=NO
       env:
-        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+        PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
 
     - name: Build container app scheme
       run: >
         xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
-        -scheme "Ribose container" build CODE_SIGNING_ALLOWED=NO
+        -scheme "Ribose container" -configuration Direct build CODE_SIGNING_ALLOWED=NO
       env:
-        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+        PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig

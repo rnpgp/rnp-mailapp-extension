@@ -127,9 +127,9 @@ package above:
 - **`Swift-Rnp`** (CLI target) — small `Rnp` demo: version print plus a
   generate/encrypt/decrypt smoke roundtrip.
 
-The shared keyring lives in the app group container `group.com.ribose.rnp`
+The shared keyring lives in the app group container `group.com.rnpgp.RnpMail`
 so both processes see the same keys; key passphrases are stored in the
-Keychain (access group `$(AppIdentifierPrefix)group.com.ribose.rnp`), never
+Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RnpMail`), never
 in UserDefaults.
 
 ### Install librnp
@@ -168,11 +168,12 @@ For Mail.app to actually load the extension you must sign both targets:
 
 4. In each target's **Signing & Capabilities** tab, set your
    **DEVELOPMENT_TEAM** (the project deliberately ships with it empty).
-   The default bundle IDs are `com.ribose.swift-rnp.container` and
-   `com.ribose.swift-rnp.container.MailPlugin`; if you change them, keep
-   the extension ID prefixed by the app ID, and update the app group
-   `group.com.ribose.rnp` in both entitlements files *and* in
-   `Swift-Rnp/Shared/AppGroup.swift` to a group registered to your team.
+   The default bundle IDs are `com.rnpgp.RnpMail` (container) and
+   `com.rnpgp.RnpMail.MailExtension` (extension). IDs are single-sourced in
+   `Swift-Rnp/Shared/IDs.xcconfig` and injected into both targets' entitlements
+   and Info.plist at build time. If you change them, keep the extension ID
+   prefixed by the app ID, and update the app group `group.com.rnpgp.RnpMail`
+   in `Swift-Rnp/Shared/IDs.xcconfig` to a group registered to your team.
 5. Run the **Ribose container** scheme once more so the signed extension is
    embedded and registered, then enable it in
    **Mail → Settings → Extensions** (check "RNP OpenPGP").
@@ -182,24 +183,52 @@ For Mail.app to actually load the extension you must sign both targets:
    is decrypted and verified automatically, with the signature status shown
    in the message banner.
 
-Command-line builds (as used in CI) work without signing configuration:
+Command-line builds (as used in CI) work without signing configuration. The
+Xcode project consumes the SwiftPM package, whose `CRnp` system-library target
+resolves headers and linking via `pkg-config`. Point `PKG_CONFIG_PATH` at the
+vendored framework's `.pc` file:
 
 ```sh
+export PKG_CONFIG_PATH="$(pwd)/Vendor/pkgconfig"
 xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin \
-    build CODE_SIGNING_ALLOWED=NO
+    -configuration Direct build CODE_SIGNING_ALLOWED=NO
 xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" \
-    build CODE_SIGNING_ALLOWED=NO
+    -configuration Direct build CODE_SIGNING_ALLOWED=NO
 ```
+
+Two release-channel configurations are provided:
+- `Direct` — for Developer ID-signed, notarized direct downloads (default for
+  local builds).
+- `AppStore` — for Apple Distribution-signed Mac App Store uploads.
+
+Both share the same app group and sandboxing; only the signing identity differs.
+Use `-configuration AppStore` when archiving for App Store Connect.
+
+### Install (direct download)
+
+The latest signed and notarized DMG is attached to each [GitHub
+Release](https://github.com/rnpgp/rnp-mailapp-extension/releases).
+
+1. Download `RnpMail-<version>.dmg` and open it.
+2. Drag **RnpMail** (the `Ribose container` app) into **Applications**.
+3. Launch the app from Applications, generate or import your OpenPGP key.
+4. Open **Mail → Settings → Extensions**, check **RNP OpenPGP**, and click
+   **Done**.
+5. Compose a message; use the security button in the compose window to sign
+   and/or encrypt.
+
+> On first launch, macOS may show a Gatekeeper warning because the app is
+> distributed outside the Mac App Store. Control-click the app and choose
+> **Open** to approve it.
 
 ### Limitations
 
 - **MailKit requires proper signing.** Mail.app refuses to load extensions
   that are ad-hoc signed or unsigned, so `CODE_SIGNING_ALLOWED=NO` builds
-  are for compile checks only. The extension is also sandboxed: a librnp in
-  `/usr/local` or `/opt/homebrew` is reachable in unsigned local runs, but
-  a properly signed deployment should embed `librnp.dylib` (and its
-  non-system dependencies) into the app bundle's Frameworks directory —
-  the rpath entries already include `@executable_path/../Frameworks`.
+  are for compile checks only. The Xcode project embeds a self-contained
+  `RNPFramework.xcframework` (built by `scripts/build-rnp-framework.sh`) in
+  both the container app and the Mail extension, so a signed deployment has
+  no dependency on `/usr/local` or `/opt/homebrew`.
 - **Inline PGP vs PGP/MIME.** The extension emits PGP/MIME (RFC 3156)
   messages, which preserve attachments and non-ASCII content exactly; on
   decode it accepts both PGP/MIME and inline-PGP (armored blocks in

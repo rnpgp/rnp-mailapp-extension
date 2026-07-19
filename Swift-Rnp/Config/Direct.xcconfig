@@ -1,0 +1,14 @@
+// Build settings for the Developer ID / direct-download channel.
+// Archives built with this configuration are signed with a Developer ID
+// certificate and hardened for notarization.
+
+#include "../Shared/IDs.xcconfig"
+#include "Version.xcconfig"
+#include "../Shared/RNPFramework.xcconfig"
+
+CODE_SIGN_IDENTITY = Developer ID Application
+ENABLE_HARDENED_RUNTIME = YES
+
+// Inject app-group / keychain access group into generated Info.plist files.
+INFOPLIST_KEY_RNPMAILAppGroup = $(RNPMAIL_APP_GROUP)
+INFOPLIST_KEY_RNPMAILKeychainAccessGroup = $(RNPMAIL_KEYCHAIN_ACCESS_GROUP)

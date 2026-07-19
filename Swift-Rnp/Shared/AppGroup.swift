@@ -11,7 +11,18 @@ import Foundation
 enum AppGroup {
     /// App group identifier shared by the container app and the Mail
     /// extension (see both targets' entitlements).
-    static let identifier = "group.com.ribose.rnp"
+    ///
+    /// The value is injected via the `RNPMAILAppGroup` Info.plist key so it
+    /// can be driven by `Shared/IDs.xcconfig`. A hardcoded fallback keeps
+    /// unsigned local builds working when no entitlements are present.
+    static let identifier: String = {
+        if let value = Bundle.main.object(forInfoDictionaryKey: "RNPMAILAppGroup") as? String,
+           !value.isEmpty,
+           !value.hasPrefix("$(") {
+            return value
+        }
+        return "group.com.rnpgp.RnpMail"
+    }()
 
     /// Directory holding the shared OpenPGP keyring (pubring.gpg and
     /// secring.gpg).

@@ -1,0 +1,13 @@
+// Build settings for the Mac App Store channel.
+// Archives built with this configuration are signed with an Apple
+// Distribution certificate and uploaded to App Store Connect.
+
+#include "../Shared/IDs.xcconfig"
+#include "Version.xcconfig"
+#include "../Shared/RNPFramework.xcconfig"
+
+CODE_SIGN_IDENTITY = Apple Distribution
+
+// Inject app-group / keychain access group into generated Info.plist files.
+INFOPLIST_KEY_RNPMAILAppGroup = $(RNPMAIL_APP_GROUP)
+INFOPLIST_KEY_RNPMAILKeychainAccessGroup = $(RNPMAIL_KEYCHAIN_ACCESS_GROUP)

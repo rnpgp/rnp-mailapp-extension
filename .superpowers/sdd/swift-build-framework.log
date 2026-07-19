@@ -1,0 +1,15 @@
+[0/1] Planning build
+Building for debugging...
+[1/6] Compiling Rnp Verification.swift
+[2/6] Compiling Rnp RnpError.swift
+[3/6] Compiling Rnp FFIHelpers.swift
+[4/6] Compiling Rnp Rnp.swift
+[5/6] Compiling Rnp RnpKey.swift
+[6/6] Emitting module Rnp
+[7/12] Compiling MailSecurityEngine MessageDecoder.swift
+[8/12] Compiling MailSecurityEngine MessageEncoder.swift
+[9/12] Emitting module MailSecurityEngine
+[10/12] Compiling MailSecurityEngine MailSecurityEngine.swift
+[11/12] Compiling MailSecurityEngine KeyManager.swift
+[12/12] Compiling MailSecurityEngine MimeMessage.swift
+Build complete! (7.30s)

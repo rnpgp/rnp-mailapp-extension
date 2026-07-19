@@ -1,0 +1,765 @@
+Cloning into '/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/src/libsexpp'...
+Note: switching to 'c641a2f36520bab783657a58650d9fda548b9dec'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at c641a2f Update version.txt to match the latest release.
+Botan arm64 already built; skipping
+json-c arm64 already built; skipping
+-- Found version.txt with 0.18.1
+-- Found Git: /opt/homebrew/bin/git (found version "2.54.0")
+-- Found no annotated tags.
+-- RNP_VERSION: 0.18.1
+-- RNP_VERSION_NCOMMITS: 0
+-- RNP_VERSION_GIT_REV: 7465708
+-- RNP_VERSION_IS_DIRTY: TRUE
+-- RNP_VERSION_COMMIT_TIMESTAMP: 1784431671
+-- RNP_VERSION_SUFFIX: +git20260719.7465708
+-- RNP_VERSION_FULL: 0.18.1+git20260719.7465708
+-- The C compiler identification is AppleClang 15.0.0.15000040
+-- The CXX compiler identification is AppleClang 15.0.0.15000040
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found version.txt with 0.9.0
+-- Found annotated tag v0.9.0-0-gc641a2f
+-- SEXPP_VERSION: 0.9.0
+-- SEXPP_VERSION_NCOMMITS: 0
+-- SEXPP_VERSION_GIT_REV: c641a2f
+-- SEXPP_VERSION_IS_DIRTY: FALSE
+-- SEXPP_VERSION_COMMIT_TIMESTAMP: 0
+-- SEXPP_MAJOR_VERSION: 0
+-- SEXPP_VERSION_SUFFIX: 
+-- SEXPP_VERSION_FULL: 0.9.0
+-- Building STATIC library
+-- Building Release configuration
+-- Found BZip2: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/libbz2.tbd (found version "1.0.8")
+-- Looking for BZ2_bzCompressInit
+-- Looking for BZ2_bzCompressInit - found
+-- Found ZLIB: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/libz.tbd (found version "1.2.12")
+-- Found JSON-C: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/jsonc-arm64/lib/libjson-c.a (found suitable version "0.18", minimum required is "0.11")
+-- Found Botan: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-arm64/lib/libbotan-3.a (found suitable version "3.10.0", minimum required is "3.0.0")
+-- Looking for C++ include fcntl.h
+-- Looking for C++ include fcntl.h - found
+-- Looking for C++ include inttypes.h
+-- Looking for C++ include inttypes.h - found
+-- Looking for C++ include limits.h
+-- Looking for C++ include limits.h - found
+-- Looking for C++ include stdint.h
+-- Looking for C++ include stdint.h - found
+-- Looking for C++ include string.h
+-- Looking for C++ include string.h - found
+-- Looking for C++ include sys/cdefs.h
+-- Looking for C++ include sys/cdefs.h - found
+-- Looking for C++ include sys/cdefs.h
+-- Looking for C++ include sys/cdefs.h - found
+-- Looking for C++ include sys/resource.h
+-- Looking for C++ include sys/resource.h - found
+-- Looking for C++ include sys/stat.h
+-- Looking for C++ include sys/stat.h - found
+-- Looking for C++ include sys/types.h
+-- Looking for C++ include sys/types.h - found
+-- Looking for C++ include sys/param.h
+-- Looking for C++ include sys/param.h - found
+-- Looking for C++ include unistd.h
+-- Looking for C++ include unistd.h - found
+-- Looking for C++ include sys/wait.h
+-- Looking for C++ include sys/wait.h - found
+-- Looking for mkdtemp
+-- Looking for mkdtemp - found
+-- Looking for mkstemp
+-- Looking for mkstemp - found
+-- Looking for realpath
+-- Looking for realpath - found
+-- Looking for O_BINARY
+-- Looking for O_BINARY - not found
+-- Looking for _O_BINARY
+-- Looking for _O_BINARY - not found
+-- Looking for _tempnam
+-- Looking for _tempnam - not found
+-- Looking for BOTAN_HAS_BIGINT
+-- Looking for BOTAN_HAS_BIGINT - found
+-- Looking for BOTAN_HAS_FFI
+-- Looking for BOTAN_HAS_FFI - found
+-- Looking for BOTAN_HAS_HEX_CODEC
+-- Looking for BOTAN_HAS_HEX_CODEC - found
+-- Looking for BOTAN_HAS_PGP_S2K
+-- Looking for BOTAN_HAS_PGP_S2K - found
+-- Looking for BOTAN_HAS_BLOCK_CIPHER
+-- Looking for BOTAN_HAS_BLOCK_CIPHER - found
+-- Looking for BOTAN_HAS_AES
+-- Looking for BOTAN_HAS_AES - found
+-- Looking for BOTAN_HAS_CAMELLIA
+-- Looking for BOTAN_HAS_CAMELLIA - found
+-- Looking for BOTAN_HAS_DES
+-- Looking for BOTAN_HAS_DES - found
+-- Looking for BOTAN_HAS_MODE_CBC
+-- Looking for BOTAN_HAS_MODE_CBC - found
+-- Looking for BOTAN_HAS_MODE_CFB
+-- Looking for BOTAN_HAS_MODE_CFB - found
+-- Looking for BOTAN_HAS_AUTO_RNG
+-- Looking for BOTAN_HAS_AUTO_RNG - found
+-- Looking for BOTAN_HAS_AUTO_SEEDING_RNG
+-- Looking for BOTAN_HAS_AUTO_SEEDING_RNG - found
+-- Looking for BOTAN_HAS_HMAC
+-- Looking for BOTAN_HAS_HMAC - found
+-- Looking for BOTAN_HAS_HMAC_DRBG
+-- Looking for BOTAN_HAS_HMAC_DRBG - found
+-- Looking for BOTAN_HAS_CRC24
+-- Looking for BOTAN_HAS_CRC24 - found
+-- Looking for BOTAN_HAS_HASH
+-- Looking for BOTAN_HAS_HASH - found
+-- Looking for BOTAN_HAS_MD5
+-- Looking for BOTAN_HAS_MD5 - found
+-- Looking for BOTAN_HAS_SHA1
+-- Looking for BOTAN_HAS_SHA1 - found
+-- Looking for BOTAN_HAS_SHA2_32
+-- Looking for BOTAN_HAS_SHA2_32 - found
+-- Looking for BOTAN_HAS_SHA2_64
+-- Looking for BOTAN_HAS_SHA2_64 - found
+-- Looking for BOTAN_HAS_SHA3
+-- Looking for BOTAN_HAS_SHA3 - found
+-- Looking for BOTAN_HAS_DL_GROUP
+-- Looking for BOTAN_HAS_DL_GROUP - found
+-- Looking for BOTAN_HAS_ECC_GROUP
+-- Looking for BOTAN_HAS_ECC_GROUP - found
+-- Looking for BOTAN_HAS_ECC_PUBLIC_KEY_CRYPTO
+-- Looking for BOTAN_HAS_ECC_PUBLIC_KEY_CRYPTO - found
+-- Looking for BOTAN_HAS_PUBLIC_KEY_CRYPTO
+-- Looking for BOTAN_HAS_PUBLIC_KEY_CRYPTO - found
+-- Looking for BOTAN_HAS_CURVE_25519
+-- Looking for BOTAN_HAS_CURVE_25519 - found
+-- Looking for BOTAN_HAS_DSA
+-- Looking for BOTAN_HAS_DSA - found
+-- Looking for BOTAN_HAS_ECDH
+-- Looking for BOTAN_HAS_ECDH - found
+-- Looking for BOTAN_HAS_ECDSA
+-- Looking for BOTAN_HAS_ECDSA - found
+-- Looking for BOTAN_HAS_ED25519
+-- Looking for BOTAN_HAS_ED25519 - found
+-- Looking for BOTAN_HAS_ELGAMAL
+-- Looking for BOTAN_HAS_ELGAMAL - found
+-- Looking for BOTAN_HAS_RSA
+-- Looking for BOTAN_HAS_RSA - found
+-- Looking for BOTAN_HAS_EME_PKCS1v15
+-- Looking for BOTAN_HAS_EME_PKCS1v15 - found
+-- Looking for BOTAN_HAS_EMSA_PKCS1
+-- Looking for BOTAN_HAS_EMSA_PKCS1 - found
+-- Looking for BOTAN_HAS_EMSA_RAW
+-- Looking for BOTAN_HAS_EMSA_RAW - found
+-- Looking for BOTAN_HAS_KDF_BASE
+-- Looking for BOTAN_HAS_KDF_BASE - found
+-- Looking for BOTAN_HAS_RFC3394_KEYWRAP
+-- Looking for BOTAN_HAS_RFC3394_KEYWRAP - found
+-- Looking for BOTAN_HAS_SP800_56A
+-- Looking for BOTAN_HAS_SP800_56A - found
+-- Looking for BOTAN_HAS_DL_SCHEME
+-- Looking for BOTAN_HAS_DL_SCHEME - found
+-- Looking for BOTAN_HAS_RAW_HASH_FN
+-- Looking for BOTAN_HAS_RAW_HASH_FN - found
+-- Looking for BOTAN_HAS_PCURVES
+-- Looking for BOTAN_HAS_PCURVES - found
+-- Looking for BOTAN_HAS_PCURVES_IMPL
+-- Looking for BOTAN_HAS_PCURVES_IMPL - found
+-- Looking for BOTAN_HAS_PCURVES_SECP192R1
+-- Looking for BOTAN_HAS_PCURVES_SECP192R1 - found
+-- Looking for BOTAN_HAS_PCURVES_SECP256K1
+-- Looking for BOTAN_HAS_PCURVES_SECP256K1 - found
+-- Looking for BOTAN_HAS_PCURVES_SECP256R1
+-- Looking for BOTAN_HAS_PCURVES_SECP256R1 - found
+-- Looking for BOTAN_HAS_PCURVES_SECP384R1
+-- Looking for BOTAN_HAS_PCURVES_SECP384R1 - found
+-- Looking for BOTAN_HAS_PCURVES_SECP521R1
+-- Looking for BOTAN_HAS_PCURVES_SECP521R1 - found
+-- Looking for BOTAN_HAS_SM2
+-- Looking for BOTAN_HAS_SM2 - found
+-- Looking for BOTAN_HAS_SM3
+-- Looking for BOTAN_HAS_SM3 - found
+-- Looking for BOTAN_HAS_SM4
+-- Looking for BOTAN_HAS_SM4 - found
+-- Looking for BOTAN_HAS_AEAD_EAX
+-- Looking for BOTAN_HAS_AEAD_EAX - found
+-- Looking for BOTAN_HAS_AEAD_OCB
+-- Looking for BOTAN_HAS_AEAD_OCB - found
+-- Looking for BOTAN_HAS_TWOFISH
+-- Looking for BOTAN_HAS_TWOFISH - found
+-- Looking for BOTAN_HAS_IDEA
+-- Looking for BOTAN_HAS_IDEA - found
+-- Looking for BOTAN_HAS_BLOWFISH
+-- Looking for BOTAN_HAS_BLOWFISH - found
+-- Looking for BOTAN_HAS_CAST_128
+-- Looking for BOTAN_HAS_CAST_128 - found
+-- Looking for BOTAN_HAS_RIPEMD_160
+-- Looking for BOTAN_HAS_RIPEMD_160 - found
+-- Looking for BOTAN_HAS_PCURVES_SM2P256V1
+-- Looking for BOTAN_HAS_PCURVES_SM2P256V1 - found
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL256R1
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL256R1 - found
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL384R1
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL384R1 - found
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL512R1
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL512R1 - found
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Success
+-- Found PkgConfig: /opt/homebrew/bin/pkg-config (found version "2.5.1")
+-- Configuring done (16.4s)
+-- Generating done (0.1s)
+-- Build files have been written to: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/build-arm64
+[  1%] Building CXX object src/common/CMakeFiles/rnp-common.dir/time-utils.cpp.o
+[  3%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-simple-string.cpp.o
+[  2%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-input.cpp.o
+[  4%] Building CXX object src/common/CMakeFiles/rnp-common.dir/file-utils.cpp.o
+[  5%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-object.cpp.o
+[  6%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-output.cpp.o
+[  7%] Generating man page src/lib/librnp.3
+[  8%] Building CXX object src/common/CMakeFiles/rnp-common.dir/str-utils.cpp.o
+[  9%] Generating man page src/rnp/rnp.1
+[ 10%] Generating man page src/rnpkeys/rnpkeys.1
+[ 10%] Built target man_librnp
+[ 11%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-char-defs.cpp.o
+[ 11%] Built target man_rnpkeys
+[ 12%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-error.cpp.o
+[ 12%] Built target man_rnp
+[ 13%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-depth-manager.cpp.o
+[ 14%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/ext-key-format.cpp.o
+[ 14%] Built target rnp-common
+[ 15%] Linking CXX static library libsexpp.a
+[ 15%] Built target sexpp
+[ 16%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-sig.cpp.o
+[ 17%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-dump.cpp.o
+[ 18%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-common.cpp.o
+[ 20%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-parse.cpp.o
+[ 21%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-packet.cpp.o
+[ 22%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-armor.cpp.o
+[ 23%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-ctx.cpp.o
+[ 26%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-write.cpp.o
+[ 26%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-key.cpp.o
+[ 26%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librekey/key_store_g10.cpp.o
+[ 27%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librekey/key_store_kbx.cpp.o
+[ 28%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librekey/key_store_pgp.cpp.o
+[ 29%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librekey/rnp_key_store.cpp.o
+[ 30%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/dsa_common.cpp.o
+[ 31%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/dsa.cpp.o
+[ 32%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ec_curves.cpp.o
+[ 33%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ec.cpp.o
+[ 34%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ecdh_utils.cpp.o
+[ 35%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ecdh.cpp.o
+[ 36%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ecdsa.cpp.o
+[ 37%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/eddsa.cpp.o
+[ 38%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/elgamal.cpp.o
+[ 40%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/hash_common.cpp.o
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/src/lib/crypto/ec.cpp:69:9: warning: 'botan_privkey_x25519_get_privkey' is deprecated: Use botan_privkey_view_raw [-Wdeprecated-declarations]
+    if (botan_privkey_x25519_get_privkey(pr_key.get(), keyle.data())) {
+        ^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-arm64/include/botan-3/botan/ffi.h:1776:1: note: 'botan_privkey_x25519_get_privkey' has been explicitly marked deprecated here
+BOTAN_FFI_DEPRECATED("Use botan_privkey_view_raw")
+^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-arm64/include/botan-3/botan/ffi.h:97:59: note: expanded from macro 'BOTAN_FFI_DEPRECATED'
+         #define BOTAN_FFI_DEPRECATED(msg) __attribute__((deprecated(msg)))
+                                                          ^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/src/lib/crypto/ec.cpp:82:9: warning: 'botan_pubkey_x25519_get_pubkey' is deprecated: Use botan_pubkey_view_raw [-Wdeprecated-declarations]
+    if (botan_pubkey_x25519_get_pubkey(pu_key.get(), &p[1])) {
+        ^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-arm64/include/botan-3/botan/ffi.h:1779:1: note: 'botan_pubkey_x25519_get_pubkey' has been explicitly marked deprecated here
+BOTAN_FFI_DEPRECATED("Use botan_pubkey_view_raw")
+^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-arm64/include/botan-3/botan/ffi.h:97:59: note: expanded from macro 'BOTAN_FFI_DEPRECATED'
+         #define BOTAN_FFI_DEPRECATED(msg) __attribute__((deprecated(msg)))
+                                                          ^
+[ 41%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/hash.cpp.o
+2 warnings generated.
+[ 42%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/mpi.cpp.o
+[ 43%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/rng.cpp.o
+[ 44%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/rsa.cpp.o
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/src/lib/crypto/eddsa.cpp:103:9: warning: 'botan_privkey_ed25519_get_privkey' is deprecated: Use botan_privkey_view_raw [-Wdeprecated-declarations]
+    if (botan_privkey_ed25519_get_privkey(eddsa.get(), key_bits)) {
+        ^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-arm64/include/botan-3/botan/ffi.h:1748:1: note: 'botan_privkey_ed25519_get_privkey' has been explicitly marked deprecated here
+BOTAN_FFI_DEPRECATED("Use botan_privkey_view_raw")
+^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-arm64/include/botan-3/botan/ffi.h:97:59: note: expanded from macro 'BOTAN_FFI_DEPRECATED'
+         #define BOTAN_FFI_DEPRECATED(msg) __attribute__((deprecated(msg)))
+                                                          ^
+1 warning generated.
+[ 45%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/s2k.cpp.o
+[ 46%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/symmetric_common.cpp.o
+[ 47%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/symmetric.cpp.o
+[ 48%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/signatures.cpp.o
+[ 49%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/mem.cpp.o
+[ 50%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/cipher.cpp.o
+[ 51%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/cipher_botan.cpp.o
+[ 52%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/sm2.cpp.o
+[ 53%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/backend_version.cpp.o
+[ 54%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/hash_sha1cd.cpp.o
+[ 55%] Building C object src/lib/CMakeFiles/librnp-obj.dir/crypto/sha1cd/sha1.c.o
+[ 56%] Building C object src/lib/CMakeFiles/librnp-obj.dir/crypto/sha1cd/ubc_check.c.o
+[ 57%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/sec_profile.cpp.o
+[ 58%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/fingerprint.cpp.o
+[ 60%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/key-provider.cpp.o
+[ 61%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/logging.cpp.o
+[ 62%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/json-utils.cpp.o
+[ 63%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/utils.cpp.o
+[ 64%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/pass-provider.cpp.o
+[ 65%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/rawpacket.cpp.o
+[ 66%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/sig_subpacket.cpp.o
+[ 67%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/key_material.cpp.o
+[ 68%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/enc_material.cpp.o
+[ 69%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/sig_material.cpp.o
+[ 70%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/signature.cpp.o
+[ 71%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/userid.cpp.o
+[ 72%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/keygen.cpp.o
+[ 73%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/key.cpp.o
+[ 74%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/rnp.cpp.o
+[ 74%] Built target librnp-obj
+[ 75%] Linking CXX static library librnp.a
+[ 75%] Built target librnp
+[ 76%] Building C object src/examples/CMakeFiles/dump.dir/dump.c.o
+[ 77%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/tui.cpp.o
+[ 78%] Building C object src/examples/CMakeFiles/sign.dir/sign.c.o
+[ 82%] Building C object src/examples/CMakeFiles/decrypt.dir/decrypt.c.o
+[ 82%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/main.cpp.o
+[ 82%] Building C object src/examples/CMakeFiles/encrypt.dir/encrypt.c.o
+[ 83%] Building C object src/examples/CMakeFiles/generate.dir/generate.c.o
+[ 84%] Building C object src/examples/CMakeFiles/verify.dir/verify.c.o
+[ 85%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/rnpkeys.cpp.o
+[ 86%] Building CXX object src/rnp/CMakeFiles/rnp.dir/rnp.cpp.o
+[ 87%] Linking CXX executable dump
+[ 88%] Linking CXX executable decrypt
+[ 89%] Linking CXX executable sign
+[ 90%] Linking CXX executable encrypt
+[ 91%] Linking CXX executable verify
+[ 92%] Linking CXX executable generate
+[ 92%] Built target decrypt
+[ 92%] Built target encrypt
+[ 92%] Built target generate
+[ 92%] Built target verify
+[ 92%] Built target sign
+[ 92%] Built target dump
+[ 93%] Building CXX object src/rnp/CMakeFiles/rnp.dir/rnpcfg.cpp.o
+[ 94%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/__/rnp/fficli.cpp.o
+[ 95%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/__/rnp/rnpcfg.cpp.o
+[ 96%] Building CXX object src/rnp/CMakeFiles/rnp.dir/__/rnpkeys/tui.cpp.o
+[ 97%] Building CXX object src/rnp/CMakeFiles/rnp.dir/fficli.cpp.o
+[ 98%] Linking CXX executable rnp
+[100%] Linking CXX executable rnpkeys
+ld: warning: ignoring duplicate libraries: '/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/jsonc-arm64/lib/libjson-c.a'
+ld: warning: ignoring duplicate libraries: '/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/jsonc-arm64/lib/libjson-c.a'
+[100%] Built target rnp
+[100%] Built target rnpkeys
+-- Install configuration: "Release"
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/lib/librnp.a
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/lib/libsexpp.a
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/include/rnp/rnp.h
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/include/rnp/rnp_err.h
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/include/rnp/rnp_export.h
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/include/rnp/rnp_ver.h
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/lib/cmake/rnp/rnp-targets.cmake
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/lib/cmake/rnp/rnp-targets-release.cmake
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/lib/cmake/rnp/rnp-config.cmake
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/lib/cmake/rnp/rnp-config-version.cmake
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/lib/pkgconfig/librnp.pc
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/share/man/man3/librnp.3
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/bin/rnp
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/share/man/man1/rnp.1
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/bin/rnpkeys
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-arm64/share/man/man1/rnpkeys.1
+Botan x86_64 already built; skipping
+json-c x86_64 already built; skipping
+-- Found version.txt with 0.18.1
+-- Found Git: /opt/homebrew/bin/git (found version "2.54.0")
+-- Found no annotated tags.
+-- RNP_VERSION: 0.18.1
+-- RNP_VERSION_NCOMMITS: 0
+-- RNP_VERSION_GIT_REV: 7465708
+-- RNP_VERSION_IS_DIRTY: TRUE
+-- RNP_VERSION_COMMIT_TIMESTAMP: 1784431671
+-- RNP_VERSION_SUFFIX: +git20260719.7465708
+-- RNP_VERSION_FULL: 0.18.1+git20260719.7465708
+-- The C compiler identification is AppleClang 15.0.0.15000040
+-- The CXX compiler identification is AppleClang 15.0.0.15000040
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found version.txt with 0.9.0
+-- Found annotated tag v0.9.0-0-gc641a2f
+-- SEXPP_VERSION: 0.9.0
+-- SEXPP_VERSION_NCOMMITS: 0
+-- SEXPP_VERSION_GIT_REV: c641a2f
+-- SEXPP_VERSION_IS_DIRTY: FALSE
+-- SEXPP_VERSION_COMMIT_TIMESTAMP: 0
+-- SEXPP_MAJOR_VERSION: 0
+-- SEXPP_VERSION_SUFFIX: 
+-- SEXPP_VERSION_FULL: 0.9.0
+-- Building STATIC library
+-- Building Release configuration
+-- Found BZip2: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/libbz2.tbd (found version "1.0.8")
+-- Looking for BZ2_bzCompressInit
+-- Looking for BZ2_bzCompressInit - found
+-- Found ZLIB: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/libz.tbd (found version "1.2.12")
+-- Found JSON-C: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/jsonc-x86_64/lib/libjson-c.a (found suitable version "0.18", minimum required is "0.11")
+-- Found Botan: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-x86_64/lib/libbotan-3.a (found suitable version "3.10.0", minimum required is "3.0.0")
+-- Looking for C++ include fcntl.h
+-- Looking for C++ include fcntl.h - found
+-- Looking for C++ include inttypes.h
+-- Looking for C++ include inttypes.h - found
+-- Looking for C++ include limits.h
+-- Looking for C++ include limits.h - found
+-- Looking for C++ include stdint.h
+-- Looking for C++ include stdint.h - found
+-- Looking for C++ include string.h
+-- Looking for C++ include string.h - found
+-- Looking for C++ include sys/cdefs.h
+-- Looking for C++ include sys/cdefs.h - found
+-- Looking for C++ include sys/cdefs.h
+-- Looking for C++ include sys/cdefs.h - found
+-- Looking for C++ include sys/resource.h
+-- Looking for C++ include sys/resource.h - found
+-- Looking for C++ include sys/stat.h
+-- Looking for C++ include sys/stat.h - found
+-- Looking for C++ include sys/types.h
+-- Looking for C++ include sys/types.h - found
+-- Looking for C++ include sys/param.h
+-- Looking for C++ include sys/param.h - found
+-- Looking for C++ include unistd.h
+-- Looking for C++ include unistd.h - found
+-- Looking for C++ include sys/wait.h
+-- Looking for C++ include sys/wait.h - found
+-- Looking for mkdtemp
+-- Looking for mkdtemp - found
+-- Looking for mkstemp
+-- Looking for mkstemp - found
+-- Looking for realpath
+-- Looking for realpath - found
+-- Looking for O_BINARY
+-- Looking for O_BINARY - not found
+-- Looking for _O_BINARY
+-- Looking for _O_BINARY - not found
+-- Looking for _tempnam
+-- Looking for _tempnam - not found
+-- Looking for BOTAN_HAS_BIGINT
+-- Looking for BOTAN_HAS_BIGINT - found
+-- Looking for BOTAN_HAS_FFI
+-- Looking for BOTAN_HAS_FFI - found
+-- Looking for BOTAN_HAS_HEX_CODEC
+-- Looking for BOTAN_HAS_HEX_CODEC - found
+-- Looking for BOTAN_HAS_PGP_S2K
+-- Looking for BOTAN_HAS_PGP_S2K - found
+-- Looking for BOTAN_HAS_BLOCK_CIPHER
+-- Looking for BOTAN_HAS_BLOCK_CIPHER - found
+-- Looking for BOTAN_HAS_AES
+-- Looking for BOTAN_HAS_AES - found
+-- Looking for BOTAN_HAS_CAMELLIA
+-- Looking for BOTAN_HAS_CAMELLIA - found
+-- Looking for BOTAN_HAS_DES
+-- Looking for BOTAN_HAS_DES - found
+-- Looking for BOTAN_HAS_MODE_CBC
+-- Looking for BOTAN_HAS_MODE_CBC - found
+-- Looking for BOTAN_HAS_MODE_CFB
+-- Looking for BOTAN_HAS_MODE_CFB - found
+-- Looking for BOTAN_HAS_AUTO_RNG
+-- Looking for BOTAN_HAS_AUTO_RNG - found
+-- Looking for BOTAN_HAS_AUTO_SEEDING_RNG
+-- Looking for BOTAN_HAS_AUTO_SEEDING_RNG - found
+-- Looking for BOTAN_HAS_HMAC
+-- Looking for BOTAN_HAS_HMAC - found
+-- Looking for BOTAN_HAS_HMAC_DRBG
+-- Looking for BOTAN_HAS_HMAC_DRBG - found
+-- Looking for BOTAN_HAS_CRC24
+-- Looking for BOTAN_HAS_CRC24 - found
+-- Looking for BOTAN_HAS_HASH
+-- Looking for BOTAN_HAS_HASH - found
+-- Looking for BOTAN_HAS_MD5
+-- Looking for BOTAN_HAS_MD5 - found
+-- Looking for BOTAN_HAS_SHA1
+-- Looking for BOTAN_HAS_SHA1 - found
+-- Looking for BOTAN_HAS_SHA2_32
+-- Looking for BOTAN_HAS_SHA2_32 - found
+-- Looking for BOTAN_HAS_SHA2_64
+-- Looking for BOTAN_HAS_SHA2_64 - found
+-- Looking for BOTAN_HAS_SHA3
+-- Looking for BOTAN_HAS_SHA3 - found
+-- Looking for BOTAN_HAS_DL_GROUP
+-- Looking for BOTAN_HAS_DL_GROUP - found
+-- Looking for BOTAN_HAS_ECC_GROUP
+-- Looking for BOTAN_HAS_ECC_GROUP - found
+-- Looking for BOTAN_HAS_ECC_PUBLIC_KEY_CRYPTO
+-- Looking for BOTAN_HAS_ECC_PUBLIC_KEY_CRYPTO - found
+-- Looking for BOTAN_HAS_PUBLIC_KEY_CRYPTO
+-- Looking for BOTAN_HAS_PUBLIC_KEY_CRYPTO - found
+-- Looking for BOTAN_HAS_CURVE_25519
+-- Looking for BOTAN_HAS_CURVE_25519 - found
+-- Looking for BOTAN_HAS_DSA
+-- Looking for BOTAN_HAS_DSA - found
+-- Looking for BOTAN_HAS_ECDH
+-- Looking for BOTAN_HAS_ECDH - found
+-- Looking for BOTAN_HAS_ECDSA
+-- Looking for BOTAN_HAS_ECDSA - found
+-- Looking for BOTAN_HAS_ED25519
+-- Looking for BOTAN_HAS_ED25519 - found
+-- Looking for BOTAN_HAS_ELGAMAL
+-- Looking for BOTAN_HAS_ELGAMAL - found
+-- Looking for BOTAN_HAS_RSA
+-- Looking for BOTAN_HAS_RSA - found
+-- Looking for BOTAN_HAS_EME_PKCS1v15
+-- Looking for BOTAN_HAS_EME_PKCS1v15 - found
+-- Looking for BOTAN_HAS_EMSA_PKCS1
+-- Looking for BOTAN_HAS_EMSA_PKCS1 - found
+-- Looking for BOTAN_HAS_EMSA_RAW
+-- Looking for BOTAN_HAS_EMSA_RAW - found
+-- Looking for BOTAN_HAS_KDF_BASE
+-- Looking for BOTAN_HAS_KDF_BASE - found
+-- Looking for BOTAN_HAS_RFC3394_KEYWRAP
+-- Looking for BOTAN_HAS_RFC3394_KEYWRAP - found
+-- Looking for BOTAN_HAS_SP800_56A
+-- Looking for BOTAN_HAS_SP800_56A - found
+-- Looking for BOTAN_HAS_DL_SCHEME
+-- Looking for BOTAN_HAS_DL_SCHEME - found
+-- Looking for BOTAN_HAS_RAW_HASH_FN
+-- Looking for BOTAN_HAS_RAW_HASH_FN - found
+-- Looking for BOTAN_HAS_PCURVES
+-- Looking for BOTAN_HAS_PCURVES - found
+-- Looking for BOTAN_HAS_PCURVES_IMPL
+-- Looking for BOTAN_HAS_PCURVES_IMPL - found
+-- Looking for BOTAN_HAS_PCURVES_SECP192R1
+-- Looking for BOTAN_HAS_PCURVES_SECP192R1 - found
+-- Looking for BOTAN_HAS_PCURVES_SECP256K1
+-- Looking for BOTAN_HAS_PCURVES_SECP256K1 - found
+-- Looking for BOTAN_HAS_PCURVES_SECP256R1
+-- Looking for BOTAN_HAS_PCURVES_SECP256R1 - found
+-- Looking for BOTAN_HAS_PCURVES_SECP384R1
+-- Looking for BOTAN_HAS_PCURVES_SECP384R1 - found
+-- Looking for BOTAN_HAS_PCURVES_SECP521R1
+-- Looking for BOTAN_HAS_PCURVES_SECP521R1 - found
+-- Looking for BOTAN_HAS_SM2
+-- Looking for BOTAN_HAS_SM2 - found
+-- Looking for BOTAN_HAS_SM3
+-- Looking for BOTAN_HAS_SM3 - found
+-- Looking for BOTAN_HAS_SM4
+-- Looking for BOTAN_HAS_SM4 - found
+-- Looking for BOTAN_HAS_AEAD_EAX
+-- Looking for BOTAN_HAS_AEAD_EAX - found
+-- Looking for BOTAN_HAS_AEAD_OCB
+-- Looking for BOTAN_HAS_AEAD_OCB - found
+-- Looking for BOTAN_HAS_TWOFISH
+-- Looking for BOTAN_HAS_TWOFISH - found
+-- Looking for BOTAN_HAS_IDEA
+-- Looking for BOTAN_HAS_IDEA - found
+-- Looking for BOTAN_HAS_BLOWFISH
+-- Looking for BOTAN_HAS_BLOWFISH - found
+-- Looking for BOTAN_HAS_CAST_128
+-- Looking for BOTAN_HAS_CAST_128 - found
+-- Looking for BOTAN_HAS_RIPEMD_160
+-- Looking for BOTAN_HAS_RIPEMD_160 - found
+-- Looking for BOTAN_HAS_PCURVES_SM2P256V1
+-- Looking for BOTAN_HAS_PCURVES_SM2P256V1 - found
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL256R1
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL256R1 - found
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL384R1
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL384R1 - found
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL512R1
+-- Looking for BOTAN_HAS_PCURVES_BRAINPOOL512R1 - found
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Success
+-- Found PkgConfig: /opt/homebrew/bin/pkg-config (found version "2.5.1")
+-- Configuring done (14.2s)
+-- Generating done (0.1s)
+-- Build files have been written to: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/build-x86_64
+[  1%] Generating man page src/rnpkeys/rnpkeys.1
+[  2%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-output.cpp.o
+[  4%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-object.cpp.o
+[  4%] Building CXX object src/common/CMakeFiles/rnp-common.dir/str-utils.cpp.o
+[  5%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-input.cpp.o
+[  6%] Generating man page src/lib/librnp.3
+[  7%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-simple-string.cpp.o
+[  8%] Generating man page src/rnp/rnp.1
+[  9%] Building CXX object src/common/CMakeFiles/rnp-common.dir/file-utils.cpp.o
+[ 10%] Building CXX object src/common/CMakeFiles/rnp-common.dir/time-utils.cpp.o
+[ 10%] Built target man_librnp
+[ 11%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-char-defs.cpp.o
+[ 11%] Built target man_rnpkeys
+[ 12%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-error.cpp.o
+[ 12%] Built target man_rnp
+[ 13%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/sexp-depth-manager.cpp.o
+[ 14%] Building CXX object src/libsexpp/CMakeFiles/sexpp.dir/src/ext-key-format.cpp.o
+[ 14%] Built target rnp-common
+[ 15%] Linking CXX static library libsexpp.a
+[ 15%] Built target sexpp
+[ 20%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-parse.cpp.o
+[ 20%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-armor.cpp.o
+[ 20%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-key.cpp.o
+[ 20%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-ctx.cpp.o
+[ 21%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-dump.cpp.o
+[ 22%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-common.cpp.o
+[ 23%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-write.cpp.o
+[ 24%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librekey/key_store_g10.cpp.o
+[ 25%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-packet.cpp.o
+[ 26%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librepgp/stream-sig.cpp.o
+[ 27%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librekey/key_store_kbx.cpp.o
+[ 28%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librekey/key_store_pgp.cpp.o
+[ 29%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/__/librekey/rnp_key_store.cpp.o
+[ 30%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/dsa_common.cpp.o
+[ 31%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/dsa.cpp.o
+[ 32%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ec_curves.cpp.o
+[ 33%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ec.cpp.o
+[ 34%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ecdh_utils.cpp.o
+[ 35%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ecdh.cpp.o
+[ 36%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/ecdsa.cpp.o
+[ 37%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/eddsa.cpp.o
+[ 38%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/elgamal.cpp.o
+[ 40%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/hash_common.cpp.o
+[ 41%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/hash.cpp.o
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/src/lib/crypto/ec.cpp:69:9: warning: 'botan_privkey_x25519_get_privkey' is deprecated: Use botan_privkey_view_raw [-Wdeprecated-declarations]
+    if (botan_privkey_x25519_get_privkey(pr_key.get(), keyle.data())) {
+        ^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-x86_64/include/botan-3/botan/ffi.h:1776:1: note: 'botan_privkey_x25519_get_privkey' has been explicitly marked deprecated here
+BOTAN_FFI_DEPRECATED("Use botan_privkey_view_raw")
+^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-x86_64/include/botan-3/botan/ffi.h:97:59: note: expanded from macro 'BOTAN_FFI_DEPRECATED'
+         #define BOTAN_FFI_DEPRECATED(msg) __attribute__((deprecated(msg)))
+                                                          ^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/src/lib/crypto/ec.cpp:82:9: warning: 'botan_pubkey_x25519_get_pubkey' is deprecated: Use botan_pubkey_view_raw [-Wdeprecated-declarations]
+    if (botan_pubkey_x25519_get_pubkey(pu_key.get(), &p[1])) {
+        ^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-x86_64/include/botan-3/botan/ffi.h:1779:1: note: 'botan_pubkey_x25519_get_pubkey' has been explicitly marked deprecated here
+BOTAN_FFI_DEPRECATED("Use botan_pubkey_view_raw")
+^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-x86_64/include/botan-3/botan/ffi.h:97:59: note: expanded from macro 'BOTAN_FFI_DEPRECATED'
+         #define BOTAN_FFI_DEPRECATED(msg) __attribute__((deprecated(msg)))
+                                                          ^
+2 warnings generated.
+[ 42%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/mpi.cpp.o
+[ 43%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/rng.cpp.o
+[ 44%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/rsa.cpp.o
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/src/rnp-0.18.1/src/lib/crypto/eddsa.cpp:103:9: warning: 'botan_privkey_ed25519_get_privkey' is deprecated: Use botan_privkey_view_raw [-Wdeprecated-declarations]
+    if (botan_privkey_ed25519_get_privkey(eddsa.get(), key_bits)) {
+        ^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-x86_64/include/botan-3/botan/ffi.h:1748:1: note: 'botan_privkey_ed25519_get_privkey' has been explicitly marked deprecated here
+BOTAN_FFI_DEPRECATED("Use botan_privkey_view_raw")
+^
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/botan-x86_64/include/botan-3/botan/ffi.h:97:59: note: expanded from macro 'BOTAN_FFI_DEPRECATED'
+         #define BOTAN_FFI_DEPRECATED(msg) __attribute__((deprecated(msg)))
+                                                          ^
+1 warning generated.
+[ 45%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/s2k.cpp.o
+[ 46%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/symmetric_common.cpp.o
+[ 47%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/symmetric.cpp.o
+[ 48%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/signatures.cpp.o
+[ 49%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/mem.cpp.o
+[ 50%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/cipher.cpp.o
+[ 51%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/cipher_botan.cpp.o
+[ 52%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/sm2.cpp.o
+[ 53%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/backend_version.cpp.o
+[ 54%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/crypto/hash_sha1cd.cpp.o
+[ 55%] Building C object src/lib/CMakeFiles/librnp-obj.dir/crypto/sha1cd/sha1.c.o
+[ 56%] Building C object src/lib/CMakeFiles/librnp-obj.dir/crypto/sha1cd/ubc_check.c.o
+[ 57%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/sec_profile.cpp.o
+[ 58%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/fingerprint.cpp.o
+[ 60%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/key-provider.cpp.o
+[ 61%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/logging.cpp.o
+[ 62%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/json-utils.cpp.o
+[ 63%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/utils.cpp.o
+[ 64%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/pass-provider.cpp.o
+[ 65%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/rawpacket.cpp.o
+[ 66%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/sig_subpacket.cpp.o
+[ 67%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/key_material.cpp.o
+[ 68%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/enc_material.cpp.o
+[ 69%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/sig_material.cpp.o
+[ 70%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/signature.cpp.o
+[ 71%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/userid.cpp.o
+[ 72%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/keygen.cpp.o
+[ 73%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/key.cpp.o
+[ 74%] Building CXX object src/lib/CMakeFiles/librnp-obj.dir/rnp.cpp.o
+[ 74%] Built target librnp-obj
+[ 75%] Linking CXX static library librnp.a
+[ 75%] Built target librnp
+[ 76%] Building C object src/examples/CMakeFiles/verify.dir/verify.c.o
+[ 77%] Building C object src/examples/CMakeFiles/sign.dir/sign.c.o
+[ 78%] Building C object src/examples/CMakeFiles/decrypt.dir/decrypt.c.o
+[ 80%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/rnpkeys.cpp.o
+[ 82%] Building C object src/examples/CMakeFiles/encrypt.dir/encrypt.c.o
+[ 84%] Building CXX object src/rnp/CMakeFiles/rnp.dir/rnp.cpp.o
+[ 83%] Building C object src/examples/CMakeFiles/dump.dir/dump.c.o
+[ 85%] Building C object src/examples/CMakeFiles/generate.dir/generate.c.o
+[ 85%] Building CXX object src/rnp/CMakeFiles/rnp.dir/rnpcfg.cpp.o
+[ 86%] Building CXX object src/rnp/CMakeFiles/rnp.dir/fficli.cpp.o
+[ 87%] Linking CXX executable sign
+[ 88%] Linking CXX executable verify
+[ 89%] Linking CXX executable decrypt
+[ 90%] Linking CXX executable encrypt
+[ 91%] Linking CXX executable generate
+[ 92%] Linking CXX executable dump
+[ 92%] Built target decrypt
+[ 93%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/tui.cpp.o
+[ 93%] Built target encrypt
+[ 93%] Built target sign
+[ 94%] Building CXX object src/rnp/CMakeFiles/rnp.dir/__/rnpkeys/tui.cpp.o
+[ 95%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/main.cpp.o
+[ 95%] Built target verify
+[ 96%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/__/rnp/fficli.cpp.o
+[ 97%] Building CXX object src/rnpkeys/CMakeFiles/rnpkeys.dir/__/rnp/rnpcfg.cpp.o
+[ 97%] Built target generate
+[ 97%] Built target dump
+[ 98%] Linking CXX executable rnp
+ld: warning: ignoring duplicate libraries: '/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/jsonc-x86_64/lib/libjson-c.a'
+[ 98%] Built target rnp
+[100%] Linking CXX executable rnpkeys
+ld: warning: ignoring duplicate libraries: '/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/jsonc-x86_64/lib/libjson-c.a'
+[100%] Built target rnpkeys
+-- Install configuration: "Release"
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/lib/librnp.a
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/lib/libsexpp.a
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/include/rnp/rnp.h
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/include/rnp/rnp_err.h
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/include/rnp/rnp_export.h
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/include/rnp/rnp_ver.h
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/lib/cmake/rnp/rnp-targets.cmake
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/lib/cmake/rnp/rnp-targets-release.cmake
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/lib/cmake/rnp/rnp-config.cmake
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/lib/cmake/rnp/rnp-config-version.cmake
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/lib/pkgconfig/librnp.pc
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/share/man/man3/librnp.3
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/bin/rnp
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/share/man/man1/rnp.1
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/bin/rnpkeys
+-- Installing: /Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/install/rnp-x86_64/share/man/man1/rnpkeys.1
+/Users/mulgogi/src/rnp/swift-rnp/.build/framework-work/source/RNPFramework.framework: replacing existing signature
+xcframework successfully written out to: /Users/mulgogi/src/rnp/swift-rnp/Vendor/RNPFramework.xcframework
+Wrote /Users/mulgogi/src/rnp/swift-rnp/Vendor/RNPFramework.xcframework
+Wrote /Users/mulgogi/src/rnp/swift-rnp/Vendor/pkgconfig/librnp.pc
+error: write on a pipe with no reader
+ERROR: framework does not appear to export rnp symbols
