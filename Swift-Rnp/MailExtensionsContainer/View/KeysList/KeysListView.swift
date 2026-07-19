@@ -6,6 +6,7 @@
 //
 
 import MailSecurityEngine
+import RnpMailUI
 import SwiftUI
 
 struct KeysListView: View {
@@ -15,7 +16,7 @@ struct KeysListView: View {
 
     var body: some View {
         Table(keys, selection: $selection) {
-            TableColumn("User ID") { key in
+            TableColumn("table.userID") { key in
                 VStack(alignment: .leading, spacing: 2) {
                     Text(key.primaryUserID)
                     HStack(spacing: 6) {
@@ -23,26 +24,31 @@ struct KeysListView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         if key.isRevoked {
-                            Badge(text: "Revoked", color: .red)
+                            Badge(text: "badge.revoked".localized, color: .red)
                         } else if key.isExpired {
-                            Badge(text: "Expired", color: .red)
+                            Badge(text: "badge.expired".localized, color: .red)
                         } else if let days = key.daysUntilExpiry, days < 60 {
-                            Badge(text: "Expires in \(days)d", color: .orange)
+                            Badge(text: String(format: "badge.expiresIn".localized, days), color: .orange)
                         }
                     }
                 }
                 .onTapGesture(count: 2) {
                     onDoubleTap?(key)
                 }
+                .accessibilityIdentifier("keyslist.row.\(key.fingerprint)")
+                .accessibilityElement(children: .combine)
+                .accessibilityAddTraits(.isButton)
+                .accessibilityLabel("\(key.primaryUserID), \(key.hasSecret ? "key.type.keyPair".localized : "key.type.publicOnly".localized)")
             }
-            TableColumn("Fingerprint") { key in
+            TableColumn("table.fingerprint") { key in
                 Text(key.fingerprint.groupedFingerprint)
                     .font(.system(.body, design: .monospaced))
             }
-            TableColumn("Type") { key in
-                Text(key.hasSecret ? "Key pair" : "Public only")
+            TableColumn("table.type") { key in
+                Text(key.hasSecret ? "key.type.keyPair".localized : "key.type.publicOnly".localized)
             }
         }
+        .accessibilityIdentifier("keyslist.table")
     }
 }
 

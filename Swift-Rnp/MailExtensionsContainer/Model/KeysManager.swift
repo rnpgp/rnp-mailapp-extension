@@ -10,6 +10,8 @@ import Foundation
 import KeyLifecycle
 import MailSecurityEngine
 import Rnp
+import RnpMailUI
+import TrustStore
 
 /// Observable wrapper around the engine's `KeyManager`.
 ///
@@ -47,7 +49,7 @@ final class KeysManager: ObservableObject {
                 keyManager = manager
             } else {
                 keyManager = nil
-                lastError = "Could not open the keyring."
+                lastError = "error.keyringOpenFailed".localized
             }
         }
         reload()
@@ -56,7 +58,7 @@ final class KeysManager: ObservableObject {
     func reload() {
         guard let keyManager else {
             keys = []
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return
         }
         do {
@@ -75,7 +77,7 @@ final class KeysManager: ObservableObject {
         useTouchID: Bool = false
     ) {
         guard let keyManager else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return
         }
 
@@ -107,7 +109,7 @@ final class KeysManager: ObservableObject {
     @discardableResult
     func importKeys(_ data: Data) -> [KeyInfo] {
         guard let keyManager else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return []
         }
         var imported: [KeyInfo] = []
@@ -120,7 +122,7 @@ final class KeysManager: ObservableObject {
     /// Armored public key export for the given fingerprint.
     func exportKey(fingerprint: String) -> Data? {
         guard let keyManager else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return nil
         }
         return try? keyManager.exportKey(fingerprint: fingerprint)
@@ -129,7 +131,7 @@ final class KeysManager: ObservableObject {
     /// Armored secret key export for the given fingerprint.
     func exportSecretKey(fingerprint: String) -> Data? {
         guard let keyManager else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return nil
         }
         return try? keyManager.exportKey(fingerprint: fingerprint, secret: true)
@@ -137,7 +139,7 @@ final class KeysManager: ObservableObject {
 
     func delete(_ key: KeyInfo) {
         guard let keyManager else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return
         }
         perform {
@@ -150,7 +152,7 @@ final class KeysManager: ObservableObject {
     /// Rotates the encryption subkey for the selected key.
     func rotateEncryptionSubkey(for key: KeyInfo) {
         guard let lifecycle else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return
         }
         perform {
@@ -161,7 +163,7 @@ final class KeysManager: ObservableObject {
     /// Rotates the signing subkey for the selected key.
     func rotateSigningSubkey(for key: KeyInfo) {
         guard let lifecycle else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return
         }
         perform {
@@ -172,7 +174,7 @@ final class KeysManager: ObservableObject {
     /// Extends the primary key's expiry to the given date.
     func extendExpiry(for key: KeyInfo, to newDate: Date) {
         guard let lifecycle else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return
         }
         perform {
@@ -183,7 +185,7 @@ final class KeysManager: ObservableObject {
     /// Revokes the key and stores the revocation certificate URL.
     func revoke(_ key: KeyInfo, code: RevocationCode, reason: String) {
         guard let lifecycle else {
-            lastError = "Could not open the keyring."
+            lastError = "error.keyringOpenFailed".localized
             return
         }
         perform {
@@ -201,7 +203,7 @@ final class KeysManager: ObservableObject {
     /// Publishes the armored public key of the given key to the default keyserver.
     func publish(key: KeyInfo) async -> Result<UploadReceipt, KeyServerError> {
         guard let keyManager else {
-            return .failure(.network(underlying: "Could not open the keyring."))
+            return .failure(.network(underlying: "error.keyringOpenFailed".localized))
         }
         guard let armored = try? keyManager.exportKey(fingerprint: key.fingerprint) else {
             return .failure(.malformedKey)
@@ -243,6 +245,36 @@ final class KeysManager: ObservableObject {
             return []
         }
         return (try? keyManager.subkeys(for: key.fingerprint)) ?? []
+    }
+
+    /// Trust state for the given fingerprint.
+    func trustState(forFpr fingerprint: String) -> TrustState {
+        guard let keyManager else {
+            return .unverified
+        }
+        return keyManager.trustStore.state(forFpr: fingerprint)
+    }
+
+    /// All unresolved key-change conflicts.
+    func trustConflicts() -> [TrustConflict] {
+        guard let keyManager else {
+            return []
+        }
+        return keyManager.trustStore.conflicts()
+    }
+
+    /// Marks the fingerprint as verified and resolves any related conflict.
+    func markVerified(fingerprint: String) {
+        guard let keyManager else {
+            lastError = "error.keyringOpenFailed".localized
+            return
+        }
+        do {
+            try keyManager.trustStore.markVerified(fingerprint: fingerprint)
+            reload()
+        } catch {
+            lastError = error.localizedDescription
+        }
     }
 
     private func perform(_ operation: () throws -> Void) {

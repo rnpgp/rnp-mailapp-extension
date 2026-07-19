@@ -11,6 +11,7 @@
 import XCTest
 @testable import MailSecurityEngine
 import Rnp
+import TrustStore
 
 final class MailSecurityEngineTests: XCTestCase {
     private static let password = "password"
@@ -782,5 +783,99 @@ final class MailSecurityEngineTests: XCTestCase {
         let passphrase = KeychainPassphraseStore.sharedPassphrase()
         XCTAssertFalse(passphrase.isEmpty)
         XCTAssertEqual(passphrase, biometricPassphrase)
+    }
+
+    // MARK: - Trust and key-change conflicts
+
+    func testTrustConflictBlocksEncryption() throws {
+        // Alice has Bob's old key. Importing a new key for Bob creates a
+        // conflict, and encryption to Bob must fail until it is resolved.
+        let alice = try makeEngine(keys: [Self.alice])
+        let bob = try makeEngine(keys: [Self.bob])
+        try importPublicKey(of: bob, into: alice)
+
+        // Generate a second Bob key in a fresh engine and import it into
+        // Alice's keyring to simulate a key change.
+        let bob2 = try makeEngine(keys: [Self.bob])
+        let bob2Fingerprint = try XCTUnwrap(bob2.keyManager.listKeys().first?.fingerprint)
+        let bob2Public = try bob2.keyManager.exportKey(fingerprint: bob2Fingerprint)
+        _ = try alice.keyManager.importKeys(bob2Public)
+
+        XCTAssertThrowsError(try alice.encode(EncodingRequest(
+            message: plainMessage(),
+            sender: Self.aliceEmail,
+            recipients: [Self.bobEmail],
+            sign: false,
+            encrypt: true
+        ))) { error in
+            guard case let MailSecurityError.trustConflict(recipient) = error else {
+                return XCTFail("unexpected error: \(error)")
+            }
+            XCTAssertEqual(recipient, Self.bobEmail)
+        }
+    }
+
+    func testMarkVerifiedAllowsEncryptionAfterConflict() throws {
+        let alice = try makeEngine(keys: [Self.alice])
+        let bob = try makeEngine(keys: [Self.bob])
+        try importPublicKey(of: bob, into: alice)
+
+        let bob2 = try makeEngine(keys: [Self.bob])
+        let bob2Fingerprint = try XCTUnwrap(bob2.keyManager.listKeys().first?.fingerprint)
+        let bob2Public = try bob2.keyManager.exportKey(fingerprint: bob2Fingerprint)
+        let imported = try alice.keyManager.importKeys(bob2Public)
+        XCTAssertFalse(imported.isEmpty)
+
+        // Verify the new key and remove the old one to simulate retirement.
+        try alice.keyManager.trustStore.markVerified(fingerprint: bob2Fingerprint)
+        let bobFingerprint = try XCTUnwrap(bob.keyManager.listKeys().first?.fingerprint)
+        try alice.keyManager.deleteKey(fingerprint: bobFingerprint)
+
+        let encoded = try alice.encode(EncodingRequest(
+            message: plainMessage(),
+            sender: Self.aliceEmail,
+            recipients: [Self.bobEmail],
+            sign: false,
+            encrypt: true
+        ))
+        XCTAssertTrue(encoded.isEncrypted)
+    }
+
+    // MARK: - Signer trust view model mapping
+
+    func testSignerTrustMappingExhaustive() {
+        let cases: [(RnpSignatureStatus, TrustState, SignerTrustIntent, Bool)] = [
+            (.valid, .verified, .positive, false),
+            (.valid, .unverified, .neutral, true),
+            (.valid, .problem, .critical, true),
+            (.expired, .verified, .caution, false),
+            (.expired, .unverified, .caution, true),
+            (.expired, .problem, .critical, true),
+            (.signerUnknown, .verified, .critical, false),
+            (.signerUnknown, .unverified, .critical, false),
+            (.signerUnknown, .problem, .critical, false),
+            (.invalid, .verified, .critical, false),
+            (.invalid, .unverified, .critical, false),
+            (.invalid, .problem, .critical, false),
+            (.unknown, .verified, .caution, false),
+            (.unknown, .unverified, .caution, true),
+            (.unknown, .problem, .critical, true),
+        ]
+
+        for (status, trust, expectedIntent, review) in cases {
+            let model = mapSignerTrust(status: status, trust: trust)
+            XCTAssertEqual(
+                model.intent,
+                expectedIntent,
+                "intent mismatch for status=\(status), trust=\(trust)"
+            )
+            XCTAssertEqual(
+                model.reviewDeepLink,
+                review,
+                "review link mismatch for status=\(status), trust=\(trust)"
+            )
+            XCTAssertFalse(model.label.isEmpty)
+            XCTAssertFalse(model.detail.isEmpty)
+        }
     }
 }

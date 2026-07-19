@@ -13,6 +13,7 @@
 
 import Foundation
 import Rnp
+import TrustStore
 
 /// Wire format used when encoding a message.
 public enum MessageFormat {
@@ -158,6 +159,8 @@ public enum MailSecurityError: Error, Equatable {
     case signatureInvalid
     /// The signer's public key is not in the keyring.
     case signatureUnknownSigner
+    /// A recipient has an unresolved key-change conflict.
+    case trustConflict(String)
 }
 
 extension MailSecurityError: LocalizedError {
@@ -177,6 +180,8 @@ extension MailSecurityError: LocalizedError {
             return "The OpenPGP signature does not verify; the message was modified."
         case .signatureUnknownSigner:
             return "The signer's public key is not in the keyring."
+        case let .trustConflict(recipient):
+            return "The key for \(recipient) changed. Verify the new fingerprint before encrypting."
         }
     }
 }
@@ -244,6 +249,12 @@ public final class MailSecurityEngine {
                 var missing: [String] = []
                 for recipient in request.recipients {
                     if let key = try keyManager.publicKeyUnlocked(for: recipient, rnp: rnp) {
+                        let fingerprint = try key.fingerprint
+                        if keyManager.trustStore.state(forFpr: fingerprint) == .problem
+                            || keyManager.trustStore.hasConflict(forEmail: recipient)
+                        {
+                            throw MailSecurityError.trustConflict(recipient)
+                        }
                         recipientKeys.append(key)
                     } else {
                         missing.append(recipient)

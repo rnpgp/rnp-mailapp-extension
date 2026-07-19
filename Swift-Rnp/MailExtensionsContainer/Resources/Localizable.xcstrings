@@ -1,0 +1,1502 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "title.keysManager": {
+      "comment": "Window title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenPGP Keys"
+          }
+        }
+      }
+    },
+    "tab.selector": {
+      "comment": "Picker accessibility label for key tabs.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tab"
+          }
+        }
+      }
+    },
+    "tab.myKeys": {
+      "comment": "Tab name.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My Keys"
+          }
+        }
+      }
+    },
+    "tab.recipients": {
+      "comment": "Tab name.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recipients"
+          }
+        }
+      }
+    },
+    "generate.algorithm.ed25519": {
+      "comment": "Algorithm menu item.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ed25519"
+          }
+        }
+      }
+    },
+    "generate.algorithm.rsa": {
+      "comment": "Algorithm menu item.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RSA-3072"
+          }
+        }
+      }
+    },
+    "generate.algorithm.ecdsa": {
+      "comment": "Algorithm menu item.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ECDSA P-256"
+          }
+        }
+      }
+    },
+    "toolbar.generate.help": {
+      "comment": "Toolbar button help text.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate a new key"
+          }
+        }
+      }
+    },
+    "import.fromClipboard": {
+      "comment": "Import menu item.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From Clipboard"
+          }
+        }
+      }
+    },
+    "import.fromFile": {
+      "comment": "Import menu item.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From File…"
+          }
+        }
+      }
+    },
+    "import.fromKeyserver": {
+      "comment": "Import menu item.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From Keyserver…"
+          }
+        }
+      }
+    },
+    "toolbar.import.help": {
+      "comment": "Toolbar button help text.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import an armored key"
+          }
+        }
+      }
+    },
+    "toolbar.export.help": {
+      "comment": "Toolbar button help text.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy the armored public key to the clipboard"
+          }
+        }
+      }
+    },
+    "toolbar.details.help": {
+      "comment": "Toolbar button help text.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show key details"
+          }
+        }
+      }
+    },
+    "toolbar.delete.help": {
+      "comment": "Toolbar button help text.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete the selected key"
+          }
+        }
+      }
+    },
+    "deleteKey.title": {
+      "comment": "Confirmation alert title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete key?"
+          }
+        }
+      }
+    },
+    "button.delete": {
+      "comment": "Destructive action button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "button.cancel": {
+      "comment": "Cancel button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "deleteKey.message": {
+      "comment": "Delete confirmation message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This removes the key from the shared keyring. This cannot be undone."
+          }
+        }
+      }
+    },
+    "error.operation.title": {
+      "comment": "Error alert title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key operation failed"
+          }
+        }
+      }
+    },
+    "button.ok": {
+      "comment": "Dismiss button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "banner.expired": {
+      "comment": "Expiry banner with user ID.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expired: %@"
+          }
+        }
+      }
+    },
+    "banner.expiringSoon": {
+      "comment": "Expiry banner with user ID.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expiring soon: %@"
+          }
+        }
+      }
+    },
+    "banner.trustConflict": {
+      "comment": "Trust conflict banner with email.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key changed for %@. Verify the new fingerprint before encrypting."
+          }
+        }
+      }
+    },
+    "extendExpiry.title": {
+      "comment": "Sheet title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extend expiry"
+          }
+        }
+      }
+    },
+    "extendExpiry.dateLabel": {
+      "comment": "Date picker label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New expiration date"
+          }
+        }
+      }
+    },
+    "button.extend": {
+      "comment": "Extend button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extend"
+          }
+        }
+      }
+    },
+    "revoke.title": {
+      "comment": "Sheet title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoke key"
+          }
+        }
+      }
+    },
+    "revoke.message": {
+      "comment": "Revoke instructions.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type the full fingerprint of the key to revoke it. A revocation certificate will be saved to the keyring directory."
+          }
+        }
+      }
+    },
+    "revoke.fingerprint.placeholder": {
+      "comment": "Text field placeholder.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fingerprint"
+          }
+        }
+      }
+    },
+    "revoke.reason.placeholder": {
+      "comment": "Text field placeholder.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reason (optional)"
+          }
+        }
+      }
+    },
+    "button.revoke": {
+      "comment": "Revoke button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoke"
+          }
+        }
+      }
+    },
+    "rotate.title": {
+      "comment": "Sheet title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate subkey"
+          }
+        }
+      }
+    },
+    "rotate.encryption.message": {
+      "comment": "Rotation explanation.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A new encryption subkey will be generated and the old one retired after a 30-day grace period."
+          }
+        }
+      }
+    },
+    "rotate.signing.message": {
+      "comment": "Rotation explanation.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A new signing subkey will be generated. Recipients should refresh your public key."
+          }
+        }
+      }
+    },
+    "button.rotate": {
+      "comment": "Rotate button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate"
+          }
+        }
+      }
+    },
+    "publish.title": {
+      "comment": "Sheet title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publish public key"
+          }
+        }
+      }
+    },
+    "publish.uploading": {
+      "comment": "Publish progress message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uploading public key to keys.openpgp.org…"
+          }
+        }
+      }
+    },
+    "fetch.title": {
+      "comment": "Sheet title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fetch key from keyserver"
+          }
+        }
+      }
+    },
+    "fetch.message": {
+      "comment": "Sheet instruction.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter an email address or fingerprint:"
+          }
+        }
+      }
+    },
+    "fetch.query.placeholder": {
+      "comment": "Text field placeholder.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email or fingerprint"
+          }
+        }
+      }
+    },
+    "fetch.found": {
+      "comment": "Found key message with source.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Found key from %@"
+          }
+        }
+      }
+    },
+    "button.search": {
+      "comment": "Search button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        }
+      }
+    },
+    "button.import": {
+      "comment": "Import button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import"
+          }
+        }
+      }
+    },
+    "clipboardImport.title": {
+      "comment": "Sheet title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import key from clipboard?"
+          }
+        }
+      }
+    },
+    "clipboardImport.message": {
+      "comment": "Sheet explanation.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The clipboard contains an armored OpenPGP key block."
+          }
+        }
+      }
+    },
+    "generateKey.sheet.title": {
+      "comment": "Sheet title with algorithm.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate key (%@)"
+          }
+        }
+      }
+    },
+    "generateKey.userIDLabel": {
+      "comment": "Label for user ID field.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "User ID, e.g. “Alice <alice@example.com>”:"
+          }
+        }
+      }
+    },
+    "generateKey.userIDPlaceholder": {
+      "comment": "Text field placeholder.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name <email>"
+          }
+        }
+      }
+    },
+    "button.generate": {
+      "comment": "Generate button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate"
+          }
+        }
+      }
+    },
+    "error.clipboardNoKey": {
+      "comment": "Error message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The clipboard does not contain an armored OpenPGP key."
+          }
+        }
+      }
+    },
+    "import.filePanelMessage": {
+      "comment": "File panel message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose an OpenPGP key file to import"
+          }
+        }
+      }
+    },
+    "error.exportPublicFailed": {
+      "comment": "Error message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The key could not be exported."
+          }
+        }
+      }
+    },
+    "error.exportSecretFailed": {
+      "comment": "Error message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The secret key could not be exported."
+          }
+        }
+      }
+    },
+    "error.keyringOpenFailed": {
+      "comment": "Error message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not open the keyring."
+          }
+        }
+      }
+    },
+    "error.fingerprintMismatch": {
+      "comment": "Error message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The fingerprint you entered does not match the selected key."
+          }
+        }
+      }
+    },
+    "table.userID": {
+      "comment": "Table column header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "User ID"
+          }
+        }
+      }
+    },
+    "badge.expiresIn": {
+      "comment": "Expiry badge with day count.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expires in %d days"
+          }
+        }
+      }
+    },
+    "table.fingerprint": {
+      "comment": "Table column header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fingerprint"
+          }
+        }
+      }
+    },
+    "table.type": {
+      "comment": "Table column header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type"
+          }
+        }
+      }
+    },
+    "key.type.keyPair": {
+      "comment": "Key type label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key pair"
+          }
+        }
+      }
+    },
+    "key.type.publicOnly": {
+      "comment": "Key type label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Public only"
+          }
+        }
+      }
+    },
+    "detail.delete.title": {
+      "comment": "Confirmation alert title for deleting a key.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete key?"
+          }
+        }
+      }
+    },
+    "detail.delete.message": {
+      "comment": "Delete confirmation message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This removes the key from the shared keyring. This cannot be undone."
+          }
+        }
+      }
+    },
+    "detail.exportSecret.title": {
+      "comment": "Confirmation alert title for secret key export.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export secret key?"
+          }
+        }
+      }
+    },
+    "button.export": {
+      "comment": "Export button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export"
+          }
+        }
+      }
+    },
+    "detail.exportSecret.message": {
+      "comment": "Secret export warning.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The secret key will be exported as an armored, passphrase-protected block. Keep it safe."
+          }
+        }
+      }
+    },
+    "alert.comingSoon.title": {
+      "comment": "Alert title for unimplemented features.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coming soon"
+          }
+        }
+      }
+    },
+    "badge.revoked": {
+      "comment": "Key status badge.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoked"
+          }
+        }
+      }
+    },
+    "badge.expired": {
+      "comment": "Key status badge.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expired"
+          }
+        }
+      }
+    },
+    "trust.verified": {
+      "comment": "Trust status badge.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verified"
+          }
+        }
+      }
+    },
+    "trust.conflict": {
+      "comment": "Trust status badge.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conflict"
+          }
+        }
+      }
+    },
+    "trust.unverified": {
+      "comment": "Trust status badge.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unverified"
+          }
+        }
+      }
+    },
+    "detail.fingerprint": {
+      "comment": "Section header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fingerprint"
+          }
+        }
+      }
+    },
+    "detail.copyFingerprint.help": {
+      "comment": "Tooltip for copy button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy full fingerprint"
+          }
+        }
+      }
+    },
+    "detail.userIDs": {
+      "comment": "Section header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "User IDs"
+          }
+        }
+      }
+    },
+    "detail.subkeys.title": {
+      "comment": "Section header with count.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subkeys (%d)"
+          }
+        }
+      }
+    },
+    "detail.subkeys.algorithm": {
+      "comment": "Table column header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algorithm"
+          }
+        }
+      }
+    },
+    "detail.subkeys.created": {
+      "comment": "Table column header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Created"
+          }
+        }
+      }
+    },
+    "detail.subkeys.expires": {
+      "comment": "Table column header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expires"
+          }
+        }
+      }
+    },
+    "detail.subkeys.never": {
+      "comment": "Label for keys that never expire.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Never"
+          }
+        }
+      }
+    },
+    "detail.subkeys.capabilities": {
+      "comment": "Table column header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capabilities"
+          }
+        }
+      }
+    },
+    "detail.actions.title": {
+      "comment": "Section header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actions"
+          }
+        }
+      }
+    },
+    "detail.exportPublic": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export public key"
+          }
+        }
+      }
+    },
+    "detail.exportSecret": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export secret key…"
+          }
+        }
+      }
+    },
+    "detail.deleteKey": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete key"
+          }
+        }
+      }
+    },
+    "detail.publish": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publish public key"
+          }
+        }
+      }
+    },
+    "detail.extendExpiry": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extend expiry…"
+          }
+        }
+      }
+    },
+    "detail.revoke": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoke…"
+          }
+        }
+      }
+    },
+    "detail.rotateEncryption": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate encryption subkey"
+          }
+        }
+      }
+    },
+    "detail.rotateSigning": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate signing subkey"
+          }
+        }
+      }
+    },
+    "detail.markVerified": {
+      "comment": "Button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark as verified"
+          }
+        }
+      }
+    },
+    "passphrase.veryWeak": {
+      "comment": "Passphrase strength label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Very weak"
+          }
+        }
+      }
+    },
+    "passphrase.weak": {
+      "comment": "Passphrase strength label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weak"
+          }
+        }
+      }
+    },
+    "passphrase.fair": {
+      "comment": "Passphrase strength label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fair"
+          }
+        }
+      }
+    },
+    "passphrase.strong": {
+      "comment": "Passphrase strength label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strong"
+          }
+        }
+      }
+    },
+    "passphrase.veryStrong": {
+      "comment": "Passphrase strength label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Very strong"
+          }
+        }
+      }
+    },
+    "error.onboarding.title": {
+      "comment": "Onboarding error alert title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not continue"
+          }
+        }
+      }
+    },
+    "onboarding.welcome.title": {
+      "comment": "Onboarding welcome title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Swift-Rnp"
+          }
+        }
+      }
+    },
+    "onboarding.welcome.subtitle": {
+      "comment": "Onboarding welcome subtitle.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A simple OpenPGP key manager for Apple Mail."
+          }
+        }
+      }
+    },
+    "onboarding.welcome.button": {
+      "comment": "Onboarding welcome button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get started"
+          }
+        }
+      }
+    },
+    "onboarding.setup.title": {
+      "comment": "Onboarding setup title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up your keyring"
+          }
+        }
+      }
+    },
+    "onboarding.setup.subtitle": {
+      "comment": "Onboarding setup subtitle.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create a new key pair or import an existing one."
+          }
+        }
+      }
+    },
+    "onboarding.createKey": {
+      "comment": "Onboarding button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create new key"
+          }
+        }
+      }
+    },
+    "onboarding.importKey": {
+      "comment": "Onboarding button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import existing key"
+          }
+        }
+      }
+    },
+    "onboarding.done.title": {
+      "comment": "Onboarding completion title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're all set"
+          }
+        }
+      }
+    },
+    "onboarding.done.revocationLabel": {
+      "comment": "Label showing revocation certificate path.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A revocation certificate was saved to:"
+          }
+        }
+      }
+    },
+    "onboarding.done.revocationHint": {
+      "comment": "Hint about revocation certificate.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep it somewhere safe. You will need it if you ever lose access to your key."
+          }
+        }
+      }
+    },
+    "onboarding.done.publishPlaceholder": {
+      "comment": "Disabled placeholder button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publish public key (task 06)"
+          }
+        }
+      }
+    },
+    "button.done": {
+      "comment": "Done button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+    "importForm.title": {
+      "comment": "Form title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import an existing key"
+          }
+        }
+      }
+    },
+    "importForm.message": {
+      "comment": "Form instruction.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste an armored public or private key block:"
+          }
+        }
+      }
+    },
+    "importForm.fetchPlaceholder": {
+      "comment": "Disabled placeholder button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fetch by email (coming in task 06)"
+          }
+        }
+      }
+    },
+    "button.back": {
+      "comment": "Back button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        }
+      }
+    },
+    "generateForm.title": {
+      "comment": "Form title.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create your key"
+          }
+        }
+      }
+    },
+    "generateForm.name.placeholder": {
+      "comment": "Text field placeholder.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full name"
+          }
+        }
+      }
+    },
+    "generateForm.email.placeholder": {
+      "comment": "Text field placeholder.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email"
+          }
+        }
+      }
+    },
+    "generateForm.algorithm.label": {
+      "comment": "Picker label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algorithm"
+          }
+        }
+      }
+    },
+    "generateForm.algorithm.ed25519": {
+      "comment": "Algorithm option.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ed25519 (recommended)"
+          }
+        }
+      }
+    },
+    "generateForm.algorithm.rsa": {
+      "comment": "Algorithm option.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RSA-3072 (maximum compatibility)"
+          }
+        }
+      }
+    },
+    "generateForm.algorithm.ecdsa": {
+      "comment": "Algorithm option.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ECDSA P-256"
+          }
+        }
+      }
+    },
+    "generateForm.expires.label": {
+      "comment": "Picker label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expires in"
+          }
+        }
+      }
+    },
+    "generateForm.expiry.1year": {
+      "comment": "Expiration option.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 year"
+          }
+        }
+      }
+    },
+    "generateForm.expiry.2years": {
+      "comment": "Expiration option.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 years"
+          }
+        }
+      }
+    },
+    "generateForm.expiry.noExpiry": {
+      "comment": "Expiration option.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No expiry"
+          }
+        }
+      }
+    },
+    "generateForm.passphrase.placeholder": {
+      "comment": "Secure text field placeholder.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passphrase"
+          }
+        }
+      }
+    },
+    "generateForm.confirm.placeholder": {
+      "comment": "Secure text field placeholder.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm passphrase"
+          }
+        }
+      }
+    },
+    "generateForm.passphrase.mismatch": {
+      "comment": "Validation message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The passphrases do not match."
+          }
+        }
+      }
+    },
+    "generateForm.touchID": {
+      "comment": "Toggle label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save to Keychain with Touch ID"
+          }
+        }
+      }
+    },
+    "generateForm.createButton": {
+      "comment": "Create key button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create key"
+          }
+        }
+      }
+    },
+    "onboarding.error.incompleteForm": {
+      "comment": "Validation error.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please fill in all fields and choose a passphrase of at least 8 characters."
+          }
+        }
+      }
+    },
+    "onboarding.error.emptyImport": {
+      "comment": "Validation error.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste an armored OpenPGP key block first."
+          }
+        }
+      }
+    },
+    "error.generic": {
+      "comment": "Generic error message.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something went wrong. Please try again."
+          }
+        }
+      }
+    },
+    "publish.success.fallback": {
+      "comment": "Fallback message after key upload when server provides none.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key uploaded. Check your email to confirm publication."
+          }
+        }
+      }
+    },
+    "menu.showOnboarding": {
+      "comment": "Help menu item.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Onboarding"
+          }
+        }
+      }
+    },
+    "menu.licenses": {
+      "comment": "Help menu item.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licenses…"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

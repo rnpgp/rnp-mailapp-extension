@@ -10,12 +10,20 @@
 import Foundation
 import MailKit
 import MailSecurityEngine
+import Rnp
 
 class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
+    /// Context attached to each `MEMessageSigner` so the extension view
+    /// controller can look up trust state without re-running verification.
+    struct SignerContext: Codable {
+        let fingerprint: String?
+        let status: String
+    }
+
     static let shared = MessageSecurityHandler()
 
-    private let engine: MailSecurityEngine
+    private let engine: MailSecurityEngine?
 
     override init() {
         engine = MessageSecurityHandler.makeEngine()
@@ -24,8 +32,10 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
     /// Engine on the shared keyring directory, with passphrases from the
     /// Keychain. Falls back to a temporary directory when the keyring is
-    /// unavailable, so the extension can never fail to launch.
-    private static func makeEngine() -> MailSecurityEngine {
+    /// unavailable, so the extension can never fail to launch. Returns `nil`
+    /// only if both the shared keyring and the temporary fallback fail to
+    /// open, in which case the handler degrades to pass-through behavior.
+    private static func makeEngine() -> MailSecurityEngine? {
         let provider: (String) -> String? = { _ in KeychainPassphraseStore.sharedPassphrase() }
         if let engine = try? MailSecurityEngine(
             directory: AppGroup.keyringDirectory(),
@@ -37,15 +47,24 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         // in-memory keyring rather than crashing the extension.
         let fallback = FileManager.default.temporaryDirectory
             .appendingPathComponent("rnp-mail-extension-fallback")
-        return (try? MailSecurityEngine(
+        return try? MailSecurityEngine(
             directory: fallback,
             passphraseProvider: provider
-        ))!
+        )
     }
 
     // MARK: - Encoding Messages
 
     func getEncodingStatus(for message: MEMessage, composeContext: MEComposeContext, completionHandler: @escaping (MEOutgoingMessageEncodingStatus) -> Void) {
+        guard let engine = engine else {
+            completionHandler(MEOutgoingMessageEncodingStatus(
+                canSign: false,
+                canEncrypt: false,
+                securityError: nil,
+                addressesFailingEncryption: []
+            ))
+            return
+        }
         let status = (try? engine.encodingStatus(
             sender: message.fromAddress.rawString,
             recipients: message.allRecipientAddresses.map(\.rawString)
@@ -62,7 +81,8 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         let noEncoding = MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil)
 
         // Only act on messages being sent that the user asked to protect.
-        guard message.state == .sending,
+        guard let engine = engine,
+              message.state == .sending,
               composeContext.shouldSign || composeContext.shouldEncrypt,
               let rawData = message.rawData
         else {
@@ -118,19 +138,23 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     // MARK: - Decoding Messages
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
-        guard let decoded = try? engine.decode(data) else {
+        guard let engine = engine,
+              let decoded = try? engine.decode(data) else {
             // No OpenPGP content: Mail displays the message untouched.
             return nil
         }
-        let signers = decoded.security.signers
-            .filter { $0.status == .valid }
-            .map { signer in
-                MEMessageSigner(
-                    emailAddresses: signer.userID.map { [MEEmailAddress(rawString: $0)] } ?? [],
-                    signatureLabel: signer.userID ?? signer.fingerprint ?? "Unknown signer",
-                    context: nil
-                )
-            }
+        let signers = decoded.security.signers.map { signer in
+            let context = SignerContext(
+                fingerprint: signer.fingerprint,
+                status: signer.status.rawValue
+            )
+            let contextData = (try? JSONEncoder().encode(context)) ?? Data()
+            return MEMessageSigner(
+                emailAddresses: signer.userID.map { [MEEmailAddress(rawString: $0)] } ?? [],
+                signatureLabel: signer.userID ?? signer.fingerprint ?? "Unknown signer",
+                context: contextData
+            )
+        }
         let information = MEMessageSecurityInformation(
             signers: signers,
             isEncrypted: decoded.security.isEncrypted,
@@ -147,7 +171,15 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     // MARK: - Displaying Security Information
 
     func extensionViewController(signers messageSigners: [MEMessageSigner]) -> MEExtensionViewController? {
-        MessageSecurityViewController(signers: messageSigners)
+        let contexts: [SignerContext?] = messageSigners.map { signer in
+            guard !signer.context.isEmpty else { return nil }
+            return try? JSONDecoder().decode(SignerContext.self, from: signer.context)
+        }
+        return MessageSecurityViewController(
+            signers: messageSigners,
+            contexts: contexts,
+            trustStore: engine?.keyManager.trustStore
+        )
     }
 
     // MARK: - Displaying Additional Context

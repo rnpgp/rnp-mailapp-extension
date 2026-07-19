@@ -25,28 +25,32 @@ public struct ImportKeyForm: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Import an existing key")
+            Text("importForm.title")
                 .font(.headline)
 
-            Text("Paste an armored public or private key block:")
+            Text("importForm.message")
                 .font(.callout)
 
             TextEditor(text: $viewModel.importText)
                 .font(.system(.body, design: .monospaced))
                 .frame(height: 180)
                 .border(Color.secondary.opacity(0.25))
+                .accessibilityIdentifier("importform.text")
 
-            Button("Fetch by email (coming in task 06)") {}
+            Button("importForm.fetchPlaceholder") {}
                 .disabled(true)
                 .font(.caption)
+                .accessibilityIdentifier("importform.fetch")
 
             HStack {
-                Button("Back", action: onBack)
+                Button("button.back", action: onBack)
+                    .accessibilityIdentifier("importform.back")
                 Spacer()
-                Button("Import") {
+                Button("button.import") {
                     onImport()
                 }
                 .disabled(!viewModel.canImport || viewModel.isWorking)
+                .accessibilityIdentifier("importform.import")
             }
         }
         .frame(width: 420)

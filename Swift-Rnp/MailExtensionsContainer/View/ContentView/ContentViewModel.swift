@@ -11,11 +11,21 @@ import Foundation
 import KeyLifecycle
 import MailSecurityEngine
 import RnpMailUI
+import TrustStore
 
 /// Which tab is selected in the key manager.
 enum KeyTab: String, CaseIterable {
     case myKeys = "My Keys"
     case recipients = "Recipients"
+
+    var localizedName: String {
+        switch self {
+        case .myKeys:
+            return "tab.myKeys".localized
+        case .recipients:
+            return "tab.recipients".localized
+        }
+    }
 }
 
 final class ContentViewModel: ObservableObject {
@@ -42,6 +52,7 @@ final class ContentViewModel: ObservableObject {
     @Published var revokeFingerprintInput = ""
     @Published var revokeReason = ""
     @Published var extendExpiryDate = Date().addingTimeInterval(365 * 24 * 60 * 60)
+    @Published var pendingReviewFingerprint: String?
 
     let manager: KeysManager
     private var lastClipboardHash: String?
@@ -49,6 +60,35 @@ final class ContentViewModel: ObservableObject {
     init(manager: KeysManager) {
 
         self.manager = manager
+    }
+
+    /// Opens the key detail sheet for the given fingerprint, switching to the
+    /// Recipients tab and selecting the matching key.
+    func openReview(fingerprint: String) {
+        pendingReviewFingerprint = fingerprint
+        if let key = manager.keys.first(where: { $0.fingerprint.compare(fingerprint, options: .caseInsensitive) == .orderedSame }) {
+            selectedTab = key.hasSecret ? .myKeys : .recipients
+            selection = key.id
+            showDetailSheet = true
+            pendingReviewFingerprint = nil
+        }
+    }
+
+    /// Trust state for a key in the current list.
+    func trustState(for key: KeyInfo) -> TrustState {
+        manager.trustState(forFpr: key.fingerprint)
+    }
+
+    /// All unresolved key-change conflicts.
+    var trustConflicts: [TrustConflict] {
+        manager.trustConflicts()
+    }
+
+    /// Marks the selected key as verified.
+    func markSelectedVerified() {
+        guard let key = selectedKey else { return }
+        manager.markVerified(fingerprint: key.fingerprint)
+        propagateError()
     }
 
     /// Keys visible in the current tab.
@@ -155,7 +195,7 @@ final class ContentViewModel: ObservableObject {
         guard let text = NSPasteboard.general.string(forType: .string),
               text.contains("BEGIN PGP")
         else {
-            errorMessage = "The clipboard does not contain an armored OpenPGP key."
+            errorMessage = "error.clipboardNoKey".localized
             return
         }
         importKeys(Data(text.utf8))
@@ -171,7 +211,7 @@ final class ContentViewModel: ObservableObject {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.data, .text]
         panel.allowsMultipleSelection = false
-        panel.message = "Choose an OpenPGP key file to import"
+        panel.message = "import.filePanelMessage".localized
         guard panel.runModal() == .OK, let url = panel.url else {
             return
         }
@@ -229,7 +269,7 @@ final class ContentViewModel: ObservableObject {
             return
         }
         guard let armored = manager.exportKey(fingerprint: key.fingerprint) else {
-            errorMessage = "The key could not be exported."
+            errorMessage = "error.exportPublicFailed".localized
             return
         }
         copyToPasteboard(String(decoding: armored, as: UTF8.self))
@@ -242,7 +282,7 @@ final class ContentViewModel: ObservableObject {
             return
         }
         guard let armored = manager.exportSecretKey(fingerprint: key.fingerprint) else {
-            errorMessage = "The secret key could not be exported."
+            errorMessage = "error.exportSecretFailed".localized
             return
         }
         copyToPasteboard(String(decoding: armored, as: UTF8.self))
@@ -287,7 +327,7 @@ final class ContentViewModel: ObservableObject {
     func revokeSelected() {
         guard let key = selectedKey else { return }
         guard revokeFingerprintInput.compare(key.fingerprint, options: .caseInsensitive) == .orderedSame else {
-            errorMessage = "The fingerprint you entered does not match the selected key."
+            errorMessage = "error.fingerprintMismatch".localized
             return
         }
         manager.revoke(key, code: .noReason, reason: revokeReason)
@@ -309,7 +349,7 @@ final class ContentViewModel: ObservableObject {
             await MainActor.run {
                 switch result {
                 case .success(let receipt):
-                    publishMessage = receipt.message ?? "Key uploaded. Check your email to confirm publication."
+                    publishMessage = receipt.message ?? "publish.success.fallback".localized
                 case .failure(let error):
                     errorMessage = error.localizedDescription
                 }
@@ -370,7 +410,7 @@ enum OnboardingAppError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .keyNotFoundAfterGeneration:
-            return "The key was generated but could not be found in the keyring."
+            return "error.keyNotFoundAfterGeneration".localized
         case .keyringError(let message):
             return message
         }

@@ -1,0 +1,9 @@
+# Global fallback
+* @rnpgp/mail-extension-maintainers
+
+# Dependency, framework, and release infrastructure changes need owner review
+scripts/build-rnp-framework.sh @rnpgp/security
+Vendor/ @rnpgp/security
+.github/workflows/ @rnpgp/release-engineering
+docs/DEPENDENCIES.md @rnpgp/security
+docs/SECURITY-MODEL.md @rnpgp/security

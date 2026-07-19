@@ -26,54 +26,64 @@ public struct GenerateKeyForm: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Create your key")
+            Text("generateForm.title")
                 .font(.headline)
 
             HStack(spacing: 12) {
-                TextField("Full name", text: $viewModel.name)
-                TextField("Email", text: $viewModel.email)
+                TextField("generateForm.name.placeholder", text: $viewModel.name)
+                    .accessibilityIdentifier("generateform.name")
+                TextField("generateForm.email.placeholder", text: $viewModel.email)
+                    .accessibilityIdentifier("generateform.email")
             }
 
-            Picker("Algorithm", selection: $viewModel.algorithm) {
-                Text("Ed25519 (recommended)").tag(KeyAlgorithm.ed25519)
-                Text("RSA-3072 (maximum compatibility)").tag(KeyAlgorithm.rsa)
-                Text("ECDSA P-256").tag(KeyAlgorithm.ecdsa)
+            Picker("generateForm.algorithm.label", selection: $viewModel.algorithm) {
+                Text("generateForm.algorithm.ed25519").tag(KeyAlgorithm.ed25519)
+                Text("generateForm.algorithm.rsa").tag(KeyAlgorithm.rsa)
+                Text("generateForm.algorithm.ecdsa").tag(KeyAlgorithm.ecdsa)
             }
             .pickerStyle(.segmented)
+            .accessibilityIdentifier("generateform.algorithm")
 
             HStack {
-                Text("Expires in")
-                Picker("Expires in", selection: $viewModel.expirationDays) {
-                    Text("1 year").tag(365)
-                    Text("2 years").tag(730)
-                    Text("No expiry").tag(0)
+                Text("generateForm.expires.label")
+                Picker("generateForm.expires.label", selection: $viewModel.expirationDays) {
+                    Text("generateForm.expiry.1year").tag(365)
+                    Text("generateForm.expiry.2years").tag(730)
+                    Text("generateForm.expiry.noExpiry").tag(0)
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+                .accessibilityIdentifier("generateform.expiry")
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                SecureField("Passphrase", text: $viewModel.passphrase)
+                SecureField("generateForm.passphrase.placeholder", text: $viewModel.passphrase)
+                    .accessibilityIdentifier("generateform.passphrase")
                 PassphraseStrengthMeter(passphrase: viewModel.passphrase)
             }
 
-            SecureField("Confirm passphrase", text: $viewModel.confirmPassphrase)
+            SecureField("generateForm.confirm.placeholder", text: $viewModel.confirmPassphrase)
+                .accessibilityIdentifier("generateform.confirm-passphrase")
 
             if viewModel.passphrase != viewModel.confirmPassphrase, !viewModel.confirmPassphrase.isEmpty {
-                Text("The passphrases do not match.")
+                Text("generateForm.passphrase.mismatch")
                     .font(.caption)
                     .foregroundStyle(.red)
+                    .accessibilityIdentifier("generateform.mismatch-warning")
             }
 
-            Toggle("Save to Keychain with Touch ID", isOn: $viewModel.useTouchID)
+            Toggle("generateForm.touchID", isOn: $viewModel.useTouchID)
+                .accessibilityIdentifier("generateform.touchid")
 
             HStack {
-                Button("Back", action: onBack)
+                Button("button.back", action: onBack)
+                    .accessibilityIdentifier("generateform.back")
                 Spacer()
-                Button("Create key") {
+                Button("generateForm.createButton") {
                     onGenerate()
                 }
                 .disabled(!viewModel.canGenerate || viewModel.isWorking)
+                .accessibilityIdentifier("generateform.create")
             }
         }
         .frame(width: 420)
