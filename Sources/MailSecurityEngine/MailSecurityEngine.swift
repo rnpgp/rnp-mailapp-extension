@@ -59,6 +59,12 @@ public struct EncodedMessage {
     public let rawData: Data
     public let isSigned: Bool
     public let isEncrypted: Bool
+
+    public init(rawData: Data, isSigned: Bool, isEncrypted: Bool) {
+        self.rawData = rawData
+        self.isSigned = isSigned
+        self.isEncrypted = isEncrypted
+    }
 }
 
 /// Capability report used for Mail's compose-window status.
@@ -69,6 +75,12 @@ public struct EncodingStatus {
     public let canEncrypt: Bool
     /// Recipients for which no public key was found.
     public let missingRecipientKeys: [String]
+
+    public init(canSign: Bool, canEncrypt: Bool, missingRecipientKeys: [String]) {
+        self.canSign = canSign
+        self.canEncrypt = canEncrypt
+        self.missingRecipientKeys = missingRecipientKeys
+    }
 }
 
 /// One verified signer of a decoded message.
@@ -79,6 +91,12 @@ public struct SignerInfo: Equatable {
     public let userID: String?
     /// Verification status of the signature.
     public let status: RnpSignatureStatus
+
+    public init(fingerprint: String?, userID: String?, status: RnpSignatureStatus) {
+        self.fingerprint = fingerprint
+        self.userID = userID
+        self.status = status
+    }
 }
 
 /// Security outcome of a decode operation, mapped by the MailKit layer to
@@ -93,6 +111,18 @@ public struct SecurityInformation {
     /// Encryption-side failure to report (undecryptable message).
     public let encryptionError: Error?
 
+    public init(
+        isEncrypted: Bool,
+        signers: [SignerInfo],
+        signingError: Error?,
+        encryptionError: Error?
+    ) {
+        self.isEncrypted = isEncrypted
+        self.signers = signers
+        self.signingError = signingError
+        self.encryptionError = encryptionError
+    }
+
     /// Whether at least one signature verified successfully.
     public var hasValidSignature: Bool {
         signers.contains { $0.status == .valid }
@@ -105,6 +135,11 @@ public struct DecodedMessage {
     /// message should be shown as-is (e.g. decryption failed).
     public let data: Data?
     public let security: SecurityInformation
+
+    public init(data: Data?, security: SecurityInformation) {
+        self.data = data
+        self.security = security
+    }
 }
 
 /// Errors thrown by `MailSecurityEngine`.

@@ -2,31 +2,31 @@
 //  main.swift
 //  Swift-Rnp
 //
-//  Created by Sergey Vinogradov on 21.11.2021.
+//  CLI demo of the Rnp Swift package: prints the librnp version and runs a
+//  generate/encrypt/decrypt smoke roundtrip.
 //
 
 import Foundation
+import Rnp
 
-// TODO: next flags check isn't work as well #if ARCHITECTURE_INTEL, because it happen in bridhging header
-// FIXME: For the moment only Intel lib is ready
-let format = RnpConstants.rnpKeyStoreFormat_(toString: .gpg)
-let object = RnpObject(pubFormat: format, secFormat: format)
+print("librnp \(Rnp.versionStringFull)")
 
-let userId = "userId@key"
-let password = "userPass"
-if !object.hasOwnKeys {
-    do {
-        try object.createKeys(userId, password: password)
-        print("Keys are generated")
-    } catch {
-        print("Keys aren't generated \(error.localizedDescription)")
+do {
+    let rnp = try Rnp(password: "password")
+    let userID = "Swift-Rnp Demo <demo@example.com>"
+    try rnp.generateKey(json: Rnp.rsaKeyGenJSON(userid: userID))
+    let key = try rnp.requireKey(userID)
+    print("generated RSA key: \(try key.fingerprint)")
+
+    let message = Data("What a day!".utf8)
+    let encrypted = try rnp.encrypt(message, for: [key])
+    let decrypted = try rnp.decrypt(encrypted)
+    guard decrypted == message else {
+        fputs("roundtrip mismatch\n", stderr)
+        exit(1)
     }
-}
-
-let text: String = "What a day!"
-if object.hasOwnKeys,
-   let message = try? object.encryptString(text, userId: userId, password: password),
-   let data: Data = message.data(using: .utf8),
-   let decrypted = try? object.decryptData(data, password: password) {
-    print("encoded and decoded - \(decrypted)")
+    print("encrypt/decrypt roundtrip OK: \(String(decoding: decrypted, as: UTF8.self))")
+} catch {
+    fputs("error: \(error.localizedDescription)\n", stderr)
+    exit(1)
 }

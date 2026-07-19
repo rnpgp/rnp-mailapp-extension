@@ -7,313 +7,208 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2A010A032751125B006CEF05 /* MailExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A010A022751125B006CEF05 /* MailExtension.swift */; };
-		2A010A052751125B006CEF05 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A010A042751125B006CEF05 /* MessageSecurityHandler.swift */; };
-		2A010A072751125B006CEF05 /* MessageSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A010A062751125B006CEF05 /* MessageSecurityViewController.swift */; };
-		2A010A092751125B006CEF05 /* MessageSecurityViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A010A082751125B006CEF05 /* MessageSecurityViewController.xib */; };
-		2A010A182756B865006CEF05 /* MailExtensionsContainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A010A172756B865006CEF05 /* MailExtensionsContainerApp.swift */; };
-		2A010A1A2756B865006CEF05 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A010A192756B865006CEF05 /* ContentView.swift */; };
-		2A010A1C2756B867006CEF05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A010A1B2756B867006CEF05 /* Assets.xcassets */; };
-		2A010A1F2756B867006CEF05 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A010A1E2756B867006CEF05 /* Preview Assets.xcassets */; };
-		2A010A252756B871006CEF05 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2A010A002751125B006CEF05 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		2A268EDE27C6852000C0CB14 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2A268EDD27C6852000C0CB14 /* RNPFramework */; };
-		2A49BAD627DA021000204DC6 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2A49BAD527DA021000204DC6 /* RNPFramework */; };
-		2A49BAD827DA021F00204DC6 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2A49BAD727DA021F00204DC6 /* RNPFramework */; };
-		2A6A06292807627700E1D1CF /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A06282807627700E1D1CF /* Result.swift */; };
-		2A6A062A2807627700E1D1CF /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A06282807627700E1D1CF /* Result.swift */; };
-		2A6A062B2807627700E1D1CF /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A06282807627700E1D1CF /* Result.swift */; };
-		2A6A062D28076D4700E1D1CF /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A062C28076D4700E1D1CF /* Error.swift */; };
-		2A6A062E28076D4700E1D1CF /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A062C28076D4700E1D1CF /* Error.swift */; };
-		2A6A062F28076D4700E1D1CF /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A062C28076D4700E1D1CF /* Error.swift */; };
-		2A7484F4276697FD002FC967 /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F3276697FD002FC967 /* KeysListView.swift */; };
-		2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F527669819002FC967 /* KeysListViewModel.swift */; };
-		2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F9276698B5002FC967 /* KeyFile.swift */; };
-		2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FB2766A081002FC967 /* KeysManager.swift */; };
-		2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FF2766A38B002FC967 /* ContentViewModel.swift */; };
-		2A787CD7274A9ED000997396 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A787CD6274A9ED000997396 /* main.swift */; };
-		2ACA9E5D27EBD1B100B43565 /* MimeParser in Frameworks */ = {isa = PBXBuildFile; productRef = 2ACA9E5C27EBD1B100B43565 /* MimeParser */; };
-		2ACA9E5E27ECBA6700B43565 /* KeyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484F9276698B5002FC967 /* KeyFile.swift */; };
-		2ACA9E5F27ECBA7100B43565 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7484FB2766A081002FC967 /* KeysManager.swift */; };
-		2ACA9E6127F2299000B43565 /* RnpMessageDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6027F2299000B43565 /* RnpMessageDecoder.swift */; };
-		2ACA9E6527F74E9D00B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
-		2ACA9E6627F74E9D00B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
-		2ACA9E6827FA4EB800B43565 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */; };
-		2AD2523B280073260010AEF8 /* RnpMessageEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523A280073260010AEF8 /* RnpMessageEncoder.swift */; };
-		2AD2523D28008BD80010AEF8 /* MessageSecurityError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523C28008BD80010AEF8 /* MessageSecurityError.swift */; };
-		2AD2523F280334790010AEF8 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523E280334790010AEF8 /* String.swift */; };
-		2AD25240280334790010AEF8 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523E280334790010AEF8 /* String.swift */; };
-		2AD25241280334790010AEF8 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD2523E280334790010AEF8 /* String.swift */; };
-		2AD356EE27D5453B00F658D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD356ED27D5453B00F658D9 /* main.m */; };
-		2AD356F327D5455700F658D9 /* RNPFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 2AD356F227D5455700F658D9 /* RNPFramework */; };
-		2AD356F927D901D400F658D9 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD356F827D901D300F658D9 /* RnpFacade.swift */; };
-		2AD356FA27D901D400F658D9 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD356F827D901D300F658D9 /* RnpFacade.swift */; };
-		2AD356FB27D901D400F658D9 /* RnpFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD356F827D901D300F658D9 /* RnpFacade.swift */; };
+		AA1000000000000000000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000001 /* main.swift */; };
+		AA1000000000000000000002 /* MailExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000003 /* MailExtension.swift */; };
+		AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000004 /* MessageSecurityHandler.swift */; };
+		AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000005 /* MessageSecurityViewController.swift */; };
+		AA1000000000000000000005 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000010 /* AppGroup.swift */; };
+		AA1000000000000000000006 /* KeychainPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000011 /* KeychainPassphraseStore.swift */; };
+		AA1000000000000000000007 /* MailExtensionsContainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000008 /* MailExtensionsContainerApp.swift */; };
+		AA1000000000000000000008 /* KeysManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000009 /* KeysManager.swift */; };
+		AA1000000000000000000009 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000A /* ContentView.swift */; };
+		AA100000000000000000000A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000B /* ContentViewModel.swift */; };
+		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
+		AA100000000000000000000C /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000010 /* AppGroup.swift */; };
+		AA100000000000000000000D /* KeychainPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000011 /* KeychainPassphraseStore.swift */; };
+		AA100000000000000000000E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* Assets.xcassets */; };
+		AA100000000000000000000F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000E /* Preview Assets.xcassets */; };
+		AA1000000000000000000010 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA1000000000000000000011 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000001 /* Rnp */; };
+		AA1000000000000000000012 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000002 /* Rnp */; };
+		AA1000000000000000000013 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000003 /* MailSecurityEngine */; };
+		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
+		AA1000000000000000000015 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000005 /* MailSecurityEngine */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2A010A262756B871006CEF05 /* PBXContainerItemProxy */ = {
+		AA7000000000000000000001 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2A787CCB274A9ED000997396 /* Project object */;
+			containerPortal = AA787CCB0000000000000001 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 2A0109FF2751125B006CEF05;
+			remoteGlobalIDString = AA4000000000000000000002;
 			remoteInfo = MailPlugin;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		2A010A282756B871006CEF05 /* Embed App Extensions */ = {
+		AA6000000000000000000009 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				2A010A252756B871006CEF05 /* MailPlugin.appex in Embed App Extensions */,
+				AA1000000000000000000010 /* MailPlugin.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A787CD1274A9ED000997396 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-		2AD356E927D5453B00F658D9 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2A010A002751125B006CEF05 /* MailPlugin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailPlugin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A010A022751125B006CEF05 /* MailExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtension.swift; sourceTree = "<group>"; };
-		2A010A042751125B006CEF05 /* MessageSecurityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityHandler.swift; sourceTree = "<group>"; };
-		2A010A062751125B006CEF05 /* MessageSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityViewController.swift; sourceTree = "<group>"; };
-		2A010A082751125B006CEF05 /* MessageSecurityViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageSecurityViewController.xib; sourceTree = "<group>"; };
-		2A010A0A2751125B006CEF05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2A010A0B2751125B006CEF05 /* MailPlugin.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MailPlugin.entitlements; sourceTree = "<group>"; };
-		2A010A152756B865006CEF05 /* Ribose container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ribose container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A010A172756B865006CEF05 /* MailExtensionsContainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtensionsContainerApp.swift; sourceTree = "<group>"; };
-		2A010A192756B865006CEF05 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		2A010A1B2756B867006CEF05 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		2A010A1E2756B867006CEF05 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2A010A202756B867006CEF05 /* MailExtensionsContainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MailExtensionsContainer.entitlements; sourceTree = "<group>"; };
-		2A268EDC27C6851700C0CB14 /* RNPFrameworkLocal */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNPFrameworkLocal; path = ../../MailKitExtension/RNPFrameworkLocal; sourceTree = "<group>"; };
-		2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift-Rnp-Bridging-Header.h"; sourceTree = "<group>"; };
-		2A6A06282807627700E1D1CF /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
-		2A6A062C28076D4700E1D1CF /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		2A7484F3276697FD002FC967 /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
-		2A7484F527669819002FC967 /* KeysListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListViewModel.swift; sourceTree = "<group>"; };
-		2A7484F9276698B5002FC967 /* KeyFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFile.swift; sourceTree = "<group>"; };
-		2A7484FB2766A081002FC967 /* KeysManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysManager.swift; sourceTree = "<group>"; };
-		2A7484FF2766A38B002FC967 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
-		2A787CD3274A9ED000997396 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A787CD6274A9ED000997396 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		2ACA9E6027F2299000B43565 /* RnpMessageDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpMessageDecoder.swift; sourceTree = "<group>"; };
-		2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
-		2AD2523A280073260010AEF8 /* RnpMessageEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpMessageEncoder.swift; sourceTree = "<group>"; };
-		2AD2523C28008BD80010AEF8 /* MessageSecurityError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityError.swift; sourceTree = "<group>"; };
-		2AD2523E280334790010AEF8 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
-		2AD356EB27D5453B00F658D9 /* ObjC-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ObjC-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2AD356ED27D5453B00F658D9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2AD356F627D7E07400F658D9 /* ObjC-Rnp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ObjC-Rnp.entitlements"; sourceTree = "<group>"; };
-		2AD356F827D901D300F658D9 /* RnpFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpFacade.swift; sourceTree = "<group>"; };
-		2AE2C83F27C542250090ACFD /* RNPFramework.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RNPFramework.xcframework; path = ../../MailKitExtension/FrameworkOutput/RNPFramework.xcframework; sourceTree = "<group>"; };
+		AA2000000000000000000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		AA2000000000000000000002 /* librnp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = librnp.xcconfig; sourceTree = "<group>"; };
+		AA2000000000000000000003 /* MailExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtension.swift; sourceTree = "<group>"; };
+		AA2000000000000000000004 /* MessageSecurityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityHandler.swift; sourceTree = "<group>"; };
+		AA2000000000000000000005 /* MessageSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityViewController.swift; sourceTree = "<group>"; };
+		AA2000000000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA2000000000000000000007 /* MailPlugin.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MailPlugin.entitlements; sourceTree = "<group>"; };
+		AA2000000000000000000008 /* MailExtensionsContainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtensionsContainerApp.swift; sourceTree = "<group>"; };
+		AA2000000000000000000009 /* KeysManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysManager.swift; sourceTree = "<group>"; };
+		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
+		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
+		AA200000000000000000000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA200000000000000000000E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		AA200000000000000000000F /* MailExtensionsContainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MailExtensionsContainer.entitlements; sourceTree = "<group>"; };
+		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
+		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPassphraseStore.swift; sourceTree = "<group>"; };
+		AA5000000000000000000001 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA5000000000000000000002 /* MailPlugin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailPlugin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA5000000000000000000003 /* Ribose container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ribose container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2A0109FD2751125B006CEF05 /* Frameworks */ = {
+		AA6000000000000000000002 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A49BAD627DA021000204DC6 /* RNPFramework in Frameworks */,
-				2ACA9E5D27EBD1B100B43565 /* MimeParser in Frameworks */,
+				AA1000000000000000000011 /* Rnp in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A010A122756B865006CEF05 /* Frameworks */ = {
+		AA6000000000000000000004 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A49BAD827DA021F00204DC6 /* RNPFramework in Frameworks */,
+				AA1000000000000000000012 /* Rnp in Frameworks */,
+				AA1000000000000000000013 /* MailSecurityEngine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A787CD0274A9ED000997396 /* Frameworks */ = {
+		AA6000000000000000000007 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A268EDE27C6852000C0CB14 /* RNPFramework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2AD356E827D5453B00F658D9 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2AD356F327D5455700F658D9 /* RNPFramework in Frameworks */,
+				AA1000000000000000000014 /* Rnp in Frameworks */,
+				AA1000000000000000000015 /* MailSecurityEngine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2A010A012751125B006CEF05 /* MailPlugin */ = {
+		AA3000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
-				2A010A022751125B006CEF05 /* MailExtension.swift */,
-				2A010A042751125B006CEF05 /* MessageSecurityHandler.swift */,
-				2A010A062751125B006CEF05 /* MessageSecurityViewController.swift */,
-				2A010A082751125B006CEF05 /* MessageSecurityViewController.xib */,
-				2A010A0A2751125B006CEF05 /* Info.plist */,
-				2A010A0B2751125B006CEF05 /* MailPlugin.entitlements */,
-				2AD2523C28008BD80010AEF8 /* MessageSecurityError.swift */,
-				2ACA9E6027F2299000B43565 /* RnpMessageDecoder.swift */,
-				2AD2523A280073260010AEF8 /* RnpMessageEncoder.swift */,
-			);
-			path = MailPlugin;
-			sourceTree = "<group>";
-		};
-		2A010A162756B865006CEF05 /* MailExtensionsContainer */ = {
-			isa = PBXGroup;
-			children = (
-				2A7484F8276698AB002FC967 /* Model */,
-				2A7484FE2766A351002FC967 /* View */,
-				2A010A172756B865006CEF05 /* MailExtensionsContainerApp.swift */,
-				2A010A1B2756B867006CEF05 /* Assets.xcassets */,
-				2A010A202756B867006CEF05 /* MailExtensionsContainer.entitlements */,
-				2A010A1D2756B867006CEF05 /* Preview Content */,
-			);
-			path = MailExtensionsContainer;
-			sourceTree = "<group>";
-		};
-		2A010A1D2756B867006CEF05 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				2A010A1E2756B867006CEF05 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		2A010A242756B871006CEF05 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				2AE2C83F27C542250090ACFD /* RNPFramework.xcframework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		2A268EDB27C6851700C0CB14 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				2A268EDC27C6851700C0CB14 /* RNPFrameworkLocal */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
-		2A6A06272807625D00E1D1CF /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				2AD2523E280334790010AEF8 /* String.swift */,
-				2ACA9E6427F74E9D00B43565 /* UserDefaults.swift */,
-				2A6A06282807627700E1D1CF /* Result.swift */,
-				2A6A062C28076D4700E1D1CF /* Error.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		2A7484F727669870002FC967 /* KeysList */ = {
-			isa = PBXGroup;
-			children = (
-				2A7484F3276697FD002FC967 /* KeysListView.swift */,
-				2A7484F527669819002FC967 /* KeysListViewModel.swift */,
-			);
-			path = KeysList;
-			sourceTree = "<group>";
-		};
-		2A7484F8276698AB002FC967 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				2A7484F9276698B5002FC967 /* KeyFile.swift */,
-				2A7484FB2766A081002FC967 /* KeysManager.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		2A7484FD2766A33F002FC967 /* ContentView */ = {
-			isa = PBXGroup;
-			children = (
-				2A010A192756B865006CEF05 /* ContentView.swift */,
-				2A7484FF2766A38B002FC967 /* ContentViewModel.swift */,
-			);
-			path = ContentView;
-			sourceTree = "<group>";
-		};
-		2A7484FE2766A351002FC967 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				2A7484F727669870002FC967 /* KeysList */,
-				2A7484FD2766A33F002FC967 /* ContentView */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		2A787CCA274A9ED000997396 = {
-			isa = PBXGroup;
-			children = (
-				2AD356F727D901A000F658D9 /* Shared */,
-				2A268EDB27C6851700C0CB14 /* Packages */,
-				2A787CD5274A9ED000997396 /* Swift-Rnp */,
-				2A010A012751125B006CEF05 /* MailPlugin */,
-				2A010A162756B865006CEF05 /* MailExtensionsContainer */,
-				2AD356EC27D5453B00F658D9 /* ObjC-Rnp */,
-				2A787CD4274A9ED000997396 /* Products */,
-				2A010A242756B871006CEF05 /* Frameworks */,
+				AA2000000000000000000002 /* librnp.xcconfig */,
+				AA300000000000000000000B /* Shared */,
+				AA3000000000000000000003 /* Swift-Rnp */,
+				AA3000000000000000000004 /* MailPlugin */,
+				AA3000000000000000000005 /* MailExtensionsContainer */,
+				AA3000000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		2A787CD4274A9ED000997396 /* Products */ = {
+		AA3000000000000000000002 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2A787CD3274A9ED000997396 /* Swift-Rnp */,
-				2A010A002751125B006CEF05 /* MailPlugin.appex */,
-				2A010A152756B865006CEF05 /* Ribose container.app */,
-				2AD356EB27D5453B00F658D9 /* ObjC-Rnp */,
+				AA5000000000000000000001 /* Swift-Rnp */,
+				AA5000000000000000000002 /* MailPlugin.appex */,
+				AA5000000000000000000003 /* Ribose container.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2A787CD5274A9ED000997396 /* Swift-Rnp */ = {
+		AA3000000000000000000003 /* Swift-Rnp */ = {
 			isa = PBXGroup;
 			children = (
-				2A787CD6274A9ED000997396 /* main.swift */,
-				2A2DABCF274D665A00F56F26 /* Swift-Rnp-Bridging-Header.h */,
+				AA2000000000000000000001 /* main.swift */,
 			);
 			path = "Swift-Rnp";
 			sourceTree = "<group>";
 		};
-		2AD356EC27D5453B00F658D9 /* ObjC-Rnp */ = {
+		AA3000000000000000000004 /* MailPlugin */ = {
 			isa = PBXGroup;
 			children = (
-				2AD356F627D7E07400F658D9 /* ObjC-Rnp.entitlements */,
-				2AD356ED27D5453B00F658D9 /* main.m */,
+				AA2000000000000000000003 /* MailExtension.swift */,
+				AA2000000000000000000004 /* MessageSecurityHandler.swift */,
+				AA2000000000000000000005 /* MessageSecurityViewController.swift */,
+				AA2000000000000000000006 /* Info.plist */,
+				AA2000000000000000000007 /* MailPlugin.entitlements */,
 			);
-			path = "ObjC-Rnp";
+			path = MailPlugin;
 			sourceTree = "<group>";
 		};
-		2AD356F727D901A000F658D9 /* Shared */ = {
+		AA3000000000000000000005 /* MailExtensionsContainer */ = {
 			isa = PBXGroup;
 			children = (
-				2A6A06272807625D00E1D1CF /* Extensions */,
-				2AD356F827D901D300F658D9 /* RnpFacade.swift */,
+				AA3000000000000000000006 /* Model */,
+				AA3000000000000000000007 /* View */,
+				AA2000000000000000000008 /* MailExtensionsContainerApp.swift */,
+				AA200000000000000000000D /* Assets.xcassets */,
+				AA200000000000000000000F /* MailExtensionsContainer.entitlements */,
+				AA300000000000000000000A /* Preview Content */,
+			);
+			path = MailExtensionsContainer;
+			sourceTree = "<group>";
+		};
+		AA3000000000000000000006 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				AA2000000000000000000009 /* KeysManager.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		AA3000000000000000000007 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				AA3000000000000000000008 /* ContentView */,
+				AA3000000000000000000009 /* KeysList */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		AA3000000000000000000008 /* ContentView */ = {
+			isa = PBXGroup;
+			children = (
+				AA200000000000000000000A /* ContentView.swift */,
+				AA200000000000000000000B /* ContentViewModel.swift */,
+			);
+			path = ContentView;
+			sourceTree = "<group>";
+		};
+		AA3000000000000000000009 /* KeysList */ = {
+			isa = PBXGroup;
+			children = (
+				AA200000000000000000000C /* KeysListView.swift */,
+			);
+			path = KeysList;
+			sourceTree = "<group>";
+		};
+		AA300000000000000000000A /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				AA200000000000000000000E /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		AA300000000000000000000B /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				AA2000000000000000000010 /* AppGroup.swift */,
+				AA2000000000000000000011 /* KeychainPassphraseStore.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -321,56 +216,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2A0109FF2751125B006CEF05 /* MailPlugin */ = {
+		AA4000000000000000000001 /* Swift-Rnp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2A010A0E2751125B006CEF05 /* Build configuration list for PBXNativeTarget "MailPlugin" */;
+			buildConfigurationList = AA9000000000000000000002 /* Build configuration list for PBXNativeTarget "Swift-Rnp" */;
 			buildPhases = (
-				2A0109FC2751125B006CEF05 /* Sources */,
-				2A0109FD2751125B006CEF05 /* Frameworks */,
-				2A0109FE2751125B006CEF05 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = MailPlugin;
-			packageProductDependencies = (
-				2A49BAD527DA021000204DC6 /* RNPFramework */,
-				2ACA9E5C27EBD1B100B43565 /* MimeParser */,
-			);
-			productName = MailPlugin;
-			productReference = 2A010A002751125B006CEF05 /* MailPlugin.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
-		2A010A142756B865006CEF05 /* Ribose container */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2A010A232756B867006CEF05 /* Build configuration list for PBXNativeTarget "Ribose container" */;
-			buildPhases = (
-				2A010A112756B865006CEF05 /* Sources */,
-				2A010A122756B865006CEF05 /* Frameworks */,
-				2A010A132756B865006CEF05 /* Resources */,
-				2A010A282756B871006CEF05 /* Embed App Extensions */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				2A010A272756B871006CEF05 /* PBXTargetDependency */,
-			);
-			name = "Ribose container";
-			packageProductDependencies = (
-				2A49BAD727DA021F00204DC6 /* RNPFramework */,
-			);
-			productName = MailExtensionsContainer;
-			productReference = 2A010A152756B865006CEF05 /* Ribose container.app */;
-			productType = "com.apple.product-type.application";
-		};
-		2A787CD2274A9ED000997396 /* Swift-Rnp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2A787CDA274A9ED000997396 /* Build configuration list for PBXNativeTarget "Swift-Rnp" */;
-			buildPhases = (
-				2A787CCF274A9ED000997396 /* Sources */,
-				2A787CD0274A9ED000997396 /* Frameworks */,
-				2A787CD1274A9ED000997396 /* CopyFiles */,
+				AA6000000000000000000001 /* Sources */,
+				AA6000000000000000000002 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -378,58 +229,79 @@
 			);
 			name = "Swift-Rnp";
 			packageProductDependencies = (
-				2A268EDD27C6852000C0CB14 /* RNPFramework */,
+				AAC000000000000000000001 /* Rnp */,
 			);
 			productName = "Swift-Rnp";
-			productReference = 2A787CD3274A9ED000997396 /* Swift-Rnp */;
+			productReference = AA5000000000000000000001 /* Swift-Rnp */;
 			productType = "com.apple.product-type.tool";
 		};
-		2AD356EA27D5453B00F658D9 /* ObjC-Rnp */ = {
+		AA4000000000000000000002 /* MailPlugin */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2AD356F127D5453B00F658D9 /* Build configuration list for PBXNativeTarget "ObjC-Rnp" */;
+			buildConfigurationList = AA9000000000000000000003 /* Build configuration list for PBXNativeTarget "MailPlugin" */;
 			buildPhases = (
-				2AD356E727D5453B00F658D9 /* Sources */,
-				2AD356E827D5453B00F658D9 /* Frameworks */,
-				2AD356E927D5453B00F658D9 /* CopyFiles */,
+				AA6000000000000000000003 /* Sources */,
+				AA6000000000000000000004 /* Frameworks */,
+				AA6000000000000000000005 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "ObjC-Rnp";
+			name = MailPlugin;
 			packageProductDependencies = (
-				2AD356F227D5455700F658D9 /* RNPFramework */,
+				AAC000000000000000000002 /* Rnp */,
+				AAC000000000000000000003 /* MailSecurityEngine */,
 			);
-			productName = "ObjC-Rnp";
-			productReference = 2AD356EB27D5453B00F658D9 /* ObjC-Rnp */;
-			productType = "com.apple.product-type.tool";
+			productName = MailPlugin;
+			productReference = AA5000000000000000000002 /* MailPlugin.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		AA4000000000000000000003 /* Ribose container */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA9000000000000000000004 /* Build configuration list for PBXNativeTarget "Ribose container" */;
+			buildPhases = (
+				AA6000000000000000000006 /* Sources */,
+				AA6000000000000000000007 /* Frameworks */,
+				AA6000000000000000000008 /* Resources */,
+				AA6000000000000000000009 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA7000000000000000000002 /* PBXTargetDependency */,
+			);
+			name = "Ribose container";
+			packageProductDependencies = (
+				AAC000000000000000000004 /* Rnp */,
+				AAC000000000000000000005 /* MailSecurityEngine */,
+			);
+			productName = "Ribose container";
+			productReference = AA5000000000000000000003 /* Ribose container.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		2A787CCB274A9ED000997396 /* Project object */ = {
+		AA787CCB0000000000000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1310;
-				LastUpgradeCheck = 1310;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					2A0109FF2751125B006CEF05 = {
-						CreatedOnToolsVersion = 13.1;
-					};
-					2A010A142756B865006CEF05 = {
-						CreatedOnToolsVersion = 13.1;
-					};
-					2A787CD2274A9ED000997396 = {
+					AA4000000000000000000001 = {
 						CreatedOnToolsVersion = 13.1;
 						LastSwiftMigration = 1310;
 					};
-					2AD356EA27D5453B00F658D9 = {
+					AA4000000000000000000002 = {
+						CreatedOnToolsVersion = 13.1;
+					};
+					AA4000000000000000000003 = {
 						CreatedOnToolsVersion = 13.1;
 					};
 				};
 			};
-			buildConfigurationList = 2A787CCE274A9ED000997396 /* Build configuration list for PBXProject "Swift-Rnp" */;
+			buildConfigurationList = AA9000000000000000000001 /* Build configuration list for PBXProject "Swift-Rnp" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -437,239 +309,87 @@
 				en,
 				Base,
 			);
-			mainGroup = 2A787CCA274A9ED000997396;
+			mainGroup = AA3000000000000000000001;
 			packageReferences = (
-				2ACA9E5B27EBD1B100B43565 /* XCRemoteSwiftPackageReference "MimeParser" */,
+				AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */,
 			);
-			productRefGroup = 2A787CD4274A9ED000997396 /* Products */;
+			productRefGroup = AA3000000000000000000002 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2A787CD2274A9ED000997396 /* Swift-Rnp */,
-				2A0109FF2751125B006CEF05 /* MailPlugin */,
-				2A010A142756B865006CEF05 /* Ribose container */,
-				2AD356EA27D5453B00F658D9 /* ObjC-Rnp */,
+				AA4000000000000000000001 /* Swift-Rnp */,
+				AA4000000000000000000002 /* MailPlugin */,
+				AA4000000000000000000003 /* Ribose container */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		2A0109FE2751125B006CEF05 /* Resources */ = {
+		AA6000000000000000000005 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A010A092751125B006CEF05 /* MessageSecurityViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A010A132756B865006CEF05 /* Resources */ = {
+		AA6000000000000000000008 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A010A1F2756B867006CEF05 /* Preview Assets.xcassets in Resources */,
-				2A010A1C2756B867006CEF05 /* Assets.xcassets in Resources */,
+				AA100000000000000000000F /* Preview Assets.xcassets in Resources */,
+				AA100000000000000000000E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2A0109FC2751125B006CEF05 /* Sources */ = {
+		AA6000000000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2ACA9E6127F2299000B43565 /* RnpMessageDecoder.swift in Sources */,
-				2AD25240280334790010AEF8 /* String.swift in Sources */,
-				2ACA9E5E27ECBA6700B43565 /* KeyFile.swift in Sources */,
-				2A6A062E28076D4700E1D1CF /* Error.swift in Sources */,
-				2A010A052751125B006CEF05 /* MessageSecurityHandler.swift in Sources */,
-				2A010A032751125B006CEF05 /* MailExtension.swift in Sources */,
-				2AD2523D28008BD80010AEF8 /* MessageSecurityError.swift in Sources */,
-				2A6A062A2807627700E1D1CF /* Result.swift in Sources */,
-				2ACA9E6527F74E9D00B43565 /* UserDefaults.swift in Sources */,
-				2ACA9E5F27ECBA7100B43565 /* KeysManager.swift in Sources */,
-				2AD2523B280073260010AEF8 /* RnpMessageEncoder.swift in Sources */,
-				2AD356FA27D901D400F658D9 /* RnpFacade.swift in Sources */,
-				2A010A072751125B006CEF05 /* MessageSecurityViewController.swift in Sources */,
+				AA1000000000000000000001 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A010A112756B865006CEF05 /* Sources */ = {
+		AA6000000000000000000003 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A7484F4276697FD002FC967 /* KeysListView.swift in Sources */,
-				2A010A1A2756B865006CEF05 /* ContentView.swift in Sources */,
-				2AD25241280334790010AEF8 /* String.swift in Sources */,
-				2A7484FA276698B5002FC967 /* KeyFile.swift in Sources */,
-				2A6A062F28076D4700E1D1CF /* Error.swift in Sources */,
-				2A7484F627669819002FC967 /* KeysListViewModel.swift in Sources */,
-				2A7484FC2766A081002FC967 /* KeysManager.swift in Sources */,
-				2ACA9E6627F74E9D00B43565 /* UserDefaults.swift in Sources */,
-				2A7485002766A38B002FC967 /* ContentViewModel.swift in Sources */,
-				2AD356FB27D901D400F658D9 /* RnpFacade.swift in Sources */,
-				2A010A182756B865006CEF05 /* MailExtensionsContainerApp.swift in Sources */,
-				2A6A062B2807627700E1D1CF /* Result.swift in Sources */,
+				AA1000000000000000000002 /* MailExtension.swift in Sources */,
+				AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */,
+				AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */,
+				AA1000000000000000000005 /* AppGroup.swift in Sources */,
+				AA1000000000000000000006 /* KeychainPassphraseStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A787CCF274A9ED000997396 /* Sources */ = {
+		AA6000000000000000000006 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2AD356F927D901D400F658D9 /* RnpFacade.swift in Sources */,
-				2A6A06292807627700E1D1CF /* Result.swift in Sources */,
-				2A787CD7274A9ED000997396 /* main.swift in Sources */,
-				2AD2523F280334790010AEF8 /* String.swift in Sources */,
-				2A6A062D28076D4700E1D1CF /* Error.swift in Sources */,
-				2ACA9E6827FA4EB800B43565 /* UserDefaults.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2AD356E727D5453B00F658D9 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2AD356EE27D5453B00F658D9 /* main.m in Sources */,
+				AA1000000000000000000007 /* MailExtensionsContainerApp.swift in Sources */,
+				AA1000000000000000000008 /* KeysManager.swift in Sources */,
+				AA1000000000000000000009 /* ContentView.swift in Sources */,
+				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
+				AA100000000000000000000B /* KeysListView.swift in Sources */,
+				AA100000000000000000000C /* AppGroup.swift in Sources */,
+				AA100000000000000000000D /* KeychainPassphraseStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2A010A272756B871006CEF05 /* PBXTargetDependency */ = {
+		AA7000000000000000000002 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2A0109FF2751125B006CEF05 /* MailPlugin */;
-			targetProxy = 2A010A262756B871006CEF05 /* PBXContainerItemProxy */;
+			target = AA4000000000000000000002 /* MailPlugin */;
+			targetProxy = AA7000000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2A010A0C2751125B006CEF05 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MailPlugin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RNP plugin";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Swift-Rnp",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		2A010A0D2751125B006CEF05 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MailPlugin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RNP plugin";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Swift-Rnp",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		2A010A212756B867006CEF05 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/MailExtensionsContainer.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Swift-Rnp",
-				);
-				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		2A010A222756B867006CEF05 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/MailExtensionsContainer.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Swift-Rnp",
-				);
-				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.Container;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		2A787CD8274A9ED000997396 /* Debug */ = {
+		AA8000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -706,7 +426,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				EXCLUDED_ARCHS = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -727,12 +446,11 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		2A787CD9274A9ED000997396 /* Release */ = {
+		AA8000000000000000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -769,7 +487,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				EXCLUDED_ARCHS = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -783,13 +500,13 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
 		};
-		2A787CDB274A9ED000997396 /* Debug */ = {
+		AA8000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -797,20 +514,17 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Swift-Rnp",
+					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
-		2A787CDC274A9ED000997396 /* Release */ = {
+		AA8000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -818,123 +532,200 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Swift-Rnp",
+					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Swift-Rnp/Swift-Rnp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
-		2AD356EF27D5453B00F658D9 /* Debug */ = {
+		AA8000000000000000000005 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "ObjC-Rnp/ObjC-Rnp.entitlements";
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = C873229R2B;
-				ENABLE_HARDENED_RUNTIME = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MailPlugin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
+				);
+				MARKETING_VERSION = 0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ribose.swift-rnp.container.MailPlugin";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
-		2AD356F027D5453B00F658D9 /* Release */ = {
+		AA8000000000000000000006 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "ObjC-Rnp/ObjC-Rnp.entitlements";
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = MailPlugin/MailPlugin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = C873229R2B;
-				ENABLE_HARDENED_RUNTIME = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MailPlugin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
+				);
+				MARKETING_VERSION = 0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ribose.swift-rnp.container.MailPlugin";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		AA8000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/MailExtensionsContainer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
+				);
+				MARKETING_VERSION = 0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ribose.swift-rnp.container";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		AA8000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA2000000000000000000002 /* librnp.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/MailExtensionsContainer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MailExtensionsContainer/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"$(LIBRNP_RUNPATH_SEARCH_PATHS)",
+				);
+				MARKETING_VERSION = 0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ribose.swift-rnp.container";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2A010A0E2751125B006CEF05 /* Build configuration list for PBXNativeTarget "MailPlugin" */ = {
+		AA9000000000000000000001 /* Build configuration list for PBXProject "Swift-Rnp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A010A0C2751125B006CEF05 /* Debug */,
-				2A010A0D2751125B006CEF05 /* Release */,
+				AA8000000000000000000001 /* Debug */,
+				AA8000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2A010A232756B867006CEF05 /* Build configuration list for PBXNativeTarget "Ribose container" */ = {
+		AA9000000000000000000002 /* Build configuration list for PBXNativeTarget "Swift-Rnp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A010A212756B867006CEF05 /* Debug */,
-				2A010A222756B867006CEF05 /* Release */,
+				AA8000000000000000000003 /* Debug */,
+				AA8000000000000000000004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2A787CCE274A9ED000997396 /* Build configuration list for PBXProject "Swift-Rnp" */ = {
+		AA9000000000000000000003 /* Build configuration list for PBXNativeTarget "MailPlugin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A787CD8274A9ED000997396 /* Debug */,
-				2A787CD9274A9ED000997396 /* Release */,
+				AA8000000000000000000005 /* Debug */,
+				AA8000000000000000000006 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2A787CDA274A9ED000997396 /* Build configuration list for PBXNativeTarget "Swift-Rnp" */ = {
+		AA9000000000000000000004 /* Build configuration list for PBXNativeTarget "Ribose container" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A787CDB274A9ED000997396 /* Debug */,
-				2A787CDC274A9ED000997396 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2AD356F127D5453B00F658D9 /* Build configuration list for PBXNativeTarget "ObjC-Rnp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2AD356EF27D5453B00F658D9 /* Debug */,
-				2AD356F027D5453B00F658D9 /* Release */,
+				AA8000000000000000000007 /* Debug */,
+				AA8000000000000000000008 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		2ACA9E5B27EBD1B100B43565 /* XCRemoteSwiftPackageReference "MimeParser" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/miximka/MimeParser";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.4;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2A268EDD27C6852000C0CB14 /* RNPFramework */ = {
+		AAC000000000000000000001 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = RNPFramework;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			productName = Rnp;
 		};
-		2A49BAD527DA021000204DC6 /* RNPFramework */ = {
+		AAC000000000000000000002 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = RNPFramework;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			productName = Rnp;
 		};
-		2A49BAD727DA021F00204DC6 /* RNPFramework */ = {
+		AAC000000000000000000003 /* MailSecurityEngine */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = RNPFramework;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			productName = MailSecurityEngine;
 		};
-		2ACA9E5C27EBD1B100B43565 /* MimeParser */ = {
+		AAC000000000000000000004 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2ACA9E5B27EBD1B100B43565 /* XCRemoteSwiftPackageReference "MimeParser" */;
-			productName = MimeParser;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			productName = Rnp;
 		};
-		2AD356F227D5455700F658D9 /* RNPFramework */ = {
+		AAC000000000000000000005 /* MailSecurityEngine */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = RNPFramework;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference "swift-rnp" */;
+			productName = MailSecurityEngine;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 2A787CCB274A9ED000997396 /* Project object */;
+	rootObject = AA787CCB0000000000000001 /* Project object */;
 }

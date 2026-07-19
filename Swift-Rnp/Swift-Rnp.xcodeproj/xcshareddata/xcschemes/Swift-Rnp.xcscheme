@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AA4000000000000000000003"
-               BuildableName = "Ribose container.app"
-               BlueprintName = "Ribose container"
+               BlueprintIdentifier = "AA4000000000000000000001"
+               BuildableName = "Swift-Rnp"
+               BlueprintName = "Swift-Rnp"
                ReferencedContainer = "container:Swift-Rnp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,9 +44,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AA4000000000000000000003"
-            BuildableName = "Ribose container.app"
-            BlueprintName = "Ribose container"
+            BlueprintIdentifier = "AA4000000000000000000001"
+            BuildableName = "Swift-Rnp"
+            BlueprintName = "Swift-Rnp"
             ReferencedContainer = "container:Swift-Rnp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,9 +61,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AA4000000000000000000003"
-            BuildableName = "Ribose container.app"
-            BlueprintName = "Ribose container"
+            BlueprintIdentifier = "AA4000000000000000000001"
+            BuildableName = "Swift-Rnp"
+            BlueprintName = "Swift-Rnp"
             ReferencedContainer = "container:Swift-Rnp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

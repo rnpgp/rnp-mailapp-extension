@@ -2,20 +2,19 @@
 //  MailExtensionsContainerApp.swift
 //  MailExtensionsContainer
 //
-//  Created by Sergey Vinogradov on 30.11.2021.
+//  Container app for the RNP Mail extension: manages the shared OpenPGP
+//  keyring (generate, import, export, delete).
 //
 
 import SwiftUI
 
 @main
 struct MailExtensionsContainerApp: App {
-    var keysManager: KeysManager {
-        KeysManager(rnp: RnpFacade(pubFormat: .gpg, secFormat: .gpg))
-    }
-    
+    @StateObject private var keysManager = KeysManager()
+
     var body: some Scene {
         WindowGroup {
-            ContentView(model: ContentViewModel(manager: self.keysManager))
+            ContentView(model: ContentViewModel(manager: keysManager))
         }
     }
 }

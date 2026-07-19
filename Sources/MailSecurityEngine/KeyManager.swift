@@ -29,6 +29,13 @@ public struct KeyInfo: Equatable, Identifiable {
     public let userIDs: [String]
     public let hasSecret: Bool
 
+    public init(fingerprint: String, primaryUserID: String, userIDs: [String], hasSecret: Bool) {
+        self.fingerprint = fingerprint
+        self.primaryUserID = primaryUserID
+        self.userIDs = userIDs
+        self.hasSecret = hasSecret
+    }
+
     public var id: String { fingerprint }
 }
 
