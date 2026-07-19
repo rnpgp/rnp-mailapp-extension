@@ -32,6 +32,37 @@ public final class RnpKey {
         }
     }
 
+    /// All user IDs bound to the key.
+    public var userIDs: [String] {
+        get throws {
+            var count = 0
+            try rnpCheck(rnp_key_get_uid_count(handle, &count), operation: "key uid count")
+            return try (0 ..< count).map { index in
+                var uid: UnsafeMutablePointer<CChar>?
+                try rnpCheck(rnp_key_get_uid_at(handle, index, &uid), operation: "key uid")
+                return try rnpTakeString(uid, operation: "key uid")
+            }
+        }
+    }
+
+    /// The key's primary user ID.
+    public var primaryUserID: String {
+        get throws {
+            var uid: UnsafeMutablePointer<CChar>?
+            try rnpCheck(rnp_key_get_primary_uid(handle, &uid), operation: "key primary uid")
+            return try rnpTakeString(uid, operation: "key primary uid")
+        }
+    }
+
+    /// Whether the secret key material is available in the secret keyring.
+    public var hasSecret: Bool {
+        get throws {
+            var result = false
+            try rnpCheck(rnp_key_have_secret(handle, &result), operation: "key have secret")
+            return result
+        }
+    }
+
     /// Exports the key (including its subkeys) in OpenPGP format.
     ///
     /// - Parameters:

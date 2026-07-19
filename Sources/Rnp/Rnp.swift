@@ -32,7 +32,9 @@ public final class Rnp {
     /// "protect"). Return the passphrase, or `nil` to abort the operation.
     public typealias PassphraseProvider = (_ context: String) -> String?
 
-    private let ffi: rnp_ffi_t
+    /// Internal so extensions in sibling files (e.g. Verification.swift) can
+    /// run FFI operations on the context.
+    let ffi: rnp_ffi_t
     /// Internal so the C passphrase callback (a free function) can reach it.
     let passphraseProvider: PassphraseProvider
 
@@ -140,7 +142,7 @@ public final class Rnp {
     }
 
     /// JSON description of an RSA primary key (signing) with an RSA
-    /// encryption subkey, protected by the passphrase provider.
+    /// encryption subkey, both protected by the passphrase provider.
     ///
     /// `bits` defaults to 3072, the librnp 0.18 default RSA key length.
     public static func rsaKeyGenJSON(userid: String, bits: Int = 3072) -> String {
@@ -156,14 +158,16 @@ public final class Rnp {
             "sub": {
                 "type": "RSA",
                 "length": \(bits),
-                "usage": ["encrypt"]
+                "usage": ["encrypt"],
+                "protection": { "cipher": "AES256", "hash": "SHA256" }
             }
         }
         """
     }
 
     /// JSON description of an ECDSA P-256 primary key (signing) with an
-    /// ECDH P-256 encryption subkey, protected by the passphrase provider.
+    /// ECDH P-256 encryption subkey, both protected by the passphrase
+    /// provider.
     public static func ecdsaP256KeyGenJSON(userid: String) -> String {
         """
         {
@@ -177,7 +181,8 @@ public final class Rnp {
             "sub": {
                 "type": "ECDH",
                 "curve": "NIST P-256",
-                "usage": ["encrypt"]
+                "usage": ["encrypt"],
+                "protection": { "cipher": "AES256", "hash": "SHA256" }
             }
         }
         """
@@ -207,6 +212,66 @@ public final class Rnp {
             throw RnpError.keyNotFound(type: type, identifier: identifier)
         }
         return key
+    }
+
+    // MARK: - Key removal / enumeration
+
+    /// Removes a key from the keyrings (`rnp_key_remove`).
+    ///
+    /// Other handles of the same key must not be used after this call.
+    /// Persist the change with `savePublicKeys` / `saveSecretKeys`.
+    ///
+    /// - Parameters:
+    ///   - key: the key to remove.
+    ///   - public: remove the public part from the public keyring.
+    ///   - secret: remove the secret part from the secret keyring.
+    ///   - subkeys: also remove all subkeys (only meaningful for primary keys).
+    public func remove(
+        key: RnpKey,
+        public: Bool = true,
+        secret: Bool = true,
+        subkeys: Bool = true
+    ) throws {
+        var flags: UInt32 = 0
+        if `public` {
+            flags |= RNP_KEY_REMOVE_PUBLIC
+        }
+        if secret {
+            flags |= RNP_KEY_REMOVE_SECRET
+        }
+        if subkeys {
+            flags |= RNP_KEY_REMOVE_SUBKEYS
+        }
+        guard flags != 0 else {
+            throw RnpError.invalidArgument("remove: no key type selected")
+        }
+        try rnpCheck(rnp_key_remove(key.handle, flags), operation: "key remove")
+    }
+
+    /// All user IDs found in the keyrings (`rnp_identifier_iterator`).
+    public func allUserIDs() throws -> [String] {
+        var iterator: rnp_identifier_iterator_t?
+        try rnpCheck(
+            rnp_identifier_iterator_create(ffi, &iterator, "userid"),
+            operation: "user id iterator create"
+        )
+        guard let iterator else {
+            return []
+        }
+        defer { rnp_identifier_iterator_destroy(iterator) }
+        var userIDs: [String] = []
+        while true {
+            var uid: UnsafePointer<CChar>?
+            try rnpCheck(
+                rnp_identifier_iterator_next(iterator, &uid),
+                operation: "user id iterator next"
+            )
+            guard let uid else {
+                break
+            }
+            userIDs.append(String(cString: uid))
+        }
+        return userIDs
     }
 
     // MARK: - Key import / export
