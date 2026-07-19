@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		04EC615718EE893F2D8F7D8C /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F15FAC74F11C17A481229F /* LicensesView.swift */; };
 		1EA4CD8D67D36E8FCC08669A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */; };
 		28F770227CACA2BDEC4D0190 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
@@ -32,7 +33,9 @@
 		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
 		AA1000000000000000000015 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000005 /* MailSecurityEngine */; };
 		BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
+		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
+		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +92,7 @@
 		3EDEA75247AF59D64D6E4190 /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
 		5A5F6629466BFE8ADAFAD979 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
+		87CD88529F4C4270DBA7A051 /* SOURCES.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = SOURCES.md; path = ../../Vendor/SOURCES.md; sourceTree = "<group>"; };
 		8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA2000000000000000000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		AA2000000000000000000002 /* librnp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = librnp.xcconfig; sourceTree = "<group>"; };
@@ -111,7 +115,9 @@
 		AD1480B5CAD3FF9C8EC9FB44 /* Version.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Version.xcconfig; path = Config/Version.xcconfig; sourceTree = "<group>"; };
 		B7393B9F8268ACF79B23A289 /* AppStore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = AppStore.xcconfig; path = Config/AppStore.xcconfig; sourceTree = "<group>"; };
 		CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNPFramework.xcconfig; sourceTree = "<group>"; };
+		D7F15FAC74F11C17A481229F /* LicensesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LicensesView.swift; path = Licenses/LicensesView.swift; sourceTree = "<group>"; };
 		DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcframework; name = RNPFramework.xcframework; path = ../Vendor/RNPFramework.xcframework; sourceTree = "<group>"; };
+		DFB75871C424635C7D11D05F /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = Resources/Localizable.xcstrings; sourceTree = "<group>"; };
 		EF97ABD297996C4EA5033642 /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
 		F1B5C106AE83671ABFEEFD4A /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -151,6 +157,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		36AF7617F543DF15DF4C5336 /* Licenses */ = {
+			isa = PBXGroup;
+			children = (
+				D7F15FAC74F11C17A481229F /* LicensesView.swift */,
+			);
+			name = Licenses;
+			sourceTree = "<group>";
+		};
+		51FB8105ABEB26CD98FCDC6E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DFB75871C424635C7D11D05F /* Localizable.xcstrings */,
+				87CD88529F4C4270DBA7A051 /* SOURCES.md */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		83D422EEE84562769B515115 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -218,6 +241,7 @@
 				218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */,
 				2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */,
 				5A5F6629466BFE8ADAFAD979 /* Info.plist */,
+				51FB8105ABEB26CD98FCDC6E /* Resources */,
 			);
 			path = MailExtensionsContainer;
 			sourceTree = "<group>";
@@ -235,6 +259,7 @@
 			children = (
 				AA3000000000000000000008 /* ContentView */,
 				AA3000000000000000000009 /* KeysList */,
+				36AF7617F543DF15DF4C5336 /* Licenses */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -415,6 +440,8 @@
 				AA100000000000000000000F /* Preview Assets.xcassets in Resources */,
 				AA100000000000000000000E /* Assets.xcassets in Resources */,
 				4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */,
+				BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */,
+				FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -448,6 +475,7 @@
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
+				0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
