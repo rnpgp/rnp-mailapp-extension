@@ -29,7 +29,7 @@ let package = Package(
         ),
         .target(
             name: "MailSecurityEngine",
-            dependencies: ["Rnp"]
+            dependencies: ["Rnp", "KeyServerClient"]
         ),
         .target(
             name: "KeyLifecycle",

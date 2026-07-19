@@ -90,6 +90,12 @@ struct ContentView: View {
         .sheet(isPresented: $model.showRotateSheet) {
             rotateConfirmationSheet
         }
+        .sheet(isPresented: $model.showPublishSheet) {
+            publishSheet
+        }
+        .sheet(isPresented: $model.showFetchSheet) {
+            fetchSheet
+        }
         .alert("Delete key?", isPresented: $model.showDeleteConfirmation) {
             Button("Delete", role: .destructive) { model.deleteSelected() }
             Button("Cancel", role: .cancel) {}
@@ -144,6 +150,11 @@ struct ContentView: View {
             Menu {
                 Button("From Clipboard") { model.importFromPasteboard() }
                 Button("From File…") { model.importFromFile() }
+                if model.selectedTab == .recipients {
+                    Button("From Keyserver…") {
+                        model.showFetchSheet = true
+                    }
+                }
             } label: {
                 Image(systemName: "square.and.arrow.down")
             }
@@ -205,6 +216,12 @@ struct ContentView: View {
                 model.showDetailSheet = false
                 model.rotateMessage = "A new signing subkey will be generated. Recipients should refresh your public key."
                 model.showRotateSheet = true
+            },
+            onPublish: {
+                model.showDetailSheet = false
+                model.publishMessage = "Uploading public key to keys.openpgp.org…"
+                model.showPublishSheet = true
+                model.publishSelectedKey()
             }
         )
     }
@@ -298,6 +315,60 @@ struct ContentView: View {
         }
         .padding()
         .frame(width: 360)
+    }
+
+    private var publishSheet: some View {
+        VStack(spacing: 16) {
+            Text("Publish public key")
+                .font(.headline)
+            Text(model.publishMessage)
+                .font(.callout)
+                .multilineTextAlignment(.center)
+            HStack(spacing: 12) {
+                Button("OK") { model.showPublishSheet = false }
+            }
+        }
+        .padding()
+        .frame(width: 360)
+    }
+
+    private var fetchSheet: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Fetch key from keyserver")
+                .font(.headline)
+            Text("Enter an email address or fingerprint:")
+                .font(.callout)
+            TextField("Email or fingerprint", text: $model.fetchQuery)
+                .textFieldStyle(.roundedBorder)
+                .frame(width: 320)
+
+            if let key = model.fetchedKey {
+                Text("Found key from \(key.source)")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 12) {
+                Spacer()
+                Button("Cancel") {
+                    model.showFetchSheet = false
+                    model.fetchQuery = ""
+                    model.fetchedKey = nil
+                }
+                Button("Search") {
+                    model.discoverKey()
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(model.fetchQuery.trimmingCharacters(in: .whitespaces).isEmpty)
+                if model.fetchedKey != nil {
+                    Button("Import") {
+                        model.importFetchedKey()
+                    }
+                }
+            }
+        }
+        .padding()
+        .frame(width: 420)
     }
 
     private var clipboardImportSheet: some View {
