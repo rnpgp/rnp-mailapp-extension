@@ -12,6 +12,14 @@
 
 set -euo pipefail
 
+DRY_RUN=0
+for arg in "$@"; do
+    case "${arg}" in
+        --dry-run) DRY_RUN=1 ;;
+        *) echo "Unknown argument: ${arg}" >&2; exit 2 ;;
+    esac
+done
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
@@ -58,8 +66,26 @@ fi
 # ------------------------------------------------------------------
 FRAMEWORK="${REPO_ROOT}/Vendor/RNPFramework.xcframework"
 if [[ ! -d "${FRAMEWORK}" ]]; then
-    echo "Vendored framework missing; building it now..."
-    "${REPO_ROOT}/scripts/build-rnp-framework.sh"
+    if [[ "${DRY_RUN}" -eq 1 ]]; then
+        echo "DRY-RUN: vendored framework missing; would run scripts/build-rnp-framework.sh"
+    else
+        echo "Vendored framework missing; building it now..."
+        "${REPO_ROOT}/scripts/build-rnp-framework.sh"
+    fi
+fi
+
+if [[ "${DRY_RUN}" -eq 1 ]]; then
+    echo "DRY-RUN: would archive scheme '${SCHEME}' configuration '${CONFIG}' to ${ARCHIVE_PATH}"
+    echo "DRY-RUN: would export archive to ${EXPORT_PATH} using Config/ExportDirect.plist"
+    echo "DRY-RUN: would verify code signature and linked libraries"
+    echo "DRY-RUN: would create DMG ${DIST_DIR}/RnpMail-${MARKETING_VERSION}.dmg"
+    if [[ -n "${ASC_API_KEY_P8}" && -n "${ASC_API_KEY_ID}" && -n "${ASC_ISSUER_ID}" ]]; then
+        echo "DRY-RUN: would submit ${DIST_DIR}/RnpMail-${MARKETING_VERSION}.dmg for notarization and staple it"
+    else
+        echo "DRY-RUN: ASC secrets not set; would skip notarization"
+    fi
+    echo "DRY-RUN: complete"
+    exit 0
 fi
 
 # ------------------------------------------------------------------

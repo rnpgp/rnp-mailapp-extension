@@ -1,0 +1,31 @@
+name: release-dry-run
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  dry-run:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache RNPFramework.xcframework
+        id: framework-cache
+        uses: actions/cache@v4
+        with:
+          path: Vendor/RNPFramework.xcframework
+          key: rnp-${{ env.RNP_REF }}-framework-${{ hashFiles('scripts/build-rnp-framework.sh', 'Vendor/SOURCES.md') }}
+
+      - name: Build RNPFramework.xcframework
+        if: steps.framework-cache.outputs.cache-hit != 'true'
+        run: ./scripts/build-rnp-framework.sh
+        env:
+          RNP_REF: v0.18.1
+
+      - name: Run release dry-run
+        run: ./scripts/ci-release-dry-run.sh
+
+env:
+  RNP_REF: v0.18.1

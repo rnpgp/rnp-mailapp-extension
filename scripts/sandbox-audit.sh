@@ -115,11 +115,12 @@ check_linked_libs() {
     section "Linked libraries: ${name}"
     local first=1
     while IFS= read -r line; do
-        # Skip the header line that names the binary.
+        # Skip the header line that names the binary (one per architecture).
         if [[ ${first} -eq 1 ]]; then
             first=0
             continue
         fi
+        [[ "${line}" == *"(architecture "* ]] && continue
         [[ -z "${line}" ]] && continue
 
         local lib
