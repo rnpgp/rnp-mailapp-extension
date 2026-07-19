@@ -16,19 +16,25 @@ public struct KeyDetailActions {
     public var onDelete: () -> Void
     public var onExtendExpiry: () -> Void
     public var onRevoke: () -> Void
+    public var onRotateEncryption: () -> Void
+    public var onRotateSigning: () -> Void
 
     public init(
         onExportPublic: @escaping () -> Void = {},
         onExportSecret: @escaping () -> Void = {},
         onDelete: @escaping () -> Void = {},
         onExtendExpiry: @escaping () -> Void = {},
-        onRevoke: @escaping () -> Void = {}
+        onRevoke: @escaping () -> Void = {},
+        onRotateEncryption: @escaping () -> Void = {},
+        onRotateSigning: @escaping () -> Void = {}
     ) {
         self.onExportPublic = onExportPublic
         self.onExportSecret = onExportSecret
         self.onDelete = onDelete
         self.onExtendExpiry = onExtendExpiry
         self.onRevoke = onRevoke
+        self.onRotateEncryption = onRotateEncryption
+        self.onRotateSigning = onRotateSigning
     }
 }
 
@@ -185,14 +191,12 @@ public struct KeyDetailView: View {
                 Button("Delete key") { showDeleteConfirmation = true }
             }
             HStack(spacing: 12) {
-                Button("Extend expiry") {
-                    notImplementedMessage = "Not yet implemented — see task 05"
-                    showNotImplementedAlert = true
-                }
-                Button("Revoke") {
-                    notImplementedMessage = "Not yet implemented — see task 05"
-                    showNotImplementedAlert = true
-                }
+                Button("Extend expiry…") { actions.onExtendExpiry() }
+                Button("Revoke…") { actions.onRevoke() }
+            }
+            HStack(spacing: 12) {
+                Button("Rotate encryption subkey") { actions.onRotateEncryption() }
+                Button("Rotate signing subkey") { actions.onRotateSigning() }
             }
         }
     }

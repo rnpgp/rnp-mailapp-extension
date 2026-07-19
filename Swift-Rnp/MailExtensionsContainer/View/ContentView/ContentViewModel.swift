@@ -8,6 +8,7 @@
 import AppKit
 import CryptoKit
 import Foundation
+import KeyLifecycle
 import MailSecurityEngine
 import RnpMailUI
 
@@ -24,11 +25,18 @@ final class ContentViewModel: ObservableObject {
     @Published var showDetailSheet = false
     @Published var showOnboarding = false
     @Published var showClipboardImport = false
+    @Published var showExtendExpirySheet = false
+    @Published var showRevokeConfirmation = false
+    @Published var showRotateSheet = false
+    @Published var rotateMessage = ""
     @Published var clipboardText = ""
     @Published var errorMessage: String?
     @Published var warningMessage: String?
     @Published private(set) var generateAlgorithm: KeyAlgorithm = .ed25519
     @Published var selectedTab: KeyTab = .myKeys
+    @Published var revokeFingerprintInput = ""
+    @Published var revokeReason = ""
+    @Published var extendExpiryDate = Date().addingTimeInterval(365 * 24 * 60 * 60)
 
     let manager: KeysManager
     private var lastClipboardHash: String?
@@ -249,6 +257,42 @@ final class ContentViewModel: ObservableObject {
         manager.delete(key)
         selection = nil
         propagateError()
+    }
+
+    // MARK: - Lifecycle
+
+    func rotateEncryptionSubkey() {
+        guard let key = selectedKey else { return }
+        manager.rotateEncryptionSubkey(for: key)
+        propagateError()
+    }
+
+    func rotateSigningSubkey() {
+        guard let key = selectedKey else { return }
+        manager.rotateSigningSubkey(for: key)
+        propagateError()
+    }
+
+    func extendSelectedExpiry() {
+        guard let key = selectedKey else { return }
+        manager.extendExpiry(for: key, to: extendExpiryDate)
+        propagateError()
+    }
+
+    func revokeSelected() {
+        guard let key = selectedKey else { return }
+        guard revokeFingerprintInput.compare(key.fingerprint, options: .caseInsensitive) == .orderedSame else {
+            errorMessage = "The fingerprint you entered does not match the selected key."
+            return
+        }
+        manager.revoke(key, code: .noReason, reason: revokeReason)
+        revokeFingerprintInput = ""
+        revokeReason = ""
+        propagateError()
+    }
+
+    func expiryReport() -> [KeyExpiryItem] {
+        manager.expiryReport()
     }
 
     // MARK: - Error / warning propagation

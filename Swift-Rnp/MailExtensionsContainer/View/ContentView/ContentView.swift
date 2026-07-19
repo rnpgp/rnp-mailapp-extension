@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import KeyLifecycle
 import MailSecurityEngine
 import RnpMailUI
 import SwiftUI
@@ -28,6 +29,8 @@ struct ContentView: View {
             .padding(.horizontal)
 
             toolbar
+
+            expiryBanner
 
             KeysListView(
                 keys: model.keys,
@@ -77,6 +80,15 @@ struct ContentView: View {
         }
         .sheet(isPresented: $model.showClipboardImport) {
             clipboardImportSheet
+        }
+        .sheet(isPresented: $model.showExtendExpirySheet) {
+            extendExpirySheet
+        }
+        .sheet(isPresented: $model.showRevokeConfirmation) {
+            revokeConfirmationSheet
+        }
+        .sheet(isPresented: $model.showRotateSheet) {
+            rotateConfirmationSheet
         }
         .alert("Delete key?", isPresented: $model.showDeleteConfirmation) {
             Button("Delete", role: .destructive) { model.deleteSelected() }
@@ -176,9 +188,116 @@ struct ContentView: View {
                 model.showDetailSheet = false
                 model.showDeleteConfirmation = true
             },
-            onExtendExpiry: {},
-            onRevoke: {}
+            onExtendExpiry: {
+                model.showDetailSheet = false
+                model.showExtendExpirySheet = true
+            },
+            onRevoke: {
+                model.showDetailSheet = false
+                model.showRevokeConfirmation = true
+            },
+            onRotateEncryption: {
+                model.showDetailSheet = false
+                model.rotateMessage = "A new encryption subkey will be generated and the old one retired after a 30-day grace period."
+                model.showRotateSheet = true
+            },
+            onRotateSigning: {
+                model.showDetailSheet = false
+                model.rotateMessage = "A new signing subkey will be generated. Recipients should refresh your public key."
+                model.showRotateSheet = true
+            }
         )
+    }
+
+    private var expiryBanner: some View {
+        let report = model.expiryReport()
+        guard let first = report.first else { return AnyView(EmptyView()) }
+        let suffix = report.count > 1 ? " (and \(report.count - 1) more)" : ""
+        let label = first.isExpired
+            ? "Expired: \(first.userID)\(suffix)"
+            : "Expiring soon: \(first.userID)\(suffix)"
+        return AnyView(
+            HStack(spacing: 8) {
+                Image(systemName: first.isExpired ? "exclamationmark.octagon" : "exclamationmark.triangle")
+                Text(label)
+                    .font(.callout)
+                Spacer()
+            }
+            .foregroundStyle(.red)
+            .padding(.horizontal)
+        )
+    }
+
+    private var extendExpirySheet: some View {
+        VStack(spacing: 16) {
+            Text("Extend expiry")
+                .font(.headline)
+            DatePicker(
+                "New expiration date",
+                selection: $model.extendExpiryDate,
+                in: Date()...,
+                displayedComponents: .date
+            )
+            .datePickerStyle(.graphical)
+            HStack(spacing: 12) {
+                Button("Cancel") { model.showExtendExpirySheet = false }
+                Button("Extend") {
+                    model.showExtendExpirySheet = false
+                    model.extendSelectedExpiry()
+                }
+                .keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding()
+        .frame(width: 400)
+    }
+
+    private var revokeConfirmationSheet: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Revoke key")
+                .font(.headline)
+            Text("Type the full fingerprint of the key to revoke it. A revocation certificate will be saved to the keyring directory.")
+                .font(.callout)
+            TextField("Fingerprint", text: $model.revokeFingerprintInput)
+                .textFieldStyle(.roundedBorder)
+            TextField("Reason (optional)", text: $model.revokeReason)
+                .textFieldStyle(.roundedBorder)
+            HStack(spacing: 12) {
+                Spacer()
+                Button("Cancel") { model.showRevokeConfirmation = false }
+                Button("Revoke", role: .destructive) {
+                    model.showRevokeConfirmation = false
+                    model.revokeSelected()
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(model.revokeFingerprintInput.isEmpty)
+            }
+        }
+        .padding()
+        .frame(width: 420)
+    }
+
+    private var rotateConfirmationSheet: some View {
+        VStack(spacing: 16) {
+            Text("Rotate subkey")
+                .font(.headline)
+            Text(model.rotateMessage)
+                .font(.callout)
+            HStack(spacing: 12) {
+                Button("Cancel") { model.showRotateSheet = false }
+                Button("Rotate") {
+                    model.showRotateSheet = false
+                    if model.rotateMessage.contains("encryption") {
+                        model.rotateEncryptionSubkey()
+                    } else {
+                        model.rotateSigningSubkey()
+                    }
+                }
+                .keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding()
+        .frame(width: 360)
     }
 
     private var clipboardImportSheet: some View {
