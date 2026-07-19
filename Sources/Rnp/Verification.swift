@@ -11,7 +11,7 @@ import Foundation
 
 /// Verification status of a single signature, mapped from the
 /// `rnp_op_verify_signature_get_status()` result codes.
-public enum RnpSignatureStatus: Equatable {
+public enum RnpSignatureStatus: String, Equatable, Sendable {
     /// Signature verified successfully (`RNP_SUCCESS`).
     case valid
     /// Signature is valid but expired (`RNP_ERROR_SIGNATURE_EXPIRED`).
