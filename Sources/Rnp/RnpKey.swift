@@ -73,10 +73,13 @@ public final class RnpKey {
     }
 
     /// The key's allowed usage flags, e.g. `["sign", "certify"]`.
+    ///
+    /// Only flags meaningful for the key type are queried; unsupported
+    /// combinations are treated as `false` instead of throwing.
     public var capabilities: [String] {
         get throws {
             let allCapabilities = ["sign", "certify", "encrypt", "auth"]
-            return try allCapabilities.filter { try allowsUsage($0) }
+            return allCapabilities.filter { (try? allowsUsage($0)) ?? false }
         }
     }
 
@@ -151,6 +154,14 @@ public final class RnpKey {
             try rnpCheck(rnp_key_get_expiration(handle, &value), operation: "key expiration")
             return value
         }
+    }
+
+    /// Sets the key's expiration time in seconds from creation.
+    ///
+    /// Pass `0` to make the key not expire. Re-signing requires the secret
+    /// primary key, so the passphrase provider may be invoked.
+    public func setExpirationSeconds(_ value: UInt32) throws {
+        try rnpCheck(rnp_key_set_expiration(handle, value), operation: "set key expiration")
     }
 
     /// The timestamp until which the key is considered valid, taking into account

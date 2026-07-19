@@ -9,6 +9,7 @@ let package = Package(
     products: [
         .library(name: "Rnp", targets: ["Rnp"]),
         .library(name: "MailSecurityEngine", targets: ["MailSecurityEngine"]),
+        .library(name: "KeyLifecycle", targets: ["KeyLifecycle"]),
         .library(name: "RnpMailUI", targets: ["RnpMailUI"])
     ],
     targets: [
@@ -30,8 +31,12 @@ let package = Package(
             dependencies: ["Rnp"]
         ),
         .target(
+            name: "KeyLifecycle",
+            dependencies: ["Rnp", "MailSecurityEngine"]
+        ),
+        .target(
             name: "RnpMailUI",
-            dependencies: ["MailSecurityEngine"]
+            dependencies: ["MailSecurityEngine", "KeyLifecycle"]
         ),
         .testTarget(
             name: "RnpTests",
@@ -40,6 +45,10 @@ let package = Package(
         .testTarget(
             name: "MailSecurityEngineTests",
             dependencies: ["MailSecurityEngine"]
+        ),
+        .testTarget(
+            name: "KeyLifecycleTests",
+            dependencies: ["KeyLifecycle"]
         ),
         .testTarget(
             name: "RnpMailUITests",
