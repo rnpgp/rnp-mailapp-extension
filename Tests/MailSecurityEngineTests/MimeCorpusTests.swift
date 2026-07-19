@@ -11,9 +11,17 @@ import XCTest
 final class MimeCorpusTests: XCTestCase {
     private let fixtureNames = [
         "deep-nesting",
+        "nested-10-levels",
         "broken-boundary",
+        "duplicate-boundary",
+        "empty-parts",
         "huge-header",
+        "huge-header-64kb",
+        "malformed-base64",
+        "malformed-quoted-printable",
+        "missing-content-type",
         "mixed-eols",
+        "mixed-eols-cr",
     ]
 
     func testCorpusParsesWithoutCrashing() throws {
