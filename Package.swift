@@ -7,7 +7,8 @@ let package = Package(
         .macOS(.v12)
     ],
     products: [
-        .library(name: "Rnp", targets: ["Rnp"])
+        .library(name: "Rnp", targets: ["Rnp"]),
+        .library(name: "MailSecurityEngine", targets: ["MailSecurityEngine"])
     ],
     targets: [
         .systemLibrary(
@@ -23,9 +24,17 @@ let package = Package(
             name: "Rnp",
             dependencies: ["CRnp"]
         ),
+        .target(
+            name: "MailSecurityEngine",
+            dependencies: ["Rnp"]
+        ),
         .testTarget(
             name: "RnpTests",
             dependencies: ["Rnp"]
+        ),
+        .testTarget(
+            name: "MailSecurityEngineTests",
+            dependencies: ["MailSecurityEngine"]
         )
     ]
 )
