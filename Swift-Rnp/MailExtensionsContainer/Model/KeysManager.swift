@@ -196,6 +196,34 @@ final class KeysManager: ObservableObject {
         }
     }
 
+    // MARK: - Keyserver
+
+    /// Publishes the armored public key of the given key to the default keyserver.
+    func publish(key: KeyInfo) async -> Result<UploadReceipt, KeyServerError> {
+        guard let keyManager else {
+            return .failure(.network(underlying: "Could not open the keyring."))
+        }
+        guard let armored = try? keyManager.exportKey(fingerprint: key.fingerprint) else {
+            return .failure(.malformedKey)
+        }
+        let service = KeyServerService()
+        do {
+            let receipt = try await service.upload(armoredKey: String(decoding: armored, as: UTF8.self))
+            return .success(receipt)
+        } catch {
+            return .failure(error as? KeyServerError ?? .network(underlying: error.localizedDescription))
+        }
+    }
+
+    /// Discovers a key by email or fingerprint.
+    func discoverByEmail(_ email: String) async -> Result<FetchedKey, KeyServerError> {
+        await KeyServerService().discoverByEmail(email)
+    }
+
+    func discoverByFingerprint(_ fingerprint: String) async -> Result<FetchedKey, KeyServerError> {
+        await KeyServerService().discoverByFingerprint(fingerprint)
+    }
+
     /// Returns keys and subkeys that are expired or expiring soon.
     func expiryReport() -> [KeyExpiryItem] {
         guard let lifecycle else {

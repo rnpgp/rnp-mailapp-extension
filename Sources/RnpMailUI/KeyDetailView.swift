@@ -18,6 +18,7 @@ public struct KeyDetailActions {
     public var onRevoke: () -> Void
     public var onRotateEncryption: () -> Void
     public var onRotateSigning: () -> Void
+    public var onPublish: () -> Void
 
     public init(
         onExportPublic: @escaping () -> Void = {},
@@ -26,7 +27,8 @@ public struct KeyDetailActions {
         onExtendExpiry: @escaping () -> Void = {},
         onRevoke: @escaping () -> Void = {},
         onRotateEncryption: @escaping () -> Void = {},
-        onRotateSigning: @escaping () -> Void = {}
+        onRotateSigning: @escaping () -> Void = {},
+        onPublish: @escaping () -> Void = {}
     ) {
         self.onExportPublic = onExportPublic
         self.onExportSecret = onExportSecret
@@ -35,6 +37,7 @@ public struct KeyDetailActions {
         self.onRevoke = onRevoke
         self.onRotateEncryption = onRotateEncryption
         self.onRotateSigning = onRotateSigning
+        self.onPublish = onPublish
     }
 }
 
@@ -189,6 +192,7 @@ public struct KeyDetailView: View {
                 Button("Export public key") { actions.onExportPublic() }
                 Button("Export secret key…") { showSecretExportConfirmation = true }
                 Button("Delete key") { showDeleteConfirmation = true }
+                Button("Publish public key") { actions.onPublish() }
             }
             HStack(spacing: 12) {
                 Button("Extend expiry…") { actions.onExtendExpiry() }

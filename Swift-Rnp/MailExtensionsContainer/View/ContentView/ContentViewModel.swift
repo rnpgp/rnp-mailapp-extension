@@ -29,6 +29,11 @@ final class ContentViewModel: ObservableObject {
     @Published var showRevokeConfirmation = false
     @Published var showRotateSheet = false
     @Published var rotateMessage = ""
+    @Published var showPublishSheet = false
+    @Published var publishMessage = ""
+    @Published var showFetchSheet = false
+    @Published var fetchQuery = ""
+    @Published var fetchedKey: FetchedKey?
     @Published var clipboardText = ""
     @Published var errorMessage: String?
     @Published var warningMessage: String?
@@ -293,6 +298,54 @@ final class ContentViewModel: ObservableObject {
 
     func expiryReport() -> [KeyExpiryItem] {
         manager.expiryReport()
+    }
+
+    // MARK: - Keyserver
+
+    func publishSelectedKey() {
+        guard let key = selectedKey else { return }
+        Task {
+            let result = await manager.publish(key: key)
+            await MainActor.run {
+                switch result {
+                case .success(let receipt):
+                    publishMessage = receipt.message ?? "Key uploaded. Check your email to confirm publication."
+                case .failure(let error):
+                    errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    func discoverKey() {
+        let query = fetchQuery.trimmingCharacters(in: .whitespaces)
+        guard !query.isEmpty else { return }
+        Task {
+            let result: Result<FetchedKey, KeyServerError>
+            if query.contains("@") {
+                result = await manager.discoverByEmail(query)
+            } else {
+                result = await manager.discoverByFingerprint(query)
+            }
+            await MainActor.run {
+                switch result {
+                case .success(let key):
+                    fetchedKey = key
+                case .failure(let error):
+                    errorMessage = error.localizedDescription
+                    fetchedKey = nil
+                }
+            }
+        }
+    }
+
+    func importFetchedKey() {
+        guard let key = fetchedKey else { return }
+        manager.importKeys(key.data)
+        propagateError()
+        showFetchSheet = false
+        fetchQuery = ""
+        fetchedKey = nil
     }
 
     // MARK: - Error / warning propagation
