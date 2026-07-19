@@ -7,7 +7,9 @@
 //
 
 import Foundation
+import KeyLifecycle
 import MailSecurityEngine
+import Rnp
 
 /// Observable wrapper around the engine's `KeyManager`.
 ///
@@ -20,6 +22,9 @@ final class KeysManager: ObservableObject {
     @Published var lastRevocationCertificateURL: URL?
 
     private let keyManager: KeyManager?
+    private var lifecycle: KeyLifecycle? {
+        keyManager.map { KeyLifecycle(keyManager: $0) }
+    }
 
     /// Opens the shared keyring (app group container), creating it on first
     /// use. Falls back to a temporary directory if the keyring cannot be
@@ -137,6 +142,70 @@ final class KeysManager: ObservableObject {
         }
         perform {
             try keyManager.deleteKey(fingerprint: key.fingerprint)
+        }
+    }
+
+    // MARK: - Lifecycle
+
+    /// Rotates the encryption subkey for the selected key.
+    func rotateEncryptionSubkey(for key: KeyInfo) {
+        guard let lifecycle else {
+            lastError = "Could not open the keyring."
+            return
+        }
+        perform {
+            _ = try lifecycle.rotateEncryptionSubkey(for: key.fingerprint)
+        }
+    }
+
+    /// Rotates the signing subkey for the selected key.
+    func rotateSigningSubkey(for key: KeyInfo) {
+        guard let lifecycle else {
+            lastError = "Could not open the keyring."
+            return
+        }
+        perform {
+            _ = try lifecycle.rotateSigningSubkey(for: key.fingerprint)
+        }
+    }
+
+    /// Extends the primary key's expiry to the given date.
+    func extendExpiry(for key: KeyInfo, to newDate: Date) {
+        guard let lifecycle else {
+            lastError = "Could not open the keyring."
+            return
+        }
+        perform {
+            try lifecycle.extendExpiry(for: key.fingerprint, newDate: newDate)
+        }
+    }
+
+    /// Revokes the key and stores the revocation certificate URL.
+    func revoke(_ key: KeyInfo, code: RevocationCode, reason: String) {
+        guard let lifecycle else {
+            lastError = "Could not open the keyring."
+            return
+        }
+        perform {
+            let certificate = try lifecycle.revoke(for: key.fingerprint, code: code, reason: reason)
+            let url = AppGroup.keyringDirectory()
+                .appendingPathComponent("\(key.fingerprint)-revocation")
+                .appendingPathExtension("asc")
+            try certificate.write(to: url, options: .atomic)
+            lastRevocationCertificateURL = url
+        }
+    }
+
+    /// Returns keys and subkeys that are expired or expiring soon.
+    func expiryReport() -> [KeyExpiryItem] {
+        guard let lifecycle else {
+            return []
+        }
+        do {
+            return try lifecycle.expiryReport()
+        } catch {
+            lastError = error.localizedDescription
+            return []
         }
     }
 
