@@ -93,7 +93,7 @@ RnpMail provides OpenPGP signing, encryption, and key management for Apple Mail 
   - `com.apple.security.app-sandbox`
   - `com.apple.security.application-groups`
   - `com.apple.security.network.client` (keyserver queries)
-  - `com.apple.security.files.user-selected.read-only` (key file import)
+  - `com.apple.security.files.user-selected.read-write` (key file import and export)
 - The sandbox does not grant arbitrary file-system access. Keyring storage is limited to the app-group container and the temporary fallback directory.
 
 ## Reporting Security Issues

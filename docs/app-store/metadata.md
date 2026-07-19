@@ -66,3 +66,13 @@ TODO: https://example.com/rnpmail/support
 Use the self-classification prepared in the Apple Developer account checklist.
 RnpMail uses the open-source librnp implementation of OpenPGP; submit the
 Encryption Registration (ERN) notification if required for your jurisdiction.
+
+## Release Automation Notes
+
+`.github/workflows/release-appstore.yml` uses a `workflow_run` trigger that
+depends on the successful completion of `.github/workflows/release-direct.yml`.
+`workflow_run` triggers are only evaluated on the repository's default branch,
+so the App Store upload path will not run automatically from this branch. It
+becomes active after the branch is merged to `main` and a matching version tag
+is pushed.
+

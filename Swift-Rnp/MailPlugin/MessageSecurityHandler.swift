@@ -23,7 +23,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
     static let shared = MessageSecurityHandler()
 
-    private let engine: MailSecurityEngine
+    private let engine: MailSecurityEngine?
 
     override init() {
         engine = MessageSecurityHandler.makeEngine()
@@ -32,8 +32,10 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
     /// Engine on the shared keyring directory, with passphrases from the
     /// Keychain. Falls back to a temporary directory when the keyring is
-    /// unavailable, so the extension can never fail to launch.
-    private static func makeEngine() -> MailSecurityEngine {
+    /// unavailable, so the extension can never fail to launch. Returns `nil`
+    /// only if both the shared keyring and the temporary fallback fail to
+    /// open, in which case the handler degrades to pass-through behavior.
+    private static func makeEngine() -> MailSecurityEngine? {
         let provider: (String) -> String? = { _ in KeychainPassphraseStore.sharedPassphrase() }
         if let engine = try? MailSecurityEngine(
             directory: AppGroup.keyringDirectory(),
@@ -45,15 +47,24 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         // in-memory keyring rather than crashing the extension.
         let fallback = FileManager.default.temporaryDirectory
             .appendingPathComponent("rnp-mail-extension-fallback")
-        return (try? MailSecurityEngine(
+        return try? MailSecurityEngine(
             directory: fallback,
             passphraseProvider: provider
-        ))!
+        )
     }
 
     // MARK: - Encoding Messages
 
     func getEncodingStatus(for message: MEMessage, composeContext: MEComposeContext, completionHandler: @escaping (MEOutgoingMessageEncodingStatus) -> Void) {
+        guard let engine = engine else {
+            completionHandler(MEOutgoingMessageEncodingStatus(
+                canSign: false,
+                canEncrypt: false,
+                securityError: nil,
+                addressesFailingEncryption: []
+            ))
+            return
+        }
         let status = (try? engine.encodingStatus(
             sender: message.fromAddress.rawString,
             recipients: message.allRecipientAddresses.map(\.rawString)
@@ -70,7 +81,8 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         let noEncoding = MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil)
 
         // Only act on messages being sent that the user asked to protect.
-        guard message.state == .sending,
+        guard let engine = engine,
+              message.state == .sending,
               composeContext.shouldSign || composeContext.shouldEncrypt,
               let rawData = message.rawData
         else {
@@ -126,7 +138,8 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     // MARK: - Decoding Messages
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
-        guard let decoded = try? engine.decode(data) else {
+        guard let engine = engine,
+              let decoded = try? engine.decode(data) else {
             // No OpenPGP content: Mail displays the message untouched.
             return nil
         }
@@ -165,7 +178,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         return MessageSecurityViewController(
             signers: messageSigners,
             contexts: contexts,
-            trustStore: engine.keyManager.trustStore
+            trustStore: engine?.keyManager.trustStore
         )
     }
 
