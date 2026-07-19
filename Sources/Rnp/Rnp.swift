@@ -192,6 +192,77 @@ public final class Rnp {
         """
     }
 
+    /// Generates a subkey for the given primary key.
+    ///
+    /// - Parameters:
+    ///   - primary: the primary key that will bind the new subkey.
+    ///   - algorithm: the subkey algorithm, e.g. "RSA", "ECDH", "ECDSA".
+    ///   - bits: RSA/DSA/Elgamal key size (optional).
+    ///   - curve: ECC curve name (optional).
+    ///   - hash: hash algorithm for binding signatures (default "SHA256").
+    ///   - usage: usage flags, e.g. `["encrypt"]` or `["sign"]`.
+    ///   - expirationSeconds: seconds from creation until expiry, or `0` for no expiry.
+    /// - Returns: the generated subkey handle.
+    public func generateSubkey(
+        for primary: RnpKey,
+        algorithm: String,
+        bits: UInt32? = nil,
+        curve: String? = nil,
+        hash: String = "SHA256",
+        usage: [String] = [],
+        expirationSeconds: UInt32 = 0
+    ) throws -> RnpKey {
+        var op: rnp_op_generate_t?
+        try rnpCheck(
+            rnp_op_generate_subkey_create(&op, ffi, primary.handle, algorithm),
+            operation: "subkey generation create"
+        )
+        guard let operation = op else {
+            throw RnpError.ffiFailed(
+                operation: "subkey generation create",
+                code: rnpStatusSuccess,
+                message: "unexpected NULL generation operation"
+            )
+        }
+        defer { rnp_op_generate_destroy(operation) }
+
+        if let bits {
+            try rnpCheck(rnp_op_generate_set_bits(operation, bits), operation: "subkey set bits")
+        }
+        if let curve {
+            try rnpCheck(rnp_op_generate_set_curve(operation, curve), operation: "subkey set curve")
+        }
+        try rnpCheck(rnp_op_generate_set_hash(operation, hash), operation: "subkey set hash")
+        for flag in usage {
+            try rnpCheck(rnp_op_generate_add_usage(operation, flag), operation: "subkey add usage")
+        }
+        try rnpCheck(
+            rnp_op_generate_set_expiration(operation, expirationSeconds),
+            operation: "subkey set expiration"
+        )
+
+        guard let password = passphraseProvider("protect") else {
+            throw RnpError.invalidArgument("passphrase provider returned nil for subkey protection")
+        }
+        try rnpCheck(
+            rnp_op_generate_set_protection_password(operation, password),
+            operation: "subkey set protection password"
+        )
+
+        try rnpCheck(rnp_op_generate_execute(operation), operation: "subkey generation execute")
+
+        var handle: rnp_key_handle_t?
+        try rnpCheck(rnp_op_generate_get_key(operation, &handle), operation: "subkey get key")
+        guard let handle else {
+            throw RnpError.ffiFailed(
+                operation: "subkey get key",
+                code: rnpStatusSuccess,
+                message: "unexpected NULL subkey handle"
+            )
+        }
+        return RnpKey(handle: handle)
+    }
+
     /// JSON description of an Ed25519 primary signing key with a
     /// Curve25519 encryption subkey, both protected by the passphrase
     /// provider.

@@ -185,9 +185,9 @@ public final class KeyManager {
 
     /// Runs `body` with the managed `Rnp` context under the manager lock.
     ///
-    /// Used by `MailSecurityEngine` to perform crypto operations on the
-    /// shared keyrings without racing other callers.
-    func withRnp<T>(_ body: (Rnp) throws -> T) throws -> T {
+    /// Used by `MailSecurityEngine` and the `KeyLifecycle` target to perform
+    /// crypto operations on the shared keyrings without racing other callers.
+    public func withRnp<T>(_ body: (Rnp) throws -> T) throws -> T {
         lock.lock()
         defer { lock.unlock() }
         return try body(rnp)
@@ -262,7 +262,7 @@ public final class KeyManager {
         algorithm: KeyAlgorithm = .rsa,
         expirationSeconds: UInt32 = 0
     ) throws -> KeyInfo {
-        try withRnp { rnp in
+        return try withRnp { rnp in
             let json: String
             switch algorithm {
             case .rsa:
@@ -274,6 +274,17 @@ public final class KeyManager {
             }
             try rnp.generateKey(json: json)
             let key = try rnp.requireKey(userID)
+
+            // librnp's JSON generator may ignore the "expiration" field when
+            // protection is also supplied, so explicitly set the requested
+            // expiration on the primary key and all subkeys.
+            if expirationSeconds > 0 {
+                try key.setExpirationSeconds(expirationSeconds)
+                for subkey in try key.subkeys {
+                    try subkey.setExpirationSeconds(expirationSeconds)
+                }
+            }
+
             let info = try makeKeyInfo(key: key, primaryUserID: userID)
             try persist(rnp)
             return info
@@ -457,6 +468,10 @@ public final class KeyManager {
     /// Keyrings that hold no keys are removed instead of written, so a
     /// freshly initialized or fully emptied manager leaves no files that a
     /// later load would choke on.
+    public func save() throws {
+        try withRnp { try persist($0) }
+    }
+
     private func persist(_ rnp: Rnp) throws {
         let publicKeys = try rnp.publicKeyCount > 0 ? rnp.savePublicKeys(armored: false) : nil
         let secretKeys = try rnp.secretKeyCount > 0 ? rnp.saveSecretKeys(armored: false) : nil
