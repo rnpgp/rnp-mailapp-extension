@@ -10,6 +10,7 @@ let package = Package(
         .library(name: "Rnp", targets: ["Rnp"]),
         .library(name: "MailSecurityEngine", targets: ["MailSecurityEngine"]),
         .library(name: "KeyLifecycle", targets: ["KeyLifecycle"]),
+        .library(name: "KeyServerClient", targets: ["KeyServerClient"]),
         .library(name: "RnpMailUI", targets: ["RnpMailUI"])
     ],
     targets: [
@@ -38,6 +39,10 @@ let package = Package(
             name: "RnpMailUI",
             dependencies: ["MailSecurityEngine", "KeyLifecycle"]
         ),
+        .target(
+            name: "KeyServerClient",
+            dependencies: []
+        ),
         .testTarget(
             name: "RnpTests",
             dependencies: ["Rnp"]
@@ -53,6 +58,10 @@ let package = Package(
         .testTarget(
             name: "RnpMailUITests",
             dependencies: ["RnpMailUI"]
+        ),
+        .testTarget(
+            name: "KeyServerClientTests",
+            dependencies: ["KeyServerClient"]
         )
     ]
 )
