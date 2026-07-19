@@ -11,6 +11,8 @@
 #   BUILD_NUMBER           CI run number to set as CURRENT_PROJECT_VERSION
 #   TAG                    Git tag (e.g. v1.2.3) to validate against MARKETING_VERSION
 #   RNP_REF                rnp version to vendor (default: v0.18.1)
+#   SKIP_UPLOAD            If set, build and export but do not upload
+#   UPLOAD_ONLY            If set, upload a previously exported archive without rebuilding
 
 set -euo pipefail
 
@@ -30,8 +32,61 @@ ASC_API_KEY_P8="${ASC_API_KEY_P8:-}"
 ASC_API_KEY_ID="${ASC_API_KEY_ID:-}"
 ASC_ISSUER_ID="${ASC_ISSUER_ID:-}"
 TAG="${TAG:-${GITHUB_REF_NAME:-}}"
+RNP_REF="${RNP_REF:-v0.18.1}"
+SKIP_UPLOAD="${SKIP_UPLOAD:-}"
+UPLOAD_ONLY="${UPLOAD_ONLY:-}"
 
 mkdir -p "${BUILD_DIR}"
+
+# ------------------------------------------------------------------
+# Helpers.
+# ------------------------------------------------------------------
+has_asc_secrets() {
+    [[ -n "${ASC_API_KEY_P8}" && -n "${ASC_API_KEY_ID}" && -n "${ASC_ISSUER_ID}" ]]
+}
+
+build_auth_args() {
+    if has_asc_secrets; then
+        AUTH_ARGS=(
+            -allowProvisioningUpdates
+            -authenticationKeyPath "${ASC_API_KEY_P8}"
+            -authenticationKeyID "${ASC_API_KEY_ID}"
+            -authenticationKeyIssuerID "${ASC_ISSUER_ID}"
+        )
+    else
+        AUTH_ARGS=()
+    fi
+}
+
+# ------------------------------------------------------------------
+# Upload-only path: no build, just upload the existing archive/export.
+# ------------------------------------------------------------------
+if [[ -n "${UPLOAD_ONLY}" ]]; then
+    build_auth_args
+    if [[ ${#AUTH_ARGS[@]} -eq 0 ]]; then
+        echo "ASC secrets not set; cannot upload" >&2
+        exit 1
+    fi
+
+    EXPORT_OPTIONS_PLIST="${BUILD_DIR}/ExportOptions-AppStore.plist"
+    if [[ ! -f "${EXPORT_OPTIONS_PLIST}" ]]; then
+        echo "Missing export options plist: ${EXPORT_OPTIONS_PLIST}" >&2
+        echo "Run a build/export pass first (without UPLOAD_ONLY)." >&2
+        exit 1
+    fi
+
+    echo "=== Uploading to App Store Connect ==="
+    xcodebuild \
+        -exportArchive \
+        -archivePath "${ARCHIVE_PATH}" \
+        -exportPath "${EXPORT_PATH}" \
+        -exportOptionsPlist "${EXPORT_OPTIONS_PLIST}" \
+        -uploadApp \
+        "${AUTH_ARGS[@]}"
+
+    echo "=== Done ==="
+    exit 0
+fi
 
 # ------------------------------------------------------------------
 # Version handling.
@@ -42,11 +97,23 @@ if [[ ! -f "${VERSION_FILE}" ]]; then
     exit 1
 fi
 
+VERSION_BACKUP="${VERSION_FILE}.bak"
+RESTORE_BACKUP=0
+
+restore_version_file() {
+    if [[ ${RESTORE_BACKUP} -eq 1 && -f "${VERSION_BACKUP}" ]]; then
+        mv "${VERSION_BACKUP}" "${VERSION_FILE}"
+        echo "Restored ${VERSION_FILE}"
+    fi
+}
+trap restore_version_file EXIT
+
 # Auto-increment CURRENT_PROJECT_VERSION from the CI run number. This is only
 # persisted for the current archive; the repository is not rewritten.
 if [[ -n "${BUILD_NUMBER:-}" ]]; then
+    cp "${VERSION_FILE}" "${VERSION_BACKUP}"
+    RESTORE_BACKUP=1
     sed -i.bak "s/CURRENT_PROJECT_VERSION = .*/CURRENT_PROJECT_VERSION = ${BUILD_NUMBER}/" "${VERSION_FILE}"
-    rm -f "${VERSION_FILE}.bak"
     echo "Set CURRENT_PROJECT_VERSION to ${BUILD_NUMBER}"
 fi
 
@@ -70,7 +137,7 @@ fi
 FRAMEWORK="${REPO_ROOT}/Vendor/RNPFramework.xcframework"
 if [[ ! -d "${FRAMEWORK}" ]]; then
     echo "Vendored framework missing; building it now..."
-    "${REPO_ROOT}/scripts/build-rnp-framework.sh"
+    RNP_REF="${RNP_REF}" "${REPO_ROOT}/scripts/build-rnp-framework.sh"
 fi
 
 # ------------------------------------------------------------------
@@ -78,19 +145,20 @@ fi
 # ------------------------------------------------------------------
 rm -rf "${ARCHIVE_PATH}" "${EXPORT_PATH}"
 
-AUTH_ARGS=()
-if [[ -n "${ASC_API_KEY_P8}" && -n "${ASC_API_KEY_ID}" && -n "${ASC_ISSUER_ID}" ]]; then
-    AUTH_ARGS=(
-        -allowProvisioningUpdates
-        -authenticationKeyPath "${ASC_API_KEY_P8}"
-        -authenticationKeyID "${ASC_API_KEY_ID}"
-        -authenticationKeyIssuerID "${ASC_ISSUER_ID}"
-    )
-fi
+build_auth_args
 
 CODE_SIGN_ARGS=()
 if [[ -n "${SIGNING_IDENTITY}" ]]; then
     CODE_SIGN_ARGS+=(CODE_SIGN_IDENTITY="${SIGNING_IDENTITY}")
+fi
+
+# Prepare a temporary export-options plist with the literal Team ID substituted.
+EXPORT_OPTIONS_TEMPLATE="${REPO_ROOT}/Swift-Rnp/Config/ExportAppStore.plist"
+EXPORT_OPTIONS_PLIST="${BUILD_DIR}/ExportOptions-AppStore.plist"
+if [[ -n "${DEVELOPMENT_TEAM}" ]]; then
+    sed "s/__TEAM_ID__/${DEVELOPMENT_TEAM}/g" "${EXPORT_OPTIONS_TEMPLATE}" > "${EXPORT_OPTIONS_PLIST}"
+else
+    sed "s/__TEAM_ID__//g" "${EXPORT_OPTIONS_TEMPLATE}" > "${EXPORT_OPTIONS_PLIST}"
 fi
 
 xcodebuild \
@@ -107,7 +175,7 @@ xcodebuild \
     -exportArchive \
     -archivePath "${ARCHIVE_PATH}" \
     -exportPath "${EXPORT_PATH}" \
-    -exportOptionsPlist "${REPO_ROOT}/Swift-Rnp/Config/ExportAppStore.plist" \
+    -exportOptionsPlist "${EXPORT_OPTIONS_PLIST}" \
     "${AUTH_ARGS[@]}"
 
 PKG_PATH="$(find "${EXPORT_PATH}" -maxdepth 1 -name '*.pkg' | head -n1)"
@@ -121,15 +189,25 @@ ls -lh "${PKG_PATH}"
 # ------------------------------------------------------------------
 # Upload to App Store Connect (only when ASC secrets are present).
 # ------------------------------------------------------------------
-if [[ -n "${ASC_API_KEY_P8}" && -n "${ASC_API_KEY_ID}" && -n "${ASC_ISSUER_ID}" ]]; then
+if [[ -n "${SKIP_UPLOAD}" ]]; then
+    echo "SKIP_UPLOAD set; skipping App Store Connect upload"
+elif has_asc_secrets; then
     echo "=== Uploading to App Store Connect ==="
-    xcrun altool --upload-package "${PKG_PATH}" \
-        --type macos \
-        --apiKey "${ASC_API_KEY_ID}" \
-        --apiIssuer "${ASC_ISSUER_ID}" \
-        --verbose
+    xcodebuild \
+        -exportArchive \
+        -archivePath "${ARCHIVE_PATH}" \
+        -exportPath "${EXPORT_PATH}" \
+        -exportOptionsPlist "${EXPORT_OPTIONS_PLIST}" \
+        -uploadApp \
+        "${AUTH_ARGS[@]}"
 else
     echo "ASC secrets not set; skipping App Store Connect upload"
+fi
+
+# Discard the Version.xcconfig backup on a successful run.
+if [[ -n "${BUILD_NUMBER:-}" ]]; then
+    rm -f "${VERSION_BACKUP}"
+    RESTORE_BACKUP=0
 fi
 
 echo "=== Done: ${PKG_PATH} ==="
