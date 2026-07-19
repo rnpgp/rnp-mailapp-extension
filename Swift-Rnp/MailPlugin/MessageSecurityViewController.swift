@@ -16,12 +16,12 @@ class MessageSecurityViewController: MEExtensionViewController {
 
     private let messageSigners: [MEMessageSigner]
     private let signerContexts: [MessageSecurityHandler.SignerContext?]
-    private let trustStore: TrustStore
+    private let trustStore: TrustStore?
 
     init(
         signers: [MEMessageSigner],
         contexts: [MessageSecurityHandler.SignerContext?],
-        trustStore: TrustStore
+        trustStore: TrustStore?
     ) {
         self.messageSigners = signers
         self.signerContexts = contexts
@@ -72,13 +72,23 @@ class MessageSecurityViewController: MEExtensionViewController {
         context: MessageSecurityHandler.SignerContext?
     ) -> NSView {
         let status = context.flatMap { RnpSignatureStatus(rawValue: $0.status) } ?? .unknown
-        let trust: TrustState
-        if let fingerprint = context?.fingerprint {
-            trust = trustStore.state(forFpr: fingerprint)
+        let model: SignerTrustViewModel
+        if let trustStore = trustStore {
+            let trust: TrustState
+            if let fingerprint = context?.fingerprint {
+                trust = trustStore.state(forFpr: fingerprint)
+            } else {
+                trust = .unverified
+            }
+            model = mapSignerTrust(status: status, trust: trust)
         } else {
-            trust = .unverified
+            model = SignerTrustViewModel(
+                label: "Trust state unavailable",
+                detail: "Trust information cannot be loaded while the keyring is unavailable.",
+                intent: .caution,
+                reviewDeepLink: false
+            )
         }
-        let model = mapSignerTrust(status: status, trust: trust)
 
         let nameLabel = NSTextField(labelWithString: signer.label)
         nameLabel.font = NSFont.systemFont(ofSize: NSFont.systemFontSize, weight: .medium)
