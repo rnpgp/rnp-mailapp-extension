@@ -8,6 +8,7 @@
 import AppKit
 import SwiftUI
 import MailSecurityEngine
+import TrustStore
 
 /// Actions available for a key in the detail sheet.
 public struct KeyDetailActions {
@@ -19,6 +20,7 @@ public struct KeyDetailActions {
     public var onRotateEncryption: () -> Void
     public var onRotateSigning: () -> Void
     public var onPublish: () -> Void
+    public var onMarkVerified: () -> Void
 
     public init(
         onExportPublic: @escaping () -> Void = {},
@@ -28,7 +30,8 @@ public struct KeyDetailActions {
         onRevoke: @escaping () -> Void = {},
         onRotateEncryption: @escaping () -> Void = {},
         onRotateSigning: @escaping () -> Void = {},
-        onPublish: @escaping () -> Void = {}
+        onPublish: @escaping () -> Void = {},
+        onMarkVerified: @escaping () -> Void = {}
     ) {
         self.onExportPublic = onExportPublic
         self.onExportSecret = onExportSecret
@@ -38,6 +41,7 @@ public struct KeyDetailActions {
         self.onRotateEncryption = onRotateEncryption
         self.onRotateSigning = onRotateSigning
         self.onPublish = onPublish
+        self.onMarkVerified = onMarkVerified
     }
 }
 
@@ -46,6 +50,7 @@ public struct KeyDetailView: View {
     public let key: KeyInfo
     public let subkeys: [SubkeyInfo]
     public let isRecipient: Bool
+    public let trustState: TrustState
     public let actions: KeyDetailActions
 
     @State private var showDeleteConfirmation = false
@@ -57,11 +62,13 @@ public struct KeyDetailView: View {
         key: KeyInfo,
         subkeys: [SubkeyInfo],
         isRecipient: Bool,
+        trustState: TrustState = .unverified,
         actions: KeyDetailActions
     ) {
         self.key = key
         self.subkeys = subkeys
         self.isRecipient = isRecipient
+        self.trustState = trustState
         self.actions = actions
     }
 
@@ -122,7 +129,7 @@ public struct KeyDetailView: View {
                 } else if key.isExpired {
                     Badge(text: "Expired", color: .red)
                 } else if isRecipient {
-                    Badge(text: "Unverified", color: .orange)
+                    Badge(text: trustBadgeText, color: trustBadgeColor)
                 }
             }
         }
@@ -202,6 +209,33 @@ public struct KeyDetailView: View {
                 Button("Rotate encryption subkey") { actions.onRotateEncryption() }
                 Button("Rotate signing subkey") { actions.onRotateSigning() }
             }
+            if isRecipient && trustState != .verified {
+                Button("Mark as verified") { actions.onMarkVerified() }
+                    .buttonStyle(.borderedProminent)
+                    .tint(trustState == .problem ? .red : .orange)
+            }
+        }
+    }
+
+    private var trustBadgeText: String {
+        switch trustState {
+        case .verified:
+            return "Verified"
+        case .problem:
+            return "Conflict"
+        case .unverified:
+            return "Unverified"
+        }
+    }
+
+    private var trustBadgeColor: Color {
+        switch trustState {
+        case .verified:
+            return .green
+        case .problem:
+            return .red
+        case .unverified:
+            return .orange
         }
     }
 
@@ -261,7 +295,8 @@ struct KeyDetailView_Previews: PreviewProvider {
                 subkeyCount: 1
             ),
             subkeys: [],
-            isRecipient: false,
+            isRecipient: true,
+            trustState: .unverified,
             actions: KeyDetailActions()
         )
     }

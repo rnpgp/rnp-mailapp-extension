@@ -11,6 +11,7 @@ import KeyLifecycle
 import MailSecurityEngine
 import RnpMailUI
 import SwiftUI
+import TrustStore
 import UniformTypeIdentifiers
 
 struct ContentView: View {
@@ -29,6 +30,8 @@ struct ContentView: View {
             .padding(.horizontal)
 
             toolbar
+
+            trustConflictsBanner
 
             expiryBanner
 
@@ -54,6 +57,7 @@ struct ContentView: View {
                     key: key,
                     subkeys: model.manager.subkeys(for: key),
                     isRecipient: model.selectedTab == .recipients,
+                    trustState: model.trustState(for: key),
                     actions: detailActions(for: key)
                 )
             }
@@ -127,6 +131,21 @@ struct ContentView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             model.checkClipboardForPGP()
+        }
+        .onOpenURL { url in
+            guard url.scheme == "rnpmail",
+                  url.host == "review",
+                  let fingerprint = url.pathComponents.dropFirst().first,
+                  !fingerprint.isEmpty
+            else {
+                return
+            }
+            model.openReview(fingerprint: fingerprint)
+        }
+        .onChange(of: model.manager.keys) { _ in
+            if let fingerprint = model.pendingReviewFingerprint {
+                model.openReview(fingerprint: fingerprint)
+            }
         }
     }
 
@@ -222,6 +241,9 @@ struct ContentView: View {
                 model.publishMessage = "Uploading public key to keys.openpgp.org…"
                 model.showPublishSheet = true
                 model.publishSelectedKey()
+            },
+            onMarkVerified: {
+                model.markSelectedVerified()
             }
         )
     }
@@ -241,6 +263,22 @@ struct ContentView: View {
                 Spacer()
             }
             .foregroundStyle(.red)
+            .padding(.horizontal)
+        )
+    }
+
+    private var trustConflictsBanner: some View {
+        let conflicts = model.trustConflicts
+        guard let first = conflicts.first else { return AnyView(EmptyView()) }
+        let suffix = conflicts.count > 1 ? " (and \(conflicts.count - 1) more)" : ""
+        return AnyView(
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.shield")
+                Text("Key changed for \(first.email)\(suffix). Verify the new fingerprint before encrypting.")
+                    .font(.callout)
+                Spacer()
+            }
+            .foregroundStyle(.orange)
             .padding(.horizontal)
         )
     }
