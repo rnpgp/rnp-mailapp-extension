@@ -29,8 +29,14 @@ struct MailExtensionsContainerApp: App {
         }
         .commands {
             CommandGroup(after: .help) {
-                Button("Show Onboarding") {
+                Button("menu.showOnboarding") {
                     model.reopenOnboarding()
+                }
+                Button("menu.licenses") {
+                    NotificationCenter.default.post(
+                        name: .showLicenses,
+                        object: nil
+                    )
                 }
             }
         }
