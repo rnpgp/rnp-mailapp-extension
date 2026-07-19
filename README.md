@@ -286,6 +286,10 @@ data.
 - **No SmartCard/HSM support.** Only software keys in the local keyring can
   be used; librnp's G10 keyring format is not used by the key manager.
 
+## Security
+
+For the security model, trust boundaries, memory hygiene notes, and vulnerability reporting instructions, see [`docs/SECURITY-MODEL.md`](docs/SECURITY-MODEL.md) and [`docs/SECURITY.md`](docs/SECURITY.md).
+
 ## License
 
 The repository currently ships no license file; the original sources carry
