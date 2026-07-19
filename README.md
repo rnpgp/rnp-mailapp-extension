@@ -221,6 +221,17 @@ Release](https://github.com/rnpgp/rnp-mailapp-extension/releases).
 > distributed outside the Mac App Store. Control-click the app and choose
 > **Open** to approve it.
 
+### Install (Mac App Store)
+
+[![Download on the Mac App Store](TODO-badge-url)](TODO-app-store-link)
+
+RnpMail is also available on the Mac App Store. The App Store build uses the
+same sandbox and app group as the direct-download release, with Apple
+Distribution signing and App Store Connect upload handled by the
+[`.github/workflows/release-appstore.yml`](.github/workflows/release-appstore.yml)
+pipeline. See [`docs/app-store/metadata.md`](docs/app-store/metadata.md) for
+the submission metadata template and review notes.
+
 ### Trust model
 
 RnpMail uses a deliberately simple trust model focused on clarity and

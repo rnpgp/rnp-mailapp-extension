@@ -1,0 +1,116 @@
+name: release-appstore
+
+# Run after the direct-download release workflow has successfully completed.
+# release-direct is itself triggered by v* tags, so this effectively uploads
+# a matching Mac App Store build for every version tag.
+on:
+  workflow_run:
+    workflows: [release-direct]
+    types: [completed]
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.event.workflow_run.head_sha }}'
+  cancel-in-progress: false
+
+env:
+  RNP_REF: v0.18.1
+
+jobs:
+  upload-appstore:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: macos-15
+    steps:
+    - name: Checkout swift-rnp
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.workflow_run.head_sha }}
+        fetch-depth: 0
+
+    - name: Determine tag
+      id: tag
+      run: |
+        TAG=$(git describe --tags --exact-match "${{ github.event.workflow_run.head_sha }}" 2>/dev/null || true)
+        if [[ -z "${TAG}" ]]; then
+          echo "The triggering workflow was not for a tag; nothing to upload."
+          exit 0
+        fi
+        echo "TAG=${TAG}" >> "$GITHUB_ENV"
+        echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+        echo "Tag: ${TAG}"
+
+    - name: Check Apple credentials
+      if: startsWith(env.TAG, 'v')
+      env:
+        ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        TEAM_ID: ${{ secrets.TEAM_ID }}
+        MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+        MACOS_CERTIFICATE_P12_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      run: |
+        missing=()
+        [[ -n "${ASC_API_KEY_P8}" ]] || missing+=("ASC_API_KEY_P8")
+        [[ -n "${ASC_API_KEY_ID}" ]] || missing+=("ASC_API_KEY_ID")
+        [[ -n "${ASC_ISSUER_ID}" ]] || missing+=("ASC_ISSUER_ID")
+        [[ -n "${TEAM_ID}" ]] || missing+=("TEAM_ID")
+        [[ -n "${MACOS_CERTIFICATE_P12}" ]] || missing+=("MACOS_CERTIFICATE_P12")
+        [[ -n "${MACOS_CERTIFICATE_P12_PASSWORD}" ]] || missing+=("MACOS_CERTIFICATE_P12_PASSWORD")
+        [[ -n "${KEYCHAIN_PASSWORD}" ]] || missing+=("KEYCHAIN_PASSWORD")
+        if [[ ${#missing[@]} -gt 0 ]]; then
+          echo "Missing secrets required for the Mac App Store upload: ${missing[*]}" >&2
+          exit 1
+        fi
+
+    - name: Cache RNPFramework.xcframework
+      if: startsWith(env.TAG, 'v')
+      id: framework-cache
+      uses: actions/cache@v4
+      with:
+        path: Vendor/RNPFramework.xcframework
+        key: rnp-${{ env.RNP_REF }}-framework-${{ hashFiles('scripts/build-rnp-framework.sh', 'Vendor/SOURCES.md') }}
+
+    - name: Build RNPFramework.xcframework
+      if: ${{ startsWith(env.TAG, 'v') && steps.framework-cache.outputs.cache-hit != 'true' }}
+      run: ./scripts/build-rnp-framework.sh
+
+    - name: Write App Store Connect API key
+      if: startsWith(env.TAG, 'v')
+      env:
+        ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+      run: |
+        mkdir -p "${RUNNER_TEMP}/asc"
+        echo -n "${ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8"
+
+    - name: Import signing certificate
+      if: startsWith(env.TAG, 'v')
+      env:
+        MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+        MACOS_CERTIFICATE_P12_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      run: |
+        CERTIFICATE_PATH="${RUNNER_TEMP}/build_certificate.p12"
+        KEYCHAIN_PATH="${RUNNER_TEMP}/app-signing.keychain-db"
+        echo -n "${MACOS_CERTIFICATE_P12}" | base64 --decode > "${CERTIFICATE_PATH}"
+        security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+        security set-keychain-settings -lut 21600 "${KEYCHAIN_PATH}"
+        security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+        security import "${CERTIFICATE_PATH}" -P "${MACOS_CERTIFICATE_P12_PASSWORD}" -A -t cert -f pkcs12 -k "${KEYCHAIN_PATH}"
+        security list-keychain -d user -s "${KEYCHAIN_PATH}"
+
+    - name: Build and upload to App Store
+      if: startsWith(env.TAG, 'v')
+      env:
+        DEVELOPMENT_TEAM: ${{ secrets.TEAM_ID }}
+        ASC_API_KEY_P8: "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8"
+        ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        BUILD_NUMBER: ${{ github.run_number }}
+        TAG: ${{ env.TAG }}
+      run: ./scripts/release-appstore.sh
+
+    - name: Clean up keychain
+      if: always()
+      run: |
+        KEYCHAIN_PATH="${RUNNER_TEMP}/app-signing.keychain-db"
+        security delete-keychain "${KEYCHAIN_PATH}" || true
