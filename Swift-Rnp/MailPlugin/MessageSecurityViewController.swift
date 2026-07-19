@@ -15,12 +15,12 @@ import TrustStore
 class MessageSecurityViewController: MEExtensionViewController {
 
     private let messageSigners: [MEMessageSigner]
-    private let signerContexts: [MessageSecurityHandler.SignerContext?]
+    private let signerContexts: [SignerContext?]
     private let trustStore: TrustStore?
 
     init(
         signers: [MEMessageSigner],
-        contexts: [MessageSecurityHandler.SignerContext?],
+        contexts: [SignerContext?],
         trustStore: TrustStore?
     ) {
         self.messageSigners = signers
@@ -69,7 +69,7 @@ class MessageSecurityViewController: MEExtensionViewController {
 
     private func row(
         for signer: MEMessageSigner,
-        context: MessageSecurityHandler.SignerContext?
+        context: SignerContext?
     ) -> NSView {
         let status = context.flatMap { RnpSignatureStatus(rawValue: $0.status) } ?? .unknown
         let model: SignerTrustViewModel
