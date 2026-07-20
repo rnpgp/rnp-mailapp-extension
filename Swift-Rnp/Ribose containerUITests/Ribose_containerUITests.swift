@@ -19,6 +19,13 @@ final class Ribose_containerUITests: XCTestCase {
         return app
     }
 
+    private func dismissOnboardingIfPresent(_ app: XCUIApplication) {
+        let doneButton = app.buttons["onboarding.done"]
+        if doneButton.waitForExistence(timeout: 2) {
+            doneButton.tap()
+        }
+    }
+
     func testOnboardingRenders() throws {
         let app = launchApp()
         XCTAssertTrue(app.windows.firstMatch.exists)
@@ -34,25 +41,25 @@ final class Ribose_containerUITests: XCTestCase {
         }
 
         // Fill in user ID and passphrase.
-        let userIDField = app.textFields["generate.userID"]
+        let userIDField = app.textFields["contentview.generate.userid"]
         XCTAssertTrue(userIDField.waitForExistence(timeout: 2))
         userIDField.tap()
         userIDField.typeText("UI Test <uitest@example.com>")
 
-        let passphraseField = app.secureTextFields["generate.passphrase"]
+        let passphraseField = app.secureTextFields["contentview.generate.passphrase"]
         if passphraseField.exists {
             passphraseField.tap()
             passphraseField.typeText("ui-test-passphrase")
         }
 
-        let confirmField = app.secureTextFields["generate.confirmPassphrase"]
+        let confirmField = app.secureTextFields["contentview.generate.confirmPassphrase"]
         if confirmField.exists {
             confirmField.tap()
             confirmField.typeText("ui-test-passphrase")
         }
 
         // Submit.
-        let submitButton = app.buttons["generate.submit"]
+        let submitButton = app.buttons["contentview.generate.confirm"]
         if submitButton.exists {
             submitButton.tap()
         }
@@ -75,10 +82,61 @@ final class Ribose_containerUITests: XCTestCase {
             throw XCTSkip("performAccessibilityAudit requires macOS 14")
         }
         let app = launchApp()
-        // Dismiss onboarding if present.
-        let doneButton = app.buttons["onboarding.done"]
-        if doneButton.waitForExistence(timeout: 2) {
-            doneButton.tap()
+        dismissOnboardingIfPresent(app)
+        try app.performAccessibilityAudit()
+    }
+
+    func testAccessibilityAuditGenerateForm() throws {
+        guard #available(macOS 14.0, *) else {
+            throw XCTSkip("performAccessibilityAudit requires macOS 14")
+        }
+        let app = launchApp()
+        dismissOnboardingIfPresent(app)
+
+        let generateMenu = app.buttons["contentview.generate-menu"]
+        if generateMenu.waitForExistence(timeout: 2) {
+            generateMenu.tap()
+            let ed25519 = app.buttons["contentview.generate-ed25519"]
+            if ed25519.waitForExistence(timeout: 2) {
+                ed25519.tap()
+            }
+        }
+        try app.performAccessibilityAudit()
+    }
+
+    func testAccessibilityAuditImportForm() throws {
+        guard #available(macOS 14.0, *) else {
+            throw XCTSkip("performAccessibilityAudit requires macOS 14")
+        }
+        let app = launchApp()
+        dismissOnboardingIfPresent(app)
+
+        let importMenu = app.buttons["contentview.import-menu"]
+        if importMenu.waitForExistence(timeout: 2) {
+            importMenu.tap()
+            let importClipboard = app.buttons["contentview.import-clipboard"]
+            if importClipboard.waitForExistence(timeout: 2) {
+                importClipboard.tap()
+            }
+        }
+        try app.performAccessibilityAudit()
+    }
+
+    func testAccessibilityAuditKeyDetail() throws {
+        guard #available(macOS 14.0, *) else {
+            throw XCTSkip("performAccessibilityAudit requires macOS 14")
+        }
+        let app = launchApp()
+        dismissOnboardingIfPresent(app)
+
+        // Select the first key row if one exists.
+        let firstRow = app.tables["keyslist.table"].rows.firstMatch
+        if firstRow.waitForExistence(timeout: 2) {
+            firstRow.tap()
+            let detailsButton = app.buttons["contentview.details-button"]
+            if detailsButton.waitForExistence(timeout: 2) {
+                detailsButton.tap()
+            }
         }
         try app.performAccessibilityAudit()
     }
