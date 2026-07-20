@@ -696,7 +696,8 @@
 		5FF9D74CA5F64F7024A9FA0C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_IDENTITY = "-";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
@@ -724,7 +725,8 @@
 		90264AB3832F43511F485410 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_IDENTITY = "-";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
@@ -1015,7 +1017,8 @@
 		D53856F8CE8E958F0CE571C7 /* AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_IDENTITY = "-";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
@@ -1109,7 +1112,8 @@
 		FE4A9E045573D02397B0CCC1 /* Direct */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_IDENTITY = "-";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
