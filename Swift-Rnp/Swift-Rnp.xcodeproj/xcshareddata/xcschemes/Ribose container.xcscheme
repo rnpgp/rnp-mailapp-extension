@@ -28,6 +28,56 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "3A455E8345F92843441914AE"
+               BuildableName = "Ribose containerUITests.xctest"
+               BlueprintName = "Ribose containerUITests"
+               ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6C89D91BA2C58BFB6DD93FF6"
+               BuildableName = "Ribose containerUITests.xctest"
+               BlueprintName = "Ribose containerUITests"
+               ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DD6E397AFEF7464D7392D5ED"
+               BuildableName = "Ribose containerUITests.xctest"
+               BlueprintName = "Ribose containerUITests"
+               ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C33AB748C073E6DFEF5C0EB4"
+               BuildableName = "Ribose containerUITests.xctest"
+               BlueprintName = "Ribose containerUITests"
+               ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C11C7952369D291DC9FDE728"
+               BuildableName = "Ribose containerUITests.xctest"
+               BlueprintName = "Ribose containerUITests"
+               ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
