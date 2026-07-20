@@ -34,6 +34,7 @@
 		AA1000000000000000000013 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000003 /* MailSecurityEngine */; };
 		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
 		AA1000000000000000000015 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000005 /* MailSecurityEngine */; };
+		AA1000000000000000000016 /* MailSecurityUI in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000006 /* MailSecurityUI */; };
 		BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
@@ -158,6 +159,7 @@
 			files = (
 				AA1000000000000000000012 /* Rnp in Frameworks */,
 				AA1000000000000000000013 /* MailSecurityEngine in Frameworks */,
+				AA1000000000000000000016 /* MailSecurityUI in Frameworks */,
 				BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -389,6 +391,7 @@
 			packageProductDependencies = (
 				AAC000000000000000000002 /* Rnp */,
 				AAC000000000000000000003 /* MailSecurityEngine */,
+				AAC000000000000000000006 /* MailSecurityUI */,
 			);
 			productName = MailPlugin;
 			productReference = AA5000000000000000000002 /* MailPlugin.appex */;
@@ -1208,6 +1211,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
 			productName = MailSecurityEngine;
+		};
+		AAC000000000000000000006 /* MailSecurityUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			productName = MailSecurityUI;
 		};
 		F7F139FFDED467A772241EBC /* RnpMailUI */ = {
 			isa = XCSwiftPackageProductDependency;

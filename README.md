@@ -118,9 +118,13 @@ package above:
   RFC 822 message data, and a `KeyManager` backed by a keyring directory
   (`pubring.gpg` / `secring.gpg`) with generate/import/export/list/delete.
   Fully covered by `swift test` — no Xcode required.
+- **`MailSecurityUI`** (SwiftPM target, `Sources/MailSecurityUI`) — the
+  AppKit security banner (`MailSecurityBannerView`) shown for signed
+  messages, kept free of MailKit so it can be unit- and snapshot-tested
+  without Mail.app.
 - **`MailPlugin`** (app extension target) — a thin MailKit shell
   (`MEMessageSecurityHandler`) delegating all OpenPGP work to
-  `MailSecurityEngine`.
+  `MailSecurityEngine` and rendering the banner via `MailSecurityUI`.
 - **Ribose container** (SwiftUI app target) — key manager UI (generate
   RSA/ECDSA keys, import armored keys from clipboard or file, export the
   armored public key to the clipboard, delete keys).
