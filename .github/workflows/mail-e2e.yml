@@ -1,0 +1,52 @@
+name: mail-e2e
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Swift-Rnp/MailPlugin/**'
+      - 'Sources/MailSecurityEngine/**'
+      - 'scripts/test-mail-e2e.sh'
+      - 'scripts/local-mail-server.sh'
+
+jobs:
+  e2e:
+    # This job requires a self-hosted macOS runner with:
+    #   - A valid Apple development certificate installed.
+    #   - Mail.app configured and able to run AppleScript.
+    #   - Homebrew packages: dovecot, postfix.
+    runs-on: [self-hosted, macos]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build RNPFramework.xcframework
+        run: ./scripts/build-rnp-framework.sh
+        env:
+          RNP_REF: v0.18.1
+
+      - name: Install mail server dependencies
+        run: brew install dovecot postfix
+
+      - name: Build signed app and extension
+        run: |
+          PKG_CONFIG_PATH=${{ github.workspace }}/Vendor/pkgconfig \
+          xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj \
+            -scheme "Ribose container" \
+            -configuration Direct \
+            build \
+            CODE_SIGNING_ALLOWED=YES \
+            DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }}
+        env:
+          PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
+
+      - name: Enable extension in Mail
+        run: |
+          echo "Manual step: enable the RNP OpenPGP extension in Mail > Settings > Extensions."
+          echo "This step is a placeholder until AppleScript or MDM automation is reliable."
+          exit 0
+
+      - name: Run end-to-end test
+        run: ./scripts/test-mail-e2e.sh
+        env:
+          MAIL_SERVER_DIR: /tmp/rnpmail-local-server
