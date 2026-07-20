@@ -10,18 +10,6 @@
 import Foundation
 import TrustStore
 
-/// Context attached to each signer so the view layer can look up trust state
-/// without re-running verification.
-public struct SignerContext: Codable {
-    public let fingerprint: String?
-    public let status: String
-
-    public init(fingerprint: String?, status: String) {
-        self.fingerprint = fingerprint
-        self.status = status
-    }
-}
-
 /// MailKit-independent message-security handler.
 public final class MessageSecurityCore {
     private let engine: MailSecurityEngine
