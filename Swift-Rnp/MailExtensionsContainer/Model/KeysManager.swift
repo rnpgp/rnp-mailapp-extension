@@ -32,10 +32,14 @@ final class KeysManager: ObservableObject {
     /// use. Falls back to a temporary directory if the keyring cannot be
     /// read. If both locations fail, the manager is left in a failed state
     /// and operations surface an error instead of crashing.
+    ///
+    /// UI tests can pass `--uitest-keyring-dir <path>` as a launch argument
+    /// to use an isolated keyring (and trust store) instead of the shared
+    /// app-group container.
     init() {
         let provider: (String) -> String? = { _ in KeychainPassphraseStore.sharedPassphrase() }
         if let manager = try? KeyManager(
-            directory: AppGroup.keyringDirectory(),
+            directory: Self.launchKeyringDirectory(),
             passphraseProvider: provider
         ) {
             keyManager = manager
@@ -53,6 +57,17 @@ final class KeysManager: ObservableObject {
             }
         }
         reload()
+    }
+
+    /// Keyring directory for this launch: the `--uitest-keyring-dir` launch
+    /// argument when present, otherwise the shared app-group location.
+    private static func launchKeyringDirectory() -> URL {
+        let arguments = CommandLine.arguments
+        if let flagIndex = arguments.firstIndex(of: "--uitest-keyring-dir"),
+           arguments.indices.contains(flagIndex + 1) {
+            return URL(fileURLWithPath: arguments[flagIndex + 1], isDirectory: true)
+        }
+        return AppGroup.keyringDirectory()
     }
 
     func reload() {
