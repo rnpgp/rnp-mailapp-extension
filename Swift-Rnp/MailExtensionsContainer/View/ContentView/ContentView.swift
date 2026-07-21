@@ -2,8 +2,10 @@
 //  ContentView.swift
 //  Ribose container
 //
-//  Key manager window: toolbar with generate/import/export/delete actions
-//  above the key list.
+//  Key manager window: a native split view (key list beside the selected
+//  key's details) with a toolbar holding the primary actions. On macOS 12
+//  the window falls back to a single-column layout and presents details in
+//  a sheet instead.
 //
 
 import AppKit
@@ -19,151 +21,278 @@ struct ContentView: View {
     @State private var showLicenses = false
 
     var body: some View {
-        VStack(spacing: 12) {
-            header
-
-            Picker("tab.selector", selection: $model.selectedTab) {
-                ForEach(KeyTab.allCases, id: \.self) { tab in
-                    Text(tab.localizedName).tag(tab)
+        rootContent
+            .frame(minWidth: 760, minHeight: 480)
+            .toolbar { toolbarItems }
+            .sheet(isPresented: $model.showGenerateSheet) {
+                GenerateKeySheet(algorithm: model.generateAlgorithm) { userID, algorithm in
+                    model.generate(userID: userID, algorithm: algorithm)
                 }
             }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-            .accessibilityIdentifier("contentview.tab-picker")
-
-            toolbar
-
-            trustConflictsBanner
-
-            expiryBanner
-
-            KeysListView(
-                keys: model.keys,
-                selection: $model.selection,
-                onDoubleTap: { _ in model.showDetailSheet = true }
-            )
-            .onDrop(of: [.fileURL, .data, .plainText], isTargeted: .constant(false)) { providers in
-                handleDrop(providers: providers)
+            .sheet(isPresented: $model.showDetailSheet) {
+                if let key = model.selectedKey {
+                    KeyDetailView(
+                        key: key,
+                        subkeys: model.manager.subkeys(for: key),
+                        isRecipient: model.selectedTab == .recipients,
+                        trustState: model.trustState(for: key),
+                        actions: detailActions(for: key)
+                    )
+                    .frame(minWidth: 560, minHeight: 520)
+                }
             }
+            .sheet(isPresented: $model.showOnboarding) {
+                OnboardingView(
+                    isPresented: $model.showOnboarding,
+                    onGenerate: { userID, algorithm, passphrase, expirationSeconds, useTouchID in
+                        model.generateForOnboarding(
+                            userID: userID,
+                            algorithm: algorithm,
+                            passphrase: passphrase,
+                            expirationSeconds: expirationSeconds,
+                            useTouchID: useTouchID
+                        )
+                    },
+                    onImport: { data in
+                        model.importForOnboarding(data)
+                    },
+                    onComplete: {
+                        model.markOnboardingComplete()
+                    }
+                )
+            }
+            .sheet(isPresented: $model.showClipboardImport) {
+                clipboardImportSheet
+            }
+            .sheet(isPresented: $model.showExtendExpirySheet) {
+                extendExpirySheet
+            }
+            .sheet(isPresented: $model.showRevokeConfirmation) {
+                revokeConfirmationSheet
+            }
+            .sheet(isPresented: $model.showRotateSheet) {
+                rotateConfirmationSheet
+            }
+            .sheet(isPresented: $model.showPublishSheet) {
+                publishSheet
+            }
+            .sheet(isPresented: $model.showFetchSheet) {
+                fetchSheet
+            }
+            .sheet(isPresented: $showLicenses) {
+                LicensesView(sourcesMarkdown: LicensesView.loadSources())
+            }
+            .alert("deleteKey.title", isPresented: $model.showDeleteConfirmation) {
+                Button("button.delete", role: .destructive) { model.deleteSelected() }
+                Button("button.cancel", role: .cancel) {}
+            } message: {
+                Text("deleteKey.message")
+            }
+            .alert(
+                "error.operation.title",
+                isPresented: Binding(
+                    get: { model.errorMessage != nil },
+                    set: { if !$0 { model.errorMessage = nil } }
+                )
+            ) {
+                Button("button.ok") { model.errorMessage = nil }
+            } message: {
+                Text(model.errorMessage ?? "")
+            }
+            .alert(
+                model.warningMessage ?? "",
+                isPresented: Binding(
+                    get: { model.warningMessage != nil },
+                    set: { if !$0 { model.warningMessage = nil } }
+                )
+            ) {
+                Button("button.ok") { model.warningMessage = nil }
+            }
+            .onAppear {
+                model.checkOnboarding()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+                model.checkClipboardForPGP()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .showLicenses)) { _ in
+                showLicenses = true
+            }
+            .onOpenURL { url in
+                guard url.scheme == "rnpmail",
+                      url.host == "review",
+                      let fingerprint = url.pathComponents.dropFirst().first,
+                      !fingerprint.isEmpty
+                else {
+                    return
+                }
+                model.openReview(fingerprint: fingerprint)
+            }
+            .onChange(of: model.manager.keys) { _ in
+                if let fingerprint = model.pendingReviewFingerprint {
+                    model.openReview(fingerprint: fingerprint)
+                }
+            }
+    }
+
+    // MARK: - Layout
+
+    @ViewBuilder
+    private var rootContent: some View {
+        if #available(macOS 13.0, *) {
+            splitContent
+        } else {
+            stackContent
+        }
+    }
+
+    /// macOS 13+: key list in the leading column, selected key's details in
+    /// the detail column.
+    @available(macOS 13.0, *)
+    private var splitContent: some View {
+        NavigationSplitView {
+            listColumn
+                .navigationTitle(Text("title.keysManager"))
+                .navigationSplitViewColumnWidth(min: 340, ideal: 420, max: 560)
+        } detail: {
+            detailColumn
+        }
+    }
+
+    /// macOS 12 fallback: single-column list; details open in a sheet.
+    private var stackContent: some View {
+        VStack(spacing: 12) {
+            tabPicker
+            bannerStack
+            keyList
         }
         .padding()
-        .frame(minWidth: 640, minHeight: 400)
-        .sheet(isPresented: $model.showGenerateSheet) {
-            GenerateKeySheet(algorithm: model.generateAlgorithm) { userID, algorithm in
-                model.generate(userID: userID, algorithm: algorithm)
-            }
+        .animation(.default, value: model.trustConflicts.count)
+        .animation(.default, value: model.expiryReport().count)
+        .navigationTitle(Text("title.keysManager"))
+    }
+
+    private var listColumn: some View {
+        VStack(spacing: 8) {
+            tabPicker
+                .padding(.horizontal, 12)
+                .padding(.top, 10)
+            bannerStack
+                .padding(.horizontal, 12)
+            keyList
         }
-        .sheet(isPresented: $model.showDetailSheet) {
+        .animation(.default, value: model.trustConflicts.count)
+        .animation(.default, value: model.expiryReport().count)
+    }
+
+    private var detailColumn: some View {
+        Group {
             if let key = model.selectedKey {
                 KeyDetailView(
                     key: key,
                     subkeys: model.manager.subkeys(for: key),
                     isRecipient: model.selectedTab == .recipients,
                     trustState: model.trustState(for: key),
-                    actions: detailActions(for: key)
+                    actions: detailActions(for: key),
+                    identifierPrefix: "keydetail.pane"
                 )
+                .id(key.fingerprint)
+                .transition(.opacity)
+            } else {
+                noSelectionPlaceholder
+                    .transition(.opacity)
             }
         }
-        .sheet(isPresented: $model.showOnboarding) {
-            OnboardingView(
-                isPresented: $model.showOnboarding,
-                onGenerate: { userID, algorithm, passphrase, expirationSeconds, useTouchID in
-                    model.generateForOnboarding(
-                        userID: userID,
-                        algorithm: algorithm,
-                        passphrase: passphrase,
-                        expirationSeconds: expirationSeconds,
-                        useTouchID: useTouchID
-                    )
-                },
-                onImport: { data in
-                    model.importForOnboarding(data)
-                },
-                onComplete: {
-                    model.markOnboardingComplete()
+        .animation(.default, value: model.selection)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var noSelectionPlaceholder: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "key.fill")
+                .font(.system(size: 40))
+                .foregroundStyle(.tertiary)
+                .accessibilityHidden(true)
+            Text("detail.noSelection")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    // MARK: - Key list
+
+    private var tabPicker: some View {
+        Picker("tab.selector", selection: $model.selectedTab) {
+            ForEach(KeyTab.allCases, id: \.self) { tab in
+                Text(tab.localizedName).tag(tab)
+            }
+        }
+        .pickerStyle(.segmented)
+        .accessibilityIdentifier("contentview.tab-picker")
+    }
+
+    private var keyList: some View {
+        KeysListView(
+            keys: model.keys,
+            selection: $model.selection,
+            trustState: { key in
+                key.hasSecret ? nil : model.trustState(for: key)
+            },
+            onDoubleTap: { _ in model.showDetailSheet = true },
+            onExport: { key in model.exportPublicToPasteboard(key) },
+            onCopyFingerprint: { key in model.copyFingerprint(key) },
+            onDelete: { key in model.confirmDelete(key) }
+        )
+        .overlay { emptyStateOverlay }
+        .animation(.default, value: model.keys)
+        .onDrop(of: [.fileURL, .data, .plainText], isTargeted: .constant(false)) { providers in
+            handleDrop(providers: providers)
+        }
+    }
+
+    @ViewBuilder
+    private var emptyStateOverlay: some View {
+        if model.keys.isEmpty {
+            VStack(spacing: 16) {
+                Image(systemName: "key.fill")
+                    .font(.system(size: 36))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+                VStack(spacing: 6) {
+                    Text("emptyState.title")
+                        .font(.title3.weight(.semibold))
+                    Text("emptyState.message")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
                 }
-            )
-        }
-        .sheet(isPresented: $model.showClipboardImport) {
-            clipboardImportSheet
-        }
-        .sheet(isPresented: $model.showExtendExpirySheet) {
-            extendExpirySheet
-        }
-        .sheet(isPresented: $model.showRevokeConfirmation) {
-            revokeConfirmationSheet
-        }
-        .sheet(isPresented: $model.showRotateSheet) {
-            rotateConfirmationSheet
-        }
-        .sheet(isPresented: $model.showPublishSheet) {
-            publishSheet
-        }
-        .sheet(isPresented: $model.showFetchSheet) {
-            fetchSheet
-        }
-        .sheet(isPresented: $showLicenses) {
-            LicensesView(sourcesMarkdown: LicensesView.loadSources())
-        }
-        .alert("deleteKey.title", isPresented: $model.showDeleteConfirmation) {
-            Button("button.delete", role: .destructive) { model.deleteSelected() }
-            Button("button.cancel", role: .cancel) {}
-        } message: {
-            Text("deleteKey.message")
-        }
-        .alert(
-            "error.operation.title",
-            isPresented: Binding(
-                get: { model.errorMessage != nil },
-                set: { if !$0 { model.errorMessage = nil } }
-            )
-        ) {
-            Button("button.ok") { model.errorMessage = nil }
-        } message: {
-            Text(model.errorMessage ?? "")
-        }
-        .alert(
-            model.warningMessage ?? "",
-            isPresented: Binding(
-                get: { model.warningMessage != nil },
-                set: { if !$0 { model.warningMessage = nil } }
-            )
-        ) {
-            Button("button.ok") { model.warningMessage = nil }
-        }
-        .onAppear {
-            model.checkOnboarding()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
-            model.checkClipboardForPGP()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .showLicenses)) { _ in
-            showLicenses = true
-        }
-        .onOpenURL { url in
-            guard url.scheme == "rnpmail",
-                  url.host == "review",
-                  let fingerprint = url.pathComponents.dropFirst().first,
-                  !fingerprint.isEmpty
-            else {
-                return
+                if model.selectedTab == .myKeys {
+                    HStack(spacing: 12) {
+                        Button("emptyState.generate") {
+                            model.beginGenerate(algorithm: .ed25519)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("contentview.empty.generate")
+                        Button("emptyState.import") {
+                            model.importFromFile()
+                        }
+                        .accessibilityIdentifier("contentview.empty.import")
+                    }
+                    .controlSize(.large)
+                    .padding(.top, 4)
+                }
             }
-            model.openReview(fingerprint: fingerprint)
-        }
-        .onChange(of: model.manager.keys) { _ in
-            if let fingerprint = model.pendingReviewFingerprint {
-                model.openReview(fingerprint: fingerprint)
-            }
+            .padding(32)
+            .frame(maxWidth: 340)
+            .transition(.opacity)
         }
     }
 
-    private var header: some View {
-        Text("title.keysManager")
-            .font(.title2)
-    }
+    // MARK: - Toolbar
 
-    private var toolbar: some View {
-        HStack(spacing: 24) {
+    @ToolbarContentBuilder
+    private var toolbarItems: some ToolbarContent {
+        ToolbarItemGroup(placement: .primaryAction) {
             Menu {
                 Button("generate.algorithm.ed25519") { model.beginGenerate(algorithm: .ed25519) }
                     .accessibilityIdentifier("contentview.generate-ed25519")
@@ -172,9 +301,9 @@ struct ContentView: View {
                 Button("generate.algorithm.ecdsa") { model.beginGenerate(algorithm: .ecdsa) }
                     .accessibilityIdentifier("contentview.generate-ecdsa")
             } label: {
-                Image(systemName: "plus.circle")
+                Label("toolbar.generate.help", systemImage: "plus")
             }
-            .menuStyle(.borderlessButton)
+            .menuIndicator(.hidden)
             .help("toolbar.generate.help")
             .accessibilityIdentifier("contentview.generate-menu")
             .accessibilityLabel("toolbar.generate.help")
@@ -191,9 +320,9 @@ struct ContentView: View {
                     .accessibilityIdentifier("contentview.import-keyserver")
                 }
             } label: {
-                Image(systemName: "square.and.arrow.down")
+                Label("toolbar.import.help", systemImage: "square.and.arrow.down")
             }
-            .menuStyle(.borderlessButton)
+            .menuIndicator(.hidden)
             .help("toolbar.import.help")
             .accessibilityIdentifier("contentview.import-menu")
             .accessibilityLabel("toolbar.import.help")
@@ -201,9 +330,8 @@ struct ContentView: View {
             Button {
                 model.exportSelectedPublicToPasteboard()
             } label: {
-                Image(systemName: "square.and.arrow.up")
+                Label("toolbar.export.help", systemImage: "square.and.arrow.up")
             }
-            .buttonStyle(.borderless)
             .disabled(model.selectedKey == nil)
             .help("toolbar.export.help")
             .accessibilityIdentifier("contentview.export-button")
@@ -212,9 +340,8 @@ struct ContentView: View {
             Button {
                 model.showDetailSheet = true
             } label: {
-                Image(systemName: "info.circle")
+                Label("toolbar.details.help", systemImage: "info.circle")
             }
-            .buttonStyle(.borderless)
             .disabled(model.selectedKey == nil)
             .help("toolbar.details.help")
             .accessibilityIdentifier("contentview.details-button")
@@ -223,15 +350,22 @@ struct ContentView: View {
             Button {
                 model.showDeleteConfirmation = true
             } label: {
-                Image(systemName: "minus.circle")
+                Label("toolbar.delete.help", systemImage: "trash")
             }
-            .buttonStyle(.borderless)
             .disabled(model.selectedKey == nil)
             .help("toolbar.delete.help")
             .accessibilityIdentifier("contentview.delete-button")
             .accessibilityLabel("toolbar.delete.help")
+
+            Button {
+                model.refresh()
+            } label: {
+                Label("toolbar.refresh.help", systemImage: "arrow.clockwise")
+            }
+            .help("toolbar.refresh.help")
+            .accessibilityIdentifier("contentview.refresh-button")
+            .accessibilityLabel("toolbar.refresh.help")
         }
-        .font(.system(size: 32))
     }
 
     private func detailActions(for key: KeyInfo) -> KeyDetailActions {
@@ -272,41 +406,38 @@ struct ContentView: View {
         )
     }
 
-    private var expiryBanner: some View {
-        let report = model.expiryReport()
-        guard let first = report.first else { return AnyView(EmptyView()) }
-        let suffix = report.count > 1 ? " (and \(report.count - 1) more)" : ""
-        let format = first.isExpired ? "banner.expired" : "banner.expiringSoon"
-        let label = String(format: format.localized, first.userID + suffix)
-        return AnyView(
-            HStack(spacing: 8) {
-                Image(systemName: first.isExpired ? "exclamationmark.octagon" : "exclamationmark.triangle")
-                Text(label)
-                    .font(.callout)
-                Spacer()
+    // MARK: - Banners
+
+    @ViewBuilder
+    private var bannerStack: some View {
+        let conflicts = model.trustConflicts
+        let expiry = model.expiryReport()
+        if !conflicts.isEmpty || !expiry.isEmpty {
+            VStack(spacing: 8) {
+                if let first = conflicts.first {
+                    let suffix = conflicts.count > 1 ? " (and \(conflicts.count - 1) more)" : ""
+                    BannerView(
+                        icon: "exclamationmark.shield.fill",
+                        tint: .orange,
+                        text: String(format: "banner.trustConflict".localized, first.email + suffix)
+                    )
+                    .accessibilityIdentifier("contentview.trust-conflict-banner")
+                }
+                if let first = expiry.first {
+                    let suffix = expiry.count > 1 ? " (and \(expiry.count - 1) more)" : ""
+                    let format = first.isExpired ? "banner.expired" : "banner.expiringSoon"
+                    BannerView(
+                        icon: first.isExpired ? "exclamationmark.octagon.fill" : "exclamationmark.triangle.fill",
+                        tint: .red,
+                        text: String(format: format.localized, first.userID + suffix)
+                    )
+                }
             }
-            .foregroundStyle(.red)
-            .padding(.horizontal)
-        )
+            .transition(.move(edge: .top).combined(with: .opacity))
+        }
     }
 
-    private var trustConflictsBanner: some View {
-        let conflicts = model.trustConflicts
-        guard let first = conflicts.first else { return AnyView(EmptyView()) }
-        let suffix = conflicts.count > 1 ? " (and \(conflicts.count - 1) more)" : ""
-        let label = String(format: "banner.trustConflict".localized, first.email + suffix)
-        return AnyView(
-            HStack(spacing: 8) {
-                Image(systemName: "exclamationmark.shield")
-                Text(label)
-                    .font(.callout)
-                Spacer()
-            }
-            .foregroundStyle(.orange)
-            .padding(.horizontal)
-            .accessibilityIdentifier("contentview.trust-conflict-banner")
-        )
-    }
+    // MARK: - Sheets
 
     private var extendExpirySheet: some View {
         VStack(spacing: 16) {
@@ -321,26 +452,30 @@ struct ContentView: View {
             .datePickerStyle(.graphical)
             .accessibilityIdentifier("contentview.extendexpiry.datepicker")
             HStack(spacing: 12) {
+                Spacer()
                 Button("button.cancel") { model.showExtendExpirySheet = false }
+                    .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("contentview.extendexpiry.cancel")
                 Button("button.extend") {
                     model.showExtendExpirySheet = false
                     model.extendSelectedExpiry()
                 }
                 .keyboardShortcut(.defaultAction)
+                .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("contentview.extendexpiry.extend")
             }
         }
-        .padding()
+        .padding(20)
         .frame(width: 400)
     }
 
     private var revokeConfirmationSheet: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             Text("revoke.title")
                 .font(.headline)
             Text("revoke.message")
                 .font(.callout)
+                .foregroundStyle(.secondary)
             TextField("revoke.fingerprint.placeholder", text: $model.revokeFingerprintInput)
                 .textFieldStyle(.roundedBorder)
                 .accessibilityIdentifier("contentview.revoke.fingerprint")
@@ -350,6 +485,7 @@ struct ContentView: View {
             HStack(spacing: 12) {
                 Spacer()
                 Button("button.cancel") { model.showRevokeConfirmation = false }
+                    .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("contentview.revoke.cancel")
                 Button("button.revoke", role: .destructive) {
                     model.showRevokeConfirmation = false
@@ -360,7 +496,7 @@ struct ContentView: View {
                 .accessibilityIdentifier("contentview.revoke.confirm")
             }
         }
-        .padding()
+        .padding(20)
         .frame(width: 420)
     }
 
@@ -370,8 +506,12 @@ struct ContentView: View {
                 .font(.headline)
             Text(model.rotateMessage.localized)
                 .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
             HStack(spacing: 12) {
+                Spacer()
                 Button("button.cancel") { model.showRotateSheet = false }
+                    .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("contentview.rotate.cancel")
                 Button("button.rotate") {
                     model.showRotateSheet = false
@@ -382,42 +522,63 @@ struct ContentView: View {
                     }
                 }
                 .keyboardShortcut(.defaultAction)
+                .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("contentview.rotate.confirm")
             }
         }
-        .padding()
-        .frame(width: 360)
+        .padding(20)
+        .frame(width: 380)
     }
 
     private var publishSheet: some View {
         VStack(spacing: 16) {
             Text("publish.title")
                 .font(.headline)
-            Text(model.publishMessage.localized)
-                .font(.callout)
-                .multilineTextAlignment(.center)
+            HStack(spacing: 10) {
+                if model.isPublishing {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+                Text(model.publishMessage.localized)
+                    .font(.callout)
+                    .multilineTextAlignment(.center)
+            }
             HStack(spacing: 12) {
+                Spacer()
                 Button("button.ok") { model.showPublishSheet = false }
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(model.isPublishing)
                     .accessibilityIdentifier("contentview.publish.ok")
             }
         }
-        .padding()
-        .frame(width: 360)
+        .padding(20)
+        .frame(width: 380)
     }
 
     private var fetchSheet: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             Text("fetch.title")
                 .font(.headline)
             Text("fetch.message")
                 .font(.callout)
+                .foregroundStyle(.secondary)
             TextField("fetch.query.placeholder", text: $model.fetchQuery)
                 .textFieldStyle(.roundedBorder)
-                .frame(width: 320)
+                .frame(width: 340)
                 .accessibilityIdentifier("contentview.fetch.query")
 
-            if let key = model.fetchedKey {
-                Text(String(format: "fetch.found".localized, key.source))
+            if model.isDiscoveringKey {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text("fetch.searching")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("contentview.fetch.progress")
+            } else if let key = model.fetchedKey {
+                Label(String(format: "fetch.found".localized, key.source), systemImage: "checkmark.circle.fill")
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -429,46 +590,58 @@ struct ContentView: View {
                     model.fetchQuery = ""
                     model.fetchedKey = nil
                 }
+                .keyboardShortcut(.cancelAction)
                 .accessibilityIdentifier("contentview.fetch.cancel")
                 Button("button.search") {
                     model.discoverKey()
                 }
                 .keyboardShortcut(.defaultAction)
-                .disabled(model.fetchQuery.trimmingCharacters(in: .whitespaces).isEmpty)
+                .disabled(model.fetchQuery.trimmingCharacters(in: .whitespaces).isEmpty || model.isDiscoveringKey)
                 .accessibilityIdentifier("contentview.fetch.search")
                 if model.fetchedKey != nil {
                     Button("button.import") {
                         model.importFetchedKey()
                     }
+                    .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("contentview.fetch.import")
                 }
             }
         }
-        .padding()
+        .padding(20)
         .frame(width: 420)
     }
 
     private var clipboardImportSheet: some View {
         VStack(spacing: 16) {
+            Image(systemName: "doc.on.clipboard")
+                .font(.system(size: 32))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
             Text("clipboardImport.title")
                 .font(.headline)
             Text("clipboardImport.message")
                 .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
             HStack(spacing: 12) {
+                Spacer()
                 Button("button.cancel") {
                     model.showClipboardImport = false
                     model.clipboardText = ""
                 }
+                .keyboardShortcut(.cancelAction)
                 .accessibilityIdentifier("contentview.clipboard.cancel")
                 Button("button.import") {
                     model.confirmClipboardImport()
                 }
                 .keyboardShortcut(.defaultAction)
+                .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("contentview.clipboard.import")
             }
         }
-        .padding()
-        .frame(width: 360)
+        .padding(20)
+        .frame(width: 380)
     }
 
     private func handleDrop(providers: [NSItemProvider]) -> Bool {
@@ -511,6 +684,27 @@ struct ContentView: View {
     }
 }
 
+/// Tinted banner used for trust-conflict and expiry warnings.
+private struct BannerView: View {
+    let icon: String
+    let tint: Color
+    let text: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .foregroundStyle(tint)
+                .accessibilityHidden(true)
+            Text(text)
+                .font(.callout)
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+}
+
 /// Sheet collecting the user ID for a new key.
 private struct GenerateKeySheet: View {
     @Environment(\.dismiss) private var dismiss
@@ -520,11 +714,12 @@ private struct GenerateKeySheet: View {
     let onGenerate: (String, KeyAlgorithm) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             Text(String(format: "generateKey.sheet.title".localized, algorithm.rawValue))
                 .font(.headline)
             Text("generateKey.userIDLabel")
                 .font(.callout)
+                .foregroundStyle(.secondary)
             TextField("generateKey.userIDPlaceholder", text: $userID)
                 .textFieldStyle(.roundedBorder)
                 .frame(width: 320)
@@ -532,17 +727,19 @@ private struct GenerateKeySheet: View {
             HStack {
                 Spacer()
                 Button("button.cancel") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("contentview.generate.cancel")
                 Button("button.generate") {
                     onGenerate(userID, algorithm)
                     dismiss()
                 }
                 .keyboardShortcut(.defaultAction)
+                .buttonStyle(.borderedProminent)
                 .disabled(userID.trimmingCharacters(in: .whitespaces).isEmpty)
                 .accessibilityIdentifier("contentview.generate.confirm")
             }
         }
-        .padding()
+        .padding(20)
     }
 }
 

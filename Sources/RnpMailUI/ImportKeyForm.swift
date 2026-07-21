@@ -34,7 +34,11 @@ public struct ImportKeyForm: View {
             TextEditor(text: $viewModel.importText)
                 .font(.system(.body, design: .monospaced))
                 .frame(height: 180)
-                .border(Color.secondary.opacity(0.25))
+                .padding(4)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .stroke(Color.secondary.opacity(0.25), lineWidth: 1)
+                )
                 .accessibilityIdentifier("importform.text")
 
             Button("importForm.fetchPlaceholder") {}
@@ -46,15 +50,21 @@ public struct ImportKeyForm: View {
                 Button("button.back", action: onBack)
                     .accessibilityIdentifier("importform.back")
                 Spacer()
+                if viewModel.isWorking {
+                    ProgressView()
+                        .controlSize(.small)
+                        .accessibilityIdentifier("importform.progress")
+                }
                 Button("button.import") {
                     onImport()
                 }
+                .buttonStyle(.borderedProminent)
                 .disabled(!viewModel.canImport || viewModel.isWorking)
                 .accessibilityIdentifier("importform.import")
             }
         }
-        .frame(width: 420)
-        .padding()
+        .frame(width: 440)
+        .padding(24)
     }
 }
 

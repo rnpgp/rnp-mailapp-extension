@@ -79,15 +79,21 @@ public struct GenerateKeyForm: View {
                 Button("button.back", action: onBack)
                     .accessibilityIdentifier("generateform.back")
                 Spacer()
+                if viewModel.isWorking {
+                    ProgressView()
+                        .controlSize(.small)
+                        .accessibilityIdentifier("generateform.progress")
+                }
                 Button("generateForm.createButton") {
                     onGenerate()
                 }
+                .buttonStyle(.borderedProminent)
                 .disabled(!viewModel.canGenerate || viewModel.isWorking)
                 .accessibilityIdentifier("generateform.create")
             }
         }
-        .frame(width: 420)
-        .padding()
+        .frame(width: 440)
+        .padding(24)
     }
 }
 

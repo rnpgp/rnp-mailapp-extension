@@ -6,6 +6,7 @@
 //
 
 import AppKit
+import Combine
 import CryptoKit
 import Foundation
 import KeyLifecycle
@@ -53,13 +54,23 @@ final class ContentViewModel: ObservableObject {
     @Published var revokeReason = ""
     @Published var extendExpiryDate = Date().addingTimeInterval(365 * 24 * 60 * 60)
     @Published var pendingReviewFingerprint: String?
+    /// Whether a keyserver discovery (fetch sheet) is in flight.
+    @Published var isDiscoveringKey = false
+    /// Whether a keyserver publish is in flight.
+    @Published var isPublishing = false
 
     let manager: KeysManager
     private var lastClipboardHash: String?
+    private var managerObserver: AnyCancellable?
 
     init(manager: KeysManager) {
 
         self.manager = manager
+        // Forward keyring changes so every view bound to this model (list,
+        // banners, detail pane) re-renders — and animates — on mutation.
+        managerObserver = manager.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
     }
 
     /// Opens the key detail sheet for the given fingerprint, switching to the
@@ -270,12 +281,28 @@ final class ContentViewModel: ObservableObject {
 
     // MARK: - Export
 
+    /// Reloads the key list from the keyring (toolbar refresh action).
+    func refresh() {
+        manager.reload()
+    }
+
+    /// Copies the key's fingerprint to the general pasteboard.
+    func copyFingerprint(_ key: KeyInfo) {
+        copyToPasteboard(key.fingerprint)
+    }
+
     /// Copies the armored public key of the current selection to the
     /// general pasteboard.
     func exportSelectedPublicToPasteboard() {
         guard let key = selectedKey else {
             return
         }
+        exportPublicToPasteboard(key)
+    }
+
+    /// Copies the armored public key of the given key to the general
+    /// pasteboard.
+    func exportPublicToPasteboard(_ key: KeyInfo) {
         guard let armored = manager.exportKey(fingerprint: key.fingerprint) else {
             errorMessage = "error.exportPublicFailed".localized
             return
@@ -302,6 +329,13 @@ final class ContentViewModel: ObservableObject {
     }
 
     // MARK: - Delete
+
+    /// Selects the given key and presents the delete confirmation (used by
+    /// the list's context menu, where the clicked row may not be selected).
+    func confirmDelete(_ key: KeyInfo) {
+        selection = key.id
+        showDeleteConfirmation = true
+    }
 
     func deleteSelected() {
         guard let key = selectedKey else {
@@ -352,9 +386,11 @@ final class ContentViewModel: ObservableObject {
 
     func publishSelectedKey() {
         guard let key = selectedKey else { return }
+        isPublishing = true
         Task {
             let result = await manager.publish(key: key)
             await MainActor.run {
+                isPublishing = false
                 switch result {
                 case .success(let receipt):
                     publishMessage = receipt.message ?? "publish.success.fallback".localized
@@ -368,6 +404,7 @@ final class ContentViewModel: ObservableObject {
     func discoverKey() {
         let query = fetchQuery.trimmingCharacters(in: .whitespaces)
         guard !query.isEmpty else { return }
+        isDiscoveringKey = true
         Task {
             let result: Result<FetchedKey, KeyServerError>
             if query.contains("@") {
@@ -376,6 +413,7 @@ final class ContentViewModel: ObservableObject {
                 result = await manager.discoverByFingerprint(query)
             }
             await MainActor.run {
+                isDiscoveringKey = false
                 switch result {
                 case .success(let key):
                     fetchedKey = key
