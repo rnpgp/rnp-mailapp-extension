@@ -1,4 +1,4 @@
-prefix=/Users/mulgogi/src/rnp/swift-rnp/Vendor/RNPFramework.xcframework/macos-arm64_x86_64/RNPFramework.framework
+prefix=${pcfiledir}/../RNPFramework.xcframework/macos-arm64_x86_64/RNPFramework.framework
 exec_prefix=${prefix}
 libdir=${prefix}
 includedir=${prefix}/Headers
@@ -6,5 +6,5 @@ includedir=${prefix}/Headers
 Name: rnp
 Description: RNPFramework vendored for RnpMail
 Version: 0.18.1
-Libs: -F/Users/mulgogi/src/rnp/swift-rnp/Vendor/RNPFramework.xcframework/macos-arm64_x86_64 -framework RNPFramework
+Libs: -F${pcfiledir}/../RNPFramework.xcframework/macos-arm64_x86_64 -framework RNPFramework
 Cflags: -I${includedir}

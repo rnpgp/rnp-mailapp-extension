@@ -130,7 +130,7 @@ EOF
     SLICE_DIR="$(find "${OUT_DIR}" -maxdepth 2 -name 'RNPFramework.framework' | head -n1)"
     FRAMEWORK_DIR="$(dirname "${SLICE_DIR}")"
     cat > "${REPO_ROOT}/Vendor/pkgconfig/librnp.pc" <<EOF
-prefix=${SLICE_DIR}
+prefix=\${pcfiledir}/../RNPFramework.xcframework/macos-arm64_x86_64/RNPFramework.framework
 exec_prefix=\${prefix}
 libdir=\${prefix}
 includedir=\${prefix}/Headers
@@ -138,7 +138,7 @@ includedir=\${prefix}/Headers
 Name: rnp
 Description: RNPFramework vendored for RnpMail
 Version: ${RNP_REF#v}
-Libs: -F${FRAMEWORK_DIR} -framework RNPFramework
+Libs: -F\${pcfiledir}/../RNPFramework.xcframework/macos-arm64_x86_64 -framework RNPFramework
 Cflags: -I\${includedir}
 EOF
 
@@ -448,7 +448,7 @@ xcodebuild -create-xcframework -framework "${FW_DIR}" -output "${OUT_DIR}"
 SLICE_DIR="$(find "${OUT_DIR}" -maxdepth 2 -name 'RNPFramework.framework' | head -n1)"
 FRAMEWORK_DIR="$(dirname "${SLICE_DIR}")"
 cat > "${REPO_ROOT}/Vendor/pkgconfig/librnp.pc" <<EOF
-prefix=${SLICE_DIR}
+prefix=\${pcfiledir}/../RNPFramework.xcframework/macos-arm64_x86_64/RNPFramework.framework
 exec_prefix=\${prefix}
 libdir=\${prefix}
 includedir=\${prefix}/Headers
@@ -456,7 +456,7 @@ includedir=\${prefix}/Headers
 Name: rnp
 Description: RNPFramework vendored for RnpMail
 Version: ${RNP_REF#v}
-Libs: -F${FRAMEWORK_DIR} -framework RNPFramework
+Libs: -F\${pcfiledir}/../RNPFramework.xcframework/macos-arm64_x86_64 -framework RNPFramework
 Cflags: -I\${includedir}
 EOF
 

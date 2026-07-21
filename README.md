@@ -107,6 +107,36 @@ dance could not be validated reliably; the package itself has no
 macOS-specific code beyond Foundation/XCTest, so Linux support should be a
 matter of CI plumbing (contributions welcome).
 
+## Testing the Mail extension
+
+The automated test suite covers the engine, MIME parser, trust store, keyserver client, key lifecycle, banner UI, and container app basics:
+
+```sh
+# Swift package tests (engine, MIME, trust, keyserver, lifecycle, snapshot tests)
+PKG_CONFIG_PATH=/path/to/librnp/lib/pkgconfig \
+  swift test -Xlinker -rpath -Xlinker /path/to/librnp/lib
+
+# Xcode builds (container app + Mail extension)
+PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
+  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin build CODE_SIGNING_ALLOWED=NO
+PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
+  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" build CODE_SIGNING_ALLOWED=NO
+
+# Container app UI tests (onboarding, key generation, accessibility audits)
+PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
+  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" test CODE_SIGNING_ALLOWED=NO
+
+# Sandbox / entitlement audit
+./scripts/sandbox-audit.sh
+
+# Release pipeline dry-run with a self-signed certificate
+./scripts/ci-release-dry-run.sh
+```
+
+Snapshot tests for the Mail banner live in `Tests/MailSecurityUITests/`. Reference PNGs are stored in `Tests/Fixtures/snapshots/` and are machine-specific (fonts/anti-aliasing); if they mismatch on a new machine, delete the affected PNGs and re-run the tests to re-record them, then review the new images before committing.
+
+For real Mail integration testing, a local IMAP/SMTP server harness is provided (`scripts/local-mail-server.sh` + `scripts/test-mail-e2e.sh`) and a CI workflow (`mail-e2e.yml`) for a self-hosted macOS runner with a development certificate.
+
 ## Use with Apple Mail
 
 The `Swift-Rnp/` directory contains `Swift-Rnp.xcodeproj`, an Apple Mail

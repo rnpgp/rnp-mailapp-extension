@@ -368,7 +368,7 @@ private func storeKeychainData(_ data: Data, service: String, account: String, a
         kSecAttrService: service,
         kSecAttrAccount: account,
         kSecValueData: data,
-        kSecAttrAccessible: kSecAttrAccessibleWhenUnlocked,
+        kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
     ]
     if let accessGroup = accessGroup {
         item[kSecAttrAccessGroup] = accessGroup
