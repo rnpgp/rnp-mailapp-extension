@@ -1,6 +1,6 @@
 //
 //  LicensesView.swift
-//  Ribose container
+//  RNP
 //
 //  About → Licenses view rendering the vendored dependency summary and any
 //  bundled license texts.

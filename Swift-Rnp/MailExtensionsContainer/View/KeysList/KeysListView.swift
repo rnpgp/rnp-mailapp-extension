@@ -1,6 +1,6 @@
 //
 //  KeysListView.swift
-//  Ribose container
+//  RNP
 //
 //  Table of the OpenPGP keys in the shared keyring.
 //
@@ -65,11 +65,11 @@ struct KeysListView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             if key.isRevoked {
-                                RnpBadge(text: "badge.revoked".localized, color: .red)
+                                RnpBadge(text: "badge.revoked".localized, color: RnpBrand.critical)
                             } else if key.isExpired {
-                                RnpBadge(text: "badge.expired".localized, color: .red)
+                                RnpBadge(text: "badge.expired".localized, color: RnpBrand.critical)
                             } else if let days = key.daysUntilExpiry, days < 60 {
-                                RnpBadge(text: String(format: "badge.expiresIn".localized, days), color: .orange)
+                                RnpBadge(text: String(format: "badge.expiresIn".localized, days), color: RnpBrand.unverified)
                             }
                         }
                     }

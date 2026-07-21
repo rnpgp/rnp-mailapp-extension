@@ -177,9 +177,9 @@ public struct KeyDetailView: View {
                             in: RoundedRectangle(cornerRadius: RnpRadius.badge, style: .continuous)
                         )
                     if key.isRevoked {
-                        RnpBadge(text: "badge.revoked".localized, color: .red)
+                        RnpBadge(text: "badge.revoked".localized, color: RnpBrand.critical)
                     } else if key.isExpired {
-                        RnpBadge(text: "badge.expired".localized, color: .red)
+                        RnpBadge(text: "badge.expired".localized, color: RnpBrand.critical)
                     } else if isRecipient {
                         miniTrustBadge
                     }
@@ -232,7 +232,7 @@ public struct KeyDetailView: View {
             if trustState != .verified {
                 Button("detail.markVerified") { actions.onMarkVerified() }
                     .buttonStyle(.borderedProminent)
-                    .tint(trustState == .problem ? .red : .accentColor)
+                    .tint(trustState == .problem ? RnpBrand.critical : Color.accentColor)
                     .accessibilityIdentifier("\(identifierPrefix).mark-verified")
             }
         }
@@ -309,7 +309,7 @@ public struct KeyDetailView: View {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .tint(didCopyFingerprint ? .green : nil)
+                    .tint(didCopyFingerprint ? RnpBrand.verified : nil)
                     .animation(.easeInOut(duration: 0.15), value: didCopyFingerprint)
                     .help("detail.copyFingerprint.help")
                     .accessibilityIdentifier("\(identifierPrefix).copy-fingerprint")

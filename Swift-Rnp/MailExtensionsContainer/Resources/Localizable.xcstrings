@@ -7,67 +7,67 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "OpenPGP Keys"
+            "value": "RNP"
           }
         },
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "OpenPGP-Schlüssel"
+            "value": "RNP"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Claves OpenPGP"
+            "value": "RNP"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Clés OpenPGP"
+            "value": "RNP"
           }
         },
         "it": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Chiavi OpenPGP"
+            "value": "RNP"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "OpenPGP 鍵"
+            "value": "RNP"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "OpenPGP 키"
+            "value": "RNP"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Chaves OpenPGP"
+            "value": "RNP"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Ключи OpenPGP"
+            "value": "RNP"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "OpenPGP 密钥"
+            "value": "RNP"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "OpenPGP 金鑰"
+            "value": "RNP"
           }
         }
       }
@@ -6965,67 +6965,67 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Welcome to Swift-Rnp"
+            "value": "Welcome to RNP"
           }
         },
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Willkommen bei Swift-Rnp"
+            "value": "Willkommen bei RNP"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Bienvenido a Swift-Rnp"
+            "value": "Bienvenido a RNP"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Bienvenue dans Swift-Rnp"
+            "value": "Bienvenue dans RNP"
           }
         },
         "it": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Benvenuto in Swift-Rnp"
+            "value": "Benvenuto in RNP"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Swift-Rnp へようこそ"
+            "value": "RNP へようこそ"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Swift-Rnp에 오신 것을 환영합니다"
+            "value": "RNP에 오신 것을 환영합니다"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Bem-vindo ao Swift-Rnp"
+            "value": "Bem-vindo ao RNP"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Добро пожаловать в Swift-Rnp"
+            "value": "Добро пожаловать в RNP"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "欢迎使用 Swift-Rnp"
+            "value": "欢迎使用 RNP"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "歡迎使用 Swift-Rnp"
+            "value": "歡迎使用 RNP"
           }
         }
       }
