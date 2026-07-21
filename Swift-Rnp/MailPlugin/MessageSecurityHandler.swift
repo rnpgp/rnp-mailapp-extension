@@ -10,6 +10,7 @@
 import Foundation
 import MailKit
 import MailSecurityEngine
+import MailSecurityUI
 import Rnp
 
 class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
@@ -95,10 +96,26 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
     // MARK: - Decoding Messages
 
+    /// Encryption status of the most recently decoded OpenPGP message.
+    ///
+    /// MailKit's `extensionViewController(signers:)` receives no encryption
+    /// state, and signer contexts only exist for signed messages. For
+    /// encrypted-but-unsigned messages the banner falls back to the status
+    /// recorded here at decode time (Mail always decodes a message before it
+    /// can show its security indicator).
+    private var lastDecodedEncryption: (isEncrypted: Bool, errorDescription: String?)?
+    private let lastDecodedEncryptionLock = NSLock()
+
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
         guard let core = core, let decoded = core.decodedMessage(forMessageData: data) else {
             return nil
         }
+        lastDecodedEncryptionLock.lock()
+        lastDecodedEncryption = (
+            decoded.securityInformation.isEncrypted,
+            decoded.securityInformation.encryptionError?.localizedDescription
+        )
+        lastDecodedEncryptionLock.unlock()
         let signers = decoded.securityInformation.signers.map { info in
             MEMessageSigner(
                 emailAddresses: info.emailAddresses.map { MEEmailAddress(rawString: $0) },
@@ -131,8 +148,29 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         return MessageSecurityViewController(
             signers: messageSigners,
             contexts: contexts,
-            trustStore: core.trustStore
+            trustStore: core.trustStore,
+            encryption: encryptionInfo(for: contexts)
         )
+    }
+
+    /// Encryption status for the banner: prefer the per-message value carried
+    /// in the signer contexts; fall back to the most recent decode for
+    /// encrypted messages without signers.
+    private func encryptionInfo(for contexts: [SignerContext?]) -> MailSecurityBannerView.EncryptionInfo? {
+        if let context = contexts.lazy.compactMap({ $0 }).first, let isEncrypted = context.isEncrypted {
+            return MailSecurityBannerView.EncryptionInfo(
+                isEncrypted: isEncrypted,
+                errorDescription: context.encryptionError
+            )
+        }
+        lastDecodedEncryptionLock.lock()
+        defer { lastDecodedEncryptionLock.unlock() }
+        return lastDecodedEncryption.map {
+            MailSecurityBannerView.EncryptionInfo(
+                isEncrypted: $0.isEncrypted,
+                errorDescription: $0.errorDescription
+            )
+        }
     }
 
     // MARK: - Displaying Additional Context

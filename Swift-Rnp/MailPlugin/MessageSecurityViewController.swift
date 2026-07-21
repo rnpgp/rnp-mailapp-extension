@@ -2,8 +2,9 @@
 //  MessageSecurityViewController.swift
 //  MailPlugin
 //
-//  Signature-status banner shown when the user clicks Mail's security
-//  indicator for a signed message, now augmented with per-signer trust.
+//  OpenPGP security banner shown when the user clicks Mail's security
+//  indicator: encryption status plus per-signer signature trust and key
+//  actions.
 //
 //  Thin MailKit shell: the banner itself lives in the MailSecurityUI Swift
 //  package (`MailSecurityBannerView`) so it can be tested without Mail.app;
@@ -21,15 +22,18 @@ class MessageSecurityViewController: MEExtensionViewController {
     private let messageSigners: [MEMessageSigner]
     private let signerContexts: [SignerContext?]
     private let trustStore: TrustStore?
+    private let encryption: MailSecurityBannerView.EncryptionInfo?
 
     init(
         signers: [MEMessageSigner],
         contexts: [SignerContext?],
-        trustStore: TrustStore?
+        trustStore: TrustStore?,
+        encryption: MailSecurityBannerView.EncryptionInfo? = nil
     ) {
         self.messageSigners = signers
         self.signerContexts = contexts
         self.trustStore = trustStore
+        self.encryption = encryption
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -42,6 +46,6 @@ class MessageSecurityViewController: MEExtensionViewController {
         let signers = zip(messageSigners, signerContexts).map { signer, context in
             MailSecurityBannerView.Signer(label: signer.label, context: context)
         }
-        view = MailSecurityBannerView(signers: signers, trustStore: trustStore)
+        view = MailSecurityBannerView(signers: signers, trustStore: trustStore, encryption: encryption)
     }
 }
