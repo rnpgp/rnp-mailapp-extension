@@ -2,8 +2,14 @@
 //  MailSecurityBannerView.swift
 //  swift-rnp
 //
-//  AppKit signature-status banner shown when the user clicks Mail's security
-//  indicator for a signed message, augmented with per-signer trust.
+//  AppKit OpenPGP security banner shown when the user clicks Mail's security
+//  indicator. Surfaces:
+//  - the message's encryption status (encrypted / not encrypted / decryption
+//    problems), when the handler supplies it;
+//  - per-signer signature + trust state;
+//  - per-signer actions: "View Key in RNP" (deep link
+//    `rnpmail://review/<fpr>`), "Copy Fingerprint", and "Mark as Verified"
+//    for unverified keys.
 //
 //  Moved out of the MailPlugin appex into this SwiftPM target so the banner
 //  can be unit- and snapshot-tested without Mail.app. Kept free of MailKit
@@ -15,9 +21,9 @@ import MailSecurityEngine
 import Rnp
 import TrustStore
 
-/// Renders the "OpenPGP signature" banner: a title plus one row stack per
-/// signer with the signer's trust state and, when useful, a deep link to
-/// review the key in the container app (`rnpmail://review/<fpr>`).
+/// Renders the "OpenPGP signature" banner: a branded header, an optional
+/// encryption-status line, and one row stack per signer with the signer's
+/// trust state and actions.
 public final class MailSecurityBannerView: NSView {
 
     /// One signer row in the banner.
@@ -33,12 +39,27 @@ public final class MailSecurityBannerView: NSView {
         }
     }
 
+    /// Encryption status of the decoded message, supplied by the handler.
+    public struct EncryptionInfo: Equatable, Sendable {
+        /// Whether the message was encrypted (and successfully decrypted).
+        public let isEncrypted: Bool
+        /// Decryption problem reported at decode time, if any.
+        public let errorDescription: String?
+
+        public init(isEncrypted: Bool, errorDescription: String? = nil) {
+            self.isEncrypted = isEncrypted
+            self.errorDescription = errorDescription
+        }
+    }
+
     private let signers: [Signer]
     private let trustStore: TrustStore?
+    private let encryption: EncryptionInfo?
 
-    public init(signers: [Signer], trustStore: TrustStore?) {
+    public init(signers: [Signer], trustStore: TrustStore?, encryption: EncryptionInfo? = nil) {
         self.signers = signers
         self.trustStore = trustStore
+        self.encryption = encryption
         super.init(frame: NSRect(x: 0, y: 0, width: 360, height: 120))
         setUpViews()
     }
@@ -48,15 +69,26 @@ public final class MailSecurityBannerView: NSView {
         fatalError("init(coder:) is not supported")
     }
 
-    private func setUpViews() {
-        let title = NSTextField(labelWithString: "OpenPGP signature")
-        title.font = .boldSystemFont(ofSize: NSFont.systemFontSize)
+    // MARK: - View construction
 
-        let stack = NSStackView(views: [title] + signerRows)
+    private func setUpViews() {
+        setAccessibilityRole(.group)
+        setAccessibilityLabel("OpenPGP security")
+
+        let header = headerRow
+
+        var sections: [NSView] = [header]
+        if let encryptionSection = encryptionSection {
+            sections.append(encryptionSection)
+            sections.append(makeSeparator())
+        }
+        sections.append(contentsOf: signerRows)
+
+        let stack = NSStackView(views: sections)
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 12
-        stack.setCustomSpacing(10, after: title)
+        stack.setCustomSpacing(10, after: header)
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         addSubview(stack)
@@ -75,6 +107,93 @@ public final class MailSecurityBannerView: NSView {
         ])
     }
 
+    /// Rebuilds the banner content, e.g. after a "Mark as Verified" action
+    /// changed the trust state.
+    private func refreshContent() {
+        subviews.forEach { $0.removeFromSuperview() }
+        setUpViews()
+    }
+
+    /// Header: brand-blue shield glyph plus the banner title.
+    private var headerRow: NSView {
+        let icon = NSImageView()
+        icon.image = NSImage(
+            systemSymbolName: "lock.shield.fill",
+            accessibilityDescription: nil
+        )
+        icon.symbolConfiguration = NSImage.SymbolConfiguration(hierarchicalColor: BannerBrand.primary)
+            .applying(NSImage.SymbolConfiguration(pointSize: 15, weight: .semibold))
+        icon.setContentHuggingPriority(.required, for: .horizontal)
+        icon.setAccessibilityHidden(true)
+
+        let title = NSTextField(labelWithString: "OpenPGP signature")
+        title.font = .boldSystemFont(ofSize: NSFont.systemFontSize)
+
+        let row = NSStackView(views: [icon, title])
+        row.orientation = .horizontal
+        row.alignment = .centerY
+        row.spacing = 6
+        return row
+    }
+
+    /// Encryption-status line, shown when the handler reported one.
+    private var encryptionSection: NSView? {
+        guard let encryption else { return nil }
+
+        let icon = NSImageView()
+        icon.image = NSImage(
+            systemSymbolName: encryption.isEncrypted ? "lock.fill" : "lock.open",
+            accessibilityDescription: nil
+        )
+        let tint = encryption.isEncrypted ? BannerBrand.primary : NSColor.secondaryLabelColor
+        icon.symbolConfiguration = NSImage.SymbolConfiguration(hierarchicalColor: tint)
+            .applying(NSImage.SymbolConfiguration(pointSize: 12, weight: .medium))
+        icon.setContentHuggingPriority(.required, for: .horizontal)
+        icon.setAccessibilityHidden(true)
+
+        let statusLabel = NSTextField(labelWithString: encryption.isEncrypted
+            ? "Encrypted message"
+            : "This message was not encrypted")
+        statusLabel.font = NSFont.systemFont(ofSize: NSFont.systemFontSize, weight: .medium)
+        if !encryption.isEncrypted {
+            statusLabel.textColor = .secondaryLabelColor
+        }
+        statusLabel.setAccessibilityIdentifier("rnp.banner.encryption-status")
+
+        var textRows: [NSView] = [statusLabel]
+        if encryption.isEncrypted {
+            let detail = NSTextField(wrappingLabelWithString: "This message was protected with OpenPGP and decrypted by RNP.")
+            detail.textColor = .secondaryLabelColor
+            detail.font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
+            textRows.append(detail)
+        }
+        if let error = encryption.errorDescription, !error.isEmpty {
+            let errorLabel = NSTextField(wrappingLabelWithString: "Decryption problem: \(error)")
+            errorLabel.textColor = BannerBrand.critical
+            errorLabel.font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
+            textRows.append(errorLabel)
+        }
+
+        let textStack = NSStackView(views: textRows)
+        textStack.orientation = .vertical
+        textStack.alignment = .leading
+        textStack.spacing = 3
+
+        let row = NSStackView(views: [icon, textStack])
+        row.orientation = .horizontal
+        row.alignment = .top
+        row.spacing = 8
+        row.setAccessibilityRole(.group)
+        row.setAccessibilityLabel(statusLabel.stringValue)
+        return row
+    }
+
+    private func makeSeparator() -> NSView {
+        let separator = NSBox()
+        separator.boxType = .separator
+        return separator
+    }
+
     private var signerRows: [NSView] {
         guard !signers.isEmpty else {
             return [NSTextField(wrappingLabelWithString: "No valid signatures found on this message.")]
@@ -85,14 +204,14 @@ public final class MailSecurityBannerView: NSView {
     private func row(for signer: Signer) -> NSView {
         let status = signer.context.flatMap { RnpSignatureStatus(rawValue: $0.status) } ?? .unknown
         let model: SignerTrustViewModel
+        var trust: TrustState?
         if let trustStore = trustStore {
-            let trust: TrustState
             if let fingerprint = signer.context?.fingerprint {
                 trust = trustStore.state(forFpr: fingerprint)
             } else {
                 trust = .unverified
             }
-            model = mapSignerTrust(status: status, trust: trust)
+            model = mapSignerTrust(status: status, trust: trust ?? .unverified)
         } else {
             model = SignerTrustViewModel(
                 label: "Trust state unavailable",
@@ -112,6 +231,7 @@ public final class MailSecurityBannerView: NSView {
         icon.symbolConfiguration = NSImage.SymbolConfiguration(hierarchicalColor: intentColor)
             .applying(NSImage.SymbolConfiguration(pointSize: 13, weight: .semibold))
         icon.setContentHuggingPriority(.required, for: .horizontal)
+        icon.setAccessibilityHidden(true)
 
         let nameLabel = NSTextField(labelWithString: signer.label)
         nameLabel.font = NSFont.systemFont(ofSize: NSFont.systemFontSize, weight: .medium)
@@ -130,23 +250,66 @@ public final class MailSecurityBannerView: NSView {
             detailLabel,
         ]
 
-        if model.reviewDeepLink, let fingerprint = signer.context?.fingerprint {
-            let link = NSButton(title: "Review in RnpMail", target: self, action: #selector(openReviewLink(_:)))
-            link.identifier = NSUserInterfaceItemIdentifier(fingerprint)
-            link.bezelStyle = .inline
-            rows.append(link)
+        let buttons = actionButtons(for: signer, model: model, trust: trust)
+        if !buttons.isEmpty {
+            let buttonRow = NSStackView(views: buttons)
+            buttonRow.orientation = .horizontal
+            buttonRow.alignment = .centerY
+            buttonRow.spacing = 8
+            rows.append(buttonRow)
         }
 
         let textStack = NSStackView(views: rows)
         textStack.orientation = .vertical
         textStack.alignment = .leading
         textStack.spacing = 3
+        textStack.setCustomSpacing(6, after: detailLabel)
 
         let rowStack = NSStackView(views: [icon, textStack])
         rowStack.orientation = .horizontal
         rowStack.alignment = .top
         rowStack.spacing = 8
+        rowStack.setAccessibilityRole(.group)
+        rowStack.setAccessibilityLabel("\(signer.label): \(model.label)")
         return rowStack
+    }
+
+    // MARK: - Actions
+
+    /// Per-signer action buttons, depending on the signer's trust state and
+    /// the available context.
+    private func actionButtons(for signer: Signer, model: SignerTrustViewModel, trust: TrustState?) -> [NSButton] {
+        guard let fingerprint = signer.context?.fingerprint, !fingerprint.isEmpty else {
+            return []
+        }
+        var buttons: [NSButton] = []
+
+        if model.reviewDeepLink {
+            let link = NSButton(title: "View Key in RNP", target: self, action: #selector(openReviewLink(_:)))
+            link.identifier = NSUserInterfaceItemIdentifier(fingerprint)
+            link.bezelStyle = .inline
+            link.setAccessibilityIdentifier("rnp.banner.view-key.\(fingerprint)")
+            link.setAccessibilityHelp("Opens the key detail in the RNP app.")
+            buttons.append(link)
+        }
+
+        let copy = NSButton(title: "Copy Fingerprint", target: self, action: #selector(copyFingerprint(_:)))
+        copy.identifier = NSUserInterfaceItemIdentifier(fingerprint)
+        copy.bezelStyle = .inline
+        copy.setAccessibilityIdentifier("rnp.banner.copy-fingerprint.\(fingerprint)")
+        copy.setAccessibilityHelp("Copies the signer's key fingerprint to the clipboard.")
+        buttons.append(copy)
+
+        if trustStore != nil, trust == .unverified {
+            let verify = NSButton(title: "Mark as Verified", target: self, action: #selector(markVerified(_:)))
+            verify.identifier = NSUserInterfaceItemIdentifier(fingerprint)
+            verify.bezelStyle = .inline
+            verify.setAccessibilityIdentifier("rnp.banner.mark-verified.\(fingerprint)")
+            verify.setAccessibilityHelp("Confirms that you verified this key's fingerprint and marks the key as verified.")
+            buttons.append(verify)
+        }
+
+        return buttons
     }
 
     private func symbolName(for intent: SignerTrustIntent) -> String {
@@ -165,13 +328,13 @@ public final class MailSecurityBannerView: NSView {
     private func color(for intent: SignerTrustIntent) -> NSColor {
         switch intent {
         case .positive:
-            return .systemGreen
+            return BannerBrand.verified
         case .neutral:
-            return .secondaryLabelColor
+            return BannerBrand.unverified
         case .caution:
-            return .systemOrange
+            return BannerBrand.unverified
         case .critical:
-            return .systemRed
+            return BannerBrand.critical
         }
     }
 
@@ -182,5 +345,63 @@ public final class MailSecurityBannerView: NSView {
             return
         }
         NSWorkspace.shared.open(url)
+    }
+
+    @objc private func copyFingerprint(_ sender: NSButton) {
+        guard let fingerprint = sender.identifier?.rawValue else {
+            return
+        }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(fingerprint, forType: .string)
+
+        // Brief confirmation feedback on the button itself.
+        sender.title = "Copied"
+        sender.isEnabled = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak sender] in
+            sender?.title = "Copy Fingerprint"
+            sender?.isEnabled = true
+        }
+    }
+
+    @objc private func markVerified(_ sender: NSButton) {
+        guard let fingerprint = sender.identifier?.rawValue,
+              let trustStore = trustStore,
+              (try? trustStore.markVerified(fingerprint: fingerprint)) != nil
+        else {
+            return
+        }
+        refreshContent()
+    }
+}
+
+// MARK: - Brand palette
+
+/// RNP brand colors for the AppKit banner, mirroring `RnpBrand` in the
+/// SwiftUI design system (`Sources/RnpMailUI/DesignSystem.swift`).
+enum BannerBrand {
+    /// Primary brand blue (#1A7BEC): header glyph, links, encryption tint.
+    static let primary = NSColor(srgbRed: 0x1A / 255, green: 0x7B / 255, blue: 0xEC / 255, alpha: 1)
+
+    /// Verified trust state (light/dark aware).
+    static let verified = dynamic(light: (0x05, 0xA3, 0x77), dark: (0x2F, 0xD3, 0x9A))
+    /// Unverified keys and caution states (light/dark aware).
+    static let unverified = dynamic(light: (0xC2, 0x41, 0x0C), dark: (0xF5, 0xA6, 0x23))
+    /// Critical states: key problems, invalid signatures (light/dark aware).
+    static let critical = dynamic(light: (0xD9, 0x2D, 0x20), dark: (0xFF, 0x5A, 0x52))
+
+    private static func dynamic(
+        light: (UInt8, UInt8, UInt8),
+        dark: (UInt8, UInt8, UInt8)
+    ) -> NSColor {
+        NSColor(name: nil) { appearance in
+            let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+            let rgb = isDark ? dark : light
+            return NSColor(
+                srgbRed: CGFloat(rgb.0) / 255,
+                green: CGFloat(rgb.1) / 255,
+                blue: CGFloat(rgb.2) / 255,
+                alpha: 1
+            )
+        }
     }
 }
