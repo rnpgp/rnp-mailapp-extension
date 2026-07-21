@@ -1,0 +1,66 @@
+name: mail-e2e-docker
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Swift-Rnp/MailPlugin/**'
+      - 'Sources/MailSecurityEngine/**'
+      - 'scripts/test-mail-e2e.sh'
+      - '.github/workflows/mail-e2e-docker.yml'
+
+jobs:
+  e2e:
+    # Requires a self-hosted macOS runner with a valid Apple development
+    # certificate and Mail.app configured. Docker is used for the local
+    # mail server (GreenMail) via colima.
+    runs-on: [self-hosted, macos]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build RNPFramework.xcframework
+        run: ./scripts/build-rnp-framework.sh
+        env:
+          RNP_REF: v0.18.1
+
+      - name: Install dependencies
+        run: |
+          brew install colima docker
+
+      - name: Start Docker daemon
+        run: |
+          colima start --cpu 2 --memory 4
+          docker info
+
+      - name: Start GreenMail server
+        run: |
+          docker run -d --name greenmail \
+            -p 3025:3025 -p 3143:3143 \
+            greenmail/standalone:2.0.0
+          sleep 5
+          docker ps
+
+      - name: Build signed app and extension
+        run: |
+          PKG_CONFIG_PATH=${{ github.workspace }}/Vendor/pkgconfig \
+          xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj \
+            -scheme "Ribose container" \
+            -configuration Direct \
+            build \
+            CODE_SIGNING_ALLOWED=YES \
+            DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }}
+        env:
+          PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
+
+      - name: Run end-to-end Mail test
+        run: ./scripts/test-mail-e2e-docker.sh
+        env:
+          GREENMAIL_SMTP_PORT: 3025
+          GREENMAIL_IMAP_PORT: 3143
+          TEST_EMAIL: test@localhost
+          TEST_PASSWORD: test
+
+      - name: Stop GreenMail
+        if: always()
+        run: docker stop greenmail && docker rm greenmail
