@@ -116,6 +116,131 @@ final class MessageSecurityCoreTests: XCTestCase {
         XCTAssertEqual(status.addressesFailingEncryption, [Self.bobEmail])
     }
 
+    // MARK: - getEncodingStatus trust warnings
+
+    func testGetEncodingStatusUnverifiedRecipientWarnsButDoesNotBlock() throws {
+        let core = try makeCore(keys: [Self.alice, Self.bob])
+        let message = MockMessage(
+            rawData: nil,
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: true)
+        let status = core.getEncodingStatus(for: message, composeContext: context)
+
+        XCTAssertTrue(status.canSign)
+        XCTAssertTrue(status.canEncrypt)
+        XCTAssertEqual(status.addressesFailingEncryption, [])
+        let warning = try XCTUnwrap(status.securityError as? RecipientTrustWarning)
+        XCTAssertEqual(warning.issues, [RecipientTrustIssue(recipient: Self.bobEmail, kind: .unverified)])
+        XCTAssertTrue(warning.blockedRecipients.isEmpty)
+    }
+
+    func testGetEncodingStatusVerifiedRecipientHasNoWarning() throws {
+        let engine = try makeEngine(keys: [Self.alice, Self.bob])
+        let core = MessageSecurityCore(engine: engine)
+        let bobFingerprint = try XCTUnwrap(fingerprint(of: Self.bob, in: engine))
+        try core.trustStore.noteSeen(email: Self.bobEmail, fingerprint: bobFingerprint)
+        try core.trustStore.markVerified(fingerprint: bobFingerprint)
+
+        let message = MockMessage(
+            rawData: nil,
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: true)
+        let status = core.getEncodingStatus(for: message, composeContext: context)
+
+        XCTAssertTrue(status.canEncrypt)
+        XCTAssertEqual(status.addressesFailingEncryption, [])
+        XCTAssertNil(status.securityError)
+    }
+
+    func testGetEncodingStatusProblemRecipientBlocksEncryption() throws {
+        let engine = try makeEngine(keys: [Self.alice, Self.bob])
+        let core = MessageSecurityCore(engine: engine)
+        let bobFingerprint = try XCTUnwrap(fingerprint(of: Self.bob, in: engine))
+        try core.trustStore.noteSeen(email: Self.bobEmail, fingerprint: bobFingerprint)
+        try core.trustStore.markProblem(fingerprint: bobFingerprint)
+
+        let message = MockMessage(
+            rawData: nil,
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: true)
+        let status = core.getEncodingStatus(for: message, composeContext: context)
+
+        XCTAssertFalse(status.canEncrypt)
+        XCTAssertEqual(status.addressesFailingEncryption, [Self.bobEmail])
+        let warning = try XCTUnwrap(status.securityError as? RecipientTrustWarning)
+        XCTAssertEqual(warning.issues, [RecipientTrustIssue(recipient: Self.bobEmail, kind: .problem)])
+        XCTAssertEqual(warning.blockedRecipients, [Self.bobEmail])
+    }
+
+    func testGetEncodingStatusConflictRecipientBlocksEncryption() throws {
+        let engine = try makeEngine(keys: [Self.alice, Self.bob])
+        let core = MessageSecurityCore(engine: engine)
+        let bobFingerprint = try XCTUnwrap(fingerprint(of: Self.bob, in: engine))
+        try core.trustStore.noteSeen(email: Self.bobEmail, fingerprint: bobFingerprint)
+        // A different key appearing for the same address opens a conflict.
+        try core.trustStore.noteSeen(
+            email: Self.bobEmail,
+            fingerprint: "DDDD4444DDDD4444DDDD4444DDDD4444DDDD4444"
+        )
+
+        let message = MockMessage(
+            rawData: nil,
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: true)
+        let status = core.getEncodingStatus(for: message, composeContext: context)
+
+        XCTAssertFalse(status.canEncrypt)
+        XCTAssertEqual(status.addressesFailingEncryption, [Self.bobEmail])
+        let warning = try XCTUnwrap(status.securityError as? RecipientTrustWarning)
+        XCTAssertEqual(warning.issues, [RecipientTrustIssue(recipient: Self.bobEmail, kind: .conflict)])
+    }
+
+    func testGetEncodingStatusWarningSuppressedWhenNotEncrypting() throws {
+        let core = try makeCore(keys: [Self.alice, Self.bob])
+        let message = MockMessage(
+            rawData: nil,
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: false)
+        let status = core.getEncodingStatus(for: message, composeContext: context)
+
+        XCTAssertTrue(status.canEncrypt)
+        XCTAssertEqual(status.addressesFailingEncryption, [])
+        XCTAssertNil(status.securityError)
+    }
+
+    func testRecipientTrustWarningDescriptionListsAllIssues() {
+        let warning = RecipientTrustWarning(issues: [
+            RecipientTrustIssue(recipient: "a@example.com", kind: .conflict),
+            RecipientTrustIssue(recipient: "b@example.com", kind: .problem),
+            RecipientTrustIssue(recipient: "c@example.com", kind: .unverified),
+        ])
+        let description = warning.errorDescription ?? ""
+        XCTAssertTrue(description.contains("a@example.com"))
+        XCTAssertTrue(description.contains("b@example.com"))
+        XCTAssertTrue(description.contains("c@example.com"))
+        XCTAssertEqual(warning.blockedRecipients, ["a@example.com", "b@example.com"])
+    }
+
+    /// Fingerprint of the key whose primary user ID equals `userID`.
+    private func fingerprint(of userID: String, in engine: MailSecurityEngine) throws -> String? {
+        try engine.keyManager.listKeys().first { $0.primaryUserID == userID }?.fingerprint
+    }
+
     // MARK: - encode
 
     func testEncodeSignOnly() throws {

@@ -37,11 +37,36 @@ public final class MessageSecurityCore {
             recipients: message.recipientAddresses
         )) ?? EncodingStatus(canSign: false, canEncrypt: false, missingRecipientKeys: [])
 
+        // Per-recipient key trust, for recipients that resolve to a key.
+        // Problem keys and unresolved conflicts block encryption exactly the
+        // way `encode` does; unverified keys only produce a warning, matching
+        // the engine's TOFU behavior.
+        var issues: [RecipientTrustIssue] = []
+        for recipient in message.recipientAddresses where !status.missingRecipientKeys.contains(recipient) {
+            if trustStore.hasConflict(forEmail: recipient) {
+                issues.append(RecipientTrustIssue(recipient: recipient, kind: .conflict))
+                continue
+            }
+            switch trustStore.state(forEmail: recipient) {
+            case .problem:
+                issues.append(RecipientTrustIssue(recipient: recipient, kind: .problem))
+            case .unverified:
+                issues.append(RecipientTrustIssue(recipient: recipient, kind: .unverified))
+            case .verified:
+                break
+            }
+        }
+
+        let warning = issues.isEmpty ? nil : RecipientTrustWarning(issues: issues)
+        let blocked = warning?.blockedRecipients ?? []
+
         return HandlerEncodingStatus(
             canSign: status.canSign,
-            canEncrypt: status.canEncrypt,
-            securityError: nil,
-            addressesFailingEncryption: status.missingRecipientKeys
+            canEncrypt: status.canEncrypt && blocked.isEmpty,
+            // Only warn when the user actually asked for encryption; there is
+            // no point nagging about recipient keys for a plaintext send.
+            securityError: composeContext.shouldEncrypt ? warning : nil,
+            addressesFailingEncryption: status.missingRecipientKeys + blocked
         )
     }
 
