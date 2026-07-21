@@ -35,6 +35,90 @@ public enum RnpRadius {
     public static let panel: CGFloat = 10
 }
 
+// MARK: - Brand palette
+
+/// RNP brand colors, sampled from the project logo (`icon.png`): brand blue
+/// `#1A7BEC`, logo yellow `#FFDC4A`, teal `#00DFB7`, wordmark navy `#2E3349`.
+///
+/// `primary` matches the app asset catalog's `AccentColor`, so SwiftUI
+/// controls tinted via `Color.accentColor` (buttons, links, selection) and
+/// explicit brand uses stay in sync. The trust colors follow the engine's
+/// intent mapping (see `mapSignerTrust`): green for verified, orange for
+/// unverified, red for critical/problem states.
+public enum RnpBrand {
+    /// Primary brand blue (#1A7BEC): primary actions, links, selection.
+    public static let primary = Color(red: 0x1A / 255, green: 0x7B / 255, blue: 0xEC / 255)
+    /// Deeper brand blue (#0B54B8), used as the gradient end of brand tiles.
+    public static let primaryDeep = Color(red: 0x0B / 255, green: 0x54 / 255, blue: 0xB8 / 255)
+    /// Logo yellow (#FFDC4A); reserved for small highlights.
+    public static let highlight = Color(red: 0xFF / 255, green: 0xDC / 255, blue: 0x4A / 255)
+    /// Wordmark navy (#2E3349): strong text on brand surfaces.
+    public static let ink = Color(red: 0x2E / 255, green: 0x33 / 255, blue: 0x49 / 255)
+
+    /// Verified trust state: the logo teal, tuned for text/icon legibility.
+    public static let verified = dynamic(
+        light: (0x05, 0xA3, 0x77),
+        dark: (0x2F, 0xD3, 0x9A)
+    )
+    /// Unverified keys and "expires soon" warnings.
+    public static let unverified = dynamic(
+        light: (0xC2, 0x41, 0x0C),
+        dark: (0xF5, 0xA6, 0x23)
+    )
+    /// Critical states: key conflicts, revoked and expired keys.
+    public static let critical = dynamic(
+        light: (0xD9, 0x2D, 0x20),
+        dark: (0xFF, 0x5A, 0x52)
+    )
+
+    /// Light/dark-aware brand color (macOS 12 compatible).
+    private static func dynamic(
+        light: (UInt8, UInt8, UInt8),
+        dark: (UInt8, UInt8, UInt8)
+    ) -> Color {
+        Color(nsColor: NSColor(name: nil) { appearance in
+            let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+            let rgb = isDark ? dark : light
+            return NSColor(
+                srgbRed: CGFloat(rgb.0) / 255,
+                green: CGFloat(rgb.1) / 255,
+                blue: CGFloat(rgb.2) / 255,
+                alpha: 1
+            )
+        })
+    }
+}
+
+// MARK: - Brand mark
+
+/// The RNP brand mark: a shield-and-lock glyph on a brand-blue gradient
+/// tile. Used where the real app icon is unavailable (unit tests, SwiftUI
+/// previews); the app itself shows the asset-catalog app icon instead.
+public struct RnpLogoView: View {
+    public let size: CGFloat
+
+    public init(size: CGFloat = 88) {
+        self.size = size
+    }
+
+    public var body: some View {
+        Image(systemName: "lock.shield.fill")
+            .font(.system(size: size * 0.52, weight: .semibold))
+            .symbolRenderingMode(.hierarchical)
+            .foregroundStyle(.white)
+            .frame(width: size, height: size)
+            .background(
+                LinearGradient(
+                    colors: [RnpBrand.primary, RnpBrand.primaryDeep],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
+            )
+            .accessibilityHidden(true)
+    }
+}
+
 // MARK: - Trust presentation
 
 /// Colors and SF Symbols describing a recipient key's trust state.
@@ -48,17 +132,17 @@ public struct TrustPresentation {
     public init(state: TrustState) {
         switch state {
         case .verified:
-            color = .green
+            color = RnpBrand.verified
             iconName = "checkmark.shield.fill"
             labelKey = "trust.verified"
             descriptionKey = "trust.description.verified"
         case .problem:
-            color = .red
+            color = RnpBrand.critical
             iconName = "exclamationmark.shield.fill"
             labelKey = "trust.conflict"
             descriptionKey = "trust.description.problem"
         case .unverified:
-            color = .orange
+            color = RnpBrand.unverified
             iconName = "questionmark.shield"
             labelKey = "trust.unverified"
             descriptionKey = "trust.description.unverified"
@@ -113,7 +197,7 @@ public struct RnpKeyAvatar: View {
     public var body: some View {
         let gradientColors: [Color] = isDimmed
             ? [Color(nsColor: .tertiaryLabelColor), Color(nsColor: .quaternaryLabelColor)]
-            : [Color.accentColor, Color.accentColor.opacity(0.72)]
+            : [RnpBrand.primary, RnpBrand.primaryDeep]
         Image(systemName: hasSecret ? "key.fill" : "key")
             .font(.system(size: size * 0.44, weight: .semibold))
             .foregroundStyle(.white)

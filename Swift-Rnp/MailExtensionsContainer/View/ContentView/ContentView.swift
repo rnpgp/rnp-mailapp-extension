@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  Ribose container
+//  RNP
 //
 //  Key manager window: a native split view (key list beside the selected
 //  key's details) with a toolbar holding the primary actions. On macOS 12
@@ -478,7 +478,7 @@ struct ContentView: View {
                     let suffix = conflicts.count > 1 ? " (and \(conflicts.count - 1) more)" : ""
                     BannerView(
                         icon: "exclamationmark.shield.fill",
-                        tint: .orange,
+                        tint: RnpBrand.critical,
                         text: String(format: "banner.trustConflict".localized, first.email + suffix)
                     )
                     .accessibilityIdentifier("contentview.trust-conflict-banner")
@@ -488,7 +488,7 @@ struct ContentView: View {
                     let format = first.isExpired ? "banner.expired" : "banner.expiringSoon"
                     BannerView(
                         icon: first.isExpired ? "exclamationmark.octagon.fill" : "exclamationmark.triangle.fill",
-                        tint: .red,
+                        tint: first.isExpired ? RnpBrand.critical : RnpBrand.unverified,
                         text: String(format: format.localized, first.userID + suffix)
                     )
                 }

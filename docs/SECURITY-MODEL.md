@@ -31,7 +31,7 @@ RnpMail provides OpenPGP signing, encryption, and key management for Apple Mail 
 ┌─────────────────────────────────────────────────────────────────┐
 │                        User / macOS                             │
 │  ┌─────────────────┐    ┌─────────────────────────────────────┐ │
-│  │   Ribose app    │    │           Apple Mail                │ │
+│  │    RNP app      │    │           Apple Mail                │ │
 │  │  (key manager)  │◄──►│  MailPlugin.appex                   │ │
 │  └────────┬────────┘    │  (encode/decode signatures,         │ │
 │           │             │   decrypt, verify)                  │ │

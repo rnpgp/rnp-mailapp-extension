@@ -158,11 +158,8 @@ public struct OnboardingView: View {
                     .shadow(color: .black.opacity(0.18), radius: 6, y: 3)
                     .accessibilityHidden(true)
             } else {
-                Image(systemName: "lock.shield.fill")
-                    .font(.system(size: 64))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(Color.accentColor)
-                    .accessibilityHidden(true)
+                RnpLogoView(size: 88)
+                    .shadow(color: .black.opacity(0.18), radius: 6, y: 3)
             }
             VStack(spacing: RnpSpacing.xs) {
                 Text("onboarding.welcome.title")

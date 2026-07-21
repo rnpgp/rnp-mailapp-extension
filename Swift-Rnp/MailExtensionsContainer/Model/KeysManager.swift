@@ -1,6 +1,6 @@
 //
 //  KeysManager.swift
-//  Ribose container
+//  RNP
 //
 //  Observable keyring model for the container app, backed by the real
 //  MailSecurityEngine KeyManager on the shared app-group keyring.

@@ -1,6 +1,6 @@
 //
 //  ContentViewModel.swift
-//  Ribose container
+//  RNP
 //
 //  UI state and actions for the key manager window.
 //

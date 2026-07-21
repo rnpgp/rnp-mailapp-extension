@@ -1,6 +1,6 @@
 //
 //  MailExtensionsContainerApp.swift
-//  Ribose container
+//  RNP
 //
 //  Container app for the RNP Mail extension: manages the shared OpenPGP
 //  keyring (generate, import, export, delete).
@@ -21,7 +21,7 @@ struct MailExtensionsContainerApp: App {
     }
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup("RNP") {
             ContentView(model: model)
                 .onAppear {
                     model.checkOnboarding()

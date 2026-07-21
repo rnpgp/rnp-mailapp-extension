@@ -1,3 +1,5 @@
+<p><img src="icon.png" width="120" alt="RNP logo"></p>
+
 # swift-rnp
 
 Swift bindings for [librnp](https://github.com/rnpgp/rnp), the OpenPGP
@@ -155,9 +157,11 @@ package above:
 - **`MailPlugin`** (app extension target) — a thin MailKit shell
   (`MEMessageSecurityHandler`) delegating all OpenPGP work to
   `MailSecurityEngine` and rendering the banner via `MailSecurityUI`.
-- **Ribose container** (SwiftUI app target) — key manager UI (generate
-  RSA/ECDSA keys, import armored keys from clipboard or file, export the
-  armored public key to the clipboard, delete keys).
+- **RNP** (SwiftUI container app target; the Xcode target and scheme are
+  still named `Ribose container`) — key manager UI (generate RSA/ECDSA keys,
+  import armored keys from clipboard or file, export the armored public key
+  to the clipboard, delete keys). Branded as **RNP** in the menu bar, window
+  title, and About panel.
 - **`Swift-Rnp`** (CLI target) — small `Rnp` demo: version print plus a
   generate/encrypt/decrypt smoke roundtrip.
 
@@ -244,7 +248,8 @@ The latest signed and notarized DMG is attached to each [GitHub
 Release](https://github.com/rnpgp/rnp-mailapp-extension/releases).
 
 1. Download `RnpMail-<version>.dmg` and open it.
-2. Drag **RnpMail** (the `Ribose container` app) into **Applications**.
+2. Drag **RNP** into **Applications** (the app bundle is still named
+   `Ribose container.app` on disk; Finder and the Dock display it as "RNP").
 3. Launch the app from Applications, generate or import your OpenPGP key.
 4. Open **Mail → Settings → Extensions**, check **RNP OpenPGP**, and click
    **Done**.
