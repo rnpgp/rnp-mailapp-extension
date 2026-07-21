@@ -126,7 +126,9 @@ public final class MessageSecurityCore {
         let signers = decoded.security.signers.map { signer in
             let context = SignerContext(
                 fingerprint: signer.fingerprint,
-                status: signer.status.rawValue
+                status: signer.status.rawValue,
+                isEncrypted: decoded.security.isEncrypted,
+                encryptionError: decoded.security.encryptionError?.localizedDescription
             )
             let contextData = (try? JSONEncoder().encode(context)) ?? Data()
             return HandlerSignerInfo(

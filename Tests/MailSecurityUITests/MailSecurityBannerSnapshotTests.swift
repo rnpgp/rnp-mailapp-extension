@@ -173,9 +173,11 @@ final class MailSecurityBannerSnapshotTests: XCTestCase {
             trustStore: store
         )
         let buttons = allSubviews(of: view).compactMap { $0 as? NSButton }
-        XCTAssertEqual(buttons.count, 1)
-        XCTAssertEqual(buttons.first?.title, "Review in RnpMail")
-        XCTAssertEqual(buttons.first?.identifier?.rawValue, Self.fprAlice)
+        XCTAssertEqual(buttons.count, 3)
+        let viewKey = buttons.first { $0.title == "View Key in RNP" }
+        XCTAssertEqual(viewKey?.identifier?.rawValue, Self.fprAlice)
+        XCTAssertNotNil(buttons.first { $0.title == "Copy Fingerprint" })
+        XCTAssertNotNil(buttons.first { $0.title == "Mark as Verified" })
     }
 
     func testNoReviewDeepLinkForVerifiedSigner() throws {
@@ -186,11 +188,140 @@ final class MailSecurityBannerSnapshotTests: XCTestCase {
             signers: [signer(label: "Alice <alice@example.com>", fpr: Self.fprAlice, status: .valid)],
             trustStore: store
         )
-        let buttons = allSubviews(of: view).compactMap { $0 as? NSButton }
-        XCTAssertTrue(buttons.isEmpty)
+        let titles = allSubviews(of: view).compactMap { ($0 as? NSButton)?.title }
+        XCTAssertFalse(titles.contains("View Key in RNP"))
+        XCTAssertFalse(titles.contains("Mark as Verified"))
+        // Copying the fingerprint stays available for verified keys.
+        XCTAssertTrue(titles.contains("Copy Fingerprint"))
+    }
+
+    // MARK: - Encryption status
+
+    func testEncryptionStatusShownWhenEncrypted() {
+        let view = MailSecurityBannerView(
+            signers: [],
+            trustStore: nil,
+            encryption: .init(isEncrypted: true)
+        )
+        let labels = allSubviews(of: view).compactMap { ($0 as? NSTextField)?.stringValue }
+        XCTAssertTrue(labels.contains("Encrypted message"))
+        XCTAssertNotNil(encryptionStatusField(in: view))
+    }
+
+    func testEncryptionStatusShownWhenNotEncrypted() {
+        let view = MailSecurityBannerView(
+            signers: [],
+            trustStore: nil,
+            encryption: .init(isEncrypted: false)
+        )
+        let labels = allSubviews(of: view).compactMap { ($0 as? NSTextField)?.stringValue }
+        XCTAssertTrue(labels.contains("This message was not encrypted"))
+    }
+
+    func testDecryptionProblemShown() {
+        let view = MailSecurityBannerView(
+            signers: [],
+            trustStore: nil,
+            encryption: .init(isEncrypted: true, errorDescription: "bad session key")
+        )
+        let labels = allSubviews(of: view).compactMap { ($0 as? NSTextField)?.stringValue }
+        XCTAssertTrue(labels.contains("Decryption problem: bad session key"))
+    }
+
+    func testNoEncryptionRowWhenStatusUnknown() {
+        let view = MailSecurityBannerView(signers: [], trustStore: nil)
+        let labels = allSubviews(of: view).compactMap { ($0 as? NSTextField)?.stringValue }
+        XCTAssertFalse(labels.contains("Encrypted message"))
+        XCTAssertFalse(labels.contains("This message was not encrypted"))
+        XCTAssertNil(encryptionStatusField(in: view))
+    }
+
+    // MARK: - Signer actions
+
+    func testCopyFingerprintCopiesToPasteboard() throws {
+        let store = try makeStore()
+        try store.noteSeen(email: "alice@example.com", fingerprint: Self.fprAlice)
+        let view = MailSecurityBannerView(
+            signers: [signer(label: "Alice <alice@example.com>", fpr: Self.fprAlice, status: .valid)],
+            trustStore: store
+        )
+        let button = try XCTUnwrap(findButton(titled: "Copy Fingerprint", in: view))
+
+        let pasteboard = NSPasteboard.general
+        let previous = pasteboard.string(forType: .string)
+        defer {
+            pasteboard.clearContents()
+            if let previous {
+                pasteboard.setString(previous, forType: .string)
+            }
+        }
+
+        // performClick is unreliable for views that are not in a window;
+        // drive the same target–action wiring directly. NSControl.sendAction
+        // routes through NSApp, which a bare test bundle does not create.
+        _ = NSApplication.shared
+        XCTAssertTrue(button.sendAction(button.action, to: button.target))
+        XCTAssertEqual(pasteboard.string(forType: .string), Self.fprAlice)
+    }
+
+    func testMarkAsVerifiedUpdatesTrustAndRefreshesBanner() throws {
+        let store = try makeStore()
+        try store.noteSeen(email: "alice@example.com", fingerprint: Self.fprAlice)
+        let view = MailSecurityBannerView(
+            signers: [signer(label: "Alice <alice@example.com>", fpr: Self.fprAlice, status: .valid)],
+            trustStore: store
+        )
+        let button = try XCTUnwrap(findButton(titled: "Mark as Verified", in: view))
+
+        // performClick is unreliable for views that are not in a window;
+        // drive the same target–action wiring directly. NSControl.sendAction
+        // routes through NSApp, which a bare test bundle does not create.
+        _ = NSApplication.shared
+        XCTAssertTrue(button.sendAction(button.action, to: button.target))
+
+        XCTAssertEqual(store.state(forFpr: Self.fprAlice), .verified)
+        // The banner rebuilt itself: the action is gone and the trust line
+        // now reads verified.
+        XCTAssertNil(findButton(titled: "Mark as Verified", in: view))
+        XCTAssertNil(findButton(titled: "View Key in RNP", in: view))
+        let labels = allSubviews(of: view).compactMap { ($0 as? NSTextField)?.stringValue }
+        XCTAssertTrue(labels.contains("Verified key"))
+    }
+
+    func testMarkAsVerifiedHiddenWithoutTrustStore() {
+        let view = MailSecurityBannerView(
+            signers: [signer(label: "Alice <alice@example.com>", fpr: Self.fprAlice, status: .valid)],
+            trustStore: nil
+        )
+        XCTAssertNil(findButton(titled: "Mark as Verified", in: view))
+    }
+
+    func testActionButtonsExposeAccessibilityIdentifiers() throws {
+        let store = try makeStore()
+        try store.noteSeen(email: "alice@example.com", fingerprint: Self.fprAlice)
+        let view = MailSecurityBannerView(
+            signers: [signer(label: "Alice <alice@example.com>", fpr: Self.fprAlice, status: .valid)],
+            trustStore: store
+        )
+        let identifiers = Set(allSubviews(of: view).compactMap { $0.accessibilityIdentifier() })
+        XCTAssertTrue(identifiers.contains("rnp.banner.view-key.\(Self.fprAlice)"))
+        XCTAssertTrue(identifiers.contains("rnp.banner.copy-fingerprint.\(Self.fprAlice)"))
+        XCTAssertTrue(identifiers.contains("rnp.banner.mark-verified.\(Self.fprAlice)"))
     }
 
     // MARK: - Helpers
+
+    private func encryptionStatusField(in view: NSView) -> NSTextField? {
+        allSubviews(of: view)
+            .compactMap { $0 as? NSTextField }
+            .first { $0.accessibilityIdentifier() == "rnp.banner.encryption-status" }
+    }
+
+    private func findButton(titled title: String, in view: NSView) -> NSButton? {
+        allSubviews(of: view)
+            .compactMap { $0 as? NSButton }
+            .first { $0.title == title }
+    }
 
     private static let fprAlice = "AAAA1111AAAA1111AAAA1111AAAA1111AAAA1111"
     private static let fprBob = "BBBB2222BBBB2222BBBB2222BBBB2222BBBB2222"
@@ -315,7 +446,7 @@ final class MailSecurityBannerSnapshotTests: XCTestCase {
             XCTAssertTrue(labels.contains(expected.detail), "Missing detail: \(expected.detail)", file: file, line: line)
 
             if expected.hasButton {
-                XCTAssertTrue(buttonTitles.contains("Review in RnpMail"), "Missing review button", file: file, line: line)
+                XCTAssertTrue(buttonTitles.contains("View Key in RNP"), "Missing view-key button", file: file, line: line)
             }
         }
     }
