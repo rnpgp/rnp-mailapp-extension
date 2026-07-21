@@ -2,8 +2,12 @@
 //  KeyDetailView.swift
 //  swift-rnp
 //
-//  Detail view for an OpenPGP key, shown in the container app's detail
-//  column and (on macOS 12 or on demand) in a sheet.
+//  Inspector-style detail view for an OpenPGP key, shown in the container
+//  app's detail column and (on macOS 12 or on demand) in a sheet.
+//
+//  Layout: a pinned header (key avatar, user ID, badges) with the trust
+//  card underneath for recipient keys, then a segmented section switcher
+//  (Overview / Subkeys / User IDs) and a scrolling content area.
 //
 
 import AppKit
@@ -11,6 +15,7 @@ import CoreImage
 import SwiftUI
 import MailSecurityEngine
 import TrustStore
+import UniformTypeIdentifiers
 
 /// Actions available for a key in the detail view.
 public struct KeyDetailActions {
@@ -62,8 +67,30 @@ public struct KeyDetailView: View {
 
     @State private var showDeleteConfirmation = false
     @State private var showSecretExportConfirmation = false
-    @State private var showNotImplementedAlert = false
-    @State private var notImplementedMessage = ""
+    @State private var selectedSection: DetailSection = .overview
+    /// Transient checkmark state after copying the fingerprint.
+    @State private var didCopyFingerprint = false
+
+    /// Sections available in the segmented switcher. Signatures and history
+    /// are intentionally absent: the engine does not expose that data.
+    private enum DetailSection: String, CaseIterable, Identifiable {
+        case overview
+        case subkeys
+        case userIDs
+
+        var id: String { rawValue }
+
+        var localizedName: String {
+            switch self {
+            case .overview:
+                return "detail.tab.overview".localized
+            case .subkeys:
+                return "detail.tab.subkeys".localized
+            case .userIDs:
+                return "detail.tab.userIDs".localized
+            }
+        }
+    }
 
     public init(
         key: KeyInfo,
@@ -82,22 +109,28 @@ public struct KeyDetailView: View {
     }
 
     public var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: RnpSpacing.md) {
                 header
                 if isRecipient {
-                    trustSection
+                    trustCard
                 }
-                fingerprintSection
-                metadataSection
-                userIDsSection
-                subkeysSection
-                if !isRecipient {
-                    actionsSection
-                }
+                sectionPicker
             }
-            .padding(24)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, RnpSpacing.xl)
+            .padding(.top, RnpSpacing.lg)
+            .padding(.bottom, RnpSpacing.sm)
+
+            Divider()
+
+            ScrollView {
+                tabContent
+                    .padding(RnpSpacing.xl)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .id(selectedSection)
+                    .transition(.opacity)
+            }
+            .animation(.default, value: selectedSection)
         }
         .alert("detail.delete.title", isPresented: $showDeleteConfirmation) {
             Button("button.delete", role: .destructive) { actions.onDelete() }
@@ -114,147 +147,259 @@ public struct KeyDetailView: View {
         } message: {
             Text("detail.exportSecret.message")
         }
-        .alert(
-            "alert.comingSoon.title",
-            isPresented: $showNotImplementedAlert
-        ) {
-            Button("button.ok") {}
-        } message: {
-            Text(notImplementedMessage)
-        }
     }
 
     // MARK: - Header
 
+    private var trustPresentation: TrustPresentation {
+        TrustPresentation(state: trustState)
+    }
+
     private var header: some View {
-        HStack(alignment: .center, spacing: 16) {
-            Image(systemName: key.hasSecret ? "key.fill" : "key")
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 48, height: 48)
-                .background(
-                    key.isRevoked || key.isExpired ? Color.secondary : Color.accentColor,
-                    in: Circle()
-                )
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 6) {
+        HStack(alignment: .center, spacing: RnpSpacing.md) {
+            RnpKeyAvatar(
+                hasSecret: key.hasSecret,
+                isDimmed: key.isRevoked || key.isExpired,
+                size: 56
+            )
+            VStack(alignment: .leading, spacing: RnpSpacing.xxs + 2) {
                 Text(key.primaryUserID)
                     .font(.title2.weight(.semibold))
-                HStack(spacing: 8) {
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: RnpSpacing.xs) {
                     Text(key.algorithmLabel)
                         .font(.caption)
-                        .padding(.horizontal, 6)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, RnpSpacing.xxs + 2)
                         .padding(.vertical, 2)
-                        .background(.quaternary, in: Capsule())
+                        .background(
+                            .quaternary,
+                            in: RoundedRectangle(cornerRadius: RnpRadius.badge, style: .continuous)
+                        )
                     if key.isRevoked {
-                        Badge(text: "badge.revoked".localized, color: .red)
+                        RnpBadge(text: "badge.revoked".localized, color: .red)
                     } else if key.isExpired {
-                        Badge(text: "badge.expired".localized, color: .red)
+                        RnpBadge(text: "badge.expired".localized, color: .red)
+                    } else if isRecipient {
+                        miniTrustBadge
                     }
                 }
             }
-            Spacer()
+            Spacer(minLength: 0)
         }
     }
 
-    // MARK: - Trust
+    /// Compact trust capsule shown in the header. The actionable trust card
+    /// below carries the accessibility identifiers.
+    private var miniTrustBadge: some View {
+        HStack(spacing: RnpSpacing.xxs) {
+            Image(systemName: trustPresentation.iconName)
+                .imageScale(.small)
+            Text(trustPresentation.labelKey.localized)
+                .font(.caption.weight(.medium))
+        }
+        .foregroundStyle(trustPresentation.color)
+        .padding(.horizontal, RnpSpacing.xxs + 2)
+        .padding(.vertical, 2)
+        .background(
+            trustPresentation.color.opacity(0.12),
+            in: RoundedRectangle(cornerRadius: RnpRadius.badge, style: .continuous)
+        )
+        .accessibilityHidden(true)
+    }
 
-    private var trustSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("detail.trust.title")
-                .font(.headline)
-            HStack(spacing: 10) {
-                Image(systemName: trustIconName)
-                    .font(.title3)
-                    .foregroundStyle(trustColor)
-                    .accessibilityHidden(true)
-                Text(trustBadgeText)
+    // MARK: - Trust card
+
+    private var trustCard: some View {
+        HStack(alignment: .center, spacing: RnpSpacing.sm) {
+            Image(systemName: trustPresentation.iconName)
+                .font(.system(size: 28))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(trustPresentation.color)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: RnpSpacing.xxs) {
+                Text(trustPresentation.labelKey.localized)
                     .font(.callout.weight(.semibold))
-                    .foregroundStyle(trustColor)
+                    .foregroundStyle(trustPresentation.color)
                     .accessibilityIdentifier("\(identifierPrefix).trust-badge")
                     .accessibilityValue(trustState.rawValue)
-                Spacer()
-                if trustState != .verified {
-                    Button("detail.markVerified") { actions.onMarkVerified() }
-                        .buttonStyle(.borderedProminent)
-                        .tint(trustState == .problem ? .red : .orange)
-                        .accessibilityIdentifier("\(identifierPrefix).mark-verified")
-                }
+                Text(trustPresentation.descriptionKey.localized)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .padding(12)
-            .background(
-                trustColor.opacity(0.1),
-                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-            )
+            Spacer(minLength: RnpSpacing.xs)
+            if trustState != .verified {
+                Button("detail.markVerified") { actions.onMarkVerified() }
+                    .buttonStyle(.borderedProminent)
+                    .tint(trustState == .problem ? .red : .accentColor)
+                    .accessibilityIdentifier("\(identifierPrefix).mark-verified")
+            }
         }
+        .padding(RnpSpacing.sm)
+        .background(
+            trustPresentation.color.opacity(0.09),
+            in: RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+                .strokeBorder(trustPresentation.color.opacity(0.25), lineWidth: 1)
+        )
         .animation(.default, value: trustState)
     }
 
-    // MARK: - Fingerprint
+    // MARK: - Section switcher
 
-    private var fingerprintSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private var sectionPicker: some View {
+        Picker("detail.sections", selection: $selectedSection) {
+            ForEach(DetailSection.allCases) { section in
+                Text(section.localizedName).tag(section)
+            }
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+        .accessibilityIdentifier("\(identifierPrefix).section-picker")
+    }
+
+    @ViewBuilder
+    private var tabContent: some View {
+        switch selectedSection {
+        case .overview:
+            overviewTab
+        case .subkeys:
+            subkeysTab
+        case .userIDs:
+            userIDsTab
+        }
+    }
+
+    // MARK: - Overview
+
+    private var overviewTab: some View {
+        VStack(alignment: .leading, spacing: RnpSpacing.xl) {
+            fingerprintCard
+            metadataSection
+            if !isRecipient {
+                actionsSection
+            }
+        }
+    }
+
+    private var fingerprintCard: some View {
+        VStack(alignment: .leading, spacing: RnpSpacing.xs) {
             Text("detail.fingerprint")
                 .font(.headline)
-            HStack(alignment: .top, spacing: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(key.fingerprint.groupedFingerprintFull)
+            HStack(alignment: .top, spacing: RnpSpacing.lg) {
+                VStack(alignment: .leading, spacing: RnpSpacing.xs) {
+                    Text(key.fingerprint.groupedFingerprintBlocks)
                         .font(.system(.body, design: .monospaced))
                         .textSelection(.enabled)
                         .fixedSize(horizontal: false, vertical: true)
                     Button {
                         copyToClipboard(key.fingerprint)
+                        didCopyFingerprint = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+                            didCopyFingerprint = false
+                        }
                     } label: {
-                        Label("contextmenu.copyFingerprint", systemImage: "doc.on.doc")
+                        Label(
+                            didCopyFingerprint ? "detail.copied".localized : "contextmenu.copyFingerprint".localized,
+                            systemImage: didCopyFingerprint ? "checkmark" : "doc.on.doc"
+                        )
                     }
-                    .buttonStyle(.borderless)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .tint(didCopyFingerprint ? .green : nil)
+                    .animation(.easeInOut(duration: 0.15), value: didCopyFingerprint)
                     .help("detail.copyFingerprint.help")
                     .accessibilityIdentifier("\(identifierPrefix).copy-fingerprint")
                     .accessibilityLabel("detail.copyFingerprint.help")
                 }
-                Spacer()
-                if let qrCode = qrCodeImage {
-                    VStack(spacing: 6) {
-                        Image(nsImage: qrCode)
-                            .resizable()
-                            .interpolation(.none)
-                            .frame(width: 96, height: 96)
-                            .padding(6)
-                            .background(Color.white, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                        Text("detail.qrCode")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("detail.qrCode".localized)
-                }
+                Spacer(minLength: 0)
+                qrCodeCard
             }
+            .padding(RnpSpacing.md)
+            .background(
+                .regularMaterial,
+                in: RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+                    .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 1)
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var qrCodeCard: some View {
+        if let qrCode = qrCodeImage {
+            VStack(spacing: RnpSpacing.xs) {
+                Image(nsImage: qrCode)
+                    .resizable()
+                    .interpolation(.none)
+                    .frame(width: 96, height: 96)
+                    .padding(RnpSpacing.xs)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: RnpRadius.card, style: .continuous))
+                    .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+                Text("detail.qrCode")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Button {
+                    saveQRCodeImage()
+                } label: {
+                    Label("detail.qr.save", systemImage: "square.and.arrow.down")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityIdentifier("\(identifierPrefix).qr-save")
+            }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("detail.qrCode".localized)
         }
     }
 
     /// QR code for the `OPENPGP4FPR:<fingerprint>` URI, rendered via the
     /// system's CoreImage QR generator.
     private var qrCodeImage: NSImage? {
-        guard let filter = CIFilter(name: "CIQRCodeGenerator") else { return nil }
-        filter.setValue(Data("OPENPGP4FPR:\(key.fingerprint)".utf8), forKey: "inputMessage")
-        filter.setValue("M", forKey: "inputCorrectionLevel")
-        guard let output = filter.outputImage else { return nil }
-        let targetSize: CGFloat = 288
-        let scale = targetSize / max(output.extent.width, output.extent.height)
-        let scaled = output.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        guard let scaled = scaledQRCode(targetSize: 288) else { return nil }
         let representation = NSCIImageRep(ciImage: scaled)
         let image = NSImage(size: representation.size)
         image.addRepresentation(representation)
         return image
     }
 
+    private func scaledQRCode(targetSize: CGFloat) -> CIImage? {
+        guard let filter = CIFilter(name: "CIQRCodeGenerator") else { return nil }
+        filter.setValue(Data("OPENPGP4FPR:\(key.fingerprint)".utf8), forKey: "inputMessage")
+        filter.setValue("M", forKey: "inputCorrectionLevel")
+        guard let output = filter.outputImage else { return nil }
+        let scale = targetSize / max(output.extent.width, output.extent.height)
+        return output.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+    }
+
+    /// Offers to save the fingerprint QR code as a PNG via the save panel
+    /// (allowed by the user-selected read/write sandbox entitlement).
+    private func saveQRCodeImage() {
+        guard let scaled = scaledQRCode(targetSize: 512),
+              let png = NSBitmapImageRep(ciImage: scaled).representation(using: .png, properties: [:])
+        else {
+            return
+        }
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.png]
+        panel.nameFieldStringValue = "OPENPGP4FPR-\(key.fingerprint.prefix(8)).png"
+        panel.message = "detail.qr.save.panelMessage".localized
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        try? png.write(to: url, options: .atomic)
+    }
+
     // MARK: - Metadata
 
     private var metadataSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: RnpSpacing.xs) {
             Text("detail.metadata.title")
                 .font(.headline)
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: RnpSpacing.xxs + 2) {
                 metadataRow("detail.algorithm") {
                     Text(key.algorithmLabel)
                 }
@@ -279,11 +424,11 @@ public struct KeyDetailView: View {
         _ label: LocalizedStringKey,
         @ViewBuilder value: () -> Content
     ) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
+        HStack(alignment: .firstTextBaseline, spacing: RnpSpacing.sm) {
             Text(label)
                 .font(.callout)
                 .foregroundStyle(.secondary)
-                .frame(width: 80, alignment: .trailing)
+                .frame(width: 90, alignment: .trailing)
             value()
                 .font(.callout)
                 .textSelection(.enabled)
@@ -292,21 +437,37 @@ public struct KeyDetailView: View {
 
     // MARK: - User IDs
 
-    private var userIDsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private var userIDsTab: some View {
+        VStack(alignment: .leading, spacing: RnpSpacing.xs) {
             Text("detail.userIDs")
                 .font(.headline)
-            ForEach(key.userIDs, id: \.self) { userID in
-                Text(userID)
-                    .textSelection(.enabled)
+            VStack(spacing: 0) {
+                ForEach(Array(key.userIDs.enumerated()), id: \.element) { index, userID in
+                    HStack(spacing: RnpSpacing.xs) {
+                        Image(systemName: index == 0 ? "person.crop.circle.fill" : "person.crop.circle")
+                            .foregroundStyle(index == 0 ? Color.accentColor : Color.secondary)
+                            .accessibilityHidden(true)
+                        Text(userID)
+                            .textSelection(.enabled)
+                        if index == 0 {
+                            RnpBadge(text: "detail.userIDs.primary".localized, color: .accentColor)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.vertical, RnpSpacing.xs)
+                    .padding(.horizontal, RnpSpacing.xxs)
+                    if index < key.userIDs.count - 1 {
+                        Divider()
+                    }
+                }
             }
         }
     }
 
     // MARK: - Subkeys
 
-    private var subkeysSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private var subkeysTab: some View {
+        VStack(alignment: .leading, spacing: RnpSpacing.xs) {
             Text(String(format: "detail.subkeys.title".localized, subkeys.count))
                 .font(.headline)
             Table(subkeys) {
@@ -315,12 +476,15 @@ public struct KeyDetailView: View {
                 }
                 TableColumn("detail.subkeys.created") { subkey in
                     Text(subkey.creationDate, style: .date)
+                        .foregroundStyle(.secondary)
                 }
                 TableColumn("detail.subkeys.expires") { subkey in
                     if let date = subkey.expirationDate {
                         Text(date, style: .date)
+                            .foregroundStyle(.secondary)
                     } else {
                         Text("detail.subkeys.never")
+                            .foregroundStyle(.secondary)
                     }
                 }
                 TableColumn("detail.subkeys.capabilities") { subkey in
@@ -328,113 +492,51 @@ public struct KeyDetailView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .frame(minHeight: 120)
+            .frame(minHeight: 160)
         }
     }
 
     // MARK: - Actions
 
     private var actionsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: RnpSpacing.sm) {
             Text("detail.actions.title")
                 .font(.headline)
-            HStack(spacing: 12) {
-                Button("detail.exportPublic") { actions.onExportPublic() }
-                    .accessibilityIdentifier("\(identifierPrefix).export-public")
-                Button("detail.exportSecret") { showSecretExportConfirmation = true }
-                    .accessibilityIdentifier("\(identifierPrefix).export-secret")
-                Button("detail.publish") { actions.onPublish() }
-                    .accessibilityIdentifier("\(identifierPrefix).publish")
+            VStack(alignment: .leading, spacing: RnpSpacing.xs) {
+                HStack(spacing: RnpSpacing.sm) {
+                    Button("detail.exportPublic") { actions.onExportPublic() }
+                        .accessibilityIdentifier("\(identifierPrefix).export-public")
+                    Button("detail.exportSecret") { showSecretExportConfirmation = true }
+                        .accessibilityIdentifier("\(identifierPrefix).export-secret")
+                    Button("detail.publish") { actions.onPublish() }
+                        .accessibilityIdentifier("\(identifierPrefix).publish")
+                }
+                HStack(spacing: RnpSpacing.sm) {
+                    Button("detail.extendExpiry") { actions.onExtendExpiry() }
+                        .accessibilityIdentifier("\(identifierPrefix).extend-expiry")
+                    Button("detail.rotateEncryption") { actions.onRotateEncryption() }
+                        .accessibilityIdentifier("\(identifierPrefix).rotate-encryption")
+                    Button("detail.rotateSigning") { actions.onRotateSigning() }
+                        .accessibilityIdentifier("\(identifierPrefix).rotate-signing")
+                }
+                HStack(spacing: RnpSpacing.sm) {
+                    Button("detail.revoke") { actions.onRevoke() }
+                        .accessibilityIdentifier("\(identifierPrefix).revoke")
+                    Button("detail.deleteKey", role: .destructive) { showDeleteConfirmation = true }
+                        .accessibilityIdentifier("\(identifierPrefix).delete")
+                }
             }
-            HStack(spacing: 12) {
-                Button("detail.extendExpiry") { actions.onExtendExpiry() }
-                    .accessibilityIdentifier("\(identifierPrefix).extend-expiry")
-                Button("detail.rotateEncryption") { actions.onRotateEncryption() }
-                    .accessibilityIdentifier("\(identifierPrefix).rotate-encryption")
-                Button("detail.rotateSigning") { actions.onRotateSigning() }
-                    .accessibilityIdentifier("\(identifierPrefix).rotate-signing")
-            }
-            HStack(spacing: 12) {
-                Button("detail.revoke") { actions.onRevoke() }
-                    .accessibilityIdentifier("\(identifierPrefix).revoke")
-                Button("detail.deleteKey", role: .destructive) { showDeleteConfirmation = true }
-                    .accessibilityIdentifier("\(identifierPrefix).delete")
-            }
+            .buttonStyle(.bordered)
         }
     }
 
-    // MARK: - Trust presentation
-
-    private var trustBadgeText: String {
-        switch trustState {
-        case .verified:
-            return "trust.verified".localized
-        case .problem:
-            return "trust.conflict".localized
-        case .unverified:
-            return "trust.unverified".localized
-        }
-    }
-
-    private var trustColor: Color {
-        switch trustState {
-        case .verified:
-            return .green
-        case .problem:
-            return .red
-        case .unverified:
-            return .orange
-        }
-    }
-
-    private var trustIconName: String {
-        switch trustState {
-        case .verified:
-            return "checkmark.shield.fill"
-        case .problem:
-            return "exclamationmark.shield.fill"
-        case .unverified:
-            return "questionmark.shield"
-        }
-    }
+    // MARK: - Helpers
 
     private func copyToClipboard(_ text: String) {
         #if canImport(AppKit)
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
         #endif
-    }
-}
-
-private struct Badge: View {
-    let text: String
-    let color: Color
-
-    var body: some View {
-        Text(text)
-            .font(.caption2.bold())
-            .padding(.horizontal, 5)
-            .padding(.vertical, 1)
-            .foregroundStyle(color)
-            .background(color.opacity(0.12), in: Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(color.opacity(0.6), lineWidth: 1)
-            )
-    }
-}
-
-private extension String {
-    /// Groups a hex fingerprint into blocks of four characters.
-    var groupedFingerprintFull: String {
-        let cleaned = self
-        return stride(from: 0, to: cleaned.count, by: 4)
-            .map { offset -> String in
-                let start = cleaned.index(cleaned.startIndex, offsetBy: offset)
-                let end = cleaned.index(start, offsetBy: 4, limitedBy: cleaned.endIndex) ?? cleaned.endIndex
-                return String(cleaned[start ..< end])
-            }
-            .joined(separator: " ")
     }
 }
 

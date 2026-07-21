@@ -58,6 +58,11 @@ final class ContentViewModel: ObservableObject {
     @Published var isDiscoveringKey = false
     /// Whether a keyserver publish is in flight.
     @Published var isPublishing = false
+    /// Sidebar search query; filters the visible key list.
+    @Published var searchText = ""
+    /// Import failure shown as an inline banner in the sidebar (instead of a
+    /// modal alert) so the user can fix the data and retry.
+    @Published var importError: String?
 
     let manager: KeysManager
     private var lastClipboardHash: String?
@@ -110,6 +115,22 @@ final class ContentViewModel: ObservableObject {
         case .recipients:
             return manager.keys.filter { !$0.hasSecret }
         }
+    }
+
+    /// Keys shown in the sidebar: the current tab filtered by the search
+    /// query (matched against user IDs and the fingerprint).
+    var filteredKeys: [KeyInfo] {
+        let query = searchText.trimmingCharacters(in: .whitespaces)
+        guard !query.isEmpty else { return keys }
+        return keys.filter { key in
+            key.fingerprint.range(of: query, options: .caseInsensitive) != nil
+                || key.userIDs.contains { $0.range(of: query, options: .caseInsensitive) != nil }
+        }
+    }
+
+    /// Whether the sidebar search is active and matched nothing.
+    var isSearchEmpty: Bool {
+        !searchText.trimmingCharacters(in: .whitespaces).isEmpty && filteredKeys.isEmpty
     }
 
     var selectedKey: KeyInfo? {
@@ -276,7 +297,12 @@ final class ContentViewModel: ObservableObject {
 
     private func importKeys(_ data: Data) {
         manager.importKeys(data)
-        propagateError()
+        if let error = manager.lastError {
+            importError = error
+            manager.lastError = nil
+        } else {
+            importError = nil
+        }
     }
 
     // MARK: - Export
@@ -427,8 +453,7 @@ final class ContentViewModel: ObservableObject {
 
     func importFetchedKey() {
         guard let key = fetchedKey else { return }
-        manager.importKeys(key.data)
-        propagateError()
+        importKeys(key.data)
         showFetchSheet = false
         fetchQuery = ""
         fetchedKey = nil

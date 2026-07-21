@@ -20,6 +20,7 @@ struct KeysListView: View {
     var onExport: ((KeyInfo) -> Void)?
     var onCopyFingerprint: ((KeyInfo) -> Void)?
     var onDelete: ((KeyInfo) -> Void)?
+    var onRefresh: (() -> Void)?
 
     init(
         keys: [KeyInfo],
@@ -28,7 +29,8 @@ struct KeysListView: View {
         onDoubleTap: ((KeyInfo) -> Void)? = nil,
         onExport: ((KeyInfo) -> Void)? = nil,
         onCopyFingerprint: ((KeyInfo) -> Void)? = nil,
-        onDelete: ((KeyInfo) -> Void)? = nil
+        onDelete: ((KeyInfo) -> Void)? = nil,
+        onRefresh: (() -> Void)? = nil
     ) {
         self.keys = keys
         self._selection = selection
@@ -37,34 +39,42 @@ struct KeysListView: View {
         self.onExport = onExport
         self.onCopyFingerprint = onCopyFingerprint
         self.onDelete = onDelete
+        self.onRefresh = onRefresh
     }
 
     var body: some View {
         Table(keys, selection: $selection) {
             TableColumn("table.userID") { key in
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text(key.primaryUserID)
-                            .font(.body.weight(.medium))
-                            .lineLimit(1)
-                        if let state = trustState?(key) {
-                            TrustIndicator(state: state)
+                HStack(spacing: RnpSpacing.sm - 2) {
+                    RnpKeyAvatar(
+                        hasSecret: key.hasSecret,
+                        isDimmed: key.isRevoked || key.isExpired,
+                        size: 28
+                    )
+                    VStack(alignment: .leading, spacing: RnpSpacing.xxs - 2) {
+                        HStack(spacing: RnpSpacing.xxs + 2) {
+                            Text(key.primaryUserID)
+                                .font(.body.weight(.medium))
+                                .lineLimit(1)
+                            if let state = trustState?(key) {
+                                TrustIndicator(state: state)
+                            }
                         }
-                    }
-                    HStack(spacing: 6) {
-                        Text(key.algorithmLabel)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        if key.isRevoked {
-                            Badge(text: "badge.revoked".localized, color: .red)
-                        } else if key.isExpired {
-                            Badge(text: "badge.expired".localized, color: .red)
-                        } else if let days = key.daysUntilExpiry, days < 60 {
-                            Badge(text: String(format: "badge.expiresIn".localized, days), color: .orange)
+                        HStack(spacing: RnpSpacing.xxs + 2) {
+                            Text(key.algorithmLabel)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            if key.isRevoked {
+                                RnpBadge(text: "badge.revoked".localized, color: .red)
+                            } else if key.isExpired {
+                                RnpBadge(text: "badge.expired".localized, color: .red)
+                            } else if let days = key.daysUntilExpiry, days < 60 {
+                                RnpBadge(text: String(format: "badge.expiresIn".localized, days), color: .orange)
+                            }
                         }
                     }
                 }
-                .padding(.vertical, 2)
+                .padding(.vertical, RnpSpacing.xxs - 2)
                 // `onTapGesture` would consume the mouse events and prevent
                 // the Table's own row selection; a simultaneous gesture lets
                 // both the selection and the double-tap action fire.
@@ -79,16 +89,17 @@ struct KeysListView: View {
                 .accessibilityLabel("\(key.primaryUserID), \(key.hasSecret ? "key.type.keyPair".localized : "key.type.publicOnly".localized)")
             }
             TableColumn("table.fingerprint") { key in
-                Text(key.fingerprint.groupedFingerprint)
-                    .font(.system(.body, design: .monospaced))
+                Text(key.fingerprint.groupedFingerprintAbbreviated)
+                    .font(.system(.caption, design: .monospaced))
                     .foregroundStyle(.secondary)
             }
-            .width(min: 130, ideal: 150, max: 170)
+            .width(min: 110, ideal: 130, max: 150)
             TableColumn("table.type") { key in
                 Text(key.hasSecret ? "key.type.keyPair".localized : "key.type.publicOnly".localized)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            .width(min: 80, ideal: 96, max: 120)
+            .width(min: 76, ideal: 88, max: 110)
         }
         .accessibilityIdentifier("keyslist.table")
     }
@@ -104,6 +115,10 @@ struct KeysListView: View {
         if let onCopyFingerprint {
             Button("contextmenu.copyFingerprint") { onCopyFingerprint(key) }
         }
+        if let onRefresh {
+            Divider()
+            Button("contextmenu.refresh") { onRefresh() }
+        }
         if let onDelete {
             Divider()
             Button("detail.deleteKey", role: .destructive) { onDelete(key) }
@@ -116,64 +131,11 @@ private struct TrustIndicator: View {
     let state: TrustState
 
     var body: some View {
-        Image(systemName: iconName)
-            .foregroundStyle(color)
+        let presentation = TrustPresentation(state: state)
+        Image(systemName: presentation.iconName)
+            .foregroundStyle(presentation.color)
             .imageScale(.small)
             .accessibilityHidden(true)
-    }
-
-    private var iconName: String {
-        switch state {
-        case .verified:
-            return "checkmark.shield.fill"
-        case .problem:
-            return "exclamationmark.shield.fill"
-        case .unverified:
-            return "questionmark.shield"
-        }
-    }
-
-    private var color: Color {
-        switch state {
-        case .verified:
-            return .green
-        case .problem:
-            return .red
-        case .unverified:
-            return .orange
-        }
-    }
-}
-
-private struct Badge: View {
-    let text: String
-    let color: Color
-
-    var body: some View {
-        Text(text)
-            .font(.caption2.bold())
-            .padding(.horizontal, 5)
-            .padding(.vertical, 1)
-            .foregroundStyle(color)
-            .background(color.opacity(0.12), in: Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(color.opacity(0.6), lineWidth: 1)
-            )
-    }
-}
-
-private extension String {
-    /// "AB12 CD34 …" rendering of a hex fingerprint (first 16 chars).
-    var groupedFingerprint: String {
-        let prefix = String(prefix(16))
-        return stride(from: 0, to: prefix.count, by: 4)
-            .map { offset -> String in
-                let start = prefix.index(prefix.startIndex, offsetBy: offset)
-                let end = prefix.index(start, offsetBy: 4, limitedBy: prefix.endIndex) ?? prefix.endIndex
-                return String(prefix[start ..< end])
-            }
-            .joined(separator: " ") + " …"
     }
 }
 
