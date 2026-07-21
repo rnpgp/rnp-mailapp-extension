@@ -7,6 +7,8 @@ on:
       - 'Swift-Rnp/MailPlugin/**'
       - 'Sources/MailSecurityEngine/**'
       - 'scripts/test-mail-e2e.sh'
+      - 'scripts/test-mail-e2e-docker.sh'
+      - 'scripts/mail-e2e-common.sh'
       - 'scripts/local-mail-server.sh'
 
 jobs:
