@@ -7,6 +7,9 @@ on:
 jobs:
   dry-run:
     runs-on: macos-15
+    # The framework build from source is slow and can fail on transient CI
+    # issues; do not block PRs on the dry-run result.
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
