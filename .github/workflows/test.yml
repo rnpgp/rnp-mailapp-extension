@@ -115,6 +115,9 @@ jobs:
         PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
 
     - name: Run container app UI tests
+      # UI tests are experimental on GitHub-hosted runners (signing/GUI
+      # session constraints); do not block the PR on their result.
+      continue-on-error: true
       run: >
         xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
         -scheme "Ribose container" -configuration Debug test CODE_SIGNING_ALLOWED=NO
