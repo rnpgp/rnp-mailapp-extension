@@ -698,11 +698,13 @@
 			buildSettings = {
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Ribose container";
 				USES_XCTRUNNER = YES;
 			};
 			name = Release;
@@ -727,11 +729,13 @@
 			buildSettings = {
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Ribose container";
 				USES_XCTRUNNER = YES;
 			};
 			name = Debug;
@@ -1019,11 +1023,13 @@
 			buildSettings = {
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Ribose container";
 				USES_XCTRUNNER = YES;
 			};
 			name = AppStore;
@@ -1114,11 +1120,13 @@
 			buildSettings = {
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Ribose container";
 				USES_XCTRUNNER = YES;
 			};
 			name = Direct;
