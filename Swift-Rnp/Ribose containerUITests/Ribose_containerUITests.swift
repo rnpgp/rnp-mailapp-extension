@@ -313,7 +313,7 @@ final class Ribose_containerUITests: XCTestCase {
     }
 
     func testImportKeyFromFile() throws {
-        let keyFileURL = URL(fileURLWithPath: NSTemporaryDirectory())
+        let keyFileURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("rnp-uitest-import-\(UUID().uuidString).txt")
         try UITestFixtures.fileKey.write(to: keyFileURL, atomically: true, encoding: .utf8)
         defer { try? FileManager.default.removeItem(at: keyFileURL) }
