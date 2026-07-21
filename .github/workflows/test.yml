@@ -113,3 +113,10 @@ jobs:
         -scheme "Ribose container" -configuration Direct build CODE_SIGNING_ALLOWED=NO
       env:
         PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
+
+    - name: Run container app UI tests
+      run: >
+        xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
+        -scheme "Ribose container" -configuration Debug test CODE_SIGNING_ALLOWED=NO
+      env:
+        PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
