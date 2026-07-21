@@ -24,9 +24,15 @@ public struct ImportKeyForm: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("importForm.title")
-                .font(.headline)
+        VStack(alignment: .leading, spacing: RnpSpacing.md) {
+            HStack(spacing: RnpSpacing.xs) {
+                Image(systemName: "square.and.arrow.down")
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(Color.accentColor)
+                    .accessibilityHidden(true)
+                Text("importForm.title")
+                    .font(.headline)
+            }
 
             Text("importForm.message")
                 .font(.callout)
@@ -34,9 +40,9 @@ public struct ImportKeyForm: View {
             TextEditor(text: $viewModel.importText)
                 .font(.system(.body, design: .monospaced))
                 .frame(height: 180)
-                .padding(4)
+                .padding(RnpSpacing.xxs)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    RoundedRectangle(cornerRadius: RnpRadius.badge, style: .continuous)
                         .stroke(Color.secondary.opacity(0.25), lineWidth: 1)
                 )
                 .accessibilityIdentifier("importform.text")
@@ -64,7 +70,7 @@ public struct ImportKeyForm: View {
             }
         }
         .frame(width: 440)
-        .padding(24)
+        .padding(RnpSpacing.xl)
     }
 }
 

@@ -25,11 +25,17 @@ public struct GenerateKeyForm: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("generateForm.title")
-                .font(.headline)
+        VStack(alignment: .leading, spacing: RnpSpacing.md) {
+            HStack(spacing: RnpSpacing.xs) {
+                Image(systemName: "key.fill")
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(Color.accentColor)
+                    .accessibilityHidden(true)
+                Text("generateForm.title")
+                    .font(.headline)
+            }
 
-            HStack(spacing: 12) {
+            HStack(spacing: RnpSpacing.sm) {
                 TextField("generateForm.name.placeholder", text: $viewModel.name)
                     .accessibilityIdentifier("generateform.name")
                 TextField("generateForm.email.placeholder", text: $viewModel.email)
@@ -56,7 +62,7 @@ public struct GenerateKeyForm: View {
                 .accessibilityIdentifier("generateform.expiry")
             }
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: RnpSpacing.xxs) {
                 SecureField("generateForm.passphrase.placeholder", text: $viewModel.passphrase)
                     .accessibilityIdentifier("generateform.passphrase")
                 PassphraseStrengthMeter(passphrase: viewModel.passphrase)
@@ -66,10 +72,10 @@ public struct GenerateKeyForm: View {
                 .accessibilityIdentifier("generateform.confirm-passphrase")
 
             if viewModel.passphrase != viewModel.confirmPassphrase, !viewModel.confirmPassphrase.isEmpty {
-                Text("generateForm.passphrase.mismatch")
-                    .font(.caption)
-                    .foregroundStyle(.red)
-                    .accessibilityIdentifier("generateform.mismatch-warning")
+                RnpInlineError(
+                    message: "generateForm.passphrase.mismatch".localized
+                )
+                .accessibilityIdentifier("generateform.mismatch-warning")
             }
 
             Toggle("generateForm.touchID", isOn: $viewModel.useTouchID)
@@ -93,7 +99,7 @@ public struct GenerateKeyForm: View {
             }
         }
         .frame(width: 440)
-        .padding(24)
+        .padding(RnpSpacing.xl)
     }
 }
 

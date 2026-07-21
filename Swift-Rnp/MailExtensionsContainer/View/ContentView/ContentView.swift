@@ -160,28 +160,53 @@ struct ContentView: View {
 
     /// macOS 12 fallback: single-column list; details open in a sheet.
     private var stackContent: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: RnpSpacing.sm) {
             tabPicker
+            RnpSearchField(
+                text: $model.searchText,
+                prompt: "search.prompt".localized,
+                accessibilityIdentifier: "contentview.search-field"
+            )
             bannerStack
+            sectionHeader
             keyList
         }
         .padding()
         .animation(.default, value: model.trustConflicts.count)
         .animation(.default, value: model.expiryReport().count)
+        .animation(.default, value: model.importError)
         .navigationTitle(Text("title.keysManager"))
     }
 
     private var listColumn: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: RnpSpacing.xs) {
             tabPicker
-                .padding(.horizontal, 12)
-                .padding(.top, 10)
+                .padding(.horizontal, RnpSpacing.sm)
+                .padding(.top, RnpSpacing.sm - 2)
+            RnpSearchField(
+                text: $model.searchText,
+                prompt: "search.prompt".localized,
+                accessibilityIdentifier: "contentview.search-field"
+            )
+            .padding(.horizontal, RnpSpacing.sm)
             bannerStack
-                .padding(.horizontal, 12)
+                .padding(.horizontal, RnpSpacing.sm)
+            sectionHeader
+                .padding(.horizontal, RnpSpacing.md)
+                .padding(.top, RnpSpacing.xxs)
             keyList
         }
         .animation(.default, value: model.trustConflicts.count)
         .animation(.default, value: model.expiryReport().count)
+        .animation(.default, value: model.importError)
+    }
+
+    /// "MY KEYS — 3" style header above the list.
+    private var sectionHeader: some View {
+        RnpSectionHeader(
+            title: model.selectedTab.localizedName,
+            count: model.filteredKeys.count
+        )
     }
 
     private var detailColumn: some View {
@@ -207,14 +232,20 @@ struct ContentView: View {
     }
 
     private var noSelectionPlaceholder: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: RnpSpacing.md) {
             Image(systemName: "key.fill")
-                .font(.system(size: 40))
+                .font(.system(size: 40, weight: .light))
+                .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(.tertiary)
                 .accessibilityHidden(true)
             Text("detail.noSelection")
                 .font(.title3)
                 .foregroundStyle(.secondary)
+            Text("detail.noSelection.hint")
+                .font(.callout)
+                .foregroundStyle(.tertiary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 280)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -233,7 +264,7 @@ struct ContentView: View {
 
     private var keyList: some View {
         KeysListView(
-            keys: model.keys,
+            keys: model.filteredKeys,
             selection: $model.selection,
             trustState: { key in
                 key.hasSecret ? nil : model.trustState(for: key)
@@ -241,10 +272,11 @@ struct ContentView: View {
             onDoubleTap: { _ in model.showDetailSheet = true },
             onExport: { key in model.exportPublicToPasteboard(key) },
             onCopyFingerprint: { key in model.copyFingerprint(key) },
-            onDelete: { key in model.confirmDelete(key) }
+            onDelete: { key in model.confirmDelete(key) },
+            onRefresh: { model.refresh() }
         )
         .overlay { emptyStateOverlay }
-        .animation(.default, value: model.keys)
+        .animation(.default, value: model.filteredKeys)
         .onDrop(of: [.fileURL, .data, .plainText], isTargeted: .constant(false)) { providers in
             handleDrop(providers: providers)
         }
@@ -252,22 +284,25 @@ struct ContentView: View {
 
     @ViewBuilder
     private var emptyStateOverlay: some View {
-        if model.keys.isEmpty {
-            VStack(spacing: 16) {
-                Image(systemName: "key.fill")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.tertiary)
-                    .accessibilityHidden(true)
-                VStack(spacing: 6) {
-                    Text("emptyState.title")
-                        .font(.title3.weight(.semibold))
-                    Text("emptyState.message")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                if model.selectedTab == .myKeys {
-                    HStack(spacing: 12) {
+        if model.isSearchEmpty {
+            RnpEmptyState(
+                icon: "magnifyingglass",
+                title: "emptyState.search.title",
+                message: String(format: "emptyState.search.message".localized, model.searchText)
+            ) {
+                Button("emptyState.search.clear") { model.searchText = "" }
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("contentview.empty.clearsearch")
+            }
+            .transition(.opacity)
+        } else if model.keys.isEmpty {
+            if model.selectedTab == .myKeys {
+                RnpEmptyState(
+                    icon: "key.fill",
+                    title: "emptyState.title",
+                    message: "emptyState.message".localized
+                ) {
+                    HStack(spacing: RnpSpacing.sm) {
                         Button("emptyState.generate") {
                             model.beginGenerate(algorithm: .ed25519)
                         }
@@ -279,12 +314,29 @@ struct ContentView: View {
                         .accessibilityIdentifier("contentview.empty.import")
                     }
                     .controlSize(.large)
-                    .padding(.top, 4)
                 }
+                .transition(.opacity)
+            } else {
+                RnpEmptyState(
+                    icon: "person.2",
+                    title: "emptyState.recipients.title",
+                    message: "emptyState.recipients.message".localized
+                ) {
+                    HStack(spacing: RnpSpacing.sm) {
+                        Button("emptyState.recipients.fetch") {
+                            model.showFetchSheet = true
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("contentview.empty.fetch")
+                        Button("emptyState.import") {
+                            model.importFromFile()
+                        }
+                        .accessibilityIdentifier("contentview.empty.import")
+                    }
+                    .controlSize(.large)
+                }
+                .transition(.opacity)
             }
-            .padding(32)
-            .frame(maxWidth: 340)
-            .transition(.opacity)
         }
     }
 
@@ -412,8 +464,16 @@ struct ContentView: View {
     private var bannerStack: some View {
         let conflicts = model.trustConflicts
         let expiry = model.expiryReport()
-        if !conflicts.isEmpty || !expiry.isEmpty {
-            VStack(spacing: 8) {
+        if !conflicts.isEmpty || !expiry.isEmpty || model.importError != nil {
+            VStack(spacing: RnpSpacing.xs) {
+                if let importError = model.importError {
+                    RnpInlineError(
+                        message: importError,
+                        recoverySuggestion: "error.importFailed.recovery".localized,
+                        onDismiss: { model.importError = nil }
+                    )
+                    .accessibilityIdentifier("contentview.import-error")
+                }
                 if let first = conflicts.first {
                     let suffix = conflicts.count > 1 ? " (and \(conflicts.count - 1) more)" : ""
                     BannerView(
@@ -691,17 +751,27 @@ private struct BannerView: View {
     let text: String
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: RnpSpacing.xs) {
             Image(systemName: icon)
+                .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(tint)
                 .accessibilityHidden(true)
             Text(text)
                 .font(.callout)
-            Spacer()
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .padding(.horizontal, RnpSpacing.sm)
+        .padding(.vertical, RnpSpacing.xs)
+        .background(
+            tint.opacity(0.1),
+            in: RoundedRectangle(cornerRadius: RnpRadius.card, style: .continuous)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: RnpRadius.card, style: .continuous)
+                .strokeBorder(tint.opacity(0.22), lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
     }
 }
 

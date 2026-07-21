@@ -55,7 +55,8 @@ public final class MailSecurityBannerView: NSView {
         let stack = NSStackView(views: [title] + signerRows)
         stack.orientation = .vertical
         stack.alignment = .leading
-        stack.spacing = 10
+        stack.spacing = 12
+        stack.setCustomSpacing(10, after: title)
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         addSubview(stack)
@@ -101,11 +102,22 @@ public final class MailSecurityBannerView: NSView {
             )
         }
 
+        let intentColor = color(for: model.intent)
+
+        let icon = NSImageView()
+        icon.image = NSImage(
+            systemSymbolName: symbolName(for: model.intent),
+            accessibilityDescription: nil
+        )
+        icon.symbolConfiguration = NSImage.SymbolConfiguration(hierarchicalColor: intentColor)
+            .applying(NSImage.SymbolConfiguration(pointSize: 13, weight: .semibold))
+        icon.setContentHuggingPriority(.required, for: .horizontal)
+
         let nameLabel = NSTextField(labelWithString: signer.label)
         nameLabel.font = NSFont.systemFont(ofSize: NSFont.systemFontSize, weight: .medium)
 
         let trustLabel = NSTextField(labelWithString: model.label)
-        trustLabel.textColor = color(for: model.intent)
+        trustLabel.textColor = intentColor
         trustLabel.font = NSFont.boldSystemFont(ofSize: NSFont.smallSystemFontSize)
 
         let detailLabel = NSTextField(wrappingLabelWithString: model.detail)
@@ -125,11 +137,29 @@ public final class MailSecurityBannerView: NSView {
             rows.append(link)
         }
 
-        let stack = NSStackView(views: rows)
-        stack.orientation = .vertical
-        stack.alignment = .leading
-        stack.spacing = 2
-        return stack
+        let textStack = NSStackView(views: rows)
+        textStack.orientation = .vertical
+        textStack.alignment = .leading
+        textStack.spacing = 3
+
+        let rowStack = NSStackView(views: [icon, textStack])
+        rowStack.orientation = .horizontal
+        rowStack.alignment = .top
+        rowStack.spacing = 8
+        return rowStack
+    }
+
+    private func symbolName(for intent: SignerTrustIntent) -> String {
+        switch intent {
+        case .positive:
+            return "checkmark.shield.fill"
+        case .neutral:
+            return "questionmark.shield"
+        case .caution:
+            return "exclamationmark.shield.fill"
+        case .critical:
+            return "xmark.shield.fill"
+        }
     }
 
     private func color(for intent: SignerTrustIntent) -> NSColor {

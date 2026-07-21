@@ -28,6 +28,38 @@ struct MailExtensionsContainerApp: App {
                 }
         }
         .commands {
+            CommandGroup(after: .newItem) {
+                Button("menu.newKey") {
+                    model.beginGenerate(algorithm: .ed25519)
+                }
+                .keyboardShortcut("n", modifiers: .command)
+
+                Button("menu.importKey") {
+                    model.importFromFile()
+                }
+                .keyboardShortcut("i", modifiers: .command)
+
+                Divider()
+
+                Button("menu.exportPublic") {
+                    model.exportSelectedPublicToPasteboard()
+                }
+                .keyboardShortcut("e", modifiers: .command)
+                .disabled(model.selectedKey == nil)
+
+                Button("menu.deleteKey") {
+                    model.showDeleteConfirmation = true
+                }
+                .keyboardShortcut(.delete, modifiers: .command)
+                .disabled(model.selectedKey == nil)
+
+                Divider()
+
+                Button("menu.refreshKeys") {
+                    model.refresh()
+                }
+                .keyboardShortcut("r", modifiers: .command)
+            }
             CommandGroup(after: .help) {
                 Button("menu.showOnboarding") {
                     model.reopenOnboarding()

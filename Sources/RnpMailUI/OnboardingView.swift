@@ -4,7 +4,11 @@
 //
 //  First-launch onboarding flow: welcome, create/import, done.
 //
+//  The welcome page leads with the app icon, a tagline, and three feature
+//  highlight cards; steps crossfade with a subtle slide.
+//
 
+import AppKit
 import SwiftUI
 import MailSecurityEngine
 
@@ -35,16 +39,21 @@ public struct OnboardingView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: RnpSpacing.lg) {
             progressIndicator
-                .padding(.top, 4)
+                .padding(.top, RnpSpacing.xxs)
             stepContent
-                .transition(.opacity)
                 .id(stepIdentifier)
+                .transition(
+                    .asymmetric(
+                        insertion: .move(edge: .trailing).combined(with: .opacity),
+                        removal: .move(edge: .leading).combined(with: .opacity)
+                    )
+                )
         }
-        .padding(32)
-        .frame(minWidth: 520, minHeight: 400)
-        .animation(.default, value: viewModel.currentStep)
+        .padding(RnpSpacing.xxl)
+        .frame(minWidth: 560, minHeight: 420)
+        .animation(.easeInOut(duration: 0.25), value: viewModel.currentStep)
         .alert(
             "error.onboarding.title",
             isPresented: Binding(
@@ -96,8 +105,8 @@ public struct OnboardingView: View {
         }
     }
 
-    /// Distinct identity per step so the crossfade transition also fires
-    /// between steps that share a progress phase.
+    /// Distinct identity per step so the transition also fires between steps
+    /// that share a progress phase.
     private var stepIdentifier: String {
         switch viewModel.currentStep {
         case .welcome:
@@ -114,90 +123,162 @@ public struct OnboardingView: View {
     }
 
     private var progressIndicator: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: RnpSpacing.xs) {
             ForEach(0 ..< 3, id: \.self) { index in
-                Circle()
-                    .fill(index <= stepIndex ? Color.accentColor : Color.secondary.opacity(0.3))
-                    .frame(width: 8, height: 8)
+                Capsule()
+                    .fill(index <= stepIndex ? Color.accentColor : Color.secondary.opacity(0.25))
+                    .frame(width: index == stepIndex ? 20 : 8, height: 8)
             }
         }
+        .animation(.easeInOut(duration: 0.25), value: stepIndex)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(String(format: "onboarding.progress".localized, stepIndex + 1, 3))
     }
 
-    // MARK: - Pages
+    // MARK: - Welcome
+
+    /// The app's icon, when available (in unit tests there is no app bundle
+    /// icon, so the hero falls back to a symbol).
+    private var appIconImage: NSImage? {
+        guard let icon = NSApplication.shared.applicationIconImage,
+              !icon.representations.isEmpty
+        else {
+            return nil
+        }
+        return icon
+    }
 
     private var welcomePage: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: RnpSpacing.lg) {
             Spacer()
-            Image(systemName: "lock.shield")
-                .font(.system(size: 56))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(Color.accentColor)
-                .accessibilityHidden(true)
-            Text("onboarding.welcome.title")
-                .font(.largeTitle.weight(.semibold))
-            Text("onboarding.welcome.subtitle")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 400)
+            if let icon = appIconImage {
+                Image(nsImage: icon)
+                    .resizable()
+                    .frame(width: 88, height: 88)
+                    .shadow(color: .black.opacity(0.18), radius: 6, y: 3)
+                    .accessibilityHidden(true)
+            } else {
+                Image(systemName: "lock.shield.fill")
+                    .font(.system(size: 64))
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(Color.accentColor)
+                    .accessibilityHidden(true)
+            }
+            VStack(spacing: RnpSpacing.xs) {
+                Text("onboarding.welcome.title")
+                    .font(.largeTitle.weight(.semibold))
+                Text("onboarding.welcome.subtitle")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 420)
+            }
+            HStack(spacing: RnpSpacing.sm) {
+                OnboardingFeatureCard(
+                    icon: "envelope.badge.shield.half.filled",
+                    title: "onboarding.feature.mail.title",
+                    subtitle: "onboarding.feature.mail.subtitle"
+                )
+                OnboardingFeatureCard(
+                    icon: "touchid",
+                    title: "onboarding.feature.touchid.title",
+                    subtitle: "onboarding.feature.touchid.subtitle"
+                )
+                OnboardingFeatureCard(
+                    icon: "checkmark.shield",
+                    title: "onboarding.feature.tofu.title",
+                    subtitle: "onboarding.feature.tofu.subtitle"
+                )
+            }
+            .padding(.top, RnpSpacing.xxs)
             Button("onboarding.welcome.button") {
                 viewModel.continueFromWelcome()
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .keyboardShortcut(.defaultAction)
             .accessibilityIdentifier("onboarding.welcome.continue")
-            .padding(.top, 8)
+            .padding(.top, RnpSpacing.xxs)
             Spacer()
             Spacer()
         }
         .frame(maxWidth: .infinity)
     }
 
+    // MARK: - Create or import
+
     private var createOrImportPage: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: RnpSpacing.xl) {
             Spacer()
-            Text("onboarding.setup.title")
-                .font(.title2.weight(.semibold))
-            Text("onboarding.setup.subtitle")
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 400)
-            HStack(spacing: 16) {
+            VStack(spacing: RnpSpacing.xs) {
+                Text("onboarding.setup.title")
+                    .font(.title2.weight(.semibold))
+                Text("onboarding.setup.subtitle")
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 420)
+            }
+            HStack(spacing: RnpSpacing.md) {
                 OnboardingOptionCard(
                     title: "onboarding.createKey",
+                    subtitle: "onboarding.option.create.subtitle",
                     icon: "key.fill",
                     identifier: "onboarding.create",
                     action: { viewModel.chooseCreate() }
                 )
                 OnboardingOptionCard(
                     title: "onboarding.importKey",
+                    subtitle: "onboarding.option.import.subtitle",
                     icon: "square.and.arrow.down",
                     identifier: "onboarding.import",
                     action: { viewModel.chooseImport() }
                 )
             }
-            .padding(.top, 8)
+            .padding(.top, RnpSpacing.xs)
             Spacer()
             Spacer()
         }
         .frame(maxWidth: .infinity)
     }
 
+    // MARK: - Done
+
     private func donePage(revocationURL: URL?) -> some View {
-        VStack(spacing: 16) {
+        DonePage(
+            revocationURL: revocationURL,
+            onFinish: {
+                onComplete()
+                isPresented = false
+            }
+        )
+    }
+}
+
+/// Completion step, split out so the checkmark animation state is scoped to
+/// the page's lifetime.
+private struct DonePage: View {
+    let revocationURL: URL?
+    let onFinish: () -> Void
+
+    @State private var checkmarkAppeared = false
+
+    var body: some View {
+        VStack(spacing: RnpSpacing.md) {
             Spacer()
             Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 48))
+                .font(.system(size: 52))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(.green)
+                .scaleEffect(checkmarkAppeared ? 1 : 0.4)
+                .opacity(checkmarkAppeared ? 1 : 0)
+                .animation(.spring(response: 0.45, dampingFraction: 0.6), value: checkmarkAppeared)
+                .onAppear { checkmarkAppeared = true }
                 .accessibilityHidden(true)
             Text("onboarding.done.title")
                 .font(.title2.weight(.semibold))
 
             if let url = revocationURL {
-                VStack(spacing: 8) {
+                VStack(spacing: RnpSpacing.xs) {
                     Text("onboarding.done.revocationLabel")
                         .font(.callout.weight(.medium))
                     Text(url.path)
@@ -210,23 +291,25 @@ public struct OnboardingView: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(16)
-                .frame(maxWidth: 420)
-                .background(.quaternary, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .padding(RnpSpacing.md)
+                .frame(maxWidth: 440)
+                .background(
+                    .quaternary,
+                    in: RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+                )
             }
 
             Button("onboarding.done.publishPlaceholder") {}
                 .disabled(true)
                 .accessibilityIdentifier("onboarding.done.publish")
 
-            Button("button.done") {
-                onComplete()
-                isPresented = false
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .accessibilityIdentifier("onboarding.done.finish")
+            Button("button.done", action: onFinish)
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .keyboardShortcut(.defaultAction)
+                .accessibilityIdentifier("onboarding.done.finish")
             Spacer()
             Spacer()
         }
@@ -234,9 +317,43 @@ public struct OnboardingView: View {
     }
 }
 
+/// Feature highlight on the welcome page: SF Symbol, title, one-line caption.
+private struct OnboardingFeatureCard: View {
+    let icon: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
+
+    var body: some View {
+        VStack(spacing: RnpSpacing.xs) {
+            Image(systemName: icon)
+                .font(.system(size: 24))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(Color.accentColor)
+                .frame(height: 28)
+                .accessibilityHidden(true)
+            Text(title)
+                .font(.callout.weight(.semibold))
+                .multilineTextAlignment(.center)
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(width: 150)
+        .padding(RnpSpacing.sm)
+        .background(
+            .ultraThinMaterial,
+            in: RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+        )
+        .accessibilityElement(children: .combine)
+    }
+}
+
 /// Card-style button used for the create/import choice.
 private struct OnboardingOptionCard: View {
     let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
     let icon: String
     let identifier: String
     let action: () -> Void
@@ -245,26 +362,44 @@ private struct OnboardingOptionCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 12) {
+            VStack(spacing: RnpSpacing.xs) {
                 Image(systemName: icon)
-                    .font(.system(size: 30))
+                    .font(.system(size: 28))
                     .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(Color.accentColor)
+                    .frame(height: 32)
+                    .accessibilityHidden(true)
                 Text(title)
                     .font(.headline)
                     .multilineTextAlignment(.center)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(width: 170, height: 120)
+            .frame(width: 190)
+            .padding(.vertical, RnpSpacing.lg)
+            .padding(.horizontal, RnpSpacing.sm)
             .background(
                 .quaternary.opacity(isHovering ? 1 : 0.6),
-                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                in: RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
             )
-            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+                    .strokeBorder(
+                        isHovering ? Color.accentColor.opacity(0.5) : Color(nsColor: .separatorColor),
+                        lineWidth: 1
+                    )
+            )
+            .contentShape(RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous))
         }
         .buttonStyle(.plain)
         .scaleEffect(isHovering ? 1.02 : 1.0)
         .animation(.easeOut(duration: 0.15), value: isHovering)
         .onHover { isHovering = $0 }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier(identifier)
     }
 }
