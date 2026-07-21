@@ -13,9 +13,12 @@ import TrustStore
 /// MailKit-independent message-security handler.
 public final class MessageSecurityCore {
     private let engine: MailSecurityEngine
+    /// Records decode outcomes for the end-to-end test harness, when set.
+    private let stateRecorder: SecurityStateRecorder?
 
-    public init(engine: MailSecurityEngine) {
+    public init(engine: MailSecurityEngine, stateRecorder: SecurityStateRecorder? = nil) {
         self.engine = engine
+        self.stateRecorder = stateRecorder
     }
 
     /// Trust store used by the view layer to look up per-signer trust.
@@ -113,7 +116,40 @@ public final class MessageSecurityCore {
             signingError: decoded.security.signingError,
             encryptionError: decoded.security.encryptionError
         )
+        recordState(rawMessage: data, decoded: decoded)
         return HandlerDecodedMessage(data: decoded.data, securityInformation: information)
+    }
+
+    // MARK: - State recording
+
+    /// Writes the decode outcome to the state recorder, when configured.
+    /// Header fields are read from the raw message so the harness can
+    /// correlate the record with the message it injected.
+    private func recordState(rawMessage data: Data, decoded: DecodedMessage) {
+        guard let stateRecorder else { return }
+        let parsed = MimeMessage.parse(data)
+        func header(_ name: String) -> String? {
+            parsed.headers.first(where: {
+                $0.name.caseInsensitiveCompare(name) == .orderedSame
+            })?.value
+        }
+        let signers = decoded.security.signers.map { signer in
+            RecordedSigner(
+                label: signer.userID ?? signer.fingerprint ?? "Unknown signer",
+                fingerprint: signer.fingerprint,
+                status: signer.status.rawValue,
+                trust: signer.fingerprint.map { trustStore.state(forFpr: $0).rawValue }
+            )
+        }
+        stateRecorder.record(RecordedMessageSecurity(
+            messageID: header("Message-ID"),
+            subject: header("Subject"),
+            from: header("From"),
+            isEncrypted: decoded.security.isEncrypted,
+            signers: signers,
+            signingError: decoded.security.signingError?.localizedDescription,
+            encryptionError: decoded.security.encryptionError?.localizedDescription
+        ))
     }
 
     // MARK: - Signer context

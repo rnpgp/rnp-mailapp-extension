@@ -21,6 +21,7 @@ RnpMail provides OpenPGP signing, encryption, and key management for Apple Mail 
 | Trust database | Shared app-group container (`trust.json` + `trust.json.sig`) | High: tampering can downgrade a key from verified to unverified or cause denial of service. |
 | Revocation certificates | Shared app-group container (`<fingerprint>-revocation.asc`) | High: loss prevents future revocation of the corresponding key. |
 | Public keys / recipient keys | Shared app-group keyring | Medium: disclosure reveals contact metadata but not message content. |
+| Extension state records | Shared app-group container (`ExtensionState/last-message.json`, `ExtensionState/messages/*.json`) | Medium: subject, message ID, sender, and signature/trust status of recently decoded OpenPGP messages; no message bodies. |
 | Mail message bodies | Mail.app process memory and extension `MEMessage` objects | High: the extension reads and writes plaintext during encode/decode. |
 | Network traffic to keyservers | `KeyServerClient` over HTTPS | Medium: queries reveal which keys or email addresses are being looked up. |
 
@@ -61,6 +62,7 @@ RnpMail provides OpenPGP signing, encryption, and key management for Apple Mail 
 - **App group container is shared.** Both the container app and the Mail extension run with the same app-group identifier. Any process with access to that group could read public keys and the trust database. Secret keys remain encrypted by the keyring passphrase.
 - **Keychain is the root of trust for the passphrase.** The keyring passphrase is stored in the user's default keychain via `KeychainPassphraseStore`. It is never written to UserDefaults, preferences files, or logs.
 - **Keyserver network boundary.** Key upload, discovery, and revocation-check queries travel over HTTPS to the configured keyserver (default: `keys.openpgp.org`). No other network calls are made.
+- **Extension state records.** On every OpenPGP message it decodes, the extension writes a small JSON record (subject, Message-ID, sender, signature/trust status, encryption flag — never message bodies) to `ExtensionState/` in the app group container. These records exist so the end-to-end test harness can assert the banner state from outside Mail, and they carry the same metadata Mail already shows in the message list. They live in the same protection domain as the keyring; unsigned fallback builds use `~/Library/Application Support/RNP Mail Extension/ExtensionState` instead.
 
 ## What Is Protected
 

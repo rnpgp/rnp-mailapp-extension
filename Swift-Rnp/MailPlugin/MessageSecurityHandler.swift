@@ -28,11 +28,12 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     /// extension can still launch and degrade gracefully.
     private static func makeCore() -> MessageSecurityCore? {
         let provider: (String) -> String? = { _ in KeychainPassphraseStore.sharedPassphrase() }
+        let stateRecorder = SecurityStateRecorder(directory: AppGroup.extensionStateDirectory())
         if let engine = try? MailSecurityEngine(
             directory: AppGroup.keyringDirectory(),
             passphraseProvider: provider
         ) {
-            return MessageSecurityCore(engine: engine)
+            return MessageSecurityCore(engine: engine, stateRecorder: stateRecorder)
         }
         let fallback = FileManager.default.temporaryDirectory
             .appendingPathComponent("rnp-mail-extension-fallback")
@@ -42,7 +43,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         ) else {
             return nil
         }
-        return MessageSecurityCore(engine: engine)
+        return MessageSecurityCore(engine: engine, stateRecorder: stateRecorder)
     }
 
     // MARK: - Encoding Messages
