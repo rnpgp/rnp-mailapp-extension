@@ -111,7 +111,15 @@ final class ContentViewModel: ObservableObject {
     }
 
     var autoDetectClipboard: Bool {
-        get { UserDefaults.standard.object(forKey: "autoDetectClipboardImport") as? Bool ?? true }
+        // Launch arguments arrive as strings ("NO"), which `as? Bool` does
+        // not bridge; `bool(forKey:)` parses them correctly, so only fall
+        // back to the default when the key is absent entirely.
+        get {
+            guard UserDefaults.standard.object(forKey: "autoDetectClipboardImport") != nil else {
+                return true
+            }
+            return UserDefaults.standard.bool(forKey: "autoDetectClipboardImport")
+        }
         set { UserDefaults.standard.set(newValue, forKey: "autoDetectClipboardImport") }
     }
 

@@ -82,6 +82,12 @@ public struct KeyDetailView: View {
                 if !isRecipient {
                     actionsSection
                 }
+                if isRecipient && trustState != .verified {
+                    Button("detail.markVerified") { actions.onMarkVerified() }
+                        .buttonStyle(.borderedProminent)
+                        .tint(trustState == .problem ? .red : .orange)
+                        .accessibilityIdentifier("keydetail.mark-verified")
+                }
             }
             .padding()
         }
@@ -130,6 +136,8 @@ public struct KeyDetailView: View {
                     Badge(text: "badge.expired".localized, color: .red)
                 } else if isRecipient {
                     Badge(text: trustBadgeText, color: trustBadgeColor)
+                        .accessibilityIdentifier("keydetail.trust-badge")
+                        .accessibilityValue(trustState.rawValue)
                 }
             }
         }
@@ -218,12 +226,6 @@ public struct KeyDetailView: View {
                     .accessibilityIdentifier("keydetail.rotate-encryption")
                 Button("detail.rotateSigning") { actions.onRotateSigning() }
                     .accessibilityIdentifier("keydetail.rotate-signing")
-            }
-            if isRecipient && trustState != .verified {
-                Button("detail.markVerified") { actions.onMarkVerified() }
-                    .buttonStyle(.borderedProminent)
-                    .tint(trustState == .problem ? .red : .orange)
-                    .accessibilityIdentifier("keydetail.mark-verified")
             }
         }
     }

@@ -32,9 +32,12 @@ struct KeysListView: View {
                         }
                     }
                 }
-                .onTapGesture(count: 2) {
-                    onDoubleTap?(key)
-                }
+                // `onTapGesture` would consume the mouse events and prevent
+                // the Table's own row selection; a simultaneous gesture lets
+                // both the selection and the double-tap action fire.
+                .simultaneousGesture(
+                    TapGesture(count: 2).onEnded { onDoubleTap?(key) }
+                )
                 .accessibilityIdentifier("keyslist.row.\(key.fingerprint)")
                 .accessibilityElement(children: .combine)
                 .accessibilityAddTraits(.isButton)

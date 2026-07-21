@@ -304,6 +304,7 @@ struct ContentView: View {
             }
             .foregroundStyle(.orange)
             .padding(.horizontal)
+            .accessibilityIdentifier("contentview.trust-conflict-banner")
         )
     }
 
