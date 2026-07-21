@@ -8,17 +8,49 @@
 import MailSecurityEngine
 import RnpMailUI
 import SwiftUI
+import TrustStore
 
 struct KeysListView: View {
     let keys: [KeyInfo]
     @Binding var selection: KeyInfo.ID?
+    /// Trust state for a key, or `nil` when no trust indicator applies
+    /// (e.g. the user's own key pairs).
+    var trustState: ((KeyInfo) -> TrustState?)?
     var onDoubleTap: ((KeyInfo) -> Void)?
+    var onExport: ((KeyInfo) -> Void)?
+    var onCopyFingerprint: ((KeyInfo) -> Void)?
+    var onDelete: ((KeyInfo) -> Void)?
+
+    init(
+        keys: [KeyInfo],
+        selection: Binding<KeyInfo.ID?>,
+        trustState: ((KeyInfo) -> TrustState?)? = nil,
+        onDoubleTap: ((KeyInfo) -> Void)? = nil,
+        onExport: ((KeyInfo) -> Void)? = nil,
+        onCopyFingerprint: ((KeyInfo) -> Void)? = nil,
+        onDelete: ((KeyInfo) -> Void)? = nil
+    ) {
+        self.keys = keys
+        self._selection = selection
+        self.trustState = trustState
+        self.onDoubleTap = onDoubleTap
+        self.onExport = onExport
+        self.onCopyFingerprint = onCopyFingerprint
+        self.onDelete = onDelete
+    }
 
     var body: some View {
         Table(keys, selection: $selection) {
             TableColumn("table.userID") { key in
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(key.primaryUserID)
+                    HStack(spacing: 6) {
+                        Text(key.primaryUserID)
+                            .font(.body.weight(.medium))
+                            .lineLimit(1)
+                        if let state = trustState?(key) {
+                            TrustIndicator(state: state)
+                        }
+                    }
                     HStack(spacing: 6) {
                         Text(key.algorithmLabel)
                             .font(.caption)
@@ -32,12 +64,15 @@ struct KeysListView: View {
                         }
                     }
                 }
+                .padding(.vertical, 2)
                 // `onTapGesture` would consume the mouse events and prevent
                 // the Table's own row selection; a simultaneous gesture lets
                 // both the selection and the double-tap action fire.
                 .simultaneousGesture(
                     TapGesture(count: 2).onEnded { onDoubleTap?(key) }
                 )
+                .contextMenu { contextMenu(for: key) }
+                .help(key.fingerprint)
                 .accessibilityIdentifier("keyslist.row.\(key.fingerprint)")
                 .accessibilityElement(children: .combine)
                 .accessibilityAddTraits(.isButton)
@@ -46,12 +81,67 @@ struct KeysListView: View {
             TableColumn("table.fingerprint") { key in
                 Text(key.fingerprint.groupedFingerprint)
                     .font(.system(.body, design: .monospaced))
+                    .foregroundStyle(.secondary)
             }
+            .width(min: 130, ideal: 150, max: 170)
             TableColumn("table.type") { key in
                 Text(key.hasSecret ? "key.type.keyPair".localized : "key.type.publicOnly".localized)
+                    .foregroundStyle(.secondary)
             }
+            .width(min: 80, ideal: 96, max: 120)
         }
         .accessibilityIdentifier("keyslist.table")
+    }
+
+    @ViewBuilder
+    private func contextMenu(for key: KeyInfo) -> some View {
+        if let onDoubleTap {
+            Button("contextmenu.showDetails") { onDoubleTap(key) }
+        }
+        if let onExport {
+            Button("detail.exportPublic") { onExport(key) }
+        }
+        if let onCopyFingerprint {
+            Button("contextmenu.copyFingerprint") { onCopyFingerprint(key) }
+        }
+        if let onDelete {
+            Divider()
+            Button("detail.deleteKey", role: .destructive) { onDelete(key) }
+        }
+    }
+}
+
+/// Small colored shield glyph summarizing the trust state of a recipient key.
+private struct TrustIndicator: View {
+    let state: TrustState
+
+    var body: some View {
+        Image(systemName: iconName)
+            .foregroundStyle(color)
+            .imageScale(.small)
+            .accessibilityHidden(true)
+    }
+
+    private var iconName: String {
+        switch state {
+        case .verified:
+            return "checkmark.shield.fill"
+        case .problem:
+            return "exclamationmark.shield.fill"
+        case .unverified:
+            return "questionmark.shield"
+        }
+    }
+
+    private var color: Color {
+        switch state {
+        case .verified:
+            return .green
+        case .problem:
+            return .red
+        case .unverified:
+            return .orange
+        }
     }
 }
 
@@ -65,9 +155,10 @@ private struct Badge: View {
             .padding(.horizontal, 5)
             .padding(.vertical, 1)
             .foregroundStyle(color)
+            .background(color.opacity(0.12), in: Capsule())
             .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(color, lineWidth: 1)
+                Capsule()
+                    .stroke(color.opacity(0.6), lineWidth: 1)
             )
     }
 }

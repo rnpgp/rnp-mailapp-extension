@@ -2,15 +2,17 @@
 //  KeyDetailView.swift
 //  swift-rnp
 //
-//  Detail sheet for an OpenPGP key.
+//  Detail view for an OpenPGP key, shown in the container app's detail
+//  column and (on macOS 12 or on demand) in a sheet.
 //
 
 import AppKit
+import CoreImage
 import SwiftUI
 import MailSecurityEngine
 import TrustStore
 
-/// Actions available for a key in the detail sheet.
+/// Actions available for a key in the detail view.
 public struct KeyDetailActions {
     public var onExportPublic: () -> Void
     public var onExportSecret: () -> Void
@@ -45,13 +47,18 @@ public struct KeyDetailActions {
     }
 }
 
-/// Detail sheet showing metadata and subkeys for a single OpenPGP key.
+/// Detail view showing metadata and subkeys for a single OpenPGP key.
 public struct KeyDetailView: View {
     public let key: KeyInfo
     public let subkeys: [SubkeyInfo]
     public let isRecipient: Bool
     public let trustState: TrustState
     public let actions: KeyDetailActions
+    /// Prefix for the view's accessibility identifiers. The sheet uses the
+    /// default `keydetail`; embedding contexts (e.g. the split-view detail
+    /// column) pass a distinct prefix so identifiers stay unique when both
+    /// presentations are on screen.
+    public let identifierPrefix: String
 
     @State private var showDeleteConfirmation = false
     @State private var showSecretExportConfirmation = false
@@ -63,35 +70,35 @@ public struct KeyDetailView: View {
         subkeys: [SubkeyInfo],
         isRecipient: Bool,
         trustState: TrustState = .unverified,
-        actions: KeyDetailActions
+        actions: KeyDetailActions,
+        identifierPrefix: String = "keydetail"
     ) {
         self.key = key
         self.subkeys = subkeys
         self.isRecipient = isRecipient
         self.trustState = trustState
         self.actions = actions
+        self.identifierPrefix = identifierPrefix
     }
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 24) {
                 header
+                if isRecipient {
+                    trustSection
+                }
                 fingerprintSection
+                metadataSection
                 userIDsSection
                 subkeysSection
                 if !isRecipient {
                     actionsSection
                 }
-                if isRecipient && trustState != .verified {
-                    Button("detail.markVerified") { actions.onMarkVerified() }
-                        .buttonStyle(.borderedProminent)
-                        .tint(trustState == .problem ? .red : .orange)
-                        .accessibilityIdentifier("keydetail.mark-verified")
-                }
             }
-            .padding()
+            .padding(24)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(minWidth: 520, minHeight: 420)
         .alert("detail.delete.title", isPresented: $showDeleteConfirmation) {
             Button("button.delete", role: .destructive) { actions.onDelete() }
             Button("button.cancel", role: .cancel) {}
@@ -117,55 +124,176 @@ public struct KeyDetailView: View {
         }
     }
 
+    // MARK: - Header
+
     private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(key.primaryUserID)
-                .font(.title2)
-            HStack(spacing: 8) {
-                Text(key.algorithmLabel)
-                    .font(.caption)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.secondary, lineWidth: 1)
-                    )
-                if key.isRevoked {
-                    Badge(text: "badge.revoked".localized, color: .red)
-                } else if key.isExpired {
-                    Badge(text: "badge.expired".localized, color: .red)
-                } else if isRecipient {
-                    Badge(text: trustBadgeText, color: trustBadgeColor)
-                        .accessibilityIdentifier("keydetail.trust-badge")
-                        .accessibilityValue(trustState.rawValue)
+        HStack(alignment: .center, spacing: 16) {
+            Image(systemName: key.hasSecret ? "key.fill" : "key")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 48, height: 48)
+                .background(
+                    key.isRevoked || key.isExpired ? Color.secondary : Color.accentColor,
+                    in: Circle()
+                )
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(key.primaryUserID)
+                    .font(.title2.weight(.semibold))
+                HStack(spacing: 8) {
+                    Text(key.algorithmLabel)
+                        .font(.caption)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(.quaternary, in: Capsule())
+                    if key.isRevoked {
+                        Badge(text: "badge.revoked".localized, color: .red)
+                    } else if key.isExpired {
+                        Badge(text: "badge.expired".localized, color: .red)
+                    }
                 }
             }
+            Spacer()
         }
     }
+
+    // MARK: - Trust
+
+    private var trustSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("detail.trust.title")
+                .font(.headline)
+            HStack(spacing: 10) {
+                Image(systemName: trustIconName)
+                    .font(.title3)
+                    .foregroundStyle(trustColor)
+                    .accessibilityHidden(true)
+                Text(trustBadgeText)
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(trustColor)
+                    .accessibilityIdentifier("\(identifierPrefix).trust-badge")
+                    .accessibilityValue(trustState.rawValue)
+                Spacer()
+                if trustState != .verified {
+                    Button("detail.markVerified") { actions.onMarkVerified() }
+                        .buttonStyle(.borderedProminent)
+                        .tint(trustState == .problem ? .red : .orange)
+                        .accessibilityIdentifier("\(identifierPrefix).mark-verified")
+                }
+            }
+            .padding(12)
+            .background(
+                trustColor.opacity(0.1),
+                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+            )
+        }
+        .animation(.default, value: trustState)
+    }
+
+    // MARK: - Fingerprint
 
     private var fingerprintSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("detail.fingerprint")
                 .font(.headline)
-            HStack(spacing: 8) {
-                Text(key.fingerprint.groupedFingerprintFull)
-                    .font(.system(.body, design: .monospaced))
-                    .textSelection(.enabled)
-                Button {
-                    copyToClipboard(key.fingerprint)
-                } label: {
-                    Image(systemName: "doc.on.doc")
+            HStack(alignment: .top, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(key.fingerprint.groupedFingerprintFull)
+                        .font(.system(.body, design: .monospaced))
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button {
+                        copyToClipboard(key.fingerprint)
+                    } label: {
+                        Label("contextmenu.copyFingerprint", systemImage: "doc.on.doc")
+                    }
+                    .buttonStyle(.borderless)
+                    .help("detail.copyFingerprint.help")
+                    .accessibilityIdentifier("\(identifierPrefix).copy-fingerprint")
+                    .accessibilityLabel("detail.copyFingerprint.help")
                 }
-                .buttonStyle(.borderless)
-                .help("detail.copyFingerprint.help")
-                .accessibilityIdentifier("keydetail.copy-fingerprint")
-                .accessibilityLabel("detail.copyFingerprint.help")
+                Spacer()
+                if let qrCode = qrCodeImage {
+                    VStack(spacing: 6) {
+                        Image(nsImage: qrCode)
+                            .resizable()
+                            .interpolation(.none)
+                            .frame(width: 96, height: 96)
+                            .padding(6)
+                            .background(Color.white, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        Text("detail.qrCode")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("detail.qrCode".localized)
+                }
             }
         }
     }
 
+    /// QR code for the `OPENPGP4FPR:<fingerprint>` URI, rendered via the
+    /// system's CoreImage QR generator.
+    private var qrCodeImage: NSImage? {
+        guard let filter = CIFilter(name: "CIQRCodeGenerator") else { return nil }
+        filter.setValue(Data("OPENPGP4FPR:\(key.fingerprint)".utf8), forKey: "inputMessage")
+        filter.setValue("M", forKey: "inputCorrectionLevel")
+        guard let output = filter.outputImage else { return nil }
+        let targetSize: CGFloat = 288
+        let scale = targetSize / max(output.extent.width, output.extent.height)
+        let scaled = output.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        let representation = NSCIImageRep(ciImage: scaled)
+        let image = NSImage(size: representation.size)
+        image.addRepresentation(representation)
+        return image
+    }
+
+    // MARK: - Metadata
+
+    private var metadataSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("detail.metadata.title")
+                .font(.headline)
+            VStack(alignment: .leading, spacing: 6) {
+                metadataRow("detail.algorithm") {
+                    Text(key.algorithmLabel)
+                }
+                metadataRow("table.type") {
+                    Text(key.hasSecret ? "key.type.keyPair".localized : "key.type.publicOnly".localized)
+                }
+                metadataRow("detail.created") {
+                    Text(key.creationDate, style: .date)
+                }
+                metadataRow("detail.expires") {
+                    if let expiration = key.expirationDate {
+                        Text(expiration, style: .date)
+                    } else {
+                        Text("detail.subkeys.never")
+                    }
+                }
+            }
+        }
+    }
+
+    private func metadataRow<Content: View>(
+        _ label: LocalizedStringKey,
+        @ViewBuilder value: () -> Content
+    ) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(label)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .frame(width: 80, alignment: .trailing)
+            value()
+                .font(.callout)
+                .textSelection(.enabled)
+        }
+    }
+
+    // MARK: - User IDs
+
     private var userIDsSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("detail.userIDs")
                 .font(.headline)
             ForEach(key.userIDs, id: \.self) { userID in
@@ -175,8 +303,10 @@ public struct KeyDetailView: View {
         }
     }
 
+    // MARK: - Subkeys
+
     private var subkeysSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(String(format: "detail.subkeys.title".localized, subkeys.count))
                 .font(.headline)
             Table(subkeys) {
@@ -195,11 +325,14 @@ public struct KeyDetailView: View {
                 }
                 TableColumn("detail.subkeys.capabilities") { subkey in
                     Text(subkey.capabilities.joined(separator: ", ").capitalized)
+                        .foregroundStyle(.secondary)
                 }
             }
             .frame(minHeight: 120)
         }
     }
+
+    // MARK: - Actions
 
     private var actionsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -207,28 +340,30 @@ public struct KeyDetailView: View {
                 .font(.headline)
             HStack(spacing: 12) {
                 Button("detail.exportPublic") { actions.onExportPublic() }
-                    .accessibilityIdentifier("keydetail.export-public")
+                    .accessibilityIdentifier("\(identifierPrefix).export-public")
                 Button("detail.exportSecret") { showSecretExportConfirmation = true }
-                    .accessibilityIdentifier("keydetail.export-secret")
-                Button("detail.deleteKey") { showDeleteConfirmation = true }
-                    .accessibilityIdentifier("keydetail.delete")
+                    .accessibilityIdentifier("\(identifierPrefix).export-secret")
                 Button("detail.publish") { actions.onPublish() }
-                    .accessibilityIdentifier("keydetail.publish")
+                    .accessibilityIdentifier("\(identifierPrefix).publish")
             }
             HStack(spacing: 12) {
                 Button("detail.extendExpiry") { actions.onExtendExpiry() }
-                    .accessibilityIdentifier("keydetail.extend-expiry")
-                Button("detail.revoke") { actions.onRevoke() }
-                    .accessibilityIdentifier("keydetail.revoke")
+                    .accessibilityIdentifier("\(identifierPrefix).extend-expiry")
+                Button("detail.rotateEncryption") { actions.onRotateEncryption() }
+                    .accessibilityIdentifier("\(identifierPrefix).rotate-encryption")
+                Button("detail.rotateSigning") { actions.onRotateSigning() }
+                    .accessibilityIdentifier("\(identifierPrefix).rotate-signing")
             }
             HStack(spacing: 12) {
-                Button("detail.rotateEncryption") { actions.onRotateEncryption() }
-                    .accessibilityIdentifier("keydetail.rotate-encryption")
-                Button("detail.rotateSigning") { actions.onRotateSigning() }
-                    .accessibilityIdentifier("keydetail.rotate-signing")
+                Button("detail.revoke") { actions.onRevoke() }
+                    .accessibilityIdentifier("\(identifierPrefix).revoke")
+                Button("detail.deleteKey", role: .destructive) { showDeleteConfirmation = true }
+                    .accessibilityIdentifier("\(identifierPrefix).delete")
             }
         }
     }
+
+    // MARK: - Trust presentation
 
     private var trustBadgeText: String {
         switch trustState {
@@ -241,7 +376,7 @@ public struct KeyDetailView: View {
         }
     }
 
-    private var trustBadgeColor: Color {
+    private var trustColor: Color {
         switch trustState {
         case .verified:
             return .green
@@ -249,6 +384,17 @@ public struct KeyDetailView: View {
             return .red
         case .unverified:
             return .orange
+        }
+    }
+
+    private var trustIconName: String {
+        switch trustState {
+        case .verified:
+            return "checkmark.shield.fill"
+        case .problem:
+            return "exclamationmark.shield.fill"
+        case .unverified:
+            return "questionmark.shield"
         }
     }
 
@@ -270,9 +416,10 @@ private struct Badge: View {
             .padding(.horizontal, 5)
             .padding(.vertical, 1)
             .foregroundStyle(color)
+            .background(color.opacity(0.12), in: Capsule())
             .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(color, lineWidth: 1)
+                Capsule()
+                    .stroke(color.opacity(0.6), lineWidth: 1)
             )
     }
 }
