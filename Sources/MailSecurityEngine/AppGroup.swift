@@ -40,4 +40,20 @@ public enum AppGroup {
         let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return support.appendingPathComponent("RNP Mail Extension", isDirectory: true)
     }
+
+    /// Directory holding the extension's message-security state records
+    /// (`last-message.json` and per-message files).
+    ///
+    /// Lives in the app group container next to the keyring so test harnesses
+    /// (and later diagnostics UI) can read the last verification results.
+    /// Falls back to Application Support like the keyring directory.
+    public static func extensionStateDirectory(fileManager: FileManager = .default) -> URL {
+        if let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: identifier
+        ) {
+            return container.appendingPathComponent("ExtensionState", isDirectory: true)
+        }
+        let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        return support.appendingPathComponent("RNP Mail Extension/ExtensionState", isDirectory: true)
+    }
 }
