@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RNP — OpenPGP for Apple Mail</title>
+<meta name="description" content="RNP brings OpenPGP signing, encryption, and key management to Apple Mail on macOS. Native, sandboxed, and free of telemetry.">
+<style>
+  :root {
+    --brand: #1A7BEC;
+    --brand-deep: #0B54B8;
+    --ink: #2E3349;
+    --ink-soft: #5A6178;
+    --bg: #FFFFFF;
+    --bg-alt: #F4F7FC;
+    --card: #FFFFFF;
+    --line: #E2E8F2;
+    --verified: #0E9F6E;
+    --warning: #E8A13A;
+    --critical: #D64545;
+    --shadow: 0 10px 30px rgba(11, 84, 184, 0.10);
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #E7EAF3;
+      --ink-soft: #9AA3BC;
+      --bg: #12151F;
+      --bg-alt: #181C2A;
+      --card: #1D2233;
+      --line: #2C3347;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  img { max-width: 100%; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header.site {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .nav .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--ink); }
+  .nav .brand img { width: 30px; height: 30px; border-radius: 7px; }
+  .nav .brand:hover { text-decoration: none; }
+  .nav nav { margin-left: auto; display: flex; align-items: center; gap: 22px; font-size: 14.5px; }
+  .nav nav a { color: var(--ink-soft); }
+  .nav nav a:hover { color: var(--brand); text-decoration: none; }
+  .btn {
+    display: inline-block; padding: 10px 20px; border-radius: 999px;
+    font-weight: 600; font-size: 15px; line-height: 1.2;
+    border: 1px solid transparent; cursor: pointer;
+  }
+  .btn:hover { text-decoration: none; }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-deep); }
+  .btn-outline { border-color: var(--line); color: var(--ink); background: var(--card); }
+  .btn-outline:hover { border-color: var(--brand); color: var(--brand); }
+  .btn-small { padding: 7px 16px; font-size: 14px; }
+
+  /* Hero */
+  .hero { padding: 96px 0 72px; text-align: center; }
+  .hero img.logo { width: 110px; height: 110px; border-radius: 26px; box-shadow: var(--shadow); }
+  .hero h1 {
+    margin: 28px auto 0; max-width: 720px;
+    font-size: clamp(34px, 5.2vw, 52px); line-height: 1.12; letter-spacing: -0.02em;
+  }
+  .hero h1 .accent { color: var(--brand); }
+  .hero p.sub { margin: 20px auto 0; max-width: 640px; font-size: 18px; color: var(--ink-soft); }
+  .hero .cta { margin-top: 34px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .hero .cta .btn { padding: 13px 26px; font-size: 16px; }
+  .hero p.note { margin-top: 18px; font-size: 13.5px; color: var(--ink-soft); }
+
+  /* Sections */
+  section { padding: 72px 0; }
+  section.alt { background: var(--bg-alt); }
+  .section-head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+  .section-head h2 { font-size: clamp(26px, 3.6vw, 34px); letter-spacing: -0.015em; }
+  .section-head p { margin-top: 12px; color: var(--ink-soft); font-size: 16.5px; }
+
+  /* Feature grid */
+  .grid { display: grid; gap: 22px; grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 26px 24px;
+  }
+  .card .icon {
+    width: 44px; height: 44px; border-radius: 11px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+    margin-bottom: 16px;
+  }
+  .card .icon svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { font-size: 17.5px; margin-bottom: 8px; }
+  .card p { font-size: 14.5px; color: var(--ink-soft); }
+
+  /* Capability strip */
+  .caps { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .caps span {
+    font-size: 13.5px; color: var(--ink-soft);
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; background: var(--card);
+  }
+
+  /* Screenshots */
+  .shots { display: grid; gap: 26px; grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 900px) { .shots { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; } }
+  .shot .frame {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .shot .titlebar {
+    display: flex; align-items: center; gap: 6px; padding: 10px 12px;
+    border-bottom: 1px solid var(--line); background: var(--bg-alt);
+  }
+  .shot .titlebar i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+  .shot .titlebar i:nth-child(1) { background: #FF5F57; }
+  .shot .titlebar i:nth-child(2) { background: #FEBC2E; }
+  .shot .titlebar i:nth-child(3) { background: #28C840; }
+  .shot .titlebar span { margin-left: 8px; font-size: 12px; color: var(--ink-soft); }
+  .shot .body { padding: 16px; min-height: 170px; font-size: 13px; }
+  .shot figcaption { margin-top: 14px; text-align: center; font-size: 13.5px; color: var(--ink-soft); }
+
+  /* Mock UI elements */
+  .mock-key { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; }
+  .mock-key + .mock-key { margin-top: 6px; }
+  .mock-key.active { background: color-mix(in srgb, var(--brand) 12%, transparent); outline: 1px solid color-mix(in srgb, var(--brand) 35%, transparent); }
+  .mock-avatar { width: 30px; height: 30px; border-radius: 50%; flex: none; background: linear-gradient(135deg, var(--brand), var(--brand-deep)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+  .mock-key .meta { min-width: 0; }
+  .mock-key .meta b { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mock-key .meta small { color: var(--ink-soft); font-size: 11.5px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; border-radius: 999px; padding: 3px 9px; }
+  .badge svg { width: 11px; height: 11px; stroke-width: 2.4; }
+  .badge-green { background: color-mix(in srgb, var(--verified) 14%, transparent); color: var(--verified); }
+  .badge-orange { background: color-mix(in srgb, var(--warning) 18%, transparent); color: var(--warning); }
+  .mock-menu { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .mock-menu div { padding: 9px 12px; display: flex; align-items: center; gap: 9px; }
+  .mock-menu div + div { border-top: 1px solid var(--line); }
+  .mock-menu svg { width: 15px; height: 15px; stroke: var(--brand); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .mock-menu .on { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--brand); }
+  .mock-banner { display: flex; align-items: flex-start; gap: 10px; border-radius: 10px; padding: 12px 14px; }
+  .mock-banner.green { background: color-mix(in srgb, var(--verified) 12%, transparent); border: 1px solid color-mix(in srgb, var(--verified) 30%, transparent); }
+  .mock-banner svg { width: 20px; height: 20px; stroke: var(--verified); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; margin-top: 1px; }
+  .mock-banner b { font-size: 13px; display: block; }
+  .mock-banner small { color: var(--ink-soft); font-size: 12px; }
+  .mock-lines { margin-top: 14px; }
+  .mock-lines i { display: block; height: 8px; border-radius: 4px; background: var(--line); margin-top: 8px; }
+  .mock-lines i:nth-child(2) { width: 86%; }
+  .mock-lines i:nth-child(3) { width: 62%; }
+
+  /* Steps */
+  .steps { display: grid; gap: 22px; grid-template-columns: repeat(3, 1fr); counter-reset: step; }
+  @media (max-width: 800px) { .steps { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; } }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 24px; }
+  .step .num {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; margin-bottom: 14px;
+  }
+  .step h3 { font-size: 16.5px; margin-bottom: 8px; }
+  .step p { font-size: 14.5px; color: var(--ink-soft); }
+  .step p a { font-weight: 600; }
+
+  /* Docs list */
+  .docs-list { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); max-width: 860px; margin: 0 auto; }
+  @media (max-width: 700px) { .docs-list { grid-template-columns: 1fr; } }
+  .docs-list a.doc {
+    display: block; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 22px; color: var(--ink);
+  }
+  .docs-list a.doc:hover { border-color: var(--brand); text-decoration: none; }
+  .docs-list a.doc b { display: block; font-size: 15.5px; color: var(--brand); margin-bottom: 4px; }
+  .docs-list a.doc span { font-size: 13.5px; color: var(--ink-soft); }
+
+  /* Final CTA */
+  .final-cta { text-align: center; }
+  .final-cta h2 { font-size: clamp(26px, 3.6vw, 34px); letter-spacing: -0.015em; }
+  .final-cta p { margin: 14px auto 0; max-width: 540px; color: var(--ink-soft); }
+  .final-cta .cta { margin-top: 30px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  /* Footer */
+  footer.site { border-top: 1px solid var(--line); padding: 44px 0 54px; background: var(--bg-alt); }
+  .foot-grid { display: grid; gap: 32px; grid-template-columns: 2fr 1fr 1fr 1fr; }
+  @media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+  .foot-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .foot-brand img { width: 28px; height: 28px; border-radius: 6px; }
+  footer.site p.blurb { margin-top: 12px; font-size: 13.5px; color: var(--ink-soft); max-width: 300px; }
+  footer.site h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); margin-bottom: 12px; }
+  footer.site ul { list-style: none; }
+  footer.site ul li { margin-bottom: 8px; font-size: 14px; }
+  footer.site ul li a { color: var(--ink); }
+  footer.site ul li a:hover { color: var(--brand); }
+  .foot-bottom { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-soft); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <img src="assets/icon.png" alt="RNP logo" width="30" height="30">
+      <span>RNP</span>
+    </a>
+    <nav aria-label="Main">
+      <a href="#features">Features</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="#get-started">Get Started</a>
+      <a href="#documentation">Docs</a>
+      <a class="btn btn-primary btn-small" href="https://github.com/rnpgp/swift-rnp/releases">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <img class="logo" src="assets/icon.png" alt="RNP logo — a shield with a key" width="110" height="110">
+      <h1>OpenPGP for Apple&nbsp;Mail, <span class="accent">native and polished</span></h1>
+      <p class="sub">
+        RNP brings signing, encryption, and key management to Mail.app on macOS —
+        built on the audited librnp engine, fully sandboxed, and free of telemetry.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/rnpgp/swift-rnp/releases">Download for macOS</a>
+        <a class="btn btn-outline" href="../index.md">Read the documentation</a>
+      </div>
+      <p class="note">Requires macOS 12 or later &middot; Signed &amp; notarized &middot; Free</p>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="alt" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Everything OpenPGP, nothing in your way</h2>
+        <p>Key management, trust decisions, and message security that live where your email already does.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M10.9 12.1 20 3m-3 3 2.5 2.5M14.5 8.5 17 11"/></svg>
+          </div>
+          <h3>Key management</h3>
+          <p>Generate RSA-3072 or ECDSA P-256 keys, import and export armored keys, rotate subkeys, extend expiry, and revoke — all from a native key manager.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3>Trust verification</h3>
+          <p>Trust-on-first-use with manual fingerprint verification. If a key changes for an address you know, encryption is blocked until you confirm it.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 5.7 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.7-4-9s1.5-6.4 4-9z"/></svg>
+          </div>
+          <h3>Keyserver support</h3>
+          <p>Publish your key and discover recipients' keys over VKS (keys.openpgp.org), HKPS, and Web Key Directory — all over HTTPS.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2"/><path d="M4 9.5c2.7.7 5.3 1 8 1s5.3-.3 8-1M12 10.5v4l-2.5 6m2.5-6 2.5 6"/></svg>
+          </div>
+          <h3>Accessibility</h3>
+          <p>VoiceOver-aware controls and labels throughout the app, with automated accessibility audits running in the UI test suite.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 6h9M8.5 4v2c0 3.5-2 6.5-4.5 8M6 9.5c1 2.5 3 4.5 5.5 5.5"/><path d="M13 20l4-9 4 9m-1.2-2.7h-5.6"/></svg>
+          </div>
+          <h3>Localization</h3>
+          <p>Fully localized in 11 languages: English, Deutsch, Español, Français, Italiano, 日本語, 한국어, Português, Русский, 简体中文, and 繁體中文.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5M12 14.5v2"/></svg>
+          </div>
+          <h3>Privacy-first</h3>
+          <p>No telemetry, analytics, or crash reporting. The only network traffic is the keyserver queries you initiate, and your passphrase never leaves the Keychain.</p>
+        </div>
+      </div>
+      <div class="caps">
+        <span>PGP/MIME (RFC 3156)</span>
+        <span>Inline PGP</span>
+        <span>Attachments preserved</span>
+        <span>Non-ASCII bodies</span>
+        <span>App sandbox</span>
+        <span>Keychain passphrases</span>
+        <span>Touch ID unlock</span>
+        <span>librnp 0.18.1</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshots -->
+  <section id="screenshots">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>A look at the app</h2>
+        <p>Representative previews of the key manager, the Mail compose security button, and the signature banner.</p>
+      </div>
+      <div class="shots">
+        <figure class="shot">
+          <div class="frame" role="img" aria-label="Preview of the RNP key manager window listing two keys, one verified">
+            <div class="titlebar"><i></i><i></i><i></i><span>RNP — Keys</span></div>
+            <div class="body">
+              <div class="mock-key active">
+                <div class="mock-avatar">A</div>
+                <div class="meta"><b>Alice &lt;alice@example.com&gt;</b><small>9F3E 7A21 C4D0 4B8E 51F2</small></div>
+              </div>
+              <div style="margin:8px 0 4px 50px;">
+                <span class="badge badge-green"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M20 6 9 17l-5-5"/></svg>Verified</span>
+              </div>
+              <div class="mock-key">
+                <div class="mock-avatar" style="background:linear-gradient(135deg,#8A93AC,#5A6178);">B</div>
+                <div class="meta"><b>Bob &lt;bob@example.net&gt;</b><small>77C1 0F9A 3E55 D2B8 6A40</small></div>
+              </div>
+            </div>
+          </div>
+          <figcaption>Key manager — generate, import, verify, and inspect keys.</figcaption>
+        </figure>
+        <figure class="shot">
+          <div class="frame" role="img" aria-label="Preview of the Mail compose window security menu with Sign and Encrypt options">
+            <div class="titlebar"><i></i><i></i><i></i><span>New Message</span></div>
+            <div class="body">
+              <div class="mock-menu">
+                <div>
+                  <svg viewBox="0 0 24 24"><path d="M16.5 3.5l4 4L8 20l-5 1 1-5z"/></svg>
+                  Sign this message <span class="on">ON</span>
+                </div>
+                <div>
+                  <svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
+                  Encrypt for 2 recipients <span class="on">ON</span>
+                </div>
+              </div>
+              <div class="mock-lines"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <figcaption>Compose — sign and encrypt from Mail's security button.</figcaption>
+        </figure>
+        <figure class="shot">
+          <div class="frame" role="img" aria-label="Preview of a received message showing the green verified-signature banner">
+            <div class="titlebar"><i></i><i></i><i></i><span>Inbox</span></div>
+            <div class="body">
+              <div class="mock-banner green">
+                <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+                <div>
+                  <b>Verified signature — Alice &lt;alice@example.com&gt;</b>
+                  <small>Signed with a verified key. Message decrypted.</small>
+                </div>
+              </div>
+              <div class="mock-lines"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <figcaption>Reading — signatures verified and mail decrypted automatically.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Get started -->
+  <section class="alt" id="get-started">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Get started in three steps</h2>
+        <p>From download to your first signed and encrypted message in a few minutes.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Install the app</h3>
+          <p>Download the signed, notarized DMG and drag RNP into Applications. Details in the <a href="../installation.md">installation guide</a>.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Create or import a key</h3>
+          <p>Generate an RSA or ECDSA key pair whose user ID matches your mail address, or import an existing key. See <a href="../usage.md#managing-keys">usage</a>.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Enable the extension</h3>
+          <p>Check <b>RNP OpenPGP</b> in Mail → Settings → Extensions, then sign and encrypt from the compose window. <a href="../usage.md#enabling-the-extension">How-to</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Documentation -->
+  <section id="documentation">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Documentation</h2>
+        <p>Guides for users and developers, plus the project's security and privacy policies.</p>
+      </div>
+      <div class="docs-list">
+        <a class="doc" href="../installation.md"><b>Installation</b><span>Direct download, Mac App Store, and building from source.</span></a>
+        <a class="doc" href="../usage.md"><b>Usage</b><span>Keys, signing, encryption, verification, and trust.</span></a>
+        <a class="doc" href="../features.md"><b>Features</b><span>Full feature list mapped to OpenPGP and librnp capabilities.</span></a>
+        <a class="doc" href="../trust-model.md"><b>Trust model</b><span>TOFU, manual verification, and key-change conflicts.</span></a>
+        <a class="doc" href="../keyserver.md"><b>Keyservers</b><span>Publishing and discovery over VKS, HKPS, and WKD.</span></a>
+        <a class="doc" href="../development.md"><b>Development</b><span>Build, test, and contribute to the project.</span></a>
+        <a class="doc" href="../faq.md"><b>FAQ</b><span>Answers to common questions.</span></a>
+        <a class="doc" href="../SECURITY-MODEL.md"><b>Security model</b><span>Assets, trust boundaries, and memory hygiene.</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="alt">
+    <div class="wrap final-cta">
+      <h2>Private mail, from the client you already use</h2>
+      <p>Your keys stay on your Mac, your passphrase stays in the Keychain, and the app talks to no one but the keyserver you choose.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/rnpgp/swift-rnp/releases">Download for macOS</a>
+        <a class="btn btn-outline" href="https://github.com/rnpgp/swift-rnp">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">
+          <img src="assets/icon.png" alt="RNP logo" width="28" height="28">
+          <span>RNP</span>
+        </div>
+        <p class="blurb">OpenPGP signing, encryption, and key management for Apple Mail on macOS, built on <a href="https://github.com/rnpgp/rnp">librnp</a>.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="https://github.com/rnpgp/swift-rnp/releases">Download</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="../installation.md">Installation</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="../index.md">Documentation</a></li>
+          <li><a href="../faq.md">FAQ</a></li>
+          <li><a href="../TELEMETRY.md">Privacy &amp; telemetry</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <ul>
+          <li><a href="https://github.com/rnpgp/swift-rnp">GitHub</a></li>
+          <li><a href="../SECURITY.md">Security policy</a></li>
+          <li><a href="https://github.com/rnpgp/swift-rnp/blob/main/README.md#license">License</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; <span id="year">2026</span> The RNP Mail Extension contributors.</span>
+      <span>No telemetry. No tracking. Just mail.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
