@@ -27,16 +27,24 @@ public struct SignerContext: Codable, Equatable, Sendable {
     public let isEncrypted: Bool?
     /// Decryption problem reported at decode time, when any.
     public let encryptionError: String?
+    /// Email address associated with the signer, when known: the address
+    /// from the signing key's user ID, or — for unknown signers, whose key is
+    /// not in the keyring — the message's `From:` address as a best-effort
+    /// fallback. Used by the banner's "Fetch signer key" action when the
+    /// fingerprint is unavailable.
+    public let email: String?
 
     public init(
         fingerprint: String?,
         status: String,
         isEncrypted: Bool? = nil,
-        encryptionError: String? = nil
+        encryptionError: String? = nil,
+        email: String? = nil
     ) {
         self.fingerprint = fingerprint
         self.status = status
         self.isEncrypted = isEncrypted
         self.encryptionError = encryptionError
+        self.email = email
     }
 }

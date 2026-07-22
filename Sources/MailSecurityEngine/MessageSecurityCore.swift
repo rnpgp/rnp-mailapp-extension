@@ -193,6 +193,59 @@ public final class MessageSecurityCore {
         return true
     }
 
+    // MARK: - Signer key fetch
+
+    /// Fetches an unknown signer's public key from the keyservers and imports
+    /// it into the keyring.
+    ///
+    /// The lookup goes by fingerprint first (VKS, then HKP keyservers) and
+    /// falls back to email discovery (WKD, then VKS) when the fingerprint is
+    /// unavailable — librnp does not report one for unknown signers — or not
+    /// found. The import is accepted only when the keyring afterwards holds
+    /// the exact fingerprint asked for, or a key resolving to the queried
+    /// address, so a hostile or broken server cannot substitute somebody
+    /// else's key. Imported keys land in the trust store as unverified
+    /// (TOFU), exactly like a manual import. The caller is expected to
+    /// re-decode the message afterwards to refresh the signature status.
+    @discardableResult
+    public func fetchSignerKey(fingerprint: String?, email: String?) async -> Result<SignerKeyFetchResult, KeyServerError> {
+        let address = email.flatMap { KeyManager.emailAddress(from: $0) } ?? email
+        switch await keyServerService.discover(fingerprint: fingerprint, email: address) {
+        case let .failure(error):
+            return .failure(error)
+        case let .success(fetched):
+            do {
+                _ = try engine.keyManager.importKeys(fetched.data)
+            } catch {
+                return .failure(.malformedKey)
+            }
+            return validateImportedSignerKey(fingerprint: fingerprint, email: address, source: fetched.source)
+        }
+    }
+
+    /// Substitution guard for `fetchSignerKey`: the keyring must now hold
+    /// the exact key that was looked up.
+    private func validateImportedSignerKey(
+        fingerprint: String?,
+        email: String?,
+        source: String
+    ) -> Result<SignerKeyFetchResult, KeyServerError> {
+        if let fingerprint, !fingerprint.isEmpty {
+            let known = ((try? engine.keyManager.listKeys()) ?? []).map(\.fingerprint)
+            guard let match = known.first(where: { $0.caseInsensitiveCompare(fingerprint) == .orderedSame }) else {
+                return .failure(.invalidResponse)
+            }
+            return .success(SignerKeyFetchResult(fingerprint: match, source: source))
+        }
+        if let email, !email.isEmpty,
+           let key = try? engine.keyManager.publicKey(for: email),
+           let resolved = try? key.fingerprint
+        {
+            return .success(SignerKeyFetchResult(fingerprint: resolved, source: source))
+        }
+        return .failure(.invalidResponse)
+    }
+
     public func encode(
         _ message: MailMessage,
         composeContext: MailComposeContext
@@ -277,12 +330,20 @@ public final class MessageSecurityCore {
         guard let decoded = try? engine.decode(data) else {
             return nil
         }
+        // Best-effort signer address for unknown signers: the signer is
+        // almost always the sender, so the From: address feeds the banner's
+        // "Fetch signer key" fallback when no fingerprint is available.
+        let parsed = MimeMessage.parse(data)
+        let senderEmail = parsed.headers
+            .first { $0.name.caseInsensitiveCompare("From") == .orderedSame }
+            .flatMap { KeyManager.emailAddress(from: $0.value) }
         let signers = decoded.security.signers.map { signer in
             let context = SignerContext(
                 fingerprint: signer.fingerprint,
                 status: signer.status.rawValue,
                 isEncrypted: decoded.security.isEncrypted,
-                encryptionError: decoded.security.encryptionError?.localizedDescription
+                encryptionError: decoded.security.encryptionError?.localizedDescription,
+                email: signer.userID.flatMap { KeyManager.emailAddress(from: $0) } ?? senderEmail
             )
             let contextData = (try? JSONEncoder().encode(context)) ?? Data()
             return HandlerSignerInfo(
