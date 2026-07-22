@@ -885,9 +885,12 @@ final class MailSecurityEngineTests: XCTestCase {
             (.signerUnknown, .verified, .critical, false),
             (.signerUnknown, .unverified, .critical, false),
             (.signerUnknown, .problem, .critical, false),
-            (.invalid, .verified, .critical, false),
-            (.invalid, .unverified, .critical, false),
-            (.invalid, .problem, .critical, false),
+            // Invalid signatures offer the key detail view (reason unknown
+            // here, so the signing key may be known); see
+            // InvalidSignatureWarningTests for the per-reason link rules.
+            (.invalid, .verified, .critical, true),
+            (.invalid, .unverified, .critical, true),
+            (.invalid, .problem, .critical, true),
             (.unknown, .verified, .caution, false),
             (.unknown, .unverified, .caution, true),
             (.unknown, .problem, .critical, true),

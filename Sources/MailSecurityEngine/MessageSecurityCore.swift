@@ -434,7 +434,10 @@ public final class MessageSecurityCore {
                 isEncrypted: decoded.security.isEncrypted,
                 encryptionError: decoded.security.encryptionError?.localizedDescription,
                 email: signer.userID.flatMap { KeyManager.emailAddress(from: $0) } ?? senderEmail,
-                keyExpiration: signer.fingerprint.flatMap { signerKeyExpiration(for: $0) }
+                keyExpiration: signer.fingerprint.flatMap { signerKeyExpiration(for: $0) },
+                invalidReason: signer.status == .invalid
+                    ? invalidSignatureReason(for: signer).rawValue
+                    : nil
             )
             let contextData = (try? JSONEncoder().encode(context)) ?? Data()
             return HandlerSignerInfo(
@@ -503,5 +506,29 @@ public final class MessageSecurityCore {
             }
             return try Self.expirationDate(of: key)
         }
+    }
+
+    /// Best-effort reason an `.invalid` signature failed verification, from
+    /// the detailed verification result and the signing key's keyring state:
+    /// a signature whose key is unknown (or no longer locatable) cannot be
+    /// checked at all, a revoked or expired key explains the failure, and
+    /// anything else means the signed content was modified after signing.
+    private func invalidSignatureReason(for signer: SignerInfo) -> InvalidSignatureReason {
+        guard let fingerprint = signer.fingerprint else {
+            return .keyUnknown
+        }
+        let reason = try? engine.keyManager.withRnp { rnp -> InvalidSignatureReason in
+            guard let key = try rnp.locateKey(fingerprint, type: .fingerprint) else {
+                return .keyUnknown
+            }
+            if (try? key.isRevoked) ?? false {
+                return .keyRevoked
+            }
+            if let expiration = try Self.expirationDate(of: key), expiration < Date() {
+                return .keyExpired
+            }
+            return .contentMismatch
+        }
+        return reason ?? .keyUnknown
     }
 }

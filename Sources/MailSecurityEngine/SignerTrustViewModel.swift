@@ -54,11 +54,16 @@ public struct SignerTrustViewModel: Equatable, Sendable {
 /// The mapping is deliberately simple and does not include web-of-trust or
 /// ownertrust semantics. `keyExpiration` — the signing key's expiration
 /// date, when known — is appended to the detail text of expired-signature
-/// states so the user sees when the key expired.
+/// states so the user sees when the key expired. `invalidReason` — the
+/// decode-time classification of an `.invalid` signature — replaces the
+/// generic invalid-signature detail with the specific cause; contexts
+/// written by older extension versions carry no reason and keep the generic
+/// text.
 public func mapSignerTrust(
     status: RnpSignatureStatus,
     trust: TrustState,
-    keyExpiration: Date? = nil
+    keyExpiration: Date? = nil,
+    invalidReason: InvalidSignatureReason? = nil
 ) -> SignerTrustViewModel {
     switch (status, trust) {
     case (.valid, .verified):
@@ -113,9 +118,12 @@ public func mapSignerTrust(
     case (.invalid, _):
         return SignerTrustViewModel(
             label: "Invalid signature",
-            detail: "The signature does not verify; the message may have been modified.",
+            detail: invalidSignatureDetail(reason: invalidReason, keyExpiration: keyExpiration),
             intent: .critical,
-            reviewDeepLink: false
+            // Offer the key detail view whenever the signing key is known;
+            // for an unknown key there is nothing to show — the banner's
+            // "Fetch signer key" action applies instead.
+            reviewDeepLink: invalidReason != .keyUnknown
         )
     case (.unknown, .verified):
         return SignerTrustViewModel(
@@ -146,4 +154,24 @@ public func mapSignerTrust(
 private func expiredSignatureDetail(_ base: String, keyExpiration: Date?) -> String {
     guard let keyExpiration else { return base }
     return "\(base) The key expired on \(formatKeyExpirationDate(keyExpiration))."
+}
+
+/// Detail text for an invalid signature, naming the specific cause when the
+/// decode-time classification is known. Without a reason (contexts written
+/// by older extension versions) the original generic text is kept.
+private func invalidSignatureDetail(reason: InvalidSignatureReason?, keyExpiration: Date?) -> String {
+    switch reason {
+    case .none:
+        return "The signature does not verify; the message may have been modified."
+    case .contentMismatch:
+        return "The signature does not match the message content; the message may have been modified after signing."
+    case .keyUnknown:
+        return "The signature was made by an unknown or revoked key, so it could not be verified."
+    case .keyRevoked:
+        return "The signature was made by a key that has been revoked. Do not trust this message."
+    case .keyExpired:
+        let base = "The signature was made by an expired key."
+        guard let keyExpiration else { return base }
+        return "\(base) The key expired on \(formatKeyExpirationDate(keyExpiration))."
+    }
 }
