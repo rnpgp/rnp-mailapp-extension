@@ -38,23 +38,31 @@ extension MissingRecipientKeysHint: LocalizedError {
     }
 }
 
-/// Compose-time security error combining a trust warning with a missing-key
-/// hint, for messages that have both kinds of recipients.
+/// Compose-time security error combining a trust warning, a missing-key
+/// hint, and an expired-key warning, for messages that have several kinds
+/// of recipients.
 public struct ComposeSecurityWarning: Error, Equatable, Sendable {
     /// Trust concerns for recipients whose keys resolved.
     public let trustWarning: RecipientTrustWarning?
     /// Fetch hint for recipients with no key.
     public let missingKeyHint: MissingRecipientKeysHint?
+    /// Warning for recipients whose keys expired.
+    public let expiredKeyWarning: ExpiredRecipientKeysWarning?
 
-    public init(trustWarning: RecipientTrustWarning?, missingKeyHint: MissingRecipientKeysHint?) {
+    public init(
+        trustWarning: RecipientTrustWarning?,
+        missingKeyHint: MissingRecipientKeysHint?,
+        expiredKeyWarning: ExpiredRecipientKeysWarning? = nil
+    ) {
         self.trustWarning = trustWarning
         self.missingKeyHint = missingKeyHint
+        self.expiredKeyWarning = expiredKeyWarning
     }
 }
 
 extension ComposeSecurityWarning: LocalizedError {
     public var errorDescription: String? {
-        [trustWarning?.errorDescription, missingKeyHint?.errorDescription]
+        [trustWarning?.errorDescription, missingKeyHint?.errorDescription, expiredKeyWarning?.errorDescription]
             .compactMap { $0 }
             .joined(separator: "\n")
     }
