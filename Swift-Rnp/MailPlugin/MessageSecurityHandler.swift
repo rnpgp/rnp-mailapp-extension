@@ -29,6 +29,16 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     /// imported keys protected by a foreign passphrase before falling back
     /// to the keyring passphrase. Returns `nil` when the keyring is
     /// unavailable so the extension can still launch and degrade gracefully.
+    ///
+    /// Touch ID: when the user enabled Touch ID during onboarding, the
+    /// keyring passphrase is stored with a biometric access control, so the
+    /// first passphrase read in this process shows a system Touch ID prompt
+    /// over Mail. If the user cancels, the provider returns `nil` and the
+    /// sign/decrypt operation fails gracefully (the error is recorded for
+    /// the banner); a short backoff avoids re-prompting on every message.
+    /// A successful unlock is cached for the process lifetime. Manual
+    /// passphrase entry lives in the container app — unlock there and the
+    /// next message access here succeeds.
     private static func makeCore() -> MessageSecurityCore? {
         let provider: Rnp.KeyedPassphraseProvider = KeychainPassphraseStore.resolvingProvider()
         let stateRecorder = SecurityStateRecorder(directory: AppGroup.extensionStateDirectory())

@@ -142,10 +142,28 @@ expired or expiring soon, and lets you:
 
 ## Passphrases and the Keychain
 
-Generated keys share a single random keyring passphrase stored in the macOS
+Generated keys share a single keyring passphrase stored in the macOS
 Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RnpMail`) —
-never in preferences or plain files. You can opt into Touch ID when unlocking
-during onboarding.
+never in preferences or plain files.
+
+When you enable Touch ID during onboarding, the passphrase is stored only in
+a Keychain item protected by a biometric access control, and every process
+must authenticate to read it:
+
+- On subsequent launches the container app shows the keyring as locked until
+  you unlock it with Touch ID. If Touch ID fails or is cancelled, choose
+  "Enter Passphrase" and type the passphrase you picked during onboarding;
+  it is verified against your keys and the Keychain item stays
+  Touch ID-protected.
+- The Mail extension may show a system Touch ID prompt the first time it
+  signs or decrypts a message after its process starts. Cancelling the
+  prompt fails that operation (nothing crashes and nothing is overwritten);
+  the next attempt prompts again, and unlocking in the container app does
+  not unlock the extension's process.
+- Without Touch ID, the passphrase is stored with the standard
+  device-unlocked accessibility and reads never prompt. Biometric storage
+  requires a signed build with the keychain entitlements; unsigned local
+  builds silently fall back to that plain storage.
 
 Imported keys protected by a different (foreign) passphrase are unlocked once
 via a prompt in the app; the entered passphrase is then either stored in the

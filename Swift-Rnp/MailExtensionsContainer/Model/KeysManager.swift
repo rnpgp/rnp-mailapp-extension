@@ -22,6 +22,10 @@ final class KeysManager: ObservableObject {
     @Published var lastError: String?
     @Published var lastWarning: KeychainWarning?
     @Published var lastRevocationCertificateURL: URL?
+    /// Whether the keyring passphrase is Touch ID-protected and has not been
+    /// unlocked in this process yet. Secret-key operations fail while locked;
+    /// the UI offers Touch ID and manual-passphrase unlock.
+    @Published private(set) var keyringLocked = false
 
     private let keyManager: KeyManager?
     private var lifecycle: KeyLifecycle? {
@@ -57,6 +61,90 @@ final class KeysManager: ObservableObject {
             }
         }
         reload()
+        keyringLocked = Self.computeKeyringLocked()
+    }
+
+    /// Whether the keyring needs unlocking: the passphrase is stored with
+    /// Touch ID protection and is not cached in this process. Probed without
+    /// showing authentication UI, so launching the app never prompts on its
+    /// own — the user unlocks explicitly from the locked-keyring banner.
+    private static func computeKeyringLocked() -> Bool {
+        guard KeychainPassphraseStore.isBiometricProtectionEnabled else {
+            return false
+        }
+        if case .authenticationFailed = KeychainPassphraseStore.readSharedPassphrase(
+            allowingAuthenticationUI: false
+        ) {
+            return true
+        }
+        return false
+    }
+
+    // MARK: - Keyring unlock (Touch ID)
+
+    /// Attempts to unlock the keyring with Touch ID. The system prompt is
+    /// shown from a background queue so the UI stays responsive; the result
+    /// is applied on the main queue. On success the passphrase is cached for
+    /// the rest of the process lifetime and keyring operations stop
+    /// prompting.
+    func unlockKeyring() {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let result = KeychainPassphraseStore.readSharedPassphrase()
+            DispatchQueue.main.async {
+                switch result {
+                case .success, .notFound:
+                    self.keyringLocked = false
+                case .authenticationFailed:
+                    self.keyringLocked = true
+                }
+            }
+        }
+    }
+
+    /// Manual fallback for when Touch ID fails or is cancelled: verifies
+    /// `passphrase` against the secret keys, then unlocks this process.
+    ///
+    /// Verification happens before anything is stored, so a typo cannot
+    /// overwrite the Keychain item. When the item is Touch ID-protected it
+    /// stays protected — only this process's session cache is populated.
+    ///
+    /// - Returns: `true` when the passphrase was accepted.
+    @discardableResult
+    func unlockKeyringManually(passphrase: String) -> Bool {
+        guard let keyManager else {
+            lastError = "error.keyringOpenFailed".localized
+            return false
+        }
+        guard !passphrase.isEmpty, verifyKeyringPassphrase(passphrase, keyManager: keyManager) else {
+            return false
+        }
+        if KeychainPassphraseStore.isBiometricProtectionEnabled {
+            KeychainPassphraseStore.cacheVerifiedPassphrase(passphrase)
+        } else if let warning = KeychainPassphraseStore.setPassphrase(passphrase, requiresBiometry: false) {
+            lastError = warning.message
+            return false
+        }
+        keyringLocked = false
+        return true
+    }
+
+    /// Checks a candidate keyring passphrase by trying to unlock the secret
+    /// keys with it. Passing requires at least one secret key to unlock (a
+    /// keyring without secret keys has nothing to verify against, so the
+    /// passphrase is accepted).
+    private func verifyKeyringPassphrase(_ passphrase: String, keyManager: KeyManager) -> Bool {
+        let secretFingerprints = keys.filter(\.hasSecret).map(\.fingerprint)
+        guard !secretFingerprints.isEmpty else {
+            return true
+        }
+        for fingerprint in secretFingerprints {
+            if let unlocked = try? keyManager.unlockSecretKey(fingerprint: fingerprint, passphrase: passphrase),
+               unlocked
+            {
+                return true
+            }
+        }
+        return false
     }
 
     /// Keyring directory for this launch: the `--uitest-keyring-dir` launch
@@ -154,8 +242,15 @@ final class KeysManager: ObservableObject {
         guard !fingerprints.isEmpty else {
             return
         }
+        let keyringPassphrase = KeychainPassphraseStore.sharedPassphrase()
+        // An empty passphrase means the keyring is locked behind Touch ID;
+        // detection would flag every key as foreign, so skip it until the
+        // keyring is unlocked.
+        guard !keyringPassphrase.isEmpty else {
+            return
+        }
         let locked = (try? keyManager.lockedSecretKeys(
-            keyringPassphrase: KeychainPassphraseStore.sharedPassphrase(),
+            keyringPassphrase: keyringPassphrase,
             among: fingerprints
         )) ?? []
         for info in locked where KeychainPassphraseStore.passphrase(forKeyFingerprint: info.fingerprint) == nil {
@@ -200,11 +295,18 @@ final class KeysManager: ObservableObject {
             lastError = "error.keyringOpenFailed".localized
             return false
         }
+        let keyringPassphrase = KeychainPassphraseStore.sharedPassphrase()
+        guard !keyringPassphrase.isEmpty else {
+            // The keyring is locked behind Touch ID; unlock it first.
+            keyringLocked = true
+            lastError = KeychainWarning.authenticationRequired.message
+            return false
+        }
         do {
             try keyManager.reprotectSecretKey(
                 fingerprint: request.fingerprint,
                 currentPassphrase: passphrase,
-                newPassphrase: KeychainPassphraseStore.sharedPassphrase()
+                newPassphrase: keyringPassphrase
             )
             // Re-protected with the keyring passphrase: a stale per-key entry
             // for this fingerprint must not shadow it.
