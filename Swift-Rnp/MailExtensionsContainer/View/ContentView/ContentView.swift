@@ -36,6 +36,7 @@ struct ContentView: View {
                         subkeys: model.manager.subkeys(for: key),
                         isRecipient: model.selectedTab == .recipients,
                         trustState: model.trustState(for: key),
+                        hasPendingKeyChange: model.hasPendingKeyChange(for: key),
                         actions: detailActions(for: key)
                     )
                     .frame(minWidth: 560, minHeight: 520)
@@ -78,6 +79,10 @@ struct ContentView: View {
             }
             .sheet(isPresented: $model.showFetchSheet) {
                 fetchSheet
+            }
+            .sheet(isPresented: $model.showTrustHistorySheet) {
+                TrustHistoryView(email: model.trustHistoryEmail, records: model.trustHistoryRecords)
+                    .frame(minWidth: 520, minHeight: 420)
             }
             .sheet(isPresented: $showLicenses) {
                 LicensesView(sourcesMarkdown: LicensesView.loadSources())
@@ -230,6 +235,7 @@ struct ContentView: View {
                     subkeys: model.manager.subkeys(for: key),
                     isRecipient: model.selectedTab == .recipients,
                     trustState: model.trustState(for: key),
+                    hasPendingKeyChange: model.hasPendingKeyChange(for: key),
                     actions: detailActions(for: key),
                     identifierPrefix: "keydetail.pane"
                 )
@@ -467,6 +473,12 @@ struct ContentView: View {
             },
             onMarkVerified: {
                 model.markSelectedVerified()
+            },
+            onRejectNewKey: {
+                model.rejectKeyChange(for: key)
+            },
+            onShowTrustHistory: {
+                model.openTrustHistory(for: key)
             }
         )
     }
@@ -492,7 +504,10 @@ struct ContentView: View {
                     BannerView(
                         icon: "exclamationmark.shield.fill",
                         tint: RnpBrand.critical,
-                        text: String(format: "banner.trustConflict".localized, first.email + suffix)
+                        text: String(format: "banner.trustConflict".localized, first.email + suffix),
+                        actionTitle: "detail.keepOldBinding",
+                        action: { model.rejectConflict(first) },
+                        actionIdentifier: "contentview.trust-conflict-keep-old"
                     )
                     .accessibilityIdentifier("contentview.trust-conflict-banner")
                 }
@@ -771,6 +786,9 @@ private struct BannerView: View {
     let icon: String
     let tint: Color
     let text: String
+    var actionTitle: LocalizedStringKey? = nil
+    var action: (() -> Void)? = nil
+    var actionIdentifier: String? = nil
 
     var body: some View {
         HStack(spacing: RnpSpacing.xs) {
@@ -782,6 +800,18 @@ private struct BannerView: View {
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
+            if let actionTitle, let action {
+                if let actionIdentifier {
+                    Button(actionTitle, action: action)
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .accessibilityIdentifier(actionIdentifier)
+                } else {
+                    Button(actionTitle, action: action)
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                }
+            }
         }
         .padding(.horizontal, RnpSpacing.sm)
         .padding(.vertical, RnpSpacing.xs)
@@ -793,7 +823,8 @@ private struct BannerView: View {
             RoundedRectangle(cornerRadius: RnpRadius.card, style: .continuous)
                 .strokeBorder(tint.opacity(0.22), lineWidth: 1)
         )
-        .accessibilityElement(children: .combine)
+        // Keep the action button individually accessible when present.
+        .accessibilityElement(children: action == nil ? .combine : .contain)
     }
 }
 

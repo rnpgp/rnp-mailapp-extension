@@ -292,6 +292,62 @@ final class KeysManager: ObservableObject {
         }
     }
 
+    /// Rejects the newly seen key of a key-change conflict, keeping the old
+    /// binding for the address.
+    func rejectConflict(email: String, newFingerprint: String) {
+        guard let keyManager else {
+            lastError = "error.keyringOpenFailed".localized
+            return
+        }
+        do {
+            try keyManager.trustStore.rejectConflict(email: email, newFpr: newFingerprint)
+            reload()
+        } catch {
+            lastError = error.localizedDescription
+        }
+    }
+
+    /// The unresolved conflict whose new key has the given fingerprint.
+    func trustConflict(forNewFingerprint fingerprint: String) -> TrustConflict? {
+        guard let keyManager else {
+            return nil
+        }
+        return keyManager.trustStore.conflicts().first {
+            $0.newFingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame
+        }
+    }
+
+    /// Trust history recorded for an address, most recent first.
+    func trustHistory(forEmail email: String) -> [TrustRecord] {
+        guard let keyManager else {
+            return []
+        }
+        return keyManager.trustStore.history(forEmail: email)
+    }
+
+    /// First email address found in the key's user IDs.
+    func primaryEmail(for key: KeyInfo) -> String? {
+        for userID in key.userIDs {
+            if let email = Self.emailAddress(from: userID) {
+                return email
+            }
+        }
+        return nil
+    }
+
+    /// Extracts the email address from a user ID of the form
+    /// "Name <email@example.com>", or returns the input itself when it looks
+    /// like a bare email address. Mirrors the engine's internal
+    /// `KeyManager.emailAddress(from:)`.
+    private static func emailAddress(from userID: String) -> String? {
+        if let open = userID.lastIndex(of: "<"),
+           let close = userID.lastIndex(of: ">"), open < close
+        {
+            return String(userID[userID.index(after: open) ..< close])
+        }
+        return userID.contains("@") ? userID : nil
+    }
+
     private func perform(_ operation: () throws -> Void) {
         lastError = nil
         do {

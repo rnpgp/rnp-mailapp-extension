@@ -54,6 +54,10 @@ final class ContentViewModel: ObservableObject {
     @Published var revokeReason = ""
     @Published var extendExpiryDate = Date().addingTimeInterval(365 * 24 * 60 * 60)
     @Published var pendingReviewFingerprint: String?
+    /// Trust history sheet state.
+    @Published var showTrustHistorySheet = false
+    @Published private(set) var trustHistoryEmail = ""
+    @Published private(set) var trustHistoryRecords: [TrustRecord] = []
     /// Whether a keyserver discovery (fetch sheet) is in flight.
     @Published var isDiscoveringKey = false
     /// Whether a keyserver publish is in flight.
@@ -105,6 +109,39 @@ final class ContentViewModel: ObservableObject {
         guard let key = selectedKey else { return }
         manager.markVerified(fingerprint: key.fingerprint)
         propagateError()
+    }
+
+    // MARK: - Trust conflicts and history
+
+    /// Rejects the new key of the given conflict, keeping the old binding.
+    func rejectConflict(_ conflict: TrustConflict) {
+        manager.rejectConflict(email: conflict.email, newFingerprint: conflict.newFingerprint)
+        propagateError()
+    }
+
+    /// Whether the key is the newly seen key of an unresolved conflict.
+    func hasPendingKeyChange(for key: KeyInfo) -> Bool {
+        manager.trustConflict(forNewFingerprint: key.fingerprint) != nil
+    }
+
+    /// Rejects this key as the new binding for its address, keeping the old
+    /// binding (used by the key detail view's "Keep old binding" action).
+    func rejectKeyChange(for key: KeyInfo) {
+        guard let conflict = manager.trustConflict(forNewFingerprint: key.fingerprint) else {
+            return
+        }
+        manager.rejectConflict(email: conflict.email, newFingerprint: conflict.newFingerprint)
+        propagateError()
+    }
+
+    /// Opens the trust history sheet for the key's address.
+    func openTrustHistory(for key: KeyInfo) {
+        guard let email = manager.primaryEmail(for: key) else {
+            return
+        }
+        trustHistoryEmail = email
+        trustHistoryRecords = manager.trustHistory(forEmail: email)
+        showTrustHistorySheet = true
     }
 
     /// Keys visible in the current tab.
