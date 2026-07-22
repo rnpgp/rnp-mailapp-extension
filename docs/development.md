@@ -23,7 +23,7 @@ Sources/
   RnpMailUI/                   shared app UI (design system, key views)
 Swift-Rnp/
   Swift-Rnp.xcodeproj/         container app + Mail extension project
-  MailExtensionsContainer/     the RNP container app (target "Ribose container")
+  MailExtensionsContainer/     the RNP container app (target "RNP")
   MailPlugin/                  the MailKit extension target
   Shared/IDs.xcconfig          single source for bundle IDs and app group
   Config/                      build configurations (Direct, AppStore)
@@ -71,11 +71,11 @@ export PKG_CONFIG_PATH="$(pwd)/Vendor/pkgconfig"
 # Container app + Mail extension (compile checks; no signing)
 xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" \
+xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
 
 # Container app UI tests (onboarding, key generation, accessibility audits)
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" \
+xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP \
     test CODE_SIGNING_ALLOWED=NO
 ```
 
@@ -114,7 +114,7 @@ Two channels, both from tags (`v$MARKETING_VERSION`, checked against
 
 - **Direct** (`.github/workflows/release-direct.yml`) — builds the `Direct`
   configuration, signs with Developer ID, notarizes and staples, creates
-  `RnpMail-<version>.dmg`, and attaches it to the GitHub Release. Driven by
+  `RNP-<version>.dmg`, and attaches it to the GitHub Release. Driven by
   `scripts/release-direct.sh`.
 - **App Store** (`.github/workflows/release-appstore.yml`) — builds the
   `AppStore` configuration with Apple Distribution signing and uploads to App

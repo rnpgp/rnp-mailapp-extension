@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AA4000000000000000000003"
-               BuildableName = "Ribose container.app"
-               BlueprintName = "Ribose container"
+               BuildableName = "RNP.app"
+               BlueprintName = "RNP"
                ReferencedContainer = "container:Swift-Rnp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -55,8 +55,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AA4000000000000000000003"
-            BuildableName = "Ribose container.app"
-            BlueprintName = "Ribose container"
+            BuildableName = "RNP.app"
+            BlueprintName = "RNP"
             ReferencedContainer = "container:Swift-Rnp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -72,8 +72,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AA4000000000000000000003"
-            BuildableName = "Ribose container.app"
-            BlueprintName = "Ribose container"
+            BuildableName = "RNP.app"
+            BlueprintName = "RNP"
             ReferencedContainer = "container:Swift-Rnp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

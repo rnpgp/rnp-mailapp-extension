@@ -14,8 +14,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 DEFAULT_BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build/Products/Debug"
-APP_BUNDLE="${AUDIT_APP_PATH:-${BUILD_DIR:-${DEFAULT_BUILD_DIR}}/Ribose container.app}"
-APP_BIN="${APP_BUNDLE}/Contents/MacOS/Ribose container"
+APP_BUNDLE="${AUDIT_APP_PATH:-${BUILD_DIR:-${DEFAULT_BUILD_DIR}}/RNP.app}"
+APP_BIN="${APP_BUNDLE}/Contents/MacOS/RNP"
 
 # Discover the embedded Mail extension automatically.
 APPEX_BUNDLE=""

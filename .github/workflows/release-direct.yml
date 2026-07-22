@@ -94,9 +94,9 @@ jobs:
     - name: Attach DMG and verify Gatekeeper
       run: |
         DMG="$(find "${RUNNER_TEMP}/dist" -name '*.dmg' | head -n1)"
-        VOLUME="/Volumes/RnpMail Installer"
+        VOLUME="/Volumes/RNP Installer"
         hdiutil attach "${DMG}" -nobrowse
-        APP="${VOLUME}/Ribose container.app"
+        APP="${VOLUME}/RNP.app"
         spctl -a -t exec -vv "${APP}"
-        "${APP}/Contents/MacOS/Ribose container" --self-test
+        "${APP}/Contents/MacOS/RNP" --self-test
         hdiutil detach "${VOLUME}"

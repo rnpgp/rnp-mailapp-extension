@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>RNP</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -12,22 +14,10 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>RNP</string>
-	<key>CFBundleDisplayName</key>
-	<string>RNP</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>RNPMAILAppGroup</key>
-	<string>$(RNPMAIL_APP_GROUP)</string>
-	<key>RNPMAILKeychainAccessGroup</key>
-	<string>$(RNPMAIL_KEYCHAIN_ACCESS_GROUP)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -39,5 +29,13 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>RNPMAILAppGroup</key>
+	<string>$(RNPMAIL_APP_GROUP)</string>
+	<key>RNPMAILKeychainAccessGroup</key>
+	<string>$(RNPMAIL_KEYCHAIN_ACCESS_GROUP)</string>
 </dict>
 </plist>

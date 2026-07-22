@@ -122,11 +122,11 @@ PKG_CONFIG_PATH=/path/to/librnp/lib/pkgconfig \
 PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
   xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin build CODE_SIGNING_ALLOWED=NO
 PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
-  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" build CODE_SIGNING_ALLOWED=NO
+  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP build CODE_SIGNING_ALLOWED=NO
 
 # Container app UI tests (onboarding, key generation, accessibility audits)
 PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
-  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" test CODE_SIGNING_ALLOWED=NO
+  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP test CODE_SIGNING_ALLOWED=NO
 
 # Sandbox / entitlement audit
 ./scripts/sandbox-audit.sh
@@ -158,7 +158,7 @@ package above:
   (`MEMessageSecurityHandler`) delegating all OpenPGP work to
   `MailSecurityEngine` and rendering the banner via `MailSecurityUI`.
 - **RNP** (SwiftUI container app target; the Xcode target and scheme are
-  still named `Ribose container`) — key manager UI (generate RSA/ECDSA keys,
+  named `RNP`) — key manager UI (generate RSA/ECDSA keys,
   import armored keys from clipboard or file, export the armored public key
   to the clipboard, delete keys). Branded as **RNP** in the menu bar, window
   title, and About panel.
@@ -193,7 +193,7 @@ default.)
 For a first local try-out no Apple Developer account is needed:
 
 1. Open `Swift-Rnp/Swift-Rnp.xcodeproj` in Xcode.
-2. Select the **Ribose container** scheme and build/run it
+2. Select the **RNP** scheme and build/run it
    (Product → Run). Unsigned local builds work; Xcode simply embeds no
    entitlements, and the keyring then lives in
    `~/Library/Application Support/RNP Mail Extension` instead of the app
@@ -212,7 +212,7 @@ For Mail.app to actually load the extension you must sign both targets:
    and Info.plist at build time. If you change them, keep the extension ID
    prefixed by the app ID, and update the app group `group.com.rnpgp.RnpMail`
    in `Swift-Rnp/Shared/IDs.xcconfig` to a group registered to your team.
-5. Run the **Ribose container** scheme once more so the signed extension is
+5. Run the **RNP** scheme once more so the signed extension is
    embedded and registered, then enable it in
    **Mail → Settings → Extensions** (check "RNP OpenPGP").
 6. Compose a message: the security button in the compose window now offers
@@ -230,7 +230,7 @@ vendored framework's `.pc` file:
 export PKG_CONFIG_PATH="$(pwd)/Vendor/pkgconfig"
 xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" \
+xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
 ```
 
@@ -247,9 +247,9 @@ Use `-configuration AppStore` when archiving for App Store Connect.
 The latest signed and notarized DMG is attached to each [GitHub
 Release](https://github.com/rnpgp/rnp-mailapp-extension/releases).
 
-1. Download `RnpMail-<version>.dmg` and open it.
-2. Drag **RNP** into **Applications** (the app bundle is still named
-   `Ribose container.app` on disk; Finder and the Dock display it as "RNP").
+1. Download `RNP-<version>.dmg` and open it.
+2. Drag **RNP** into **Applications** (the app bundle is `RNP.app` on disk,
+   displayed as "RNP" by Finder and the Dock).
 3. Launch the app from Applications, generate or import your OpenPGP key.
 4. Open **Mail → Settings → Extensions**, check **RNP OpenPGP**, and click
    **Done**.
@@ -264,7 +264,7 @@ Release](https://github.com/rnpgp/rnp-mailapp-extension/releases).
 
 [![Download on the Mac App Store](TODO-badge-url)](TODO-app-store-link)
 
-RnpMail is also available on the Mac App Store. The App Store build uses the
+RNP is also available on the Mac App Store. The App Store build uses the
 same sandbox and app group as the direct-download release, with Apple
 Distribution signing and App Store Connect upload handled by the
 [`.github/workflows/release-appstore.yml`](.github/workflows/release-appstore.yml)
@@ -273,7 +273,7 @@ the submission metadata template and review notes.
 
 ### Trust model
 
-RnpMail uses a deliberately simple trust model focused on clarity and
+RNP uses a deliberately simple trust model focused on clarity and
 actionable warnings:
 
 - **Trust on first use (TOFU).** The first time a public key is seen for an

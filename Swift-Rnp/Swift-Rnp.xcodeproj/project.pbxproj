@@ -54,7 +54,7 @@
 			containerPortal = AA787CCB0000000000000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = AA4000000000000000000003;
-			remoteInfo = "Ribose container";
+			remoteInfo = RNP;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -121,7 +121,7 @@
 		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainPassphraseStore.swift; path = ../../Sources/MailSecurityEngine/KeychainPassphraseStore.swift; sourceTree = "<group>"; };
 		AA5000000000000000000001 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5000000000000000000002 /* MailPlugin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailPlugin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA5000000000000000000003 /* Ribose container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ribose container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA5000000000000000000003 /* RNP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD1480B5CAD3FF9C8EC9FB44 /* Version.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Version.xcconfig; path = Config/Version.xcconfig; sourceTree = "<group>"; };
 		B0DF31866344739AFF3A2A9D /* Ribose containerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Ribose containerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7393B9F8268ACF79B23A289 /* AppStore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = AppStore.xcconfig; path = Config/AppStore.xcconfig; sourceTree = "<group>"; };
@@ -243,7 +243,7 @@
 			children = (
 				AA5000000000000000000001 /* Swift-Rnp */,
 				AA5000000000000000000002 /* MailPlugin.appex */,
-				AA5000000000000000000003 /* Ribose container.app */,
+				AA5000000000000000000003 /* RNP.app */,
 				B0DF31866344739AFF3A2A9D /* Ribose containerUITests.xctest */,
 			);
 			name = Products;
@@ -397,9 +397,9 @@
 			productReference = AA5000000000000000000002 /* MailPlugin.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		AA4000000000000000000003 /* Ribose container */ = {
+		AA4000000000000000000003 /* RNP */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA9000000000000000000004 /* Build configuration list for PBXNativeTarget "Ribose container" */;
+			buildConfigurationList = AA9000000000000000000004 /* Build configuration list for PBXNativeTarget "RNP" */;
 			buildPhases = (
 				AA6000000000000000000006 /* Sources */,
 				AA6000000000000000000007 /* Frameworks */,
@@ -412,14 +412,14 @@
 			dependencies = (
 				AA7000000000000000000002 /* PBXTargetDependency */,
 			);
-			name = "Ribose container";
+			name = RNP;
 			packageProductDependencies = (
 				AAC000000000000000000004 /* Rnp */,
 				AAC000000000000000000005 /* MailSecurityEngine */,
 				F7F139FFDED467A772241EBC /* RnpMailUI */,
 			);
-			productName = "Ribose container";
-			productReference = AA5000000000000000000003 /* Ribose container.app */;
+			productName = RNP;
+			productReference = AA5000000000000000000003 /* RNP.app */;
 			productType = "com.apple.product-type.application";
 		};
 		C11C7952369D291DC9FDE728 /* Ribose containerUITests */ = {
@@ -480,7 +480,7 @@
 			targets = (
 				AA4000000000000000000001 /* Swift-Rnp */,
 				AA4000000000000000000002 /* MailPlugin */,
-				AA4000000000000000000003 /* Ribose container */,
+				AA4000000000000000000003 /* RNP */,
 				C11C7952369D291DC9FDE728 /* Ribose containerUITests */,
 			);
 		};
@@ -561,8 +561,8 @@
 /* Begin PBXTargetDependency section */
 		5E712690EADF3649661F8F54 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "Ribose container";
-			target = AA4000000000000000000003 /* Ribose container */;
+			name = RNP;
+			target = AA4000000000000000000003 /* RNP */;
 			targetProxy = B76D8635E6FF7500BF107865 /* PBXContainerItemProxy */;
 		};
 		AA7000000000000000000002 /* PBXTargetDependency */ = {
@@ -617,8 +617,9 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RNP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_MAIN = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Direct;
@@ -704,7 +705,7 @@
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "Ribose container";
+				TEST_TARGET_NAME = RNP;
 				USES_XCTRUNNER = YES;
 			};
 			name = Release;
@@ -735,7 +736,7 @@
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "Ribose container";
+				TEST_TARGET_NAME = RNP;
 				USES_XCTRUNNER = YES;
 			};
 			name = Debug;
@@ -961,8 +962,9 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RNP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_MAIN = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -988,8 +990,9 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RNP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_MAIN = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -1029,7 +1032,7 @@
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "Ribose container";
+				TEST_TARGET_NAME = RNP;
 				USES_XCTRUNNER = YES;
 			};
 			name = AppStore;
@@ -1109,8 +1112,9 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RNP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_MAIN = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = AppStore;
@@ -1126,7 +1130,7 @@
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "Ribose container";
+				TEST_TARGET_NAME = RNP;
 				USES_XCTRUNNER = YES;
 			};
 			name = Direct;
@@ -1167,7 +1171,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA9000000000000000000004 /* Build configuration list for PBXNativeTarget "Ribose container" */ = {
+		AA9000000000000000000004 /* Build configuration list for PBXNativeTarget "RNP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA8000000000000000000007 /* Debug */,

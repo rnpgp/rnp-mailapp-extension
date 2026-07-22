@@ -7,11 +7,11 @@ from source.
 ## Direct download (DMG)
 
 Each [GitHub Release](https://github.com/rnpgp/swift-rnp/releases) carries a
-Developer ID-signed and notarized disk image, `RnpMail-<version>.dmg`.
+Developer ID-signed and notarized disk image, `RNP-<version>.dmg`.
 
-1. Download the latest `RnpMail-<version>.dmg` and open it.
-2. Drag **RNP** into **Applications**. (The app bundle on disk is still named
-   `Ribose container.app`; Finder and the Dock display it as **RNP**.)
+1. Download the latest `RNP-<version>.dmg` and open it.
+2. Drag **RNP** into **Applications**. (The app bundle on disk is `RNP.app`;
+   Finder and the Dock display it as **RNP**.)
 3. Launch RNP from Applications and generate or import your OpenPGP key —
    see [Usage](usage.md#managing-keys).
 4. Enable the Mail extension as described in
@@ -67,7 +67,7 @@ open Swift-Rnp/Swift-Rnp.xcodeproj
 ```
 
 For a first local try-out no Apple Developer account is needed: select the
-**Ribose container** scheme and run it (Product → Run). Unsigned local builds
+**RNP** scheme and run it (Product → Run). Unsigned local builds
 work, but Mail.app will not load an unsigned or ad-hoc-signed extension, and
 the keyring then lives in `~/Library/Application Support/RNP Mail Extension`
 instead of the shared app-group container.
@@ -83,7 +83,7 @@ For Mail.app to load the extension, both targets must be signed:
    `Swift-Rnp/Shared/IDs.xcconfig`. If you change them, keep the extension ID
    prefixed by the app ID, and update the app group `group.com.rnpgp.RnpMail`
    in the same file to a group registered to your team.
-3. Run the **Ribose container** scheme again so the signed extension is
+3. Run the **RNP** scheme again so the signed extension is
    embedded and registered.
 
 Command-line builds (as used in CI) work without signing configuration:
@@ -92,7 +92,7 @@ Command-line builds (as used in CI) work without signing configuration:
 export PKG_CONFIG_PATH="$(pwd)/Vendor/pkgconfig"
 xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme "Ribose container" \
+xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
 ```
 
