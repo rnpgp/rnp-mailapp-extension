@@ -112,6 +112,47 @@ final class KeyLifecycleTests: XCTestCase {
         }
     }
 
+    func testExtendExpiryRescuesExpiredEncryptionSubkey() throws {
+        let manager = try makeKeyManager()
+        let lifecycle = KeyLifecycle(keyManager: manager)
+
+        // Generate a key whose primary and encryption subkey expire almost
+        // immediately.
+        let info = try manager.generateKey(
+            userID: "Alice <alice@example.com>",
+            algorithm: .rsa,
+            expirationSeconds: 1
+        )
+
+        // Wait until the encryption subkey has actually expired.
+        let subkey = try XCTUnwrap(try manager.subkeys(for: info.fingerprint).first)
+        XCTAssertTrue(subkey.capabilities.contains("encrypt"))
+        let originalExpiry = try XCTUnwrap(subkey.expirationDate)
+        let wait = originalExpiry.timeIntervalSinceNow + 0.5
+        if wait > 0 {
+            Thread.sleep(forTimeInterval: wait)
+        }
+
+        let expiredSubkey = try XCTUnwrap(
+            try manager.subkeys(for: info.fingerprint).first { $0.fingerprint == subkey.fingerprint }
+        )
+        let expiredDate = try XCTUnwrap(expiredSubkey.expirationDate)
+        XCTAssertLessThan(expiredDate, Date(), "subkey should be expired before extension")
+
+        let newDate = Date().addingTimeInterval(2 * 365 * 24 * 60 * 60)
+        try lifecycle.extendExpiry(for: info.fingerprint, newDate: newDate)
+
+        let rescuedSubkey = try XCTUnwrap(
+            try manager.subkeys(for: info.fingerprint).first { $0.fingerprint == subkey.fingerprint }
+        )
+        let rescuedExpiry = try XCTUnwrap(rescuedSubkey.expirationDate)
+        XCTAssertGreaterThan(rescuedExpiry, Date(), "subkey should no longer be expired")
+        XCTAssertLessThan(
+            abs(rescuedExpiry.timeIntervalSince(newDate)), 10,
+            "subkey expiry should match the extended date"
+        )
+    }
+
     func testExtendExpiryRejectsPastDate() {
         do {
             let manager = try makeKeyManager()

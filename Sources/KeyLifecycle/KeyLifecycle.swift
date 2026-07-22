@@ -191,10 +191,13 @@ public final class KeyLifecycle {
 
     // MARK: - Expiry extension
 
-    /// Extends the primary key's expiration to `newDate`.
+    /// Extends the primary key's and all its subkeys' expiration to `newDate`.
     ///
-    /// The date is converted to seconds from the key's original creation time,
-    /// which is how OpenPGP stores expiration.
+    /// The date is converted to seconds from each key's original creation
+    /// time, which is how OpenPGP stores expiration. Subkeys carry their own
+    /// self-signatures, so each one is re-signed too — otherwise an expired
+    /// encryption subkey would not be rescued, matching the behavior of
+    /// `KeyManager.generateKey`.
     public func extendExpiry(for fingerprint: String, newDate: Date) throws {
         guard newDate > Date() else {
             throw KeyLifecycleError.invalidExpiryDate
@@ -205,6 +208,11 @@ public final class KeyLifecycle {
             let creation = try key.creationDate
             let expirySeconds = UInt32(max(0, newDate.timeIntervalSince1970 - creation.timeIntervalSince1970))
             try key.setExpirationSeconds(expirySeconds)
+            for subkey in try key.subkeys {
+                let subkeyCreation = try subkey.creationDate
+                let subkeyExpirySeconds = UInt32(max(0, newDate.timeIntervalSince1970 - subkeyCreation.timeIntervalSince1970))
+                try subkey.setExpirationSeconds(subkeyExpirySeconds)
+            }
             try keyManager.save()
         }
     }
