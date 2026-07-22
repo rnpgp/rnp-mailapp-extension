@@ -370,15 +370,28 @@
     transition: all 0.2s;
   }
 
+  /* Primary buttons sit on accent-deep (#0F5FC4, 6.1:1 vs white) rather
+     than the brand accent (#1A7BEC, 4.1:1) so bold 14 px label text meets
+     WCAG AA for normal-size text. The lighter brand blue is still used
+     for the glow and for hover. */
   .btn-primary {
-    background: var(--accent);
+    background: var(--accent-deep);
     color: #fff;
     box-shadow: 0 6px 20px -6px color-mix(in oklab, var(--accent) 70%, transparent);
   }
 
-  .btn-primary:hover {
+  :root[data-theme='dark'] .btn-primary {
     background: var(--accent-deep);
+    color: #0b0e1a;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent);
     transform: translateY(-1px);
+  }
+
+  :root[data-theme='dark'] .btn-primary:hover {
+    color: #0b0e1a;
   }
 
   .btn-ghost {
@@ -899,4 +912,551 @@ starlight-tabs [role='tablist'] {
 
 starlight-tabs [role='tab'] {
   font-weight: 500;
+}
+
+/* ==========================================================================
+   7. Site chrome: to-top, toasts, command palette, easter-egg elements
+   (all built at runtime by /js/site.js — no framework)
+   ========================================================================== */
+
+/* ---------- Scroll-to-top ---------- */
+.to-top {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--accent-deep);
+  box-shadow: var(--lift-shadow);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(0.75rem);
+  pointer-events: none;
+  transition:
+    opacity 0.25s,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.to-top.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.to-top:hover {
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--line));
+}
+
+.to-top svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* ---------- Toasts (aria-live status messages) ---------- */
+.toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: min(92vw, 34rem);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toast {
+  max-width: 100%;
+  padding: 0.7rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--line));
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  box-shadow: var(--lift-shadow);
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(0.6rem);
+  transition:
+    opacity 0.3s,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Command palette ---------- */
+.cmdk {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+}
+
+.cmdk.is-open {
+  display: block;
+}
+
+.cmdk-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 12, 26, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.cmdk-panel {
+  position: relative;
+  margin: min(18vh, 9rem) auto 0;
+  width: min(92vw, 34rem);
+  overflow: hidden;
+  border-radius: 0.875rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--lift-shadow);
+}
+
+.cmdk-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.cmdk-icon {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  color: var(--fg-faint);
+}
+
+.cmdk-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--fg);
+  outline: none;
+}
+
+.cmdk-input::placeholder {
+  color: var(--fg-faint);
+}
+
+.cmdk-kbd,
+.cmdk-footer kbd {
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.3rem;
+  border: 1px solid var(--line);
+  background: var(--surface-dim);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--fg-faint);
+}
+
+.cmdk-list {
+  max-height: 19rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.4rem;
+  list-style: none;
+}
+
+.cmdk-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.55rem;
+  cursor: pointer;
+}
+
+.cmdk-item[aria-selected='true'] {
+  background: var(--tint-blue);
+}
+
+.cmdk-item-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.cmdk-item-hint {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--fg-faint);
+}
+
+.cmdk-egg {
+  background: var(--tint-teal);
+  cursor: default;
+}
+
+.cmdk-egg .cmdk-item-title {
+  color: var(--accent2);
+}
+
+.cmdk-empty {
+  padding: 1rem 0.7rem;
+  font-size: 0.875rem;
+  color: var(--fg-faint);
+}
+
+.cmdk-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.55rem 1rem;
+  border-top: 1px solid var(--line);
+  background: var(--surface-dim);
+  font-size: 0.72rem;
+  color: var(--fg-faint);
+}
+
+/* ---------- Confetti canvas (Konami egg) ---------- */
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+/* ---------- TOFU tooltip (trust-demo egg) ---------- */
+.tofu-tip {
+  position: fixed;
+  z-index: 70;
+  width: min(24rem, 90vw);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--accent2) 45%, var(--line));
+  background: var(--surface);
+  color: var(--fg-soft);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  box-shadow: var(--lift-shadow);
+  transform: translate(-50%, calc(-100% + 0.4rem));
+  opacity: 0;
+  transition:
+    opacity 0.3s,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.tofu-tip.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -100%);
+}
+
+.tofu-tip-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent2);
+}
+
+/* ---------- Reduce-motion toggle (footers) ---------- */
+.motion-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fg-soft);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.motion-toggle:hover {
+  color: var(--fg);
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--line));
+}
+
+.motion-toggle .dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--fg-faint);
+  transition: background 0.15s;
+}
+
+.motion-toggle[aria-pressed='true'] .dot {
+  background: var(--gold-ink);
+}
+
+/* Always-dark navy landing footer variant */
+.site-footer .motion-toggle {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #a8aec9;
+}
+
+.site-footer .motion-toggle:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.site-footer .motion-toggle .dot {
+  background: #5f6788;
+}
+
+.site-footer .motion-toggle[aria-pressed='true'] .dot {
+  background: var(--gold);
+}
+
+/* ==========================================================================
+   8. Mock-window realism + hero texture
+   ========================================================================== */
+
+/* Toolbar row under the titlebar of mock app windows */
+.window-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 0.35rem;
+  gap: 0.15rem;
+  padding: 0.45rem 0.8rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.tb-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.45rem;
+  color: var(--fg-faint);
+}
+
+.tb-icon svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.tb-spacer {
+  flex: 1;
+}
+
+.tb-divider {
+  width: 1px;
+  height: 1.1rem;
+  margin-inline: 0.35rem;
+  background: var(--line);
+}
+
+.tb-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 8rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--line);
+  background: var(--surface-dim);
+  font-size: 0.72rem;
+  color: var(--fg-faint);
+}
+
+.tb-search svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+/* Segmented control (Key Manager mock) */
+.tb-segment {
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: 0.45rem;
+  border: 1px solid var(--line);
+  font-size: 0.72rem;
+}
+
+.tb-segment span {
+  padding: 0.28rem 0.7rem;
+  color: var(--fg-soft);
+}
+
+.tb-segment span.is-active {
+  background: var(--tint-blue);
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+
+/* Subtle dot pattern layered over the hero grid */
+.hero-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1.5px);
+  background-size: 18px 18px;
+  mask-image: radial-gradient(42rem 22rem at 78% 18%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(42rem 22rem at 78% 18%, #000 0%, transparent 72%);
+}
+
+/* Faint dot texture on tinted bands so flat sections have some grain */
+.band-tint,
+.band-gold {
+  background-image: radial-gradient(color-mix(in oklab, var(--fg-faint) 9%, transparent) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+/* ==========================================================================
+   9. Manual reduced-motion override (footer toggle).
+   `[data-motion='reduced']` mirrors the prefers-reduced-motion rules so the
+   toggle works even when the OS setting is off; `[data-motion='auto']`
+   re-enables effects for users whose OS requests reduced motion.
+   ========================================================================== */
+
+/* Smooth scrolling on docs pages too (landing sets it on .landing-root),
+   gated on both the OS preference and the manual toggle. */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion='reduced']) {
+    scroll-behavior: smooth;
+  }
+}
+
+:root[data-motion='reduced'] {
+  scroll-behavior: auto !important;
+}
+
+:root[data-motion='reduced'] *,
+:root[data-motion='reduced'] *::before,
+:root[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+:root[data-motion='reduced'] .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ==========================================================================
+   10. Print stylesheet — clean, ink-friendly docs
+   ========================================================================== */
+@media print {
+  :root,
+  :root[data-theme='dark'] {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-dim: #f4f4f4;
+    --fg: #111111;
+    --fg-soft: #333333;
+    --fg-faint: #555555;
+    --line: #cccccc;
+    color-scheme: light;
+  }
+
+  /* Hide chrome, navigation, and interactive-only elements */
+  .header,
+  .sidebar,
+  .right-sidebar,
+  .mobile-menu-toggle,
+  .pagination-links,
+  .site-footer,
+  footer,
+  nav,
+  .to-top,
+  .toast-region,
+  .cmdk,
+  .confetti-canvas,
+  .tofu-tip,
+  .skip-link,
+  starlight-theme-select,
+  .expressive-code .copy,
+  .edit-this-page {
+    display: none !important;
+  }
+
+  body,
+  .page,
+  .main-frame {
+    background: #ffffff !important;
+  }
+
+  .main-pane,
+  .content-panel,
+  main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  .sl-markdown-content {
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #111111;
+  }
+
+  .sl-markdown-content a {
+    color: #111111;
+    text-decoration: underline;
+  }
+
+  /* Show link targets for external URLs — useful on paper */
+  .sl-markdown-content a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #555555;
+    word-break: break-all;
+  }
+
+  .sl-markdown-content pre,
+  .sl-markdown-content code,
+  .expressive-code .frame {
+    background: #f4f4f4 !important;
+    color: #111111 !important;
+    border: 1px solid #cccccc;
+    box-shadow: none !important;
+  }
+
+  .card,
+  .widget,
+  .window,
+  .sl-markdown-content table,
+  .starlight-aside {
+    box-shadow: none !important;
+    border: 1px solid #cccccc !important;
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
 }
