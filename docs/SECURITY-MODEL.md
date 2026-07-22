@@ -68,6 +68,7 @@ RNP provides OpenPGP signing, encryption, and key management for Apple Mail on m
 ## What Is Protected
 
 - **Message confidentiality:** PGP/MIME encrypted messages can only be decrypted by holders of the recipient's secret key.
+- **Subject/header confidentiality on the wire:** Encrypted messages use protected headers (`protected-headers="v1"`, "Memory Hole"): the real Subject and other sensitive headers travel inside the encrypted payload; the outer message carries a generic placeholder Subject. Recipients, sender, and date remain visible for routing.
 - **Message integrity / authenticity:** PGP/MIME signed messages are verified against the sender's public key; the signature status is surfaced in Mail's banner.
 - **Secret key confidentiality at rest:** Secret key material is stored in librnp's GPG-compatible keyring and encrypted with the keyring passphrase, which is stored in the Keychain.
 - **Trust-state tamper detection:** The trust database is signed with an Ed25519 key derived at first launch. If `trust.json` or `trust.json.sig` is modified or deleted, the store resets to empty (fail-closed to unverified).
@@ -76,7 +77,7 @@ RNP provides OpenPGP signing, encryption, and key management for Apple Mail on m
 ## What Is NOT Protected
 
 - **Host compromise.** If an attacker controls the macOS kernel or the Mail.app process, they can observe plaintext while the extension processes messages.
-- **Metadata inside Mail.app.** Subject, headers, recipients, and message size are visible to Mail.app before encryption and after decryption.
+- **Metadata inside Mail.app.** Subject, headers, recipients, and message size are visible to Mail.app before encryption and after decryption. On the wire the Subject of encrypted messages is protected (see *What Is Protected*); recipients, sender, and date are not.
 - **Keyserver availability or correctness.** The default keyserver can be unavailable or return attacker-controlled keys. Users must verify fingerprints out-of-band.
 - **Side channels.** RNP does not implement constant-time protections above those provided by librnp/Botan.
 - **Phishing / UI spoofing.** MailKit renders the security banner; RNP supplies status text but cannot guarantee that a malicious Mail.app build will display it faithfully.
