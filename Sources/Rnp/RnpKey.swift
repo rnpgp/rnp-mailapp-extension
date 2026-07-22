@@ -183,6 +183,13 @@ public final class RnpKey {
         }
     }
 
+    /// Whether the key is expired (its validity period has ended).
+    public var isExpired: Bool {
+        get throws {
+            try validTill < Date()
+        }
+    }
+
     /// Human-readable revocation reason, if the key is revoked.
     public var revocationReason: String? {
         get throws {

@@ -287,6 +287,26 @@ public final class TrustStore {
         try saveLocked()
     }
 
+    /// Removes all trust records and conflicts associated with the given
+    /// fingerprint (e.g. when the key is deleted from the keyring).
+    public func removeRecords(forFpr fingerprint: String) throws {
+        lock.lock()
+        defer { lock.unlock() }
+        for email in database.records.keys {
+            if database.records[email]?.fingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame {
+                database.records.removeValue(forKey: email)
+            }
+        }
+        database.conflicts.removeAll {
+            $0.existingFingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame
+                || $0.newFingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame
+        }
+        database.history.removeAll {
+            $0.fingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame
+        }
+        try saveLocked()
+    }
+
     /// Resolves a conflict by accepting `fingerprint` as the new binding for
     /// `email`. The old binding is removed.
     public func resolveConflict(email: String, fingerprint: String) throws {
