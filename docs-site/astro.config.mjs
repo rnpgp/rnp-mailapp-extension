@@ -28,6 +28,18 @@ export default defineConfig({
         { icon: 'github', label: 'GitHub', href: 'https://github.com/rnpgp/swift-rnp' },
       ],
       customCss: ['./src/styles/global.css'],
+      components: {
+        // Adds back-to-top + reduced-motion toggle to the docs footer.
+        Footer: './src/components/overrides/Footer.astro',
+      },
+      head: [
+        // Shared interactivity layer (command palette, easter eggs,
+        // scroll-to-top, motion preference). Vanilla JS, deferred.
+        {
+          tag: 'script',
+          attrs: { src: '/js/site.js', defer: true },
+        },
+      ],
       expressiveCode: {
         styleOverrides: {
           borderRadius: '0.75rem',

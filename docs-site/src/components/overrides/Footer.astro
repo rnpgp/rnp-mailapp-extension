@@ -1,0 +1,39 @@
+---
+// Starlight footer override: renders the default docs footer, then adds a
+// small utility row — back-to-top link and a reduced-motion toggle (wired up
+// by /js/site.js, which is loaded on every page via the `head` config).
+import Default from '@astrojs/starlight/components/Footer.astro';
+---
+
+<Default><slot /></Default>
+
+<div class="docs-footer-utils not-content">
+  <a href="#_top" class="docs-footer-link">Back to top ↑</a>
+  <button type="button" class="motion-toggle" data-motion-toggle aria-pressed="false">
+    <span class="dot" aria-hidden="true"></span>
+    Reduce motion: <span data-motion-state>off</span>
+  </button>
+</div>
+
+<style>
+  .docs-footer-utils {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--sl-color-hairline);
+  }
+
+  .docs-footer-link {
+    font-family: var(--sl-font-mono);
+    font-size: 0.75rem;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+  }
+
+  .docs-footer-link:hover {
+    color: var(--sl-color-text-accent);
+  }
+</style>

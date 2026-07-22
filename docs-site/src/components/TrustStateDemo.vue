@@ -66,7 +66,7 @@ const info = computed(() => STATES[active.value]);
 </script>
 
 <template>
-  <div class="not-content widget">
+  <div class="not-content widget" data-tofu-demo>
     <div class="widget-header">
       <span class="mono-label">Trust states · Mail banner preview</span>
       <span class="live-dot" aria-hidden="true"></span>
