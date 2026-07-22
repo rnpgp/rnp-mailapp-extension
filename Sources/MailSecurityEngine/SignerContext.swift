@@ -37,6 +37,11 @@ public struct SignerContext: Codable, Equatable, Sendable {
     /// and has one. Lets the banner say when an expired signer's key
     /// actually expired.
     public let keyExpiration: Date?
+    /// `InvalidSignatureReason` raw value explaining *why* an `invalid`
+    /// signature failed verification (tampered content, unknown key,
+    /// revoked key, expired key). `nil` for non-invalid signatures and for
+    /// payloads written by extension versions predating the field.
+    public let invalidReason: String?
 
     public init(
         fingerprint: String?,
@@ -44,7 +49,8 @@ public struct SignerContext: Codable, Equatable, Sendable {
         isEncrypted: Bool? = nil,
         encryptionError: String? = nil,
         email: String? = nil,
-        keyExpiration: Date? = nil
+        keyExpiration: Date? = nil,
+        invalidReason: String? = nil
     ) {
         self.fingerprint = fingerprint
         self.status = status
@@ -52,5 +58,6 @@ public struct SignerContext: Codable, Equatable, Sendable {
         self.encryptionError = encryptionError
         self.email = email
         self.keyExpiration = keyExpiration
+        self.invalidReason = invalidReason
     }
 }

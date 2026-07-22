@@ -6,10 +6,12 @@
 //  indicator. Surfaces:
 //  - the message's encryption status (encrypted / not encrypted / decryption
 //    problems), when the handler supplies it;
-//  - per-signer signature + trust state;
+//  - per-signer signature + trust state, including the specific reason an
+//    invalid signature failed verification;
 //  - per-signer actions: "View Key in RNP" (deep link
 //    `rnpmail://review/<fpr>`), "Copy Fingerprint", "Mark as Verified"
-//    for unverified keys, and "Fetch signer key" for unknown signers.
+//    for unverified keys, "Fetch signer key" for unknown signers, and —
+//    for invalid signatures — "Report Issue" (a pre-filled GitHub issue).
 //
 //  Moved out of the MailPlugin appex into this SwiftPM target so the banner
 //  can be unit- and snapshot-tested without Mail.app. Kept free of MailKit
@@ -237,7 +239,13 @@ public final class MailSecurityBannerView: NSView {
             } else {
                 trust = .unverified
             }
-            model = mapSignerTrust(status: status, trust: trust ?? .unverified, keyExpiration: signer.context?.keyExpiration)
+            let invalidReason = signer.context?.invalidReason.flatMap(InvalidSignatureReason.init(rawValue:))
+            model = mapSignerTrust(
+                status: status,
+                trust: trust ?? .unverified,
+                keyExpiration: signer.context?.keyExpiration,
+                invalidReason: invalidReason
+            )
         } else {
             model = SignerTrustViewModel(
                 label: "Trust state unavailable",
@@ -315,10 +323,14 @@ public final class MailSecurityBannerView: NSView {
     private func actionButtons(for signer: Signer, model: SignerTrustViewModel, trust: TrustState?) -> [NSButton] {
         var buttons: [NSButton] = []
 
-        // Unknown signer: offer to fetch the key from public keyservers when
-        // the host wired the action and there is an identifier to look up.
         let status = signer.context.flatMap { RnpSignatureStatus(rawValue: $0.status) } ?? .unknown
-        if status == .signerUnknown, onFetchSignerKey != nil, let identifier = fetchIdentifier(for: signer) {
+        let fingerprint = signer.context?.fingerprint.flatMap { $0.isEmpty ? nil : $0 }
+
+        // Unknown signer — or an invalid signature whose key is not in the
+        // keyring: offer to fetch the key from public keyservers when the
+        // host wired the action and there is an identifier to look up.
+        let keyFetchable = status == .signerUnknown || (status == .invalid && fingerprint == nil)
+        if keyFetchable, onFetchSignerKey != nil, let identifier = fetchIdentifier(for: signer) {
             let fetch = NSButton(title: "Fetch signer key", target: self, action: #selector(fetchSignerKey(_:)))
             fetch.identifier = NSUserInterfaceItemIdentifier(identifier)
             fetch.bezelStyle = .inline
@@ -327,33 +339,43 @@ public final class MailSecurityBannerView: NSView {
             buttons.append(fetch)
         }
 
-        guard let fingerprint = signer.context?.fingerprint, !fingerprint.isEmpty else {
-            return buttons
+        if let fingerprint {
+            if model.reviewDeepLink {
+                let link = NSButton(title: "View Key in RNP", target: self, action: #selector(openReviewLink(_:)))
+                link.identifier = NSUserInterfaceItemIdentifier(fingerprint)
+                link.bezelStyle = .inline
+                link.setAccessibilityIdentifier("rnp.banner.view-key.\(fingerprint)")
+                link.setAccessibilityHelp("Opens the key detail in the RNP app.")
+                buttons.append(link)
+            }
+
+            let copy = NSButton(title: "Copy Fingerprint", target: self, action: #selector(copyFingerprint(_:)))
+            copy.identifier = NSUserInterfaceItemIdentifier(fingerprint)
+            copy.bezelStyle = .inline
+            copy.setAccessibilityIdentifier("rnp.banner.copy-fingerprint.\(fingerprint)")
+            copy.setAccessibilityHelp("Copies the signer's key fingerprint to the clipboard.")
+            buttons.append(copy)
+
+            if trustStore != nil, trust == .unverified {
+                let verify = NSButton(title: "Mark as Verified", target: self, action: #selector(markVerified(_:)))
+                verify.identifier = NSUserInterfaceItemIdentifier(fingerprint)
+                verify.bezelStyle = .inline
+                verify.setAccessibilityIdentifier("rnp.banner.mark-verified.\(fingerprint)")
+                verify.setAccessibilityHelp("Confirms that you verified this key's fingerprint and marks the key as verified.")
+                buttons.append(verify)
+            }
         }
 
-        if model.reviewDeepLink {
-            let link = NSButton(title: "View Key in RNP", target: self, action: #selector(openReviewLink(_:)))
-            link.identifier = NSUserInterfaceItemIdentifier(fingerprint)
-            link.bezelStyle = .inline
-            link.setAccessibilityIdentifier("rnp.banner.view-key.\(fingerprint)")
-            link.setAccessibilityHelp("Opens the key detail in the RNP app.")
-            buttons.append(link)
-        }
-
-        let copy = NSButton(title: "Copy Fingerprint", target: self, action: #selector(copyFingerprint(_:)))
-        copy.identifier = NSUserInterfaceItemIdentifier(fingerprint)
-        copy.bezelStyle = .inline
-        copy.setAccessibilityIdentifier("rnp.banner.copy-fingerprint.\(fingerprint)")
-        copy.setAccessibilityHelp("Copies the signer's key fingerprint to the clipboard.")
-        buttons.append(copy)
-
-        if trustStore != nil, trust == .unverified {
-            let verify = NSButton(title: "Mark as Verified", target: self, action: #selector(markVerified(_:)))
-            verify.identifier = NSUserInterfaceItemIdentifier(fingerprint)
-            verify.bezelStyle = .inline
-            verify.setAccessibilityIdentifier("rnp.banner.mark-verified.\(fingerprint)")
-            verify.setAccessibilityHelp("Confirms that you verified this key's fingerprint and marks the key as verified.")
-            buttons.append(verify)
+        // Invalid signature: offer a pre-filled issue report so the status
+        // and failure reason reach support without the user describing them.
+        if status == .invalid {
+            let identifier = reportIdentifier(for: signer)
+            let report = NSButton(title: "Report Issue", target: self, action: #selector(reportIssue(_:)))
+            report.identifier = NSUserInterfaceItemIdentifier(identifier)
+            report.bezelStyle = .inline
+            report.setAccessibilityIdentifier("rnp.banner.report-issue.\(identifier)")
+            report.setAccessibilityHelp("Opens a pre-filled issue report in your browser.")
+            buttons.append(report)
         }
 
         return buttons
@@ -453,6 +475,58 @@ public final class MailSecurityBannerView: NSView {
                 refreshContent()
             }
         }
+    }
+
+    /// Identifier for the "Report Issue" button: the fingerprint when
+    /// known, otherwise the signer label.
+    private func reportIdentifier(for signer: Signer) -> String {
+        if let fingerprint = signer.context?.fingerprint, !fingerprint.isEmpty {
+            return fingerprint
+        }
+        return signer.label
+    }
+
+    @objc private func reportIssue(_ sender: NSButton) {
+        guard let identifier = sender.identifier?.rawValue,
+              let signer = signers.first(where: { reportIdentifier(for: $0) == identifier }),
+              let url = Self.reportIssueURL(for: signer)
+        else {
+            return
+        }
+        NSWorkspace.shared.open(url)
+    }
+
+    /// Pre-filled GitHub issue URL for the "Report Issue" action of an
+    /// invalid signature, carrying the verification status and failure
+    /// reason so the report is actionable without the user having to
+    /// describe them.
+    static func reportIssueURL(for signer: Signer) -> URL? {
+        let status = signer.context.flatMap { RnpSignatureStatus(rawValue: $0.status) } ?? .unknown
+        var components = URLComponents(
+            string: "https://github.com/rnpgp/rnp-mailapp-extension/issues/new"
+        )
+        components?.queryItems = [
+            URLQueryItem(name: "title", value: "Invalid OpenPGP signature in Apple Mail"),
+            URLQueryItem(name: "body", value: """
+            ## What happened
+
+            Mail showed an "Invalid signature" warning for a message.
+
+            - Signer: \(signer.label)
+            - Signature status: \(status.rawValue)
+            - Failure reason: \(signer.context?.invalidReason ?? "unknown")
+            - Signer key fingerprint: \(signer.context?.fingerprint ?? "unknown")
+
+            ## What you expected
+
+            The signature to verify.
+
+            ## Additional context
+
+            (Screenshots, whether the sender recently changed or revoked their key, etc.)
+            """),
+        ]
+        return components?.url
     }
 }
 
