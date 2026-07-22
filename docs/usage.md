@@ -44,8 +44,12 @@ Use the import (arrow-down) menu to import an armored key **from the
 clipboard** or **from a file**. Both public keys (recipients' keys) and secret
 keys (your own, e.g. exported from another OpenPGP tool) are accepted.
 
-Imported secret keys keep whatever passphrase protection they arrived with;
-see [Known limitations](#known-limitations).
+Imported secret keys keep whatever passphrase protection they arrived with.
+When a key's passphrase differs from the keyring passphrase, the app asks for
+the key's passphrase (showing its user ID and fingerprint) and offers to save
+it in the Keychain — or to re-protect the key with the keyring passphrase, so
+you only ever need one passphrase; see
+[Passphrases and the Keychain](#passphrases-and-the-keychain).
 
 ### Exporting keys
 
@@ -143,12 +147,18 @@ Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RnpMail`) —
 never in preferences or plain files. You can opt into Touch ID when unlocking
 during onboarding.
 
+Imported keys protected by a different (foreign) passphrase are unlocked once
+via a prompt in the app; the entered passphrase is then either stored in the
+Keychain under the key's fingerprint (the Mail extension reads it from there
+when signing or decrypting) or replaced by re-protecting the key with the
+keyring passphrase.
+
 ## Known limitations
 
-- **One keyring passphrase.** All generated keys share the single random
-  passphrase in the Keychain. Imported keys keep the passphrase they arrived
-  with, and there is no UI to enter it — operations needing such a key's
-  secret material can fail.
+- **One passphrase per key.** Imported keys with a foreign passphrase need a
+  one-time unlock prompt in the app; there is no passphrase prompt inside
+  Mail itself, so a key whose passphrase was never entered (prompt skipped)
+  cannot sign or decrypt.
 - **No SmartCard/HSM support.** Only software keys in the local keyring can
   be used.
 - **Inline PGP is receive-mostly.** The extension sends PGP/MIME. Decoding

@@ -218,6 +218,39 @@ public final class RnpKey {
         }
     }
 
+    // MARK: - Protection
+
+    /// Whether the key's secret material is passphrase-protected.
+    public var isProtected: Bool {
+        get throws {
+            var result = false
+            try rnpCheck(rnp_key_is_protected(handle, &result), operation: "key is protected")
+            return result
+        }
+    }
+
+    /// Attempts to unlock the key's secret material with `password`.
+    ///
+    /// Succeeds without a password check for unprotected keys (unlocking is
+    /// a no-op for them, per librnp semantics).
+    ///
+    /// - Returns: `true` when the password decrypted the secret material,
+    ///   `false` when it did not (librnp reports a bad password).
+    public func unlock(password: String) -> Bool {
+        rnp_key_unlock(handle, password) == rnpStatusSuccess
+    }
+
+    /// Re-protects the key's secret material with `password`.
+    ///
+    /// The key must be unlocked first (see `unlock(password:)`); librnp's
+    /// default cipher/hash and iteration count are used.
+    public func protect(password: String) throws {
+        try rnpCheck(
+            rnp_key_protect(handle, password, nil, nil, nil, 0),
+            operation: "key protect"
+        )
+    }
+
     // MARK: - Lifecycle
 
     /// Revokes the key, adding a revocation signature to the keyring.

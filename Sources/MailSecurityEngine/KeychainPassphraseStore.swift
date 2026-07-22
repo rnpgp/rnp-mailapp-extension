@@ -14,6 +14,7 @@
 //
 
 import Foundation
+import Rnp
 import Security
 
 /// A non-fatal warning surfaced when Touch ID storage cannot be used or when
@@ -138,9 +139,99 @@ public enum KeychainPassphraseStore {
     }
 
     /// Deletes the stored passphrase (e.g. when wiping the keyring).
+    ///
+    /// Per-key passphrases stored under key fingerprints are removed as
+    /// well: with the keyring gone they no longer protect anything.
     public static func reset() {
         delete(account: plainAccount)
         delete(account: biometricAccount)
+        deleteAllKeyPassphrases()
+    }
+
+    // MARK: - Per-key passphrases
+
+    /// Keychain account holding the passphrase of one specific key.
+    ///
+    /// Distinct per-key items share the service with the keyring passphrase;
+    /// the account prefix keeps them apart.
+    private static func keyAccount(forFingerprint fingerprint: String) -> String {
+        "key-passphrase." + fingerprint.uppercased()
+    }
+
+    /// The passphrase stored for the key with the given fingerprint, or
+    /// `nil` when the key has no per-key passphrase.
+    public static func passphrase(forKeyFingerprint fingerprint: String) -> String? {
+        read(account: keyAccount(forFingerprint: fingerprint))
+    }
+
+    /// Stores a per-key passphrase for the key with the given fingerprint,
+    /// replacing any existing entry.
+    ///
+    /// Per-key passphrases are always stored in a plain Keychain item: they
+    /// must be readable by the Mail extension without user interaction, like
+    /// the keyring passphrase itself.
+    ///
+    /// - Returns: `nil` on success, or a warning describing the failure.
+    @discardableResult
+    public static func setPassphrase(_ passphrase: String, forKeyFingerprint fingerprint: String) -> KeychainWarning? {
+        do {
+            try store(passphrase, account: keyAccount(forFingerprint: fingerprint), accessControl: nil)
+            return nil
+        } catch {
+            return .storageFailed(error.localizedDescription)
+        }
+    }
+
+    /// Deletes the per-key passphrase stored for the given fingerprint
+    /// (e.g. after the key has been re-protected or removed).
+    public static func removePassphrase(forKeyFingerprint fingerprint: String) {
+        delete(account: keyAccount(forFingerprint: fingerprint))
+    }
+
+    /// Removes every per-key passphrase item (all accounts with the
+    /// per-key prefix under this service).
+    private static func deleteAllKeyPassphrases() {
+        var query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecMatchLimit: kSecMatchLimitAll,
+            kSecReturnAttributes: true,
+        ]
+        if let accessGroup {
+            query[kSecAttrAccessGroup] = accessGroup
+        }
+        var item: CFTypeRef?
+        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
+              let items = item as? [[CFString: Any]]
+        else {
+            return
+        }
+        for attributes in items {
+            guard let account = attributes[kSecAttrAccount] as? String,
+                  account.hasPrefix("key-passphrase.")
+            else {
+                continue
+            }
+            delete(account: account)
+        }
+    }
+
+    /// Passphrase provider resolving per-key passphrases before the keyring
+    /// passphrase.
+    ///
+    /// When librnp asks for the passphrase of a key that has a per-key
+    /// passphrase stored under its fingerprint, that passphrase is returned;
+    /// every other request (including requests without a key) is answered
+    /// with the shared keyring passphrase.
+    public static func resolvingProvider() -> Rnp.KeyedPassphraseProvider {
+        { _, fingerprint in
+            if let fingerprint,
+               let perKey = passphrase(forKeyFingerprint: fingerprint)
+            {
+                return perKey
+            }
+            return sharedPassphrase()
+        }
     }
 
     // MARK: - Private

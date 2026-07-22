@@ -25,26 +25,29 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     }
 
     /// Engine on the shared keyring directory, with passphrases from the
-    /// Keychain. Returns `nil` when the keyring is unavailable so the
-    /// extension can still launch and degrade gracefully.
+    /// Keychain. The keyed provider answers per-key passphrase requests for
+    /// imported keys protected by a foreign passphrase before falling back
+    /// to the keyring passphrase. Returns `nil` when the keyring is
+    /// unavailable so the extension can still launch and degrade gracefully.
     private static func makeCore() -> MessageSecurityCore? {
-        let provider: (String) -> String? = { _ in KeychainPassphraseStore.sharedPassphrase() }
+        let provider: Rnp.KeyedPassphraseProvider = KeychainPassphraseStore.resolvingProvider()
         let stateRecorder = SecurityStateRecorder(directory: AppGroup.extensionStateDirectory())
-        if let engine = try? MailSecurityEngine(
-            directory: AppGroup.keyringDirectory(),
-            passphraseProvider: provider
-        ) {
+        if let engine = try? makeEngine(directory: AppGroup.keyringDirectory(), provider: provider) {
             return MessageSecurityCore(engine: engine, stateRecorder: stateRecorder)
         }
         let fallback = FileManager.default.temporaryDirectory
             .appendingPathComponent("rnp-mail-extension-fallback")
-        guard let engine = try? MailSecurityEngine(
-            directory: fallback,
-            passphraseProvider: provider
-        ) else {
+        guard let engine = try? makeEngine(directory: fallback, provider: provider) else {
             return nil
         }
         return MessageSecurityCore(engine: engine, stateRecorder: stateRecorder)
+    }
+
+    private static func makeEngine(
+        directory: URL,
+        provider: @escaping Rnp.KeyedPassphraseProvider
+    ) throws -> MailSecurityEngine {
+        MailSecurityEngine(keyManager: try KeyManager(directory: directory, keyedPassphraseProvider: provider))
     }
 
     // MARK: - Encoding Messages

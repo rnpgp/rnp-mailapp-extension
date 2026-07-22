@@ -18,6 +18,7 @@ RNP provides OpenPGP signing, encryption, and key management for Apple Mail on m
 |---|---|---|
 | OpenPGP secret keys | Shared app-group keyring (`pubring.gpg`, `secring.gpg`) | Critical: loss or extraction allows decryption and impersonation. |
 | Keyring passphrase | macOS Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RnpMail`) | Critical: protects secret key material in the keyring. |
+| Per-key passphrases | macOS Keychain, one generic-password item per key fingerprint | Critical: protects imported keys that were not re-protected with the keyring passphrase. |
 | Trust database | Shared app-group container (`trust.json` + `trust.json.sig`) | High: tampering can downgrade a key from verified to unverified or cause denial of service. |
 | Revocation certificates | Shared app-group container (`<fingerprint>-revocation.asc`) | High: loss prevents future revocation of the corresponding key. |
 | Public keys / recipient keys | Shared app-group keyring | Medium: disclosure reveals contact metadata but not message content. |

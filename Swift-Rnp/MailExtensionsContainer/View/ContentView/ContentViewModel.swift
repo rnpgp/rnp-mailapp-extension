@@ -278,6 +278,35 @@ final class ContentViewModel: ObservableObject {
 
     // MARK: - Import
 
+    /// The imported secret key currently waiting for its foreign passphrase,
+    /// driving the unlock prompt sheet. `nil` when no key is pending.
+    var foreignPassphraseRequest: LockedSecretKeyInfo? {
+        manager.foreignPassphraseRequests.first
+    }
+
+    /// Unlocks the pending key with `passphrase`, either storing it in the
+    /// Keychain as the key's per-key passphrase or re-protecting the key
+    /// with the keyring passphrase.
+    ///
+    /// - Returns: `true` when the key was unlocked; `false` when the
+    ///   passphrase was wrong (the prompt stays open).
+    func resolveForeignPassphrase(
+        _ request: LockedSecretKeyInfo,
+        passphrase: String,
+        reprotectWithKeyringPassphrase: Bool
+    ) -> Bool {
+        let succeeded = reprotectWithKeyringPassphrase
+            ? manager.reprotectForeignKey(passphrase, for: request)
+            : manager.storeForeignPassphrase(passphrase, for: request)
+        propagateError()
+        return succeeded
+    }
+
+    /// Dismisses the pending unlock prompt without unlocking the key.
+    func skipForeignPassphrase(_ request: LockedSecretKeyInfo) {
+        manager.skipForeignPassphrase(for: request)
+    }
+
     /// Imports armored key data from the general pasteboard.
     func importFromPasteboard() {
         guard let text = NSPasteboard.general.string(forType: .string),
