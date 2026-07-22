@@ -71,6 +71,12 @@ struct MailExtensionsContainerApp: App {
                         object: nil
                     )
                 }
+                Button("menu.security") {
+                    NotificationCenter.default.post(
+                        name: .showSecuritySettings,
+                        object: nil
+                    )
+                }
                 Button("menu.licenses") {
                     NotificationCenter.default.post(
                         name: .showLicenses,

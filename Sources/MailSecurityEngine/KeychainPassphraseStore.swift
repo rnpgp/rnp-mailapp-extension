@@ -25,6 +25,16 @@
 //  in unsigned processes. In that case the store falls back to the plain
 //  item and returns a warning instead of losing the passphrase.
 //
+//  Per-operation verification (opt-in, `OperationVerification`): instead of
+//  caching the unlocked passphrase for the whole process lifetime, the store
+//  requires a fresh user-presence verification once per session-timeout
+//  window before handing it out. With biometric storage the fresh Keychain
+//  read itself prompts for Touch ID; with plain storage the store evaluates
+//  LocalAuthentication directly (Touch ID, falling back to the login
+//  password). A burst of librnp passphrase requests within the window — one
+//  sign/encrypt/decrypt operation — triggers a single prompt, and a
+//  manually entered (key-verified) passphrase also counts as verification.
+//
 
 import Foundation
 import LocalAuthentication
@@ -153,7 +163,114 @@ public enum KeychainPassphraseStore {
         sessionLock.lock()
         cachedPassphrase = nil
         lastAuthenticationFailure = nil
+        lastUserPresenceVerification = nil
         sessionLock.unlock()
+    }
+
+    // MARK: - Per-operation verification
+
+    /// Time of the last successful user-presence verification (Touch ID,
+    /// the login password, or a manually entered key-verified passphrase).
+    /// Internal so tests can age the timestamp without sleeping.
+    static var lastUserPresenceVerification: Date?
+
+    /// The prompt step of `verifyOperationAccess()`. Internal so tests can
+    /// stub out the system prompt; `resetOperationVerifier()` restores the
+    /// system implementation.
+    static var operationVerifier: () -> Bool = KeychainPassphraseStore.defaultOperationVerifier
+
+    /// Restores the system prompt implementation after a test stubbed
+    /// `operationVerifier`.
+    static func resetOperationVerifier() {
+        operationVerifier = KeychainPassphraseStore.defaultOperationVerifier
+    }
+
+    private static func noteUserPresenceVerification() {
+        sessionLock.lock()
+        lastUserPresenceVerification = Date()
+        sessionLock.unlock()
+    }
+
+    /// Whether a user-presence verification happened within the configured
+    /// session timeout, so the current operation needs no new prompt.
+    private static func userPresenceVerificationFresh() -> Bool {
+        sessionLock.lock()
+        let last = lastUserPresenceVerification
+        sessionLock.unlock()
+        guard let last else {
+            return false
+        }
+        return Date().timeIntervalSince(last) < OperationVerification.sessionTimeout()
+    }
+
+    /// Gate for secret-key operations when per-operation verification is
+    /// enabled (`OperationVerification`).
+    ///
+    /// Returns `true` immediately when the setting is off or the last
+    /// verification is still within the session-timeout window. Otherwise it
+    /// prompts once (Touch ID, with the login-password fallback) and records
+    /// the outcome: success re-arms the window; failure starts the usual
+    /// short backoff so a cancelled prompt does not re-appear for every
+    /// librnp request in the same operation.
+    static func verifyOperationAccess() -> Bool {
+        guard OperationVerification.isEnabled() else {
+            return true
+        }
+        if userPresenceVerificationFresh() {
+            return true
+        }
+        if withinAuthenticationBackoff() {
+            return false
+        }
+        let verified = operationVerifier()
+        if verified {
+            noteUserPresenceVerification()
+        } else {
+            noteAuthenticationFailure()
+        }
+        return verified
+    }
+
+    /// System prompt backing `verifyOperationAccess()`.
+    ///
+    /// With biometric storage a fresh read of the ACL-protected item (which
+    /// bypasses the session cache) shows the Touch ID prompt and returns the
+    /// passphrase straight into the cache. With plain storage the store
+    /// evaluates LocalAuthentication directly instead.
+    private static func defaultOperationVerifier() -> Bool {
+        if isBiometricProtectionEnabled {
+            switch read(account: biometricAccount, allowingAuthenticationUI: true) {
+            case .found(let passphrase):
+                cache(passphrase)
+                return true
+            case .notFound, .failed:
+                return false
+            }
+        }
+        return evaluateUserPresence(
+            reason: "Authorize signing and decryption with your OpenPGP keys"
+        )
+    }
+
+    /// Synchronously evaluates device-owner authentication (Touch ID,
+    /// falling back to the login password). The passphrase provider is
+    /// synchronous, so the async LocalAuthentication API is bridged with a
+    /// semaphore; the prompt is shown by the system and does not need the
+    /// calling run loop.
+    private static func evaluateUserPresence(reason: String) -> Bool {
+        let context = LAContext()
+        var laError: NSError?
+        guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &laError) else {
+            return false
+        }
+        var verified = false
+        let semaphore = DispatchSemaphore(value: 0)
+        context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, _ in
+            verified = success
+            semaphore.signal()
+        }
+        semaphore.wait()
+        return verified
     }
 
     // MARK: - Shared passphrase
@@ -181,7 +298,15 @@ public enum KeychainPassphraseStore {
     /// this as "keyring locked") and stays silent for a short backoff so a
     /// burst of librnp requests does not spam prompts. It never creates a
     /// new passphrase while one is stored but locked.
+    ///
+    /// When per-operation verification is enabled (`OperationVerification`)
+    /// and the last verification is older than the session timeout, the
+    /// user is prompted first; a cancelled or failed prompt returns an
+    /// empty string, exactly like a locked keyring.
     public static func sharedPassphrase() -> String {
+        guard verifyOperationAccess() else {
+            return ""
+        }
         if let cached = cachedValue() {
             return cached
         }
@@ -216,6 +341,10 @@ public enum KeychainPassphraseStore {
         }
         switch read(account: biometricAccount, allowingAuthenticationUI: allowingAuthenticationUI) {
         case .found(let passphrase):
+            if allowingAuthenticationUI {
+                // Reading the ACL-protected item required user presence.
+                noteUserPresenceVerification()
+            }
             cache(passphrase)
             return .success(passphrase)
         case .failed(let status):
@@ -325,9 +454,12 @@ public enum KeychainPassphraseStore {
     ///
     /// Used by the manual-entry fallback after the passphrase has been
     /// verified against a key: the Keychain item stays Touch ID-protected,
-    /// but this process stops prompting until it exits.
+    /// but this process stops prompting until it exits. The manual entry
+    /// also counts as user verification for per-operation verification, so
+    /// the next operations within the session-timeout window do not prompt.
     public static func cacheVerifiedPassphrase(_ passphrase: String) {
         cache(passphrase)
+        noteUserPresenceVerification()
     }
 
     /// Deletes the stored passphrase (e.g. when wiping the keyring).
@@ -423,8 +555,15 @@ public enum KeychainPassphraseStore {
     /// with the shared keyring passphrase. When the keyring is locked behind
     /// Touch ID and the user cancels, `nil` is returned so librnp aborts the
     /// operation gracefully instead of trying an empty passphrase.
+    ///
+    /// Per-operation verification (`OperationVerification`) gates every
+    /// request, including keys with a per-key passphrase: a cancelled or
+    /// failed prompt returns `nil` and aborts the operation.
     public static func resolvingProvider() -> Rnp.KeyedPassphraseProvider {
         { _, fingerprint in
+            guard verifyOperationAccess() else {
+                return nil
+            }
             if let fingerprint,
                let perKey = passphrase(forKeyFingerprint: fingerprint)
             {

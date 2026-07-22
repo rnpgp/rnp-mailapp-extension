@@ -206,6 +206,28 @@ final class ContentViewModel: ObservableObject {
         }
     }
 
+    /// Whether each sign/encrypt/decrypt operation requires user
+    /// verification (Touch ID, with the login-password fallback), re-armed
+    /// after the session timeout. Stored in the app-group defaults so the
+    /// extension process reads the same value.
+    var requireTouchIDPerOperation: Bool {
+        get { OperationVerification.isEnabled() }
+        set {
+            OperationVerification.setEnabled(newValue)
+            objectWillChange.send()
+        }
+    }
+
+    /// How long a successful verification authorizes secret-key operations,
+    /// in seconds.
+    var operationVerificationTimeout: TimeInterval {
+        get { OperationVerification.sessionTimeout() }
+        set {
+            OperationVerification.setSessionTimeout(newValue)
+            objectWillChange.send()
+        }
+    }
+
     /// Called on launch to decide whether to show onboarding.
     func checkOnboarding() {
         if !hasOnboarded && manager.keys.isEmpty {

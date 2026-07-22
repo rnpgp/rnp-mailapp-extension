@@ -39,6 +39,12 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     /// A successful unlock is cached for the process lifetime. Manual
     /// passphrase entry lives in the container app — unlock there and the
     /// next message access here succeeds.
+    ///
+    /// When "require Touch ID for each operation" is enabled in the
+    /// container app's security settings, the provider instead prompts once
+    /// per session-timeout window (default 30 seconds) before handing out a
+    /// passphrase, so every sign/encrypt/decrypt operation is freshly
+    /// authorized.
     private static func makeCore() -> MessageSecurityCore? {
         let provider: Rnp.KeyedPassphraseProvider = KeychainPassphraseStore.resolvingProvider()
         let stateRecorder = SecurityStateRecorder(directory: AppGroup.extensionStateDirectory())
