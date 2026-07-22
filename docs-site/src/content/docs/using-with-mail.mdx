@@ -1,0 +1,112 @@
+---
+title: Using with Mail
+description: Enable the extension, sign and encrypt from the compose window, and read the signature banner.
+---
+
+The RNP OpenPGP extension lives inside Mail.app: it signs and encrypts
+outgoing mail, and decrypts and verifies incoming mail — no separate mail
+client needed.
+
+## Enabling the extension
+
+The extension is registered when you launch the RNP app, but Mail does not
+activate it automatically:
+
+1. Open **Mail → Settings → Extensions**.
+2. Check **RNP OpenPGP** and click **Done**.
+
+If the entry does not appear, launch the RNP app once more and re-open Mail's
+settings. Mail.app refuses to load extensions that are unsigned or ad-hoc
+signed, so self-built copies must be signed with a development team — see
+[Build from source](/getting-started/installation/).
+
+## Sending signed and encrypted mail
+
+Compose a message in Mail as usual. The security button in the compose window
+offers two per-message toggles:
+
+- **Sign** — attaches a digital signature made with your key. Recipients can
+  verify that the message really came from you and was not altered.
+- **Encrypt** — encrypts the message so only the recipients can read it.
+  Encryption requires the recipients' public keys: import them in the RNP app
+  first, or fetch them from a keyserver (see [Keyservers](/keyserver/)).
+
+Outgoing messages are sent as **PGP/MIME** (RFC 3156), which preserves
+attachments and non-ASCII text exactly.
+
+### Protected Subject lines
+
+Outgoing encrypted messages use protected headers
+(`protected-headers="v1"`, the "Memory Hole" scheme also used by K-9 Mail and
+Thunderbird): the real Subject and other sensitive headers move into the
+encrypted payload, and the outer message carries a generic placeholder
+("Encrypted message"). Recipients whose mail app understands protected headers
+see the real subject after decryption; others see the placeholder. Recipients,
+sender, and date remain visible — the mail system needs them for routing and
+for the message list.
+
+## Reading signed and encrypted mail
+
+Incoming OpenPGP mail is handled automatically:
+
+- **Encrypted** mail addressed to one of your keys is decrypted in place.
+- **Signed** mail is verified, and the result is shown in a banner above the
+  message:
+  - a **green banner** when the signature is valid and the signer's key is one
+    you have verified,
+  - a **neutral banner** when the signature is valid but the key is unverified
+    (the normal state for new correspondents — see
+    [Trust & Verification](/trust-verification/)),
+  - a **warning banner** when the signature is invalid, the message was
+    altered, or the signer's key conflicts with a key you already trust.
+
+Both PGP/MIME and inline-PGP (armored blocks in `text/plain` parts, including
+inside `multipart/mixed`) messages are understood on receipt.
+
+## Banner actions
+
+The signature banner is not just a status display — depending on the state it
+offers actions that jump straight to the next step:
+
+- **Fetch signer key** — when a signed message arrives from a key you don't
+  have, fetch it from the keyserver without leaving Mail. The result is shown
+  inline, and the button re-enables so you can retry after a transient
+  failure.
+- **View Key in RNP** — deep-links into the RNP app's detail sheet for the
+  signer's key.
+- **Copy fingerprint** — copies the signer's fingerprint for an out-of-band
+  comparison.
+- **Mark as Verified** — upgrade the signer's key to *verified* once you have
+  confirmed the fingerprint.
+- **Report Issue** — opens a pre-filled GitHub issue when something looks
+  wrong, so the report is actionable without you having to describe the state
+  by hand.
+
+## Trusting keys from Mail
+
+RNP uses trust-on-first-use: the first key seen for an email address works
+immediately and is recorded as *unverified*. To raise assurance, compare the
+fingerprint with the owner over a trusted channel and mark the key as
+verified — from the banner or the key's detail sheet.
+
+If a *different* key later appears for the same address, RNP raises a
+conflict: the app shows a warning, the address is flagged, and encryption to
+it is blocked until you verify the new fingerprint. This protects against
+silent key substitution. The full model is described in
+[Trust & Verification](/trust-verification/).
+
+## Known limitations
+
+- **One passphrase per key.** Imported keys with a foreign passphrase need a
+  one-time unlock prompt in the app; there is no passphrase prompt inside Mail
+  itself, so a key whose passphrase was never entered (prompt skipped) cannot
+  sign or decrypt.
+- **Inline PGP is receive-mostly.** The extension sends PGP/MIME. Decoding
+  accepts both PGP/MIME and inline PGP; inline-PGP *sending* exists in the
+  engine for single-part text messages only.
+- **Metadata mostly stays visible to Mail.** Recipients and message sizes are
+  handled by Mail.app outside the encrypted payload. Subject lines of
+  encrypted messages are protected on the wire, but Mail.app still sees them
+  before encryption and after decryption.
+- **No SmartCard/HSM support.** Only software keys in the local keyring can be
+  used.
