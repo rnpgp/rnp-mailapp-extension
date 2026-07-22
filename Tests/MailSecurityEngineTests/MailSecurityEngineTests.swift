@@ -872,6 +872,44 @@ final class MailSecurityEngineTests: XCTestCase {
         XCTAssertTrue(encoded.isEncrypted)
     }
 
+    func testRejectConflictEncryptsToOldKey() throws {
+        // Alice has Bob's old key. A new key for Bob appears, raising a
+        // conflict; rejecting it keeps the old binding, so encryption
+        // proceeds to Bob's old key instead of the rejected new key.
+        let alice = try makeEngine(keys: [Self.alice])
+        let bob = try makeEngine(keys: [Self.bob])
+        try importPublicKey(of: bob, into: alice)
+
+        let bob2 = try makeEngine(keys: [Self.bob])
+        let bob2Fingerprint = try XCTUnwrap(bob2.keyManager.listKeys().first?.fingerprint)
+        let bob2Public = try bob2.keyManager.exportKey(fingerprint: bob2Fingerprint)
+        _ = try alice.keyManager.importKeys(bob2Public)
+        XCTAssertTrue(alice.keyManager.trustStore.hasConflict(forEmail: Self.bobEmail))
+
+        try alice.keyManager.trustStore.rejectConflict(email: Self.bobEmail, newFpr: bob2Fingerprint)
+        XCTAssertFalse(alice.keyManager.trustStore.hasConflict(forEmail: Self.bobEmail))
+        XCTAssertEqual(alice.keyManager.trustStore.state(forFpr: bob2Fingerprint), .problem)
+
+        let encoded = try alice.encode(EncodingRequest(
+            message: plainMessage(),
+            sender: Self.aliceEmail,
+            recipients: [Self.bobEmail],
+            sign: false,
+            encrypt: true
+        ))
+        XCTAssertTrue(encoded.isEncrypted)
+
+        // The old key can decrypt the message...
+        let decoded = try XCTUnwrap(bob.decode(encoded.rawData))
+        XCTAssertTrue(decoded.security.isEncrypted)
+        XCTAssertNil(decoded.security.encryptionError)
+        XCTAssertTrue(utf8(decoded.data).contains("Hello, Bob!"))
+
+        // ...the rejected new key cannot.
+        let rejected = try XCTUnwrap(bob2.decode(encoded.rawData))
+        XCTAssertNotNil(rejected.security.encryptionError)
+    }
+
     // MARK: - Signer trust view model mapping
 
     func testSignerTrustMappingExhaustive() {
