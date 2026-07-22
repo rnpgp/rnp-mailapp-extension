@@ -1,6 +1,6 @@
 #!/bin/bash
 # scripts/release-appstore.sh
-# Build, sign, and upload a Mac App Store release of RnpMail.
+# Build, sign, and upload a Mac App Store release of RNP.
 #
 # Environment variables (all optional for local unsigned dry-runs):
 #   DEVELOPMENT_TEAM       Apple Team ID
@@ -28,10 +28,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 PROJECT="${REPO_ROOT}/Swift-Rnp/Swift-Rnp.xcodeproj"
-SCHEME="Ribose container"
+SCHEME="RNP"
 CONFIG="AppStore"
 BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build"
-ARCHIVE_PATH="${BUILD_DIR}/RnpMail-AppStore.xcarchive"
+ARCHIVE_PATH="${BUILD_DIR}/RNP-AppStore.xcarchive"
 EXPORT_PATH="${BUILD_DIR}/Export-AppStore"
 
 SIGNING_IDENTITY="${SIGNING_IDENTITY:-}"

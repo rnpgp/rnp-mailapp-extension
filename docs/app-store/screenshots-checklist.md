@@ -1,4 +1,4 @@
-# App Store Screenshots Checklist — RnpMail
+# App Store Screenshots Checklist — RNP
 
 Mac App Store screenshots must be at least **1280×800** pixels (16:10).
 Capture on a clean macOS desktop using a demo account; do not show real email

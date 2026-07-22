@@ -45,7 +45,7 @@ jobs:
         run: |
           PKG_CONFIG_PATH=${{ github.workspace }}/Vendor/pkgconfig \
           xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj \
-            -scheme "Ribose container" \
+            -scheme RNP \
             -configuration Direct \
             build \
             CODE_SIGNING_ALLOWED=YES \

@@ -1,6 +1,6 @@
 # Dependency Policy
 
-This document describes how `swift-rnp` and the RnpMail macOS app manage their dependencies, how they are pinned, and how security issues in dependencies are handled.
+This document describes how `swift-rnp` and the RNP macOS app manage their dependencies, how they are pinned, and how security issues in dependencies are handled.
 
 ## Vendored Native Dependencies
 
@@ -27,7 +27,7 @@ The pinned hashes are stored in:
 2. Delete the old `scripts/<component>-<old-version>.sha256` file.
 3. Run `scripts/build-rnp-framework.sh`. The script downloads the new tarball and records its SHA-256.
 4. Review the diff to `Vendor/SOURCES.md` and the new hash file.
-5. Run the full test matrix (`swift test`, `xcodebuild` for `MailPlugin` and `Ribose container`) before committing.
+5. Run the full test matrix (`swift test`, `xcodebuild` for `MailPlugin` and `RNP`) before committing.
 
 ## Swift Package Manager Dependencies
 
@@ -51,7 +51,7 @@ If a future change adds an SPM dependency, it must:
 
 2. **Triage.** A reported CVE is triaged within **5 business days**. Critical issues affecting secret key confidentiality, signature forgery, or sandbox escape are treated as P0.
 
-3. **Assess impact.** We determine whether the CVE affects code paths used by RnpMail. For example, a vulnerability in GnuPG keyring import may not affect RnpMail because only GPG-compatible keyrings produced by librnp are used.
+3. **Assess impact.** We determine whether the CVE affects code paths used by RNP. For example, a vulnerability in GnuPG keyring import may not affect RNP because only GPG-compatible keyrings produced by librnp are used.
 
 4. **Update or mitigate.**
    - If an updated upstream release is available, bump the pinned version in `build-rnp-framework.sh`, regenerate `RNPFramework.xcframework`, and update the SHA-256 files.

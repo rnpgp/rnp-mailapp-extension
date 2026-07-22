@@ -1,4 +1,4 @@
-# App Store Connect Metadata — RnpMail
+# App Store Connect Metadata — RNP
 
 > Template for the Mac App Store submission. Replace all `TODO` placeholders
 > with real values before submitting in App Store Connect.
@@ -7,7 +7,7 @@
 
 | Field | Value |
 |-------|-------|
-| Name | RnpMail |
+| Name | RNP |
 | Subtitle | OpenPGP for Apple Mail |
 | Category (Primary) | Utilities |
 | Category (Secondary) | Productivity |
@@ -16,7 +16,7 @@
 
 ## Description
 
-RnpMail brings OpenPGP signing and encryption to Apple Mail on macOS.
+RNP brings OpenPGP signing and encryption to Apple Mail on macOS.
 Generate or import PGP keys, then sign, encrypt, and decrypt mail right from
 the compose window and message reader — no separate mail client required.
 
@@ -64,7 +64,7 @@ TODO: https://example.com/rnpmail/support
 ## Export Compliance
 
 Use the self-classification prepared in the Apple Developer account checklist.
-RnpMail uses the open-source librnp implementation of OpenPGP; submit the
+RNP uses the open-source librnp implementation of OpenPGP; submit the
 Encryption Registration (ERN) notification if required for your jurisdiction.
 
 ## Release Automation Notes

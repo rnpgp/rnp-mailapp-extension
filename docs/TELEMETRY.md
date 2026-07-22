@@ -2,7 +2,7 @@
 
 ## Telemetry Stance
 
-**RnpMail collects no telemetry, analytics, crash reports, or usage statistics.**
+**RNP collects no telemetry, analytics, crash reports, or usage statistics.**
 
 The app does not include third-party analytics SDKs, advertising identifiers, or network endpoints for diagnostics. The only network traffic initiated by the app is:
 
@@ -19,7 +19,7 @@ Because no telemetry is collected, the App Store privacy nutrition label remains
 - **No tracking.**
 - **No third-party data sharing.**
 
-This is consistent with the `PrivacyInfo.xcprivacy` manifest included in the `Ribose container` target, which declares no collected data categories.
+This is consistent with the `PrivacyInfo.xcprivacy` manifest included in the `RNP` target, which declares no collected data categories.
 
 ## Local Diagnostics
 

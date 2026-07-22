@@ -20,7 +20,7 @@ BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build"
 
 KEYCHAIN_PATH="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/ci-release-dry-run.keychain-db"
 KEYCHAIN_PASSWORD="ci-dry-run-password"
-CERT_NAME="RnpMail CI Dry-Run"
+CERT_NAME="RNP CI Dry-Run"
 
 cleanup() {
     security delete-keychain "${KEYCHAIN_PATH}" 2>/dev/null || true
@@ -73,13 +73,13 @@ echo "=== Building unsigned ==="
 PKG_CONFIG_PATH="${REPO_ROOT}/Vendor/pkgconfig" \
 xcodebuild \
     -project "${PROJECT}" \
-    -scheme "Ribose container" \
+    -scheme RNP \
     -configuration Direct \
     build \
     CODE_SIGNING_ALLOWED=NO
 
 echo "=== Signing with self-signed certificate ==="
-APP_BUNDLE="${BUILD_DIR}/Products/Direct/Ribose container.app"
+APP_BUNDLE="${BUILD_DIR}/Products/Direct/RNP.app"
 if [[ ! -d "${APP_BUNDLE}" ]]; then
     echo "Built app not found at ${APP_BUNDLE}" >&2
     exit 1
@@ -88,7 +88,7 @@ codesign --sign "${CERT_NAME}" --force --deep --keychain "${KEYCHAIN_PATH}" "${A
 codesign --verify --deep --strict --verbose=2 "${APP_BUNDLE}"
 
 echo "=== Running sandbox audit ==="
-AUDIT_APP_PATH="${BUILD_DIR}/Products/Direct/Ribose container.app" \
+AUDIT_APP_PATH="${BUILD_DIR}/Products/Direct/RNP.app" \
     "${SCRIPT_DIR}/sandbox-audit.sh"
 
 echo "=== Release direct dry-run ==="

@@ -1,6 +1,6 @@
 #!/bin/bash
 # scripts/release-direct.sh
-# Build, sign, notarize, and package a Developer ID release of RnpMail.
+# Build, sign, notarize, and package a Developer ID release of RNP.
 #
 # Environment variables (all optional for local unsigned dry-runs):
 #   DEVELOPMENT_TEAM       Apple Team ID
@@ -24,10 +24,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 PROJECT="${REPO_ROOT}/Swift-Rnp/Swift-Rnp.xcodeproj"
-SCHEME="MailPlugin"
+SCHEME="RNP"
 CONFIG="Direct"
 BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build"
-ARCHIVE_PATH="${BUILD_DIR}/RnpMail.xcarchive"
+ARCHIVE_PATH="${BUILD_DIR}/RNP.xcarchive"
 EXPORT_PATH="${BUILD_DIR}/Export"
 DIST_DIR="${REPO_ROOT}/dist"
 
@@ -78,9 +78,9 @@ if [[ "${DRY_RUN}" -eq 1 ]]; then
     echo "DRY-RUN: would archive scheme '${SCHEME}' configuration '${CONFIG}' to ${ARCHIVE_PATH}"
     echo "DRY-RUN: would export archive to ${EXPORT_PATH} using Config/ExportDirect.plist"
     echo "DRY-RUN: would verify code signature and linked libraries"
-    echo "DRY-RUN: would create DMG ${DIST_DIR}/RnpMail-${MARKETING_VERSION}.dmg"
+    echo "DRY-RUN: would create DMG ${DIST_DIR}/RNP-${MARKETING_VERSION}.dmg"
     if [[ -n "${ASC_API_KEY_P8}" && -n "${ASC_API_KEY_ID}" && -n "${ASC_ISSUER_ID}" ]]; then
-        echo "DRY-RUN: would submit ${DIST_DIR}/RnpMail-${MARKETING_VERSION}.dmg for notarization and staple it"
+        echo "DRY-RUN: would submit ${DIST_DIR}/RNP-${MARKETING_VERSION}.dmg for notarization and staple it"
     else
         echo "DRY-RUN: ASC secrets not set; would skip notarization"
     fi
@@ -118,7 +118,7 @@ xcodebuild \
     -exportPath "${EXPORT_PATH}" \
     -exportOptionsPlist "${REPO_ROOT}/Swift-Rnp/Config/ExportDirect.plist"
 
-APP_BUNDLE="$(find "${EXPORT_PATH}" -name 'Ribose container.app' -maxdepth 1 | head -n1)"
+APP_BUNDLE="$(find "${EXPORT_PATH}" -name 'RNP.app' -maxdepth 1 | head -n1)"
 if [[ -z "${APP_BUNDLE}" ]]; then
     echo "Could not find exported .app bundle" >&2
     exit 1
@@ -143,13 +143,13 @@ fi
 # ------------------------------------------------------------------
 # DMG.
 # ------------------------------------------------------------------
-DMG_NAME="RnpMail-${MARKETING_VERSION}.dmg"
+DMG_NAME="RNP-${MARKETING_VERSION}.dmg"
 DMG_PATH="${DIST_DIR}/${DMG_NAME}"
 rm -f "${DMG_PATH}"
 
 if [[ -x "$(command -v "${CREATE_DMG}")" ]]; then
     "${CREATE_DMG}" \
-        --volname "RnpMail Installer" \
+        --volname "RNP Installer" \
         --window-pos 200 120 \
         --window-size 600 400 \
         --icon-size 100 \
@@ -158,7 +158,7 @@ if [[ -x "$(command -v "${CREATE_DMG}")" ]]; then
         "${APP_BUNDLE}"
 else
     echo "create-dmg not found; creating a raw compressed disk image"
-    hdiutil create -srcfolder "${APP_BUNDLE}" -volname "RnpMail" -fs HFS+ \
+    hdiutil create -srcfolder "${APP_BUNDLE}" -volname "RNP" -fs HFS+ \
         -format UDZO -o "${DMG_PATH}"
 fi
 

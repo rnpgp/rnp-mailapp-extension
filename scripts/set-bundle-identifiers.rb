@@ -8,7 +8,7 @@ project_path = 'Swift-Rnp/Swift-Rnp.xcodeproj'
 project = Xcodeproj::Project.open(project_path)
 
 {
-  'Ribose container' => 'com.rnpgp.RnpMail',
+  'RNP' => 'com.rnpgp.RnpMail',
   'MailPlugin' => 'com.rnpgp.RnpMail.MailExtension',
 }.each do |target_name, bundle_id|
   target = project.targets.find { |t| t.name == target_name }

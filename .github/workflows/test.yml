@@ -110,7 +110,7 @@ jobs:
     - name: Build container app scheme
       run: >
         xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
-        -scheme "Ribose container" -configuration Direct build CODE_SIGNING_ALLOWED=NO
+        -scheme RNP -configuration Direct build CODE_SIGNING_ALLOWED=NO
       env:
         PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
 
@@ -120,6 +120,6 @@ jobs:
       continue-on-error: true
       run: >
         xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
-        -scheme "Ribose container" -configuration Debug test CODE_SIGNING_ALLOWED=NO
+        -scheme RNP -configuration Debug test CODE_SIGNING_ALLOWED=NO
       env:
         PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig

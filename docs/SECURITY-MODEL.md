@@ -1,10 +1,10 @@
 # Security Model
 
-This document describes the security model of the RnpMail Apple Mail OpenPGP extension and its companion container app. It is intended for security reviewers, downstream packagers, and users who want to understand what the project protects and what it does not protect.
+This document describes the security model of the RNP Apple Mail OpenPGP extension and its companion container app. It is intended for security reviewers, downstream packagers, and users who want to understand what the project protects and what it does not protect.
 
 ## Scope
 
-RnpMail provides OpenPGP signing, encryption, and key management for Apple Mail on macOS. It is built on top of:
+RNP provides OpenPGP signing, encryption, and key management for Apple Mail on macOS. It is built on top of:
 
 - **librnp** (`v0.18.1` or later) — OpenPGP implementation.
 - **Botan** — cryptographic backend used by librnp.
@@ -58,7 +58,7 @@ RnpMail provides OpenPGP signing, encryption, and key management for Apple Mail 
 
 ### Boundary notes
 
-- **Apple Mail is trusted.** MailKit controls the plaintext message handed to the extension. RnpMail assumes the `MEMessage` input is produced by Mail.app and does not attempt to sanitize the host application.
+- **Apple Mail is trusted.** MailKit controls the plaintext message handed to the extension. RNP assumes the `MEMessage` input is produced by Mail.app and does not attempt to sanitize the host application.
 - **App group container is shared.** Both the container app and the Mail extension run with the same app-group identifier. Any process with access to that group could read public keys and the trust database. Secret keys remain encrypted by the keyring passphrase.
 - **Keychain is the root of trust for the passphrase.** The keyring passphrase is stored in the user's default keychain via `KeychainPassphraseStore`. It is never written to UserDefaults, preferences files, or logs.
 - **Keyserver network boundary.** Key upload, discovery, and revocation-check queries travel over HTTPS to the configured keyserver (default: `keys.openpgp.org`). No other network calls are made.
@@ -77,8 +77,8 @@ RnpMail provides OpenPGP signing, encryption, and key management for Apple Mail 
 - **Host compromise.** If an attacker controls the macOS kernel or the Mail.app process, they can observe plaintext while the extension processes messages.
 - **Metadata inside Mail.app.** Subject, headers, recipients, and message size are visible to Mail.app before encryption and after decryption.
 - **Keyserver availability or correctness.** The default keyserver can be unavailable or return attacker-controlled keys. Users must verify fingerprints out-of-band.
-- **Side channels.** RnpMail does not implement constant-time protections above those provided by librnp/Botan.
-- **Phishing / UI spoofing.** MailKit renders the security banner; RnpMail supplies status text but cannot guarantee that a malicious Mail.app build will display it faithfully.
+- **Side channels.** RNP does not implement constant-time protections above those provided by librnp/Botan.
+- **Phishing / UI spoofing.** MailKit renders the security banner; RNP supplies status text but cannot guarantee that a malicious Mail.app build will display it faithfully.
 - **Backup security.** If the user backs up the app-group container without the Keychain, the secret keyring becomes unrecoverable. If the Keychain is backed up separately, restore it together with the keyring.
 
 ## Memory Hygiene
