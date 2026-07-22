@@ -309,6 +309,170 @@ final class MessageSecurityCoreTests: XCTestCase {
         XCTAssertNotNil(result.encryptionError)
     }
 
+    // MARK: - encode encrypt-to-self
+
+    /// Imports the public key of `keyOwner` into `into`'s keyring.
+    private func importPublicKey(of keyOwner: MailSecurityEngine, into: MailSecurityEngine) throws {
+        let fingerprint = try XCTUnwrap(keyOwner.keyManager.listKeys().first?.fingerprint)
+        let publicKey = try keyOwner.keyManager.exportKey(fingerprint: fingerprint)
+        try into.keyManager.importKeys(publicKey)
+    }
+
+    private func utf8(_ data: Data?) -> String {
+        guard let data else { return "" }
+        return String(decoding: data, as: UTF8.self)
+    }
+
+    func testEncodeEncryptToSelfSenderCanDecrypt() throws {
+        let aliceEngine = try makeEngine(keys: [Self.alice])
+        let bobEngine = try makeEngine(keys: [Self.bob])
+        // Alice needs Bob's public key to encrypt; Bob needs Alice's public
+        // key to verify her signature.
+        try importPublicKey(of: bobEngine, into: aliceEngine)
+        try importPublicKey(of: aliceEngine, into: bobEngine)
+
+        let aliceCore = MessageSecurityCore(engine: aliceEngine)
+        let bobCore = MessageSecurityCore(engine: bobEngine)
+
+        let message = MockMessage(
+            rawData: plainMessage(),
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: true)
+        let result = aliceCore.encode(message, composeContext: context)
+        let encoded = try XCTUnwrap(result.encodedMessage)
+        XCTAssertTrue(encoded.isSigned)
+        XCTAssertTrue(encoded.isEncrypted)
+
+        // The recipient can decrypt.
+        let bobDecoded = try XCTUnwrap(bobCore.decodedMessage(forMessageData: encoded.rawData))
+        XCTAssertTrue(bobDecoded.securityInformation.isEncrypted)
+        XCTAssertNil(bobDecoded.securityInformation.encryptionError)
+        XCTAssertTrue(utf8(bobDecoded.data).contains("Hello, Bob!"))
+
+        // Encrypt-to-self: the sender can decrypt their own sent message.
+        let aliceDecoded = try XCTUnwrap(aliceCore.decodedMessage(forMessageData: encoded.rawData))
+        XCTAssertTrue(aliceDecoded.securityInformation.isEncrypted)
+        XCTAssertNil(aliceDecoded.securityInformation.encryptionError)
+        XCTAssertTrue(utf8(aliceDecoded.data).contains("Hello, Bob!"))
+    }
+
+    func testEncodeEncryptWithoutSenderKeyStillSucceeds() throws {
+        // Only Bob's key exists: the sender has no key, so encrypt-to-self
+        // does not apply and must not fail the send.
+        let core = try makeCore(keys: [Self.bob])
+        let message = MockMessage(
+            rawData: plainMessage(),
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: false, shouldEncrypt: true)
+        let result = core.encode(message, composeContext: context)
+
+        let encoded = try XCTUnwrap(result.encodedMessage)
+        XCTAssertFalse(encoded.isSigned)
+        XCTAssertTrue(encoded.isEncrypted)
+        XCTAssertNil(result.signingError)
+        XCTAssertNil(result.encryptionError)
+
+        let decoded = try XCTUnwrap(core.decodedMessage(forMessageData: encoded.rawData))
+        XCTAssertTrue(decoded.securityInformation.isEncrypted)
+        XCTAssertNil(decoded.securityInformation.encryptionError)
+    }
+
+    func testEncodeEncryptToSelfIgnoresSenderTrustConflict() throws {
+        let aliceEngine = try makeEngine(keys: [Self.alice])
+        let bobEngine = try makeEngine(keys: [Self.bob])
+        try importPublicKey(of: bobEngine, into: aliceEngine)
+        let aliceCore = MessageSecurityCore(engine: aliceEngine)
+
+        // A different key appearing for the sender's own address opens a
+        // conflict; the sender's own key is implicitly trusted, so the
+        // conflict must not block encrypting to self.
+        let aliceFingerprint = try XCTUnwrap(fingerprint(of: Self.alice, in: aliceEngine))
+        try aliceCore.trustStore.noteSeen(email: Self.aliceEmail, fingerprint: aliceFingerprint)
+        try aliceCore.trustStore.noteSeen(
+            email: Self.aliceEmail,
+            fingerprint: "DDDD4444DDDD4444DDDD4444DDDD4444DDDD4444"
+        )
+        XCTAssertTrue(aliceCore.trustStore.hasConflict(forEmail: Self.aliceEmail))
+
+        let message = MockMessage(
+            rawData: plainMessage(),
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: true)
+        let result = aliceCore.encode(message, composeContext: context)
+        let encoded = try XCTUnwrap(result.encodedMessage)
+        XCTAssertTrue(encoded.isEncrypted)
+
+        let decoded = try XCTUnwrap(aliceCore.decodedMessage(forMessageData: encoded.rawData))
+        XCTAssertNil(decoded.securityInformation.encryptionError)
+        XCTAssertTrue(utf8(decoded.data).contains("Hello, Bob!"))
+    }
+
+    func testEncodeEncryptToSelfIgnoresSenderProblemState() throws {
+        let aliceEngine = try makeEngine(keys: [Self.alice])
+        let bobEngine = try makeEngine(keys: [Self.bob])
+        try importPublicKey(of: bobEngine, into: aliceEngine)
+        let aliceCore = MessageSecurityCore(engine: aliceEngine)
+
+        // The sender's own key marked as a problem key (e.g. superseded) must
+        // not block encrypting to self.
+        let aliceFingerprint = try XCTUnwrap(fingerprint(of: Self.alice, in: aliceEngine))
+        try aliceCore.trustStore.noteSeen(email: Self.aliceEmail, fingerprint: aliceFingerprint)
+        try aliceCore.trustStore.markProblem(fingerprint: aliceFingerprint)
+
+        let message = MockMessage(
+            rawData: plainMessage(),
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: true)
+        let result = aliceCore.encode(message, composeContext: context)
+        let encoded = try XCTUnwrap(result.encodedMessage)
+        XCTAssertTrue(encoded.isEncrypted)
+
+        let decoded = try XCTUnwrap(aliceCore.decodedMessage(forMessageData: encoded.rawData))
+        XCTAssertNil(decoded.securityInformation.encryptionError)
+    }
+
+    func testGetEncodingStatusDoesNotFlagSenderWithConflict() throws {
+        let engine = try makeEngine(keys: [Self.alice, Self.bob])
+        let core = MessageSecurityCore(engine: engine)
+
+        // Conflict on the sender's own address; the sender also appears as an
+        // explicit recipient (sending to themselves).
+        let aliceFingerprint = try XCTUnwrap(fingerprint(of: Self.alice, in: engine))
+        try core.trustStore.noteSeen(email: Self.aliceEmail, fingerprint: aliceFingerprint)
+        try core.trustStore.noteSeen(
+            email: Self.aliceEmail,
+            fingerprint: "DDDD4444DDDD4444DDDD4444DDDD4444DDDD4444"
+        )
+
+        let message = MockMessage(
+            rawData: nil,
+            fromAddress: Self.aliceEmail,
+            recipientAddresses: [Self.aliceEmail, Self.bobEmail],
+            isSending: true
+        )
+        let context = MockComposeContext(shouldSign: true, shouldEncrypt: true)
+        let status = core.getEncodingStatus(for: message, composeContext: context)
+
+        XCTAssertTrue(status.canSign)
+        XCTAssertTrue(status.canEncrypt)
+        // The sender must not be flagged as a failing recipient.
+        XCTAssertEqual(status.addressesFailingEncryption, [])
+        let warning = try XCTUnwrap(status.securityError as? RecipientTrustWarning)
+        XCTAssertEqual(warning.issues, [RecipientTrustIssue(recipient: Self.bobEmail, kind: .unverified)])
+    }
+
     // MARK: - decodedMessage
 
     func testDecodedMessagePlainReturnsNil() throws {

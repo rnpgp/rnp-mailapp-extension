@@ -250,7 +250,13 @@ public final class MailSecurityEngine {
                 for recipient in request.recipients {
                     if let key = try keyManager.publicKeyUnlocked(for: recipient, rnp: rnp) {
                         let fingerprint = try key.fingerprint
-                        if keyManager.trustStore.state(forFpr: fingerprint) == .problem
+                        // The sender's own key is implicitly trusted
+                        // (encrypt-to-self): a trust problem or key-change
+                        // conflict recorded for the sender's address must not
+                        // block encrypting to oneself.
+                        let isSender = KeyManager.addressesMatch(recipient, request.sender)
+                        if !isSender,
+                           keyManager.trustStore.state(forFpr: fingerprint) == .problem
                             || keyManager.trustStore.hasConflict(forEmail: recipient)
                         {
                             throw MailSecurityError.trustConflict(recipient)

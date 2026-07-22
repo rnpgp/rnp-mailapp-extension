@@ -500,6 +500,14 @@ public final class KeyManager {
         return userID.contains("@") ? userID : nil
     }
 
+    /// Case-insensitive equality of two address identifiers, comparing the
+    /// email addresses extracted from user-ID form when present.
+    static func addressesMatch(_ lhs: String, _ rhs: String) -> Bool {
+        let left = emailAddress(from: lhs) ?? lhs
+        let right = emailAddress(from: rhs) ?? rhs
+        return left.caseInsensitiveCompare(right) == .orderedSame
+    }
+
     // MARK: - Persistence
 
     /// Writes the in-memory keyrings back to the keyring directory.
