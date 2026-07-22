@@ -815,6 +815,37 @@ final class MailSecurityEngineTests: XCTestCase {
         }
     }
 
+    func testTrustConflictOnSenderDoesNotBlockEncryption() throws {
+        // A key-change conflict on the sender's own address must not block
+        // encryption: the sender's own key is implicitly trusted
+        // (encrypt-to-self).
+        let alice = try makeEngine(keys: [Self.alice])
+        let bob = try makeEngine(keys: [Self.bob])
+        try importPublicKey(of: bob, into: alice)
+
+        let aliceFingerprint = try XCTUnwrap(alice.keyManager.listKeys().first?.fingerprint)
+        try alice.keyManager.trustStore.noteSeen(email: Self.aliceEmail, fingerprint: aliceFingerprint)
+        try alice.keyManager.trustStore.noteSeen(
+            email: Self.aliceEmail,
+            fingerprint: "DDDD4444DDDD4444DDDD4444DDDD4444DDDD4444"
+        )
+        XCTAssertTrue(alice.keyManager.trustStore.hasConflict(forEmail: Self.aliceEmail))
+
+        let encoded = try alice.encode(EncodingRequest(
+            message: plainMessage(),
+            sender: Self.aliceEmail,
+            recipients: [Self.bobEmail, Self.aliceEmail],
+            sign: true,
+            encrypt: true
+        ))
+        XCTAssertTrue(encoded.isEncrypted)
+
+        let decoded = try XCTUnwrap(alice.decode(encoded.rawData))
+        XCTAssertTrue(decoded.security.isEncrypted)
+        XCTAssertNil(decoded.security.encryptionError)
+        XCTAssertTrue(utf8(decoded.data).contains("Hello, Bob!"))
+    }
+
     func testMarkVerifiedAllowsEncryptionAfterConflict() throws {
         let alice = try makeEngine(keys: [Self.alice])
         let bob = try makeEngine(keys: [Self.bob])

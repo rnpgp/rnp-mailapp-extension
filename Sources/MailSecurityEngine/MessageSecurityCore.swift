@@ -40,9 +40,14 @@ public final class MessageSecurityCore {
         // Per-recipient key trust, for recipients that resolve to a key.
         // Problem keys and unresolved conflicts block encryption exactly the
         // way `encode` does; unverified keys only produce a warning, matching
-        // the engine's TOFU behavior.
+        // the engine's TOFU behavior. The sender is skipped: their own key is
+        // implicitly trusted (encrypt-to-self), so they must never be flagged
+        // as a failing recipient.
         var issues: [RecipientTrustIssue] = []
         for recipient in message.recipientAddresses where !status.missingRecipientKeys.contains(recipient) {
+            if KeyManager.addressesMatch(recipient, message.fromAddress) {
+                continue
+            }
             if trustStore.hasConflict(forEmail: recipient) {
                 issues.append(RecipientTrustIssue(recipient: recipient, kind: .conflict))
                 continue
@@ -86,7 +91,7 @@ public final class MessageSecurityCore {
         let request = EncodingRequest(
             message: rawData,
             sender: message.fromAddress,
-            recipients: message.recipientAddresses,
+            recipients: encryptionRecipients(for: message, composeContext: composeContext),
             sign: composeContext.shouldSign,
             encrypt: composeContext.shouldEncrypt
         )
@@ -115,6 +120,37 @@ public final class MessageSecurityCore {
             }
             return HandlerEncodingResult(encodedMessage: nil, signingError: signingError, encryptionError: encryptionError)
         }
+    }
+
+    /// Recipient list for an encode request.
+    ///
+    /// When encryption is requested and a secret key exists for the sender,
+    /// the sender is added to the recipients (encrypt-to-self) so they can
+    /// decrypt their own sent messages. A sender without a key is left out:
+    /// encrypt-to-self is best-effort and must never break a send that would
+    /// otherwise succeed. The sender's own key is implicitly trusted; the
+    /// engine skips its trust check for the sender.
+    private func encryptionRecipients(
+        for message: MailMessage,
+        composeContext: MailComposeContext
+    ) -> [String] {
+        let recipients = message.recipientAddresses
+        guard composeContext.shouldEncrypt,
+              senderKeyAvailable(message.fromAddress),
+              !recipients.contains(where: { KeyManager.addressesMatch($0, message.fromAddress) })
+        else {
+            return recipients
+        }
+        return recipients + [message.fromAddress]
+    }
+
+    /// Whether a secret key for `userID` exists in the keyring. Keyring
+    /// failures are treated as "no key".
+    private func senderKeyAvailable(_ userID: String) -> Bool {
+        let key = try? engine.keyManager.withRnp { rnp in
+            try engine.keyManager.secretKeyUnlocked(forUserID: userID, rnp: rnp)
+        }
+        return key != nil
     }
 
     // MARK: - Decoding
