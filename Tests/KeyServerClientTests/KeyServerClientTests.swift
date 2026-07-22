@@ -174,6 +174,128 @@ final class KeyServerClientTests: XCTestCase {
             XCTAssertEqual(error as? KeyServerError, .invalidFingerprint)
         }
     }
+
+    // MARK: - HKPS
+
+    func testHKPSServerCustomHostURLs() {
+        let server = HKPSServer(rawValue: "keys.example.com")
+        XCTAssertEqual(server.lookupURL, "https://keys.example.com/pks/lookup")
+        XCTAssertEqual(server.addURL, "https://keys.example.com/pks/add")
+    }
+
+    func testURLSessionFetchHKPSBuildsLookupURL() async throws {
+        let expected = Data("armored-public-key".utf8)
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [StubURLProtocol.self]
+        let session = URLSession(configuration: config)
+
+        StubURLProtocol.handler = { request in
+            let url = request.url?.absoluteString ?? ""
+            XCTAssertTrue(url.hasPrefix("https://keyserver.ubuntu.com/pks/lookup?"), url)
+            XCTAssertTrue(url.contains("op=get"), url)
+            XCTAssertTrue(url.contains("options=mr"), url)
+            XCTAssertTrue(url.contains("search=0xABCD1234ABCD1234"), url)
+            return (expected, HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        }
+
+        let client = URLSessionKeyServerClient(session: session)
+        let result = try await client.fetchHKPS(fingerprint: "abcd 1234 abcd 1234", server: .ubuntu)
+        XCTAssertEqual(result, expected)
+    }
+
+    func testURLSessionFetchHKPSUsesCustomServerHost() async throws {
+        let expected = Data("armored-public-key".utf8)
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [StubURLProtocol.self]
+        let session = URLSession(configuration: config)
+
+        StubURLProtocol.handler = { request in
+            XCTAssertEqual(request.url?.host, "keys.example.com")
+            return (expected, HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        }
+
+        let client = URLSessionKeyServerClient(session: session)
+        let result = try await client.fetchHKPS(
+            fingerprint: "ABCD1234ABCD1234",
+            server: HKPSServer(rawValue: "keys.example.com")
+        )
+        XCTAssertEqual(result, expected)
+    }
+
+    func testURLSessionFetchHKPSRejectsInvalidFingerprint() async {
+        let client = URLSessionKeyServerClient()
+        do {
+            _ = try await client.fetchHKPS(fingerprint: "short", server: .ubuntu)
+            XCTFail("Expected invalidFingerprint")
+        } catch {
+            XCTAssertEqual(error as? KeyServerError, .invalidFingerprint)
+        }
+    }
+
+    func testURLSessionFetchHKPSReturnsNotFound() async {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [StubURLProtocol.self]
+        let session = URLSession(configuration: config)
+
+        StubURLProtocol.handler = { request in
+            (Data(), HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: nil, headerFields: nil)!)
+        }
+
+        let client = URLSessionKeyServerClient(session: session)
+        do {
+            _ = try await client.fetchHKPS(fingerprint: "ABCD1234ABCD1234", server: .ubuntu)
+            XCTFail("Expected notFound")
+        } catch {
+            XCTAssertEqual(error as? KeyServerError, .notFound)
+        }
+    }
+
+    func testURLSessionUploadHKPSPostsKeytext() async throws {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [StubURLProtocol.self]
+        let session = URLSession(configuration: config)
+
+        StubURLProtocol.handler = { request in
+            XCTAssertEqual(request.url?.absoluteString, "https://keys.example.com/pks/add")
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(
+                request.value(forHTTPHeaderField: "Content-Type"),
+                "application/x-www-form-urlencoded"
+            )
+            let bodyData: Data
+            if let body = request.httpBody {
+                bodyData = body
+            } else if let stream = request.httpBodyStream {
+                stream.open()
+                defer { stream.close() }
+                bodyData = Data(reading: stream)
+            } else {
+                bodyData = Data()
+            }
+            let body = String(decoding: bodyData, as: UTF8.self)
+            XCTAssertTrue(body.hasPrefix("keytext="), body)
+            XCTAssertTrue(body.contains("armored-key"), body)
+            let data = Data("added".utf8)
+            return (data, HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        }
+
+        let client = URLSessionKeyServerClient(session: session)
+        let receipt = try await client.uploadHKPS(
+            armoredKey: "armored-key",
+            server: HKPSServer(rawValue: "keys.example.com")
+        )
+        XCTAssertEqual(receipt.body, "added")
+    }
+
+    func testMockUploadHKPSRecordsArguments() async throws {
+        let client = MockKeyServerClient(responses: MockKeyServerResponses(
+            hkpsUploadResult: .success(UploadReceipt(body: "added"))
+        ))
+        let receipt = try await client.uploadHKPS(armoredKey: "fake-key", server: .ubuntu)
+        XCTAssertEqual(receipt.body, "added")
+        XCTAssertEqual(client.hkpsUploads.map { $0.0 }, ["fake-key"])
+        XCTAssertEqual(client.hkpsUploads.map { $0.1 }, [.ubuntu])
+    }
 }
 
 // MARK: - URLProtocol stub
