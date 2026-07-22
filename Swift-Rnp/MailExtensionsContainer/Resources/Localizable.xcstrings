@@ -1,6 +1,645 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "menu.security": {
+      "comment": "Help menu item opening the security settings sheet.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Security…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sicherheit …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Seguridad…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sécurité…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sicurezza…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "セキュリティ…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "보안…"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Segurança…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Безопасность…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "安全性…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "安全性…"
+          }
+        }
+      }
+    },
+    "security.title": {
+      "comment": "Title of the security settings sheet.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Security"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sicherheit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Seguridad"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sécurité"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sicurezza"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "セキュリティ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "보안"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Segurança"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Безопасность"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "安全性"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "安全性"
+          }
+        }
+      }
+    },
+    "security.message": {
+      "comment": "Explanation on the security settings sheet.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When enabled, Mail asks for Touch ID before each sign, encrypt, and decrypt operation. Operations within the timeout share one verification. If Touch ID fails, use your login password or the keyring passphrase."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wenn aktiviert, fragt Mail vor jedem Signieren, Verschlüsseln und Entschlüsseln nach Touch ID. Vorgänge innerhalb des Zeitlimits teilen sich eine Bestätigung. Schlägt Touch ID fehl, verwenden Sie Ihr Anmeldepasswort oder die Schlüsselring-Passphrase."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Si está activado, Mail solicita Touch ID antes de cada operación de firma, cifrado y descifrado. Las operaciones dentro del límite de tiempo comparten una verificación. Si Touch ID falla, use su contraseña de inicio de sesión o la frase de contraseña del llavero."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Si cette option est activée, Mail demande Touch ID avant chaque opération de signature, de chiffrement et de déchiffrement. Les opérations dans le délai partagent une seule vérification. Si Touch ID échoue, utilisez votre mot de passe de session ou la phrase secrète du trousseau."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Se attivata, Mail richiede Touch ID prima di ogni operazione di firma, cifratura e decifratura. Le operazioni entro il limite di tempo condividono una verifica. Se Touch ID non riesce, usa la password di login o la passphrase del portachiavi."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "有効にすると、Mail で署名・暗号化・復号の各操作の前に Touch ID を求めます。タイムアウト内の操作は 1 回の認証を共有します。Touch ID が失敗した場合は、ログインパスワードまたはキーリングのパスフレーズを使用してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "활성화하면 Mail에서 서명, 암호화, 복호화 작업 전에 Touch ID를 요청합니다. 제한 시간 내의 작업은 하나의 인증을 공유합니다. Touch ID가 실패하면 로그인 암호 또는 키링 암호구를 사용하세요."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Quando ativado, o Mail solicita o Touch ID antes de cada operação de assinatura, criptografia e descriptografia. Operações dentro do tempo limite compartilham uma verificação. Se o Touch ID falhar, use sua senha de login ou a senha do chaveiro."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Если включено, Mail запрашивает Touch ID перед каждой операцией подписи, шифрования и расшифровки. Операции в пределах тайм-аута используют одну проверку. Если Touch ID не сработал, используйте пароль входа или парольную фразу связки ключей."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "启用后，Mail 在每次签名、加密和解密操作前要求 Touch ID。超时时间内的操作共享一次验证。如果 Touch ID 失败，请使用登录密码或密钥环口令。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "啟用後，Mail 會在每次簽署、加密和解密操作前要求 Touch ID。逾時時間內的操作共享一次驗證。如果 Touch ID 失敗，請使用登入密碼或密鑰環密語。"
+          }
+        }
+      }
+    },
+    "security.requireTouchID": {
+      "comment": "Security settings toggle: per-operation Touch ID verification.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Require Touch ID for each sign, encrypt, and decrypt operation"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touch ID für jeden Signier-, Verschlüsselungs- und Entschlüsselungsvorgang anfordern"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Solicitar Touch ID para cada operación de firma, cifrado y descifrado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Exiger Touch ID pour chaque opération de signature, chiffrement et déchiffrement"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Richiedi Touch ID per ogni operazione di firma, cifratura e decifratura"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "署名・暗号化・復号の各操作で Touch ID を要求"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "각 서명, 암호화, 복호화 작업에 Touch ID 필요"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Exigir Touch ID para cada operação de assinatura, criptografia e descriptografia"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Требовать Touch ID для каждой операции подписи, шифрования и расшифровки"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "每次签名、加密和解密操作都需要 Touch ID"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "每次簽署、加密和解密操作皆需 Touch ID"
+          }
+        }
+      }
+    },
+    "security.timeout": {
+      "comment": "Security settings label for the verification session timeout picker.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verification timeout"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bestätigungs-Zeitlimit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tiempo de espera de verificación"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Délai de vérification"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Timeout di verifica"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "認証のタイムアウト"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "인증 제한 시간"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tempo limite de verificação"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Тайм-аут проверки"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "验证超时"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "驗證逾時"
+          }
+        }
+      }
+    },
+    "security.timeout.15": {
+      "comment": "Verification timeout preset.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 seconds"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 Sekunden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 segundos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 secondes"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 secondi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 秒"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15초"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 segundos"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 секунд"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 秒"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "15 秒"
+          }
+        }
+      }
+    },
+    "security.timeout.30": {
+      "comment": "Verification timeout preset.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30 seconds"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 Sekunden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 segundos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 secondes"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 secondi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 秒"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30초"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 segundos"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 секунд"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 秒"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "30 秒"
+          }
+        }
+      }
+    },
+    "security.timeout.60": {
+      "comment": "Verification timeout preset.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 minute"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 Minute"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 minuto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 minute"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 minuto"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 分"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1분"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 minuto"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 минута"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 分钟"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "1 分鐘"
+          }
+        }
+      }
+    },
+    "security.timeout.300": {
+      "comment": "Verification timeout preset.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 minutes"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 Minuten"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 minutos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 minutes"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 minuti"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 分"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5분"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 minutos"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 минут"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 分钟"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "5 分鐘"
+          }
+        }
+      }
+    },
     "title.keysManager": {
       "comment": "Window title.",
       "localizations": {

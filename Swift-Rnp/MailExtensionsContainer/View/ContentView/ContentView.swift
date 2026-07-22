@@ -20,6 +20,7 @@ struct ContentView: View {
     @ObservedObject var model: ContentViewModel
     @State private var showLicenses = false
     @State private var showKeyServerSettings = false
+    @State private var showSecuritySettings = false
 
     var body: some View {
         rootContent
@@ -107,6 +108,9 @@ struct ContentView: View {
                 KeyServerSettingsView()
                     .frame(minWidth: 480, minHeight: 420)
             }
+            .sheet(isPresented: $showSecuritySettings) {
+                SecuritySettingsSheet(model: model)
+            }
             .alert("deleteKey.title", isPresented: $model.showDeleteConfirmation) {
                 Button("button.delete", role: .destructive) { model.deleteSelected() }
                 Button("button.cancel", role: .cancel) {}
@@ -144,6 +148,9 @@ struct ContentView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .showKeyServerSettings)) { _ in
                 showKeyServerSettings = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .showSecuritySettings)) { _ in
+                showSecuritySettings = true
             }
             .onOpenURL { url in
                 guard url.scheme == "rnpmail" else {
@@ -1043,6 +1050,80 @@ private struct KeyringUnlockSheet: View {
             if !locked {
                 dismiss()
             }
+        }
+    }
+}
+
+extension Notification.Name {
+    /// Posted to open the security settings sheet.
+    static let showSecuritySettings = Notification.Name("com.rnpgp.RnpMail.showSecuritySettings")
+}
+
+/// Security settings sheet: the opt-in per-operation verification toggle
+/// ("require Touch ID for each sign/encrypt/decrypt operation") and its
+/// session timeout. Both are stored in the app-group defaults, so the Mail
+/// extension picks changes up without a restart.
+private struct SecuritySettingsSheet: View {
+    @ObservedObject var model: ContentViewModel
+    @Environment(\.dismiss) private var dismiss
+
+    /// Session-timeout presets, in seconds.
+    private static let timeoutPresets: [TimeInterval] = [15, 30, 60, 300]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("security.title")
+                .font(.headline)
+            Text("security.message")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Toggle(isOn: Binding(
+                get: { model.requireTouchIDPerOperation },
+                set: { model.requireTouchIDPerOperation = $0 }
+            )) {
+                Text("security.requireTouchID")
+            }
+            .toggleStyle(.checkbox)
+            .accessibilityIdentifier("security.requireTouchID")
+            if model.requireTouchIDPerOperation {
+                Picker(selection: Binding(
+                    get: { model.operationVerificationTimeout },
+                    set: { model.operationVerificationTimeout = $0 }
+                )) {
+                    ForEach(Self.timeoutPresets, id: \.self) { seconds in
+                        Text(timeoutLabel(for: seconds)).tag(seconds)
+                    }
+                } label: {
+                    Text("security.timeout")
+                }
+                .pickerStyle(.menu)
+                .accessibilityIdentifier("security.timeout")
+            }
+            HStack {
+                Spacer()
+                Button("button.done") {
+                    dismiss()
+                }
+                .keyboardShortcut(.defaultAction)
+                .accessibilityIdentifier("security.done")
+            }
+        }
+        .padding(20)
+        .frame(width: 460)
+        .accessibilityIdentifier("security")
+    }
+
+    private func timeoutLabel(for seconds: TimeInterval) -> String {
+        switch seconds {
+        case 15:
+            return "security.timeout.15".localized
+        case 60:
+            return "security.timeout.60".localized
+        case 300:
+            return "security.timeout.300".localized
+        default:
+            return "security.timeout.30".localized
         }
     }
 }
