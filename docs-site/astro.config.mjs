@@ -28,6 +28,13 @@ export default defineConfig({
         { icon: 'github', label: 'GitHub', href: 'https://github.com/rnpgp/swift-rnp' },
       ],
       customCss: ['./src/styles/global.css'],
+      expressiveCode: {
+        styleOverrides: {
+          borderRadius: '0.75rem',
+          codeFontFamily: "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace",
+          codeBackground: ({ theme }) => (theme.type === 'dark' ? '#0f1326' : '#f4f8fd'),
+        },
+      },
       editLink: {
         baseUrl: 'https://github.com/rnpgp/swift-rnp/edit/main/docs-site/',
       },
