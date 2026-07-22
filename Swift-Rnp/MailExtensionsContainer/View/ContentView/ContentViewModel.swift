@@ -58,6 +58,9 @@ final class ContentViewModel: ObservableObject {
     @Published var showTrustHistorySheet = false
     @Published private(set) var trustHistoryEmail = ""
     @Published private(set) var trustHistoryRecords: [TrustRecord] = []
+    /// Whether the keyring unlock sheet (Touch ID / manual passphrase) is
+    /// presented. Shown from the locked-keyring banner.
+    @Published var showKeyringUnlockSheet = false
     /// Whether a keyserver discovery (fetch sheet) is in flight.
     @Published var isDiscoveringKey = false
     /// Whether a keyserver publish is in flight.
@@ -218,6 +221,27 @@ final class ContentViewModel: ObservableObject {
     func markOnboardingComplete() {
         hasOnboarded = true
         showOnboarding = false
+    }
+
+    // MARK: - Keyring unlock (Touch ID)
+
+    /// Whether the keyring is currently locked behind Touch ID.
+    var keyringLocked: Bool {
+        manager.keyringLocked
+    }
+
+    /// Attempts to unlock the keyring with Touch ID (system prompt).
+    func unlockKeyringWithTouchID() {
+        manager.unlockKeyring()
+        propagateError()
+    }
+
+    /// Manual fallback: verifies the entered passphrase and unlocks this
+    /// process. Returns `true` when accepted.
+    func unlockKeyringManually(_ passphrase: String) -> Bool {
+        let accepted = manager.unlockKeyringManually(passphrase: passphrase)
+        propagateError()
+        return accepted
     }
 
     // MARK: - Generate

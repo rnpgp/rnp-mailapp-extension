@@ -771,15 +771,19 @@ final class MailSecurityEngineTests: XCTestCase {
     func testKeychainBiometryFallbackReturnsWarningOrNil() {
         KeychainPassphraseStore.reset()
         let (biometricPassphrase, warning) = KeychainPassphraseStore.sharedPassphrase(requiresBiometry: true)
-        // On Macs without Touch ID the fallback path returns a warning; on
-        // machines that support it, storage succeeds and the warning is nil.
-        // Either outcome is acceptable for this test.
+        // On Macs without Touch ID and in unsigned builds the fallback path
+        // returns a warning and keeps the passphrase in the plain item;
+        // where biometric storage works the warning is nil and the
+        // passphrase moves behind Touch ID. Either outcome is acceptable.
         if let warning = warning {
             XCTAssertFalse(warning.message.isEmpty)
+            XCTAssertFalse(KeychainPassphraseStore.isBiometricProtectionEnabled)
+        } else {
+            XCTAssertTrue(KeychainPassphraseStore.isBiometricProtectionEnabled)
         }
 
-        // The two-item design keeps the passphrase readable from the plain
-        // item even when biometric storage falls back.
+        // Either way the same passphrase is served back to callers (from the
+        // session cache, so no Touch ID prompt appears in the test runner).
         let passphrase = KeychainPassphraseStore.sharedPassphrase()
         XCTAssertFalse(passphrase.isEmpty)
         XCTAssertEqual(passphrase, biometricPassphrase)

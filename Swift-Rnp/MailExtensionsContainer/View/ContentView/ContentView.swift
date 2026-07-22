@@ -97,6 +97,9 @@ struct ContentView: View {
                 TrustHistoryView(email: model.trustHistoryEmail, records: model.trustHistoryRecords)
                     .frame(minWidth: 520, minHeight: 420)
             }
+            .sheet(isPresented: $model.showKeyringUnlockSheet) {
+                KeyringUnlockSheet(model: model)
+            }
             .sheet(isPresented: $showLicenses) {
                 LicensesView(sourcesMarkdown: LicensesView.loadSources())
             }
@@ -509,8 +512,19 @@ struct ContentView: View {
     private var bannerStack: some View {
         let conflicts = model.trustConflicts
         let expiry = model.expiryReport()
-        if !conflicts.isEmpty || !expiry.isEmpty || model.importError != nil {
+        if model.keyringLocked || !conflicts.isEmpty || !expiry.isEmpty || model.importError != nil {
             VStack(spacing: RnpSpacing.xs) {
+                if model.keyringLocked {
+                    BannerView(
+                        icon: "lock.fill",
+                        tint: RnpBrand.critical,
+                        text: "banner.keyringLocked".localized,
+                        actionTitle: "banner.keyringLocked.unlock",
+                        action: { model.showKeyringUnlockSheet = true },
+                        actionIdentifier: "contentview.keyring-locked.unlock"
+                    )
+                    .accessibilityIdentifier("contentview.keyring-locked-banner")
+                }
                 if let importError = model.importError {
                     RnpInlineError(
                         message: importError,
@@ -966,6 +980,68 @@ private struct ForeignPassphraseForm: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(passphrase.isEmpty)
                 .accessibilityIdentifier("contentview.foreignpassphrase.unlock")
+            }
+        }
+    }
+}
+
+/// Sheet unlocking a Touch ID-protected keyring: primary Touch ID button,
+/// with manual keyring-passphrase entry as the fallback when Touch ID fails
+/// or was cancelled. Dismisses itself once the keyring is unlocked.
+private struct KeyringUnlockSheet: View {
+    @ObservedObject var model: ContentViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var passphrase = ""
+    @State private var showWrongPassphrase = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("keyringUnlock.title")
+                .font(.headline)
+            Text("keyringUnlock.message")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Button("keyringUnlock.touchID") {
+                model.unlockKeyringWithTouchID()
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("contentview.keyringunlock.touchid")
+            Divider()
+            SecureField("keyringUnlock.fieldLabel", text: $passphrase)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityIdentifier("contentview.keyringunlock.field")
+            if showWrongPassphrase {
+                Text("keyringUnlock.wrong")
+                    .font(.callout)
+                    .foregroundStyle(Color.red)
+                    .accessibilityIdentifier("contentview.keyringunlock.wrong")
+            }
+            HStack {
+                Spacer()
+                Button("button.cancel") {
+                    dismiss()
+                }
+                .keyboardShortcut(.cancelAction)
+                .accessibilityIdentifier("contentview.keyringunlock.cancel")
+                Button("keyringUnlock.unlock") {
+                    showWrongPassphrase = !model.unlockKeyringManually(passphrase)
+                    if !showWrongPassphrase {
+                        dismiss()
+                    }
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(passphrase.isEmpty)
+                .accessibilityIdentifier("contentview.keyringunlock.unlock")
+            }
+        }
+        .padding(20)
+        .frame(width: 420)
+        // Touch ID unlock is asynchronous; once the keyring opens (from
+        // either path), close the sheet.
+        .onChange(of: model.keyringLocked) { locked in
+            if !locked {
+                dismiss()
             }
         }
     }

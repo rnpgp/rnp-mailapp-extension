@@ -1705,6 +1705,574 @@
         }
       }
     },
+    "banner.keyringLocked": {
+      "comment": "Banner shown when the keyring is locked behind Touch ID.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your keyring is locked. Unlock it with Touch ID to sign and decrypt mail."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ihr Schlüsselbund ist gesperrt. Entsperren Sie ihn mit Touch ID, um E-Mails zu signieren und zu entschlüsseln."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tu llavero está bloqueado. Desbloquéalo con Touch ID para firmar y descifrar correo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Votre trousseau est verrouillé. Déverrouillez-le avec Touch ID pour signer et déchiffrer vos courriels."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Il tuo portachiavi è bloccato. Sbloccalo con Touch ID per firmare e decifrare la posta."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "キーリングはロックされています。メールの署名と復号のために Touch ID でロックを解除してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "키링이 잠겨 있습니다. Touch ID로 잠금을 해제해야 메일에 서명하고 복호화할 수 있습니다."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O seu chaveiro está bloqueado. Desbloqueie-o com o Touch ID para assinar e decifrar e-mails."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Связка ключей заблокирована. Разблокируйте её с помощью Touch ID, чтобы подписывать и расшифровывать почту."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "您的密钥环已锁定。请使用触控 ID 解锁以签名和解密邮件。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "您的密鑰環已鎖定。請使用 Touch ID 解鎖以簽署和解密郵件。"
+          }
+        }
+      }
+    },
+    "banner.keyringLocked.unlock": {
+      "comment": "Button on the locked-keyring banner that opens the unlock sheet.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Entsperren …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Déverrouiller…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sblocca…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ロック解除…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "잠금 해제…"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Разблокировать…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解锁…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解鎖…"
+          }
+        }
+      }
+    },
+    "keyringUnlock.title": {
+      "comment": "Title of the sheet unlocking the Touch ID-protected keyring.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock Keyring"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schlüsselbund entsperren"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear llavero"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Déverrouiller le trousseau"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sblocca portachiavi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "キーリングのロックを解除"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "키링 잠금 해제"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear chaveiro"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Разблокировать связку ключей"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解锁密钥环"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解鎖密鑰環"
+          }
+        }
+      }
+    },
+    "keyringUnlock.message": {
+      "comment": "Explanation in the keyring unlock sheet.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The keyring passphrase is protected by Touch ID. Authenticate to unlock it, or enter the passphrase you chose during setup."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Schlüsselbund-Passphrase ist durch Touch ID geschützt. Authentifizieren Sie sich zum Entsperren oder geben Sie die bei der Einrichtung gewählte Passphrase ein."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La frase de contraseña del llavero está protegida con Touch ID. Autentícate para desbloquearla o introduce la frase de contraseña que elegiste durante la configuración."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La phrase de passe du trousseau est protégée par Touch ID. Authentifiez-vous pour la déverrouiller, ou saisissez la phrase de passe choisie lors de la configuration."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La passphrase del portachiavi è protetta da Touch ID. Autenticati per sbloccarla oppure inserisci la passphrase scelta durante la configurazione."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "キーリングのパスフレーズは Touch ID で保護されています。認証してロックを解除するか、設定時に選択したパスフレーズを入力してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "키링 암호구문은 Touch ID로 보호됩니다. 인증하여 잠금을 해제하거나 설정 중에 선택한 암호구문을 입력하세요."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A frase-passe do chaveiro está protegida pelo Touch ID. Autentique-se para a desbloquear ou introduza a frase-passe que escolheu durante a configuração."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Парольная фраза связки ключей защищена Touch ID. Пройдите аутентификацию, чтобы разблокировать её, или введите парольную фразу, выбранную при настройке."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "密钥环密码短语受触控 ID 保护。请进行身份验证以解锁，或输入您在设置过程中选择的密码短语。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "密鑰環密碼短語受 Touch ID 保護。請進行身份驗證以解鎖，或輸入您在設定過程中選擇的密碼短語。"
+          }
+        }
+      }
+    },
+    "keyringUnlock.touchID": {
+      "comment": "Button that unlocks the keyring with Touch ID.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock with Touch ID"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mit Touch ID entsperren"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear con Touch ID"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Déverrouiller avec Touch ID"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sblocca con Touch ID"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touch ID でロック解除"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touch ID로 잠금 해제"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear com Touch ID"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Разблокировать с помощью Touch ID"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "使用触控 ID 解锁"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "使用 Touch ID 解鎖"
+          }
+        }
+      }
+    },
+    "keyringUnlock.fieldLabel": {
+      "comment": "Label of the manual keyring passphrase field.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyring passphrase"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schlüsselbund-Passphrase"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Frase de contraseña del llavero"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Phrase de passe du trousseau"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Passphrase del portachiavi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "キーリングのパスフレーズ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "키링 암호구문"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Frase-passe do chaveiro"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Парольная фраза связки ключей"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "密钥环密码短语"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "密鑰環密碼短語"
+          }
+        }
+      }
+    },
+    "keyringUnlock.wrong": {
+      "comment": "Shown when the entered keyring passphrase did not unlock the keyring.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That passphrase did not unlock the keyring."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Diese Passphrase konnte den Schlüsselbund nicht entsperren."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Esa frase de contraseña no desbloqueó el llavero."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cette phrase de passe n'a pas déverrouillé le trousseau."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Questa passphrase non ha sbloccato il portachiavi."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "そのパスフレーズではキーリングのロックを解除できませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "해당 암호구문으로 키링 잠금을 해제할 수 없습니다."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Essa frase-passe não desbloqueou o chaveiro."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Эта парольная фраза не разблокировала связку ключей."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "该密码短语未能解锁密钥环。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "該密碼短語未能解鎖密鑰環。"
+          }
+        }
+      }
+    },
+    "keyringUnlock.unlock": {
+      "comment": "Button that submits the manually entered keyring passphrase.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Entsperren"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Déverrouiller"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sblocca"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ロック解除"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "잠금 해제"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Разблокировать"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解锁"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解鎖"
+          }
+        }
+      }
+    },
     "extendExpiry.title": {
       "comment": "Sheet title.",
       "localizations": {
