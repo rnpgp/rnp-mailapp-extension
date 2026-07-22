@@ -14,19 +14,22 @@ public struct MockKeyServerResponses: Sendable {
     public var byFingerprintResult: Result<Data, KeyServerError>?
     public var wkdResult: Result<Data, KeyServerError>?
     public var hkpsResult: Result<Data, KeyServerError>?
+    public var hkpsUploadResult: Result<UploadReceipt, KeyServerError>?
 
     public init(
         uploadResult: Result<UploadReceipt, KeyServerError>? = nil,
         byEmailResult: Result<Data, KeyServerError>? = nil,
         byFingerprintResult: Result<Data, KeyServerError>? = nil,
         wkdResult: Result<Data, KeyServerError>? = nil,
-        hkpsResult: Result<Data, KeyServerError>? = nil
+        hkpsResult: Result<Data, KeyServerError>? = nil,
+        hkpsUploadResult: Result<UploadReceipt, KeyServerError>? = nil
     ) {
         self.uploadResult = uploadResult
         self.byEmailResult = byEmailResult
         self.byFingerprintResult = byFingerprintResult
         self.wkdResult = wkdResult
         self.hkpsResult = hkpsResult
+        self.hkpsUploadResult = hkpsUploadResult
     }
 }
 
@@ -38,6 +41,7 @@ public final class MockKeyServerClient: KeyServerClient, @unchecked Sendable {
     public private(set) var fetchedFingerprints: [String] = []
     public private(set) var fetchedWKDs: [String] = []
     public private(set) var fetchedHKPS: [(String, HKPSServer)] = []
+    public private(set) var hkpsUploads: [(String, HKPSServer)] = []
 
     public init(responses: MockKeyServerResponses = MockKeyServerResponses()) {
         self.responses = responses
@@ -78,6 +82,14 @@ public final class MockKeyServerClient: KeyServerClient, @unchecked Sendable {
     public func fetchHKPS(fingerprint: String, server: HKPSServer) async throws -> Data {
         fetchedHKPS.append((fingerprint, server))
         guard let result = responses.hkpsResult else {
+            throw KeyServerError.invalidResponse
+        }
+        return try result.get()
+    }
+
+    public func uploadHKPS(armoredKey: String, server: HKPSServer) async throws -> UploadReceipt {
+        hkpsUploads.append((armoredKey, server))
+        guard let result = responses.hkpsUploadResult else {
             throw KeyServerError.invalidResponse
         }
         return try result.get()

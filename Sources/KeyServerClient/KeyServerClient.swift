@@ -71,12 +71,33 @@ public protocol KeyServerClient: Sendable {
 
     /// Fetches a key by fingerprint from an HKPS server.
     func fetchHKPS(fingerprint: String, server: HKPSServer) async throws -> Data
+
+    /// Uploads an armored public key to an HKPS server (`/pks/add`).
+    func uploadHKPS(armoredKey: String, server: HKPSServer) async throws -> UploadReceipt
 }
 
-/// Known HKPS servers.
-public enum HKPSServer: String, Sendable, CaseIterable {
-    case keysOpenPGP = "keys.openpgp.org"
-    case ubuntu = "keyserver.ubuntu.com"
+/// An HKP keyserver reached over HTTPS.
+///
+/// `RawRepresentable` over the host name, so `HKPSServer(rawValue:)` works
+/// the way the former enum's raw-value initializer did — but accepts any
+/// host, which is what user-configured (custom) HKPS servers need.
+public struct HKPSServer: RawRepresentable, Equatable, Hashable, Sendable {
+    /// Host name, e.g. "keys.openpgp.org".
+    public let rawValue: String
 
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    /// keys.openpgp.org's HKP endpoint.
+    public static let keysOpenPGP = HKPSServer(rawValue: "keys.openpgp.org")
+    /// keyserver.ubuntu.com.
+    public static let ubuntu = HKPSServer(rawValue: "keyserver.ubuntu.com")
+    /// Built-in servers, in the order they are tried as HKPS fallbacks.
+    public static let allCases: [HKPSServer] = [.keysOpenPGP, .ubuntu]
+
+    /// HKP lookup endpoint (`op=get`).
     public var lookupURL: String { "https://\(rawValue)/pks/lookup" }
+    /// HKP add endpoint accepting key uploads.
+    public var addURL: String { "https://\(rawValue)/pks/add" }
 }

@@ -23,53 +23,114 @@ public struct FetchedKey: Equatable {
 }
 
 /// High-level service for publishing and discovering keys.
+///
+/// The servers tried — and their order — come from `KeyServerSettings`,
+/// loaded from the app-group defaults on every call so edits made in the
+/// container app take effect without restarting either process. The
+/// built-in defaults reproduce the behavior that used to be hardcoded:
+/// WKD then VKS for email lookups, VKS then the HKP servers for
+/// fingerprint lookups, VKS for uploads.
 public final class KeyServerService: Sendable {
     private let client: KeyServerClient
+    private let settingsProvider: @Sendable () -> KeyServerSettings
 
     public init(client: KeyServerClient = URLSessionKeyServerClient()) {
         self.client = client
+        self.settingsProvider = { KeyServerSettingsStore().load() }
     }
 
-    /// Uploads an armored public key to the default keyserver.
+    /// Creates a service with a fixed keyserver list instead of the shared
+    /// store. Used by tests.
+    init(client: KeyServerClient, fixedSettings: KeyServerSettings) {
+        self.client = client
+        self.settingsProvider = { fixedSettings }
+    }
+
+    /// Uploads an armored public key, following the configured server
+    /// order.
+    ///
+    /// HKPS servers accept uploads via `/pks/add`; the VKS entry uploads to
+    /// keys.openpgp.org (which emails a verification link). WKD cannot
+    /// accept uploads and is skipped. The next server is tried when one
+    /// fails, so a failing HKPS server falls back to VKS and vice versa.
     public func upload(armoredKey: String) async throws -> UploadReceipt {
-        try await client.upload(armoredKey: armoredKey)
+        var lastError: KeyServerError = .network(underlying: "No keyserver configured for uploads.")
+        for server in settingsProvider().servers {
+            do {
+                switch server.kind {
+                case .vks:
+                    return try await client.upload(armoredKey: armoredKey)
+                case .hkps:
+                    return try await client.uploadHKPS(armoredKey: armoredKey, server: HKPSServer(rawValue: server.host))
+                case .wkd:
+                    continue
+                }
+            } catch {
+                lastError = error as? KeyServerError ?? .network(underlying: error.localizedDescription)
+            }
+        }
+        throw lastError
     }
 
-    /// Looks up a key by email, trying WKD first, then VKS by-email.
+    /// Looks up a key by email, following the configured server order.
+    ///
+    /// WKD entries try the advanced method, then the direct method; VKS
+    /// entries query the by-email API. HKPS entries are skipped: HKP
+    /// lookups are by fingerprint/key ID, not by email.
     public func discoverByEmail(_ email: String) async -> Result<FetchedKey, KeyServerError> {
-        // Try WKD advanced method first, then direct method, then VKS.
-        if case let .success(data) = await fetchWKD(email: email, advanced: true) {
-            return .success(FetchedKey(data: data, source: "WKD (advanced)"))
+        var lastError: KeyServerError = .notFound
+        for server in settingsProvider().servers {
+            switch server.kind {
+            case .wkd:
+                switch await fetchWKD(email: email, advanced: true) {
+                case let .success(data):
+                    return .success(FetchedKey(data: data, source: "WKD (advanced)"))
+                case let .failure(error):
+                    lastError = error as? KeyServerError ?? .network(underlying: error.localizedDescription)
+                }
+                switch await fetchWKD(email: email, advanced: false) {
+                case let .success(data):
+                    return .success(FetchedKey(data: data, source: "WKD (direct)"))
+                case let .failure(error):
+                    lastError = error as? KeyServerError ?? .network(underlying: error.localizedDescription)
+                }
+            case .vks:
+                do {
+                    let data = try await client.fetchByEmail(email)
+                    return .success(FetchedKey(data: data, source: server.host))
+                } catch {
+                    lastError = error as? KeyServerError ?? .network(underlying: error.localizedDescription)
+                }
+            case .hkps:
+                continue
+            }
         }
-        if case let .success(data) = await fetchWKD(email: email, advanced: false) {
-            return .success(FetchedKey(data: data, source: "WKD (direct)"))
-        }
-        do {
-            let data = try await client.fetchByEmail(email)
-            return .success(FetchedKey(data: data, source: "keys.openpgp.org"))
-        } catch {
-            return .failure(error as? KeyServerError ?? .network(underlying: error.localizedDescription))
-        }
+        return .failure(lastError)
     }
 
-    /// Looks up a key by fingerprint, trying VKS first, then HKP keyservers.
+    /// Looks up a key by fingerprint, following the configured server
+    /// order.
     ///
     /// VKS (keys.openpgp.org) only serves keys with verified user IDs, so a
-    /// key that was never uploaded there — or whose email was never verified —
-    /// is missed. HKP keyservers carry unverified uploads too and are tried
-    /// next, in `HKPSServer.allCases` order.
+    /// key that was never uploaded there — or whose email was never
+    /// verified — is missed. The configured HKPS servers carry unverified
+    /// uploads too and are tried in their configured positions, so a
+    /// failing HKPS server falls back to VKS and vice versa. WKD entries
+    /// are skipped: WKD derives from an email address, not a fingerprint.
     public func discoverByFingerprint(_ fingerprint: String) async -> Result<FetchedKey, KeyServerError> {
-        do {
-            let data = try await client.fetchByFingerprint(fingerprint)
-            return .success(FetchedKey(data: data, source: "keys.openpgp.org"))
-        } catch {
-            // Fall through to HKP below.
-        }
         var lastError: KeyServerError = .notFound
-        for server in HKPSServer.allCases {
+        for server in settingsProvider().servers {
             do {
-                let data = try await client.fetchHKPS(fingerprint: fingerprint, server: server)
-                return .success(FetchedKey(data: data, source: "\(server.rawValue) (HKPS)"))
+                switch server.kind {
+                case .vks:
+                    let data = try await client.fetchByFingerprint(fingerprint)
+                    return .success(FetchedKey(data: data, source: server.host))
+                case .hkps:
+                    let data = try await client.fetchHKPS(fingerprint: fingerprint, server: HKPSServer(rawValue: server.host))
+                    return .success(FetchedKey(data: data, source: "\(server.host) (HKPS)"))
+                case .wkd:
+                    continue
+                }
             } catch {
                 lastError = error as? KeyServerError ?? .network(underlying: error.localizedDescription)
             }
