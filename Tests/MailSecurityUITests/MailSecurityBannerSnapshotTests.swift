@@ -143,6 +143,20 @@ final class MailSecurityBannerSnapshotTests: XCTestCase {
         assertSnapshot(named: "multiple-all-verified", view: view)
     }
 
+    // MARK: - Fetch signer key action
+
+    func testSnapshot_signerUnknown_fetchAvailable() throws {
+        let store = try makeStore()
+        let alice = signer(label: "alice@example.com", fpr: Self.fprAlice, status: .signerUnknown)
+        let view = MailSecurityBannerView(signers: [alice], trustStore: store) { _, _ in }
+
+        let expected = [expectedRow(for: alice, trustStore: store)]
+        assertBannerStructure(view: view, expectedRows: expected)
+        let buttons = allSubviews(of: view).compactMap { $0 as? NSButton }
+        XCTAssertTrue(buttons.contains { $0.title == "Fetch signer key" })
+        assertSnapshot(named: "single-signerUnknown-fetch", view: view)
+    }
+
     // MARK: - Trust store unavailable
 
     func testSnapshot_trustStoreUnavailable() {
