@@ -59,16 +59,29 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
             ))
             return
         }
-        let status = core.getEncodingStatus(
-            for: MailKitMessage(message),
-            composeContext: MailKitComposeContext(composeContext)
+        // Snapshot the message before the async hop: with auto-fetch enabled
+        // the status may complete after a keyserver round-trip, and MailKit
+        // message objects are not meant to be read off the callback queue.
+        let snapshot = SnapshotMailMessage(
+            fromAddress: message.fromAddress.rawString,
+            recipientAddresses: message.allRecipientAddresses.map(\.rawString)
         )
-        completionHandler(MEOutgoingMessageEncodingStatus(
-            canSign: status.canSign,
-            canEncrypt: status.canEncrypt,
-            securityError: status.securityError,
-            addressesFailingEncryption: status.addressesFailingEncryption.map { MEEmailAddress(rawString: $0) }
-        ))
+        let context = SnapshotComposeContext(
+            shouldSign: composeContext.shouldSign,
+            shouldEncrypt: composeContext.shouldEncrypt
+        )
+        Task {
+            let status = await core.getEncodingStatusWithAutoFetch(
+                for: snapshot,
+                composeContext: context
+            )
+            completionHandler(MEOutgoingMessageEncodingStatus(
+                canSign: status.canSign,
+                canEncrypt: status.canEncrypt,
+                securityError: status.securityError,
+                addressesFailingEncryption: status.addressesFailingEncryption.map { MEEmailAddress(rawString: $0) }
+            ))
+        }
     }
 
     func encode(_ message: MEMessage, composeContext: MEComposeContext, completionHandler: @escaping (MEMessageEncodingResult) -> Void) {
@@ -211,6 +224,23 @@ private struct MailKitComposeContext: MailComposeContext {
 
     var shouldSign: Bool { context.shouldSign }
     var shouldEncrypt: Bool { context.shouldEncrypt }
+}
+
+/// Value-type `MailMessage` snapshot for the encoding-status path, which may
+/// complete asynchronously after a keyserver fetch. Only the fields
+/// `getEncodingStatus` reads are captured.
+private struct SnapshotMailMessage: MailMessage {
+    let fromAddress: String
+    let recipientAddresses: [String]
+
+    var rawData: Data? { nil }
+    var isSending: Bool { true }
+}
+
+/// Value-type `MailComposeContext` snapshot for the same reason.
+private struct SnapshotComposeContext: MailComposeContext {
+    let shouldSign: Bool
+    let shouldEncrypt: Bool
 }
 
 /// Wraps `MEMessageSigner`.
