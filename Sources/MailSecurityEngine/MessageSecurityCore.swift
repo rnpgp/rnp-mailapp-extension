@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import Rnp
 import TrustStore
 
 /// MailKit-independent message-security handler.
@@ -15,10 +16,29 @@ public final class MessageSecurityCore {
     private let engine: MailSecurityEngine
     /// Records decode outcomes for the end-to-end test harness, when set.
     private let stateRecorder: SecurityStateRecorder?
+    /// Keyserver discovery used by recipient-key fetches.
+    private let keyServerService: KeyServerService
+    /// Whether compose-time auto-fetch of missing recipient keys is enabled.
+    /// Read through a closure so the container app's setting takes effect
+    /// without restarting the extension.
+    private let autoFetchEnabled: () -> Bool
+    /// Recent auto-fetch attempts per recipient, so Mail's frequent
+    /// `getEncodingStatus` callbacks do not hammer the keyservers.
+    private var fetchAttempts: [String: Date] = [:]
+    private let fetchAttemptsLock = NSLock()
+    /// Minimum interval between two fetch attempts for the same recipient.
+    private static let fetchAttemptInterval: TimeInterval = 5 * 60
 
-    public init(engine: MailSecurityEngine, stateRecorder: SecurityStateRecorder? = nil) {
+    public init(
+        engine: MailSecurityEngine,
+        stateRecorder: SecurityStateRecorder? = nil,
+        keyServerService: KeyServerService = KeyServerService(),
+        autoFetchEnabled: @escaping () -> Bool = { RecipientKeyAutoFetch.isEnabled() }
+    ) {
         self.engine = engine
         self.stateRecorder = stateRecorder
+        self.keyServerService = keyServerService
+        self.autoFetchEnabled = autoFetchEnabled
     }
 
     /// Trust store used by the view layer to look up per-signer trust.
@@ -65,14 +85,112 @@ public final class MessageSecurityCore {
         let warning = issues.isEmpty ? nil : RecipientTrustWarning(issues: issues)
         let blocked = warning?.blockedRecipients ?? []
 
+        // Missing keys get a fetch hint; combined with the trust warning
+        // when the message has both kinds of recipients. Only surfaced when
+        // the user actually asked for encryption; there is no point nagging
+        // about recipient keys for a plaintext send.
+        let hint = status.missingRecipientKeys.isEmpty
+            ? nil
+            : MissingRecipientKeysHint(recipients: status.missingRecipientKeys)
+        let securityError: Error?
+        if composeContext.shouldEncrypt {
+            switch (warning, hint) {
+            case let (.some(warning), .some(hint)):
+                securityError = ComposeSecurityWarning(trustWarning: warning, missingKeyHint: hint)
+            case let (.some(warning), .none):
+                securityError = warning
+            case let (.none, .some(hint)):
+                securityError = hint
+            case (.none, .none):
+                securityError = nil
+            }
+        } else {
+            securityError = nil
+        }
+
         return HandlerEncodingStatus(
             canSign: status.canSign,
             canEncrypt: status.canEncrypt && blocked.isEmpty,
-            // Only warn when the user actually asked for encryption; there is
-            // no point nagging about recipient keys for a plaintext send.
-            securityError: composeContext.shouldEncrypt ? warning : nil,
+            securityError: securityError,
             addressesFailingEncryption: status.missingRecipientKeys + blocked
         )
+    }
+
+    // MARK: - Recipient key fetch
+
+    /// Fetches a recipient's public key from the keyservers (WKD first, then
+    /// VKS) and imports it into the keyring.
+    ///
+    /// The import is accepted only when a key actually resolves for `email`
+    /// afterwards: a keyserver answer whose user IDs do not match the
+    /// queried address is rejected, so a hostile or broken server cannot
+    /// substitute somebody else's key. Imported keys land in the trust store
+    /// as unverified (TOFU), exactly like a manual import.
+    @discardableResult
+    public func fetchRecipientKey(for email: String) async -> Result<RecipientKeyFetchResult, KeyServerError> {
+        switch await keyServerService.discoverByEmail(email) {
+        case let .failure(error):
+            return .failure(error)
+        case let .success(fetched):
+            do {
+                _ = try engine.keyManager.importKeys(fetched.data)
+            } catch {
+                return .failure(.malformedKey)
+            }
+            guard let key = try? engine.keyManager.publicKey(for: email),
+                  let fingerprint = try? key.fingerprint
+            else {
+                return .failure(.invalidResponse)
+            }
+            return .success(RecipientKeyFetchResult(
+                email: email,
+                source: fetched.source,
+                fingerprint: fingerprint
+            ))
+        }
+    }
+
+    /// Encoding status with opt-in auto-fetch of missing recipient keys.
+    ///
+    /// When the user enabled auto-fetch and encryption is requested, every
+    /// recipient without a local key is looked up on the keyservers and
+    /// imported before the status is computed — so a key that was simply
+    /// never fetched no longer blocks the send. Lookups are throttled per
+    /// recipient (`fetchAttemptInterval`) because Mail calls
+    /// `getEncodingStatus` on every compose edit. With auto-fetch disabled
+    /// this is exactly `getEncodingStatus`.
+    public func getEncodingStatusWithAutoFetch(
+        for message: MailMessage,
+        composeContext: MailComposeContext
+    ) async -> HandlerEncodingStatus {
+        guard composeContext.shouldEncrypt, autoFetchEnabled() else {
+            return getEncodingStatus(for: message, composeContext: composeContext)
+        }
+        let status = try? engine.encodingStatus(
+            sender: message.fromAddress,
+            recipients: message.recipientAddresses
+        )
+        for recipient in status?.missingRecipientKeys ?? [] where shouldAttemptFetch(for: recipient) {
+            // Failures are ignored here: the status below still reports the
+            // recipient as missing, with the fetch hint.
+            await fetchRecipientKey(for: recipient)
+        }
+        return getEncodingStatus(for: message, composeContext: composeContext)
+    }
+
+    /// Whether a fetch for `recipient` should start now; records the attempt
+    /// when returning `true`.
+    private func shouldAttemptFetch(for recipient: String) -> Bool {
+        fetchAttemptsLock.lock()
+        defer { fetchAttemptsLock.unlock() }
+        let now = Date()
+        if let last = fetchAttempts[recipient],
+           now.timeIntervalSince(last) < Self.fetchAttemptInterval
+        {
+            return false
+        }
+        fetchAttempts[recipient] = now
+        return true
     }
 
     public func encode(
