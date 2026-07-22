@@ -8,8 +8,8 @@
 //    problems), when the handler supplies it;
 //  - per-signer signature + trust state;
 //  - per-signer actions: "View Key in RNP" (deep link
-//    `rnpmail://review/<fpr>`), "Copy Fingerprint", and "Mark as Verified"
-//    for unverified keys.
+//    `rnpmail://review/<fpr>`), "Copy Fingerprint", "Mark as Verified"
+//    for unverified keys, and "Fetch signer key" for unknown signers.
 //
 //  Moved out of the MailPlugin appex into this SwiftPM target so the banner
 //  can be unit- and snapshot-tested without Mail.app. Kept free of MailKit
@@ -39,6 +39,22 @@ public final class MailSecurityBannerView: NSView {
         }
     }
 
+    /// Outcome of a "Fetch signer key" attempt, reported back to the banner
+    /// through the action's completion handler.
+    public enum SignerKeyFetchOutcome: Equatable, Sendable {
+        /// The key was imported. The host is expected to rebuild the banner
+        /// with the re-verified signature status, so the banner itself does
+        /// nothing further.
+        case success
+        /// The fetch failed; the banner shows the message inline and
+        /// re-enables the button so the user can retry.
+        case failure(String)
+    }
+
+    /// Action invoked when the user taps "Fetch signer key" for a signer.
+    /// The completion handler must be called on the main thread.
+    public typealias SignerKeyFetchAction = (Signer, @escaping (SignerKeyFetchOutcome) -> Void) -> Void
+
     /// Encryption status of the decoded message, supplied by the handler.
     public struct EncryptionInfo: Equatable, Sendable {
         /// Whether the message was encrypted (and successfully decrypted).
@@ -55,11 +71,21 @@ public final class MailSecurityBannerView: NSView {
     private let signers: [Signer]
     private let trustStore: TrustStore?
     private let encryption: EncryptionInfo?
+    private let onFetchSignerKey: SignerKeyFetchAction?
+    /// Failure messages from the most recent fetch attempt per signer,
+    /// keyed by `fetchIdentifier`; shown inline under the signer's buttons.
+    private var fetchFailures: [String: String] = [:]
 
-    public init(signers: [Signer], trustStore: TrustStore?, encryption: EncryptionInfo? = nil) {
+    public init(
+        signers: [Signer],
+        trustStore: TrustStore?,
+        encryption: EncryptionInfo? = nil,
+        onFetchSignerKey: SignerKeyFetchAction? = nil
+    ) {
         self.signers = signers
         self.trustStore = trustStore
         self.encryption = encryption
+        self.onFetchSignerKey = onFetchSignerKey
         super.init(frame: NSRect(x: 0, y: 0, width: 360, height: 120))
         setUpViews()
     }
@@ -259,6 +285,14 @@ public final class MailSecurityBannerView: NSView {
             rows.append(buttonRow)
         }
 
+        if let identifier = fetchIdentifier(for: signer), let message = fetchFailures[identifier] {
+            let errorLabel = NSTextField(wrappingLabelWithString: message)
+            errorLabel.textColor = BannerBrand.critical
+            errorLabel.font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
+            errorLabel.setAccessibilityIdentifier("rnp.banner.fetch-error.\(identifier)")
+            rows.append(errorLabel)
+        }
+
         let textStack = NSStackView(views: rows)
         textStack.orientation = .vertical
         textStack.alignment = .leading
@@ -279,10 +313,23 @@ public final class MailSecurityBannerView: NSView {
     /// Per-signer action buttons, depending on the signer's trust state and
     /// the available context.
     private func actionButtons(for signer: Signer, model: SignerTrustViewModel, trust: TrustState?) -> [NSButton] {
-        guard let fingerprint = signer.context?.fingerprint, !fingerprint.isEmpty else {
-            return []
-        }
         var buttons: [NSButton] = []
+
+        // Unknown signer: offer to fetch the key from public keyservers when
+        // the host wired the action and there is an identifier to look up.
+        let status = signer.context.flatMap { RnpSignatureStatus(rawValue: $0.status) } ?? .unknown
+        if status == .signerUnknown, onFetchSignerKey != nil, let identifier = fetchIdentifier(for: signer) {
+            let fetch = NSButton(title: "Fetch signer key", target: self, action: #selector(fetchSignerKey(_:)))
+            fetch.identifier = NSUserInterfaceItemIdentifier(identifier)
+            fetch.bezelStyle = .inline
+            fetch.setAccessibilityIdentifier("rnp.banner.fetch-signer-key.\(identifier)")
+            fetch.setAccessibilityHelp("Looks up the signer's public key on public keyservers and imports it.")
+            buttons.append(fetch)
+        }
+
+        guard let fingerprint = signer.context?.fingerprint, !fingerprint.isEmpty else {
+            return buttons
+        }
 
         if model.reviewDeepLink {
             let link = NSButton(title: "View Key in RNP", target: self, action: #selector(openReviewLink(_:)))
@@ -371,6 +418,41 @@ public final class MailSecurityBannerView: NSView {
             return
         }
         refreshContent()
+    }
+
+    /// Identifier used to fetch a signer's key: the fingerprint when known,
+    /// otherwise the signer's email address.
+    private func fetchIdentifier(for signer: Signer) -> String? {
+        if let fingerprint = signer.context?.fingerprint, !fingerprint.isEmpty {
+            return fingerprint
+        }
+        if let email = signer.context?.email, !email.isEmpty {
+            return email
+        }
+        return nil
+    }
+
+    @objc private func fetchSignerKey(_ sender: NSButton) {
+        guard let identifier = sender.identifier?.rawValue,
+              let signer = signers.first(where: { fetchIdentifier(for: $0) == identifier }),
+              let onFetchSignerKey
+        else {
+            return
+        }
+        fetchFailures.removeValue(forKey: identifier)
+        sender.isEnabled = false
+        sender.title = "Fetching…"
+        onFetchSignerKey(signer) { [weak self] outcome in
+            guard let self else { return }
+            switch outcome {
+            case .success:
+                // The host rebuilds the banner with the re-verified status.
+                break
+            case let .failure(message):
+                fetchFailures[identifier] = message
+                refreshContent()
+            }
+        }
     }
 }
 

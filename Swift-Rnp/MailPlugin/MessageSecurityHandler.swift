@@ -117,6 +117,10 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     /// recorded here at decode time (Mail always decodes a message before it
     /// can show its security indicator).
     private var lastDecodedEncryption: (isEncrypted: Bool, errorDescription: String?)?
+    /// Raw data of the most recently decoded message, kept so the banner's
+    /// "Fetch signer key" action can re-decode the message after importing
+    /// the key. Same decode-before-indicator guarantee as above.
+    private var lastDecodedRawData: Data?
     private let lastDecodedEncryptionLock = NSLock()
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
@@ -128,6 +132,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
             decoded.securityInformation.isEncrypted,
             decoded.securityInformation.encryptionError?.localizedDescription
         )
+        lastDecodedRawData = data
         lastDecodedEncryptionLock.unlock()
         let signers = decoded.securityInformation.signers.map { info in
             MEMessageSigner(
@@ -158,12 +163,51 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         let contexts: [SignerContext?] = messageSigners.map { signer in
             core.signerContext(for: MailKitSigner(signer))
         }
+        lastDecodedEncryptionLock.lock()
+        let rawData = lastDecodedRawData
+        lastDecodedEncryptionLock.unlock()
         return MessageSecurityViewController(
             signers: messageSigners,
             contexts: contexts,
             trustStore: core.trustStore,
-            encryption: encryptionInfo(for: contexts)
+            encryption: encryptionInfo(for: contexts),
+            fetchSignerKey: makeSignerKeyFetch(core: core, rawData: rawData)
         )
+    }
+
+    /// Builds the banner's "Fetch signer key" operation: fetch and import
+    /// the signer's key, then re-decode the message so the banner shows the
+    /// refreshed signature status. Returns `nil` when no decoded message is
+    /// available to re-verify (the banner then hides the action).
+    private func makeSignerKeyFetch(
+        core: MessageSecurityCore,
+        rawData: Data?
+    ) -> MessageSecurityViewController.SignerKeyFetch? {
+        guard let rawData else { return nil }
+        return { context in
+            switch await core.fetchSignerKey(fingerprint: context.fingerprint, email: context.email) {
+            case let .failure(error):
+                return .failure(error)
+            case .success:
+                guard let decoded = core.decodedMessage(forMessageData: rawData) else {
+                    return .failure(.invalidResponse)
+                }
+                let signers = decoded.securityInformation.signers.map { info in
+                    MailSecurityBannerView.Signer(
+                        label: info.signatureLabel,
+                        context: core.signerContext(for: info)
+                    )
+                }
+                let encryption = MailSecurityBannerView.EncryptionInfo(
+                    isEncrypted: decoded.securityInformation.isEncrypted,
+                    errorDescription: decoded.securityInformation.encryptionError?.localizedDescription
+                )
+                return .success(MessageSecurityViewController.RefreshedBannerContent(
+                    signers: signers,
+                    encryption: encryption
+                ))
+            }
+        }
     }
 
     /// Encryption status for the banner: prefer the per-message value carried
