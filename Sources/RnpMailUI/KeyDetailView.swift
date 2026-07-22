@@ -28,6 +28,11 @@ public struct KeyDetailActions {
     public var onRotateSigning: () -> Void
     public var onPublish: () -> Void
     public var onMarkVerified: () -> Void
+    /// Rejects the key as the new binding for its address, keeping the
+    /// previously recorded binding (key-change conflict resolution).
+    public var onRejectNewKey: () -> Void
+    /// Opens the trust history for the key's address.
+    public var onShowTrustHistory: () -> Void
 
     public init(
         onExportPublic: @escaping () -> Void = {},
@@ -38,7 +43,9 @@ public struct KeyDetailActions {
         onRotateEncryption: @escaping () -> Void = {},
         onRotateSigning: @escaping () -> Void = {},
         onPublish: @escaping () -> Void = {},
-        onMarkVerified: @escaping () -> Void = {}
+        onMarkVerified: @escaping () -> Void = {},
+        onRejectNewKey: @escaping () -> Void = {},
+        onShowTrustHistory: @escaping () -> Void = {}
     ) {
         self.onExportPublic = onExportPublic
         self.onExportSecret = onExportSecret
@@ -49,6 +56,8 @@ public struct KeyDetailActions {
         self.onRotateSigning = onRotateSigning
         self.onPublish = onPublish
         self.onMarkVerified = onMarkVerified
+        self.onRejectNewKey = onRejectNewKey
+        self.onShowTrustHistory = onShowTrustHistory
     }
 }
 
@@ -59,6 +68,9 @@ public struct KeyDetailView: View {
     public let isRecipient: Bool
     public let trustState: TrustState
     public let actions: KeyDetailActions
+    /// Whether this key is the newly seen key of an unresolved key-change
+    /// conflict for its address; shows the "Keep old binding" reject action.
+    public let hasPendingKeyChange: Bool
     /// Prefix for the view's accessibility identifiers. The sheet uses the
     /// default `keydetail`; embedding contexts (e.g. the split-view detail
     /// column) pass a distinct prefix so identifiers stay unique when both
@@ -97,6 +109,7 @@ public struct KeyDetailView: View {
         subkeys: [SubkeyInfo],
         isRecipient: Bool,
         trustState: TrustState = .unverified,
+        hasPendingKeyChange: Bool = false,
         actions: KeyDetailActions,
         identifierPrefix: String = "keydetail"
     ) {
@@ -104,6 +117,7 @@ public struct KeyDetailView: View {
         self.subkeys = subkeys
         self.isRecipient = isRecipient
         self.trustState = trustState
+        self.hasPendingKeyChange = hasPendingKeyChange
         self.actions = actions
         self.identifierPrefix = identifierPrefix
     }
@@ -229,11 +243,24 @@ public struct KeyDetailView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: RnpSpacing.xs)
-            if trustState != .verified {
-                Button("detail.markVerified") { actions.onMarkVerified() }
-                    .buttonStyle(.borderedProminent)
-                    .tint(trustState == .problem ? RnpBrand.critical : Color.accentColor)
-                    .accessibilityIdentifier("\(identifierPrefix).mark-verified")
+            VStack(alignment: .trailing, spacing: RnpSpacing.xs) {
+                if trustState != .verified {
+                    Button("detail.markVerified") { actions.onMarkVerified() }
+                        .buttonStyle(.borderedProminent)
+                        .tint(trustState == .problem ? RnpBrand.critical : Color.accentColor)
+                        .accessibilityIdentifier("\(identifierPrefix).mark-verified")
+                }
+                if hasPendingKeyChange {
+                    Button("detail.keepOldBinding") { actions.onRejectNewKey() }
+                        .buttonStyle(.bordered)
+                        .accessibilityIdentifier("\(identifierPrefix).keep-old-binding")
+                        .help("detail.keepOldBinding.help")
+                }
+                Button("trustHistory.title") { actions.onShowTrustHistory() }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .accessibilityIdentifier("\(identifierPrefix).trust-history")
+                    .help("trustHistory.title")
             }
         }
         .padding(RnpSpacing.sm)

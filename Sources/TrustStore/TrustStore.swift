@@ -27,11 +27,35 @@ private struct TrustDatabase: Codable, Equatable {
     var records: [String: TrustRecord]
     /// Unresolved key-change conflicts.
     var conflicts: [TrustConflict]
+    /// Append-only log of binding snapshots: every recorded state a binding
+    /// went through (first seen, verified, marked problem, superseded by a
+    /// conflict, restored by a rejection). Powers the trust history view and
+    /// lets `rejectConflict` restore the previous binding with its state.
+    var history: [TrustRecord]
 
-    init(version: Int = 1, records: [String: TrustRecord] = [:], conflicts: [TrustConflict] = []) {
+    init(
+        version: Int = 1,
+        records: [String: TrustRecord] = [:],
+        conflicts: [TrustConflict] = [],
+        history: [TrustRecord] = []
+    ) {
         self.version = version
         self.records = records
         self.conflicts = conflicts
+        self.history = history
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case version, records, conflicts, history
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        version = try container.decode(Int.self, forKey: .version)
+        records = try container.decode([String: TrustRecord].self, forKey: .records)
+        conflicts = try container.decode([TrustConflict].self, forKey: .conflicts)
+        // Databases written before the history log existed decode as empty.
+        history = try container.decodeIfPresent([TrustRecord].self, forKey: .history) ?? []
     }
 }
 
@@ -96,11 +120,18 @@ public final class TrustStore {
     // MARK: - Queries
 
     /// Trust state for the given fingerprint, or `unverified` when unknown.
+    ///
+    /// Falls back to the most recent history snapshot when the fingerprint
+    /// has no active record (e.g. a key that was rejected in favor of the
+    /// previous binding), so a superseded key keeps its last known state.
     public func state(forFpr fingerprint: String) -> TrustState {
         lock.lock()
         defer { lock.unlock() }
         if let record = database.records.values.first(where: { $0.fingerprint == fingerprint }) {
             return record.state
+        }
+        if let snapshot = database.history.last(where: { $0.fingerprint == fingerprint }) {
+            return snapshot.state
         }
         return .unverified
     }
@@ -128,6 +159,17 @@ public final class TrustStore {
         return database.conflicts.contains { $0.email == normalized }
     }
 
+    /// History of trust snapshots recorded for the given email address,
+    /// most recent first: every binding seen for the address and the states
+    /// it went through (`unverified`, `verified`, `problem`). In each entry,
+    /// `lastSeen` is the time that state was recorded.
+    public func history(forEmail email: String) -> [TrustRecord] {
+        let normalized = Self.normalizeEmail(email)
+        lock.lock()
+        defer { lock.unlock() }
+        return database.history.filter { $0.email == normalized }.reversed()
+    }
+
     // MARK: - Mutations
 
     /// Records that `fingerprint` was seen for `email`.
@@ -138,7 +180,11 @@ public final class TrustStore {
     ///   is updated.
     /// - If a different fingerprint was already recorded, a `TrustConflict` is
     ///   created (unless one already exists) and the new fingerprint is marked
-    ///   `problem`.
+    ///   `problem`. The superseded binding is preserved in the history log so
+    ///   `rejectConflict(email:newFpr:)` can restore it.
+    ///
+    /// First sightings and newly detected conflicts append a snapshot to the
+    /// history log; re-sightings of a known binding only touch `lastSeen`.
     public func noteSeen(email: String, fingerprint: String) throws {
         let normalized = Self.normalizeEmail(email)
         lock.lock()
@@ -161,19 +207,27 @@ public final class TrustStore {
                         existingFingerprint: existing.fingerprint,
                         newFingerprint: fingerprint
                     ))
+                    // Preserve the outgoing binding so a rejection can restore
+                    // it with its original state.
+                    database.history.append(existing)
                 }
                 // Ensure the new fingerprint has a record in problem state.
                 let newRecord = database.records.values.first {
                     $0.email == normalized && $0.fingerprint == fingerprint
                 } ?? TrustRecord(email: normalized, fingerprint: fingerprint, state: .problem)
                 database.records[normalized] = newRecord
+                if !conflictExists {
+                    database.history.append(newRecord)
+                }
             }
         } else {
-            database.records[normalized] = TrustRecord(
+            let record = TrustRecord(
                 email: normalized,
                 fingerprint: fingerprint,
                 state: .unverified
             )
+            database.records[normalized] = record
+            database.history.append(record)
         }
         try saveLocked()
     }
@@ -182,12 +236,35 @@ public final class TrustStore {
     ///
     /// Also resolves any conflicts where this fingerprint is the newly seen
     /// key, so encryption can proceed after the user accepts a key change.
+    /// When the fingerprint only exists in the history log (e.g. a key the
+    /// user previously rejected), verifying it promotes it back to the active
+    /// binding for its address.
     public func markVerified(fingerprint: String) throws {
         lock.lock()
         defer { lock.unlock() }
+        var matchedActive = false
         for email in database.records.keys {
             if database.records[email]?.fingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame {
                 database.records[email]?.state = .verified
+                if var snapshot = database.records[email] {
+                    snapshot.lastSeen = Date()
+                    database.history.append(snapshot)
+                }
+                matchedActive = true
+            }
+        }
+        if !matchedActive {
+            var promotedEmails: Set<String> = []
+            for snapshot in database.history.reversed()
+            where snapshot.fingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame
+                && !promotedEmails.contains(snapshot.email)
+            {
+                var record = snapshot
+                record.state = .verified
+                record.lastSeen = Date()
+                database.records[record.email] = record
+                database.history.append(record)
+                promotedEmails.insert(record.email)
             }
         }
         database.conflicts.removeAll { $0.newFingerprint == fingerprint }
@@ -201,6 +278,10 @@ public final class TrustStore {
         for email in database.records.keys {
             if database.records[email]?.fingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame {
                 database.records[email]?.state = .problem
+                if var snapshot = database.records[email] {
+                    snapshot.lastSeen = Date()
+                    database.history.append(snapshot)
+                }
             }
         }
         try saveLocked()
@@ -213,11 +294,66 @@ public final class TrustStore {
         lock.lock()
         defer { lock.unlock() }
         database.conflicts.removeAll { $0.email == normalized }
-        database.records[normalized] = TrustRecord(
+        let record = TrustRecord(
             email: normalized,
             fingerprint: fingerprint,
             state: .verified
         )
+        database.records[normalized] = record
+        database.history.append(record)
+        try saveLocked()
+    }
+
+    /// Resolves a conflict by rejecting the newly seen key `newFpr` for
+    /// `email`: the previous binding is restored as the active record with
+    /// the state it had when it was superseded, and the rejected key stays
+    /// marked `problem` in the history log. Encryption therefore keeps going
+    /// to the previous key instead of the rejected one.
+    ///
+    /// Does nothing when no matching conflict exists.
+    public func rejectConflict(email: String, newFpr: String) throws {
+        let normalized = Self.normalizeEmail(email)
+        lock.lock()
+        defer { lock.unlock() }
+        guard let conflict = database.conflicts.first(where: {
+            $0.email == normalized && $0.newFingerprint == newFpr
+        }) else {
+            return
+        }
+        database.conflicts.removeAll { $0.email == normalized && $0.newFingerprint == newFpr }
+
+        // Only the common case rewrites the active record: the rejected key
+        // is the current binding for the address. When another conflict chain
+        // has already moved the binding elsewhere, removing the conflict is
+        // enough.
+        guard let outgoing = database.records[normalized],
+              outgoing.fingerprint.caseInsensitiveCompare(conflict.newFingerprint) == .orderedSame
+        else {
+            try saveLocked()
+            return
+        }
+
+        // Preserve the rejected key's problem record in the history log.
+        var rejected = outgoing
+        rejected.state = .problem
+        rejected.lastSeen = Date()
+        database.history.append(rejected)
+
+        // Restore the previous binding with the state it had when it was
+        // superseded; fall back to `unverified` when no snapshot exists
+        // (e.g. the conflict predates the history log).
+        let previous = database.history.last {
+            $0.email == normalized &&
+            $0.fingerprint.caseInsensitiveCompare(conflict.existingFingerprint) == .orderedSame
+        }
+        var restored = previous ?? TrustRecord(
+            email: normalized,
+            fingerprint: conflict.existingFingerprint,
+            state: .unverified
+        )
+        restored.lastSeen = Date()
+        database.records[normalized] = restored
+        database.history.append(restored)
         try saveLocked()
     }
 
