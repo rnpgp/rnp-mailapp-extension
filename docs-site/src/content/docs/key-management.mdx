@@ -1,0 +1,102 @@
+---
+title: Key Management
+description: Generate, import, export, inspect, and maintain OpenPGP keys in the RNP app.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Open the RNP app to manage keys. The key list shows each key's user ID,
+fingerprint, and verification status. Everything you do here is immediately
+visible to the Mail extension through the shared keyring.
+
+## Generating a key
+
+1. Click the **＋** menu and choose an algorithm:
+   - **Ed25519** (the default) — modern, fast, and compact.
+   - **RSA-3072** — the librnp 0.18 default, maximally interoperable.
+   - **ECDSA P-256** — NIST-curve alternative.
+2. Enter a user ID that contains the mail address you send from, in the form
+   `Alice <alice@example.com>`. The extension matches keys to messages by
+   email address, so the address in the user ID must match the account in
+   Mail.
+3. Confirm. The secret key is protected by a random keyring passphrase stored
+   in the Keychain — you are not asked to invent one.
+
+## Importing keys
+
+Use the import (arrow-down) menu to bring in an armored key:
+
+- **From the clipboard** or **from a file** — both public keys (recipients'
+  keys) and secret keys (your own, e.g. exported from another OpenPGP tool
+  with `gpg --export-secret-keys --armor`) are accepted.
+- **From a keyserver** — fetch a correspondent's key by email address or
+  fingerprint; see [Keyservers](/keyserver/).
+
+Imported secret keys keep whatever passphrase protection they arrived with.
+When a key's passphrase differs from the keyring passphrase, the app asks for
+the key's passphrase (showing its user ID and fingerprint) and offers either
+to save it in the Keychain or to re-protect the key with the keyring
+passphrase — so you only ever need one passphrase. See
+[Passphrases and the Keychain](/security/#passphrases-and-the-keychain).
+
+## Exporting keys
+
+From a key's detail view you can copy the **armored public key** to the
+clipboard — this is what you send to correspondents or upload to a keyserver.
+
+Secret-key export is available for backups and is gated by a confirmation
+alert.
+
+<Aside type="caution">
+  Exported keys are placed on the general pasteboard, which other apps can
+  read. Clear it afterwards if that matters to you.
+</Aside>
+
+## Inspecting a key
+
+Click a key to open its detail sheet:
+
+- **Full fingerprint** with a copy button — the fingerprint is the key's
+  identity; compare it over a trusted channel before marking a key as
+  verified. Try the [fingerprint checker](/#demos) on the home page to see the
+  canonical grouped format.
+- **Creation and expiry dates** for the primary key and subkeys.
+- **Verification status** and trust actions (see
+  [Trust & Verification](/trust-verification/)).
+- **Keyserver actions** — publish the public key so others can find it (see
+  [Keyservers](/keyserver/)).
+
+## Deleting keys
+
+Deleting a key removes it from the shared keyring. Deleting a secret key is
+permanent unless you have exported a backup — messages encrypted to that key
+can no longer be decrypted.
+
+## Keeping keys healthy
+
+Keys and subkeys can expire. The RNP app monitors your keyring and warns you
+about primary keys and subkeys that are expired or expiring within 60 days,
+with in-app banners. From a key's detail view you can:
+
+- **Rotate a subkey** — generate a fresh encryption or signing subkey. The
+  retired subkey expires after a 30-day grace period so correspondents can
+  pick up the updated key.
+- **Extend expiry** — write a new expiration date into the key's
+  self-signature.
+- **Revoke a key** — produce an armored revocation certificate (stored as
+  `<fingerprint>-revocation.asc` in the app-group container) marking the key
+  as no longer valid. Publish the revoked key afterwards so others stop using
+  it — see [Keyservers](/keyserver/#revocation-checks).
+
+:::tip
+After rotating a subkey, extending expiry, or revoking, re-upload the key to
+your keyserver so correspondents receive the update.
+:::
+
+## Known limitations
+
+- **One passphrase per key.** Imported keys with a foreign passphrase need a
+  one-time unlock prompt in the app; there is no passphrase prompt inside Mail
+  itself, so a key whose passphrase was never entered cannot sign or decrypt.
+- **No SmartCard/HSM support.** Only software keys in the local keyring can be
+  used.

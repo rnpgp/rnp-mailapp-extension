@@ -1,0 +1,23 @@
+{
+  "name": "rnp-docs-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Documentation and product site for RNP — OpenPGP for Apple Mail on macOS.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.41.4",
+    "@astrojs/vue": "^7.0.1",
+    "astro": "^7.1.3",
+    "vue": "^3.5.40"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

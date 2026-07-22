@@ -1,0 +1,106 @@
+/* Tailwind 4 — theme tokens and utilities only.
+   Preflight is intentionally skipped so it cannot fight Starlight's own
+   styles; the landing page sets its own minimal base styles. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Dark mode keyed to Starlight's `data-theme` attribute so the landing
+   page, docs, and Vue islands all follow the same theme. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ------------------------------------------------------------------
+   Starlight theme — RNP brand color (#1A7BEC)
+   ------------------------------------------------------------------ */
+:root {
+  --sl-color-accent-low: #dcebfe;
+  --sl-color-accent: #1a7bec;
+  --sl-color-accent-high: #0b54b8;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #eceef4;
+  --sl-color-gray-2: #c3c8d6;
+  --sl-color-gray-3: #8b93a7;
+  --sl-color-gray-4: #5a6178;
+  --sl-color-gray-5: #3b4154;
+  --sl-color-gray-6: #2e3349;
+  --sl-color-gray-7: #1d2233;
+  --sl-color-black: #12151f;
+}
+
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #0e3a75;
+  --sl-color-accent: #58a0f4;
+  --sl-color-accent-high: #c9e0fd;
+  --sl-color-white: #f2f5fb;
+  --sl-color-gray-1: #e7eaf3;
+  --sl-color-gray-2: #c3c8d6;
+  --sl-color-gray-3: #8b93a7;
+  --sl-color-gray-4: #6d7590;
+  --sl-color-gray-5: #3b4154;
+  --sl-color-gray-6: #262c40;
+  --sl-color-gray-7: #181c2a;
+  --sl-color-black: #12151f;
+}
+
+/* ------------------------------------------------------------------
+   Landing page base + animation helpers (used by src/pages/index.astro)
+   ------------------------------------------------------------------ */
+@layer base {
+  .landing-root {
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto,
+      Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-root {
+      scroll-behavior: auto;
+    }
+    .landing-root *,
+    .landing-root *::before,
+    .landing-root *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Scroll-reveal: elements start hidden, .is-visible fades them up. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Slow ambient pulse for the hero glow. */
+@keyframes hero-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
+}
+
+.hero-glow {
+  animation: hero-glow 9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow {
+    animation: none;
+  }
+}
