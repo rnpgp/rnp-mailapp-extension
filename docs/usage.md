@@ -182,8 +182,10 @@ keyring passphrase.
 - **Inline PGP is receive-mostly.** The extension sends PGP/MIME. Decoding
   accepts both PGP/MIME and inline PGP; inline-PGP *sending* exists in the
   engine for single-part text messages only.
-- **Metadata stays visible to Mail.** Subject lines, recipients, and message
-  sizes are handled by Mail.app outside the encrypted payload.
+- **Metadata mostly stays visible to Mail.** Recipients and message sizes are
+  handled by Mail.app outside the encrypted payload. Subject lines of
+  encrypted messages are protected on the wire (protected-headers="v1"), but
+  Mail.app still sees them before encryption and after decryption.
 
 ## See also
 

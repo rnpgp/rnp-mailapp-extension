@@ -13,6 +13,7 @@ standards and librnp functionality that implements them.
 | Verify incoming signatures | Automatic verification with the result surfaced in Mail's message banner |
 | Attachments | Preserved exactly by PGP/MIME encode/decode |
 | Non-ASCII message bodies | Preserved exactly by PGP/MIME; full UTF-8 handling |
+| Protected headers (Subject encryption) | `protected-headers="v1"` ("Memory Hole", K-9 Mail / Thunderbird compatible): sensitive headers travel inside the encrypted payload; the outer Subject is a placeholder |
 | Inline-PGP sending | Available in the engine (`MessageFormat.inlinePGP`) for single-part text messages only |
 | Compose-window security button | MailKit `MEMessageSecurityHandler`; per-message sign/encrypt toggles |
 | Signature status banner | AppKit banner rendered by the extension; verified / unverified / problem states |

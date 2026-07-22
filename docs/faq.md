@@ -94,9 +94,14 @@ understood.
 
 ### Will my subject lines be encrypted?
 
-No. OpenPGP protects the message body and attachments; subject, recipients,
-and other headers remain visible to the mail system, as with most deployed
-email encryption. This is also listed in
+Yes, for encrypted PGP/MIME mail. Outgoing encrypted messages use protected
+headers (`protected-headers="v1"`, the "Memory Hole" scheme also used by K-9
+Mail and Thunderbird): the real Subject and other sensitive headers move into
+the encrypted payload, and the outer message carries a generic placeholder
+("Encrypted message"). Recipients whose mail app understands protected headers
+see the real subject after decryption; others see the placeholder. Recipients,
+sender, and date remain visible — the mail system needs them for routing and
+for the message list. See also
 [What is not protected](SECURITY-MODEL.md#what-is-not-protected).
 
 ### How do I revoke a key?
