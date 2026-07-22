@@ -208,4 +208,54 @@ final class RnpTests: XCTestCase {
         // In-memory key is not yet revoked until the revocation signature is imported.
         XCTAssertFalse(try key.isRevoked)
     }
+
+    // MARK: - Keyed passphrase provider
+
+    func testKeyedProviderReceivesPrimaryFingerprint() throws {
+        var seen: [(context: String, fingerprint: String?)] = []
+        let rnp = try Rnp(keyedPassphraseProvider: { context, fingerprint in
+            seen.append((context, fingerprint))
+            return Self.password
+        })
+        try rnp.generateKey(json: Rnp.ed25519KeyGenJSON(userid: Self.userid))
+        let key = try rnp.requireKey(Self.userid)
+        let fingerprint = try key.fingerprint
+
+        // Signing unlocks the primary key, decryption the encryption subkey;
+        // both must surface the primary key's fingerprint.
+        _ = try rnp.sign(message, with: key)
+        let encrypted = try rnp.encrypt(message, for: [key])
+        _ = try rnp.decrypt(encrypted)
+
+        XCTAssertTrue(seen.contains { $0.fingerprint == fingerprint })
+        XCTAssertFalse(seen.contains { $0.fingerprint != nil && $0.fingerprint != fingerprint })
+    }
+
+    // MARK: - Key protection
+
+    func testKeyUnlockAndProtectionState() throws {
+        let rnp = try Rnp(password: Self.password)
+        try rnp.generateKey(json: Rnp.ed25519KeyGenJSON(userid: Self.userid))
+        let key = try rnp.requireKey(Self.userid)
+        let subkey = try XCTUnwrap(key.subkeys.first)
+
+        // Generated keys are protected; a wrong password does not unlock.
+        XCTAssertTrue(try key.isProtected)
+        XCTAssertTrue(try subkey.isProtected)
+        XCTAssertFalse(key.unlock(password: "wrong-password"))
+        XCTAssertFalse(subkey.unlock(password: "wrong-password"))
+        XCTAssertTrue(key.unlock(password: Self.password))
+        XCTAssertTrue(subkey.unlock(password: Self.password))
+
+        // Re-protecting with a new password persists into the secret export:
+        // a fresh context only accepts the new password for the subkey.
+        try key.protect(password: "new-password")
+        try subkey.protect(password: "new-password")
+        let secretData = try key.exportKey(secret: true)
+        let reloaded = try Rnp(password: "new-password")
+        try reloaded.importKeys(secretData)
+        let reloadedSubkey = try XCTUnwrap(reloaded.requireKey(Self.userid).subkeys.first)
+        XCTAssertFalse(reloadedSubkey.unlock(password: Self.password))
+        XCTAssertTrue(reloadedSubkey.unlock(password: "new-password"))
+    }
 }

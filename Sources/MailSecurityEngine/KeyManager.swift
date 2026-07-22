@@ -128,6 +128,25 @@ public struct SubkeyInfo: Equatable, Identifiable {
 public enum KeyManagerError: Error, Equatable {
     /// A keyring file exists but could not be read.
     case keyringUnreadable(String)
+    /// The supplied passphrase did not unlock the key's secret material.
+    case wrongPassphrase(String)
+}
+
+/// A secret key that is passphrase-protected but cannot be unlocked with the
+/// keyring passphrase — typically a freshly imported key still protected by
+/// its original (foreign) passphrase.
+public struct LockedSecretKeyInfo: Equatable, Identifiable {
+    /// Fingerprint of the primary key.
+    public let fingerprint: String
+    /// The key's primary user ID, for display in the unlock prompt.
+    public let primaryUserID: String
+
+    public init(fingerprint: String, primaryUserID: String) {
+        self.fingerprint = fingerprint
+        self.primaryUserID = primaryUserID
+    }
+
+    public var id: String { fingerprint }
 }
 
 /// Manages an OpenPGP keyring directory for the mail extension and its
@@ -160,9 +179,37 @@ public final class KeyManager {
     ///   - keychainAccessGroup: Keychain access group used when creating the
     ///     default trust store. Defaults to the `RNPMAILKeychainAccessGroup`
     ///     value from `Bundle.main`.
-    public init(
+    public convenience init(
         directory: URL,
         passphraseProvider: @escaping Rnp.PassphraseProvider,
+        trustStore: TrustStore? = nil,
+        keychainAccessGroup: String? = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String
+    ) throws {
+        try self.init(
+            directory: directory,
+            keyedPassphraseProvider: { context, _ in passphraseProvider(context) },
+            trustStore: trustStore,
+            keychainAccessGroup: keychainAccessGroup
+        )
+    }
+
+    /// Creates a manager with a passphrase callback that is told which key
+    /// is being unlocked, so imported keys protected by a foreign passphrase
+    /// can be answered with their per-key passphrase.
+    ///
+    /// - Parameters:
+    ///   - directory: directory holding `pubring.gpg` / `secring.gpg`.
+    ///   - keyedPassphraseProvider: callback receiving the passphrase context
+    ///     and the fingerprint of the key being unlocked (the primary key's
+    ///     fingerprint for subkeys), or `nil` when no key is involved.
+    ///   - trustStore: optional trust store; if omitted, one is created in the
+    ///     same directory.
+    ///   - keychainAccessGroup: Keychain access group used when creating the
+    ///     default trust store. Defaults to the `RNPMAILKeychainAccessGroup`
+    ///     value from `Bundle.main`.
+    public init(
+        directory: URL,
+        keyedPassphraseProvider: @escaping Rnp.KeyedPassphraseProvider,
         trustStore: TrustStore? = nil,
         keychainAccessGroup: String? = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String
     ) throws {
@@ -179,7 +226,7 @@ public final class KeyManager {
                 keychainAccessGroup: keychainAccessGroup
             )
         }
-        rnp = try Rnp(passphraseProvider: passphraseProvider)
+        rnp = try Rnp(keyedPassphraseProvider: keyedPassphraseProvider)
         try loadKeyring(publicKeyringURL, public: true, secret: false)
         try loadKeyring(secretKeyringURL, public: false, secret: true)
     }
@@ -357,6 +404,89 @@ public final class KeyManager {
         try withRnp { rnp in
             try rnp.requireKey(fingerprint, type: .fingerprint)
                 .exportKey(secret: secret, armored: armored)
+        }
+    }
+
+    // MARK: - Foreign passphrases
+
+    /// Secret keys among `fingerprints` (all keys when `nil`) that are
+    /// passphrase-protected and cannot be unlocked with `keyringPassphrase`
+    /// — i.e. keys imported while protected by a foreign passphrase.
+    ///
+    /// The probe unlocks matching parts in memory as a side effect when the
+    /// keyring passphrase does fit; such keys are not reported.
+    public func lockedSecretKeys(
+        keyringPassphrase: String,
+        among fingerprints: [String]? = nil
+    ) throws -> [LockedSecretKeyInfo] {
+        try withRnp { rnp in
+            let candidates: [String]
+            if let fingerprints {
+                candidates = fingerprints
+            } else {
+                candidates = try listKeys().filter(\.hasSecret).map(\.fingerprint)
+            }
+            var locked: [LockedSecretKeyInfo] = []
+            for fingerprint in candidates {
+                guard let key = try rnp.locateKey(fingerprint, type: .fingerprint),
+                      (try? key.hasSecret) == true
+                else {
+                    continue
+                }
+                let protectedParts = protectedSecretParts(of: key)
+                guard !protectedParts.isEmpty else {
+                    continue
+                }
+                let fitsKeyring = protectedParts.allSatisfy { $0.unlock(password: keyringPassphrase) }
+                if !fitsKeyring {
+                    locked.append(LockedSecretKeyInfo(
+                        fingerprint: fingerprint,
+                        primaryUserID: (try? key.primaryUserID) ?? ""
+                    ))
+                }
+            }
+            return locked
+        }
+    }
+
+    /// Whether `passphrase` unlocks every protected secret part of the key
+    /// (primary and subkeys). Successful parts stay unlocked in memory.
+    public func unlockSecretKey(fingerprint: String, passphrase: String) throws -> Bool {
+        try withRnp { rnp in
+            let key = try rnp.requireKey(fingerprint, type: .fingerprint)
+            return protectedSecretParts(of: key).allSatisfy { $0.unlock(password: passphrase) }
+        }
+    }
+
+    /// Re-protects the key's secret material (primary and subkeys) with
+    /// `newPassphrase`, so the key can subsequently be used with the keyring
+    /// passphrase alone, and persists the keyrings.
+    ///
+    /// - Throws: `KeyManagerError.wrongPassphrase` when `currentPassphrase`
+    ///   does not unlock every protected part of the key.
+    public func reprotectSecretKey(
+        fingerprint: String,
+        currentPassphrase: String,
+        newPassphrase: String
+    ) throws {
+        try withRnp { rnp in
+            let key = try rnp.requireKey(fingerprint, type: .fingerprint)
+            let parts = protectedSecretParts(of: key)
+            guard parts.allSatisfy({ $0.unlock(password: currentPassphrase) }) else {
+                throw KeyManagerError.wrongPassphrase(fingerprint)
+            }
+            for part in parts {
+                try part.protect(password: newPassphrase)
+            }
+            try persist(rnp)
+        }
+    }
+
+    /// The primary key and subkeys holding passphrase-protected secret
+    /// material. Caller must hold the manager lock.
+    private func protectedSecretParts(of key: RnpKey) -> [RnpKey] {
+        ([key] + ((try? key.subkeys) ?? [])).filter {
+            ((try? $0.hasSecret) ?? false) && ((try? $0.isProtected) ?? false)
         }
     }
 

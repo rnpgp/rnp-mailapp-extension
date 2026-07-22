@@ -63,10 +63,10 @@ model are in [Security model](SECURITY-MODEL.md).
 ### Can I use my existing GnuPG keys?
 
 Yes. Export the secret key from GnuPG (`gpg --export-secret-keys --armor`)
-and import it in the RNP app. One caveat: imported keys keep the passphrase
-they arrived with, and RNP has no per-key passphrase prompt, so operations
-needing that secret material can fail — see
-[Known limitations](usage.md#known-limitations).
+and import it in the RNP app. If the key's passphrase differs from the
+keyring passphrase, the app prompts for it once and offers to save it in the
+Keychain or to re-protect the key with the keyring passphrase — see
+[Passphrases and the Keychain](usage.md#passphrases-and-the-keychain).
 
 ### Can I use a SmartCard or hardware token?
 

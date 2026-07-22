@@ -13136,6 +13136,77 @@
         }
       }
     },
+    "button.skip": {
+      "comment": "Button dismissing an optional prompt without acting.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Überspringen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Omitir"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ignorer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Salta"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "スキップ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "걷어넘기"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pular"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Пропустить"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "跳过"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "略過"
+          }
+        }
+      }
+    },
     "error.importFailed.recovery": {
       "comment": "Recovery hint under a failed key import.",
       "localizations": {
@@ -15049,6 +15120,432 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "重置為預設"
+          }
+        }
+      }
+    },
+    "foreignPassphrase.title": {
+      "comment": "Title of the sheet asking for an imported key’s foreign passphrase.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock imported key"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Importierten Schlüssel entsperren"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear clave importada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Déverrouiller la clé importée"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sblocca chiave importata"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "読み込んだ鍵のロックを解除"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "가져온 키 잠금 해제"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear chave importada"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Разблокировать импортированный ключ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解锁导入的密钥"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解鎖匯入的金鑰"
+          }
+        }
+      }
+    },
+    "foreignPassphrase.message": {
+      "comment": "Explanation shown in the foreign passphrase prompt.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This secret key is protected by its own passphrase, which is different from the keyring passphrase. Enter the key’s passphrase to use it for signing and decryption."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dieser geheime Schlüssel ist mit einer eigenen Passphrase geschützt, die sich von der Passphrase des Schlüsselbunds unterscheidet. Gib die Passphrase des Schlüssels ein, um ihn zum Signieren und Entschlüsseln zu verwenden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Esta clave secreta está protegida por su propia frase de contraseña, distinta de la del llavero. Introduce la frase de contraseña de la clave para usarla al firmar y descifrar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cette clé secrète est protégée par sa propre phrase de passe, différente de celle du trousseau. Saisissez la phrase de passe de la clé pour l’utiliser pour signer et déchiffrer."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Questa chiave segreta è protetta da una propria passphrase, diversa da quella del portachiavi. Inserisci la passphrase della chiave per usarla per firmare e decifrare."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "この秘密鍵はキーリングのパスフレーズとは異なる独自のパスフレーズで保護されています。署名と復号に使用するには、鍵のパスフレーズを入力してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "이 개인 키는 키링 암호와 다른 고유 암호로 보호되어 있습니다. 서명과 복호화에 사용하려면 키의 암호를 입력하세요."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Esta chave secreta está protegida por sua própria frase-senha, diferente da frase-senha do chaveiro. Digite a frase-senha da chave para usá-la para assinar e descriptografar."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Этот секретный ключ защищён собственной парольной фразой, отличной от парольной фразы связки ключей. Введите парольную фразу ключа, чтобы использовать его для подписи и расшифровки."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "此私钥由其自身的密码保护,该密码与钥匙串密码不同。请输入该密钥的密码,以便用于签名和解密。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "此私密金鑰由其自身的密語保護,與鑰匙圈密語不同。請輸入該金鑰的密語,以便用於簽署與解密。"
+          }
+        }
+      }
+    },
+    "foreignPassphrase.fieldLabel": {
+      "comment": "Label of the passphrase text field in the foreign passphrase prompt.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key passphrase"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schlüssel-Passphrase"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Frase de contraseña de la clave"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Phrase de passe de la clé"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Passphrase della chiave"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "鍵のパスフレーズ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "키 암호"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Frase-senha da chave"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Парольная фраза ключа"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "密钥密码"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "金鑰密語"
+          }
+        }
+      }
+    },
+    "foreignPassphrase.reprotect": {
+      "comment": "Checkbox offering to re-protect the key with the keyring passphrase.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Re-protect the key with the keyring passphrase"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schlüssel mit der Passphrase des Schlüsselbunds neu schützen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Volver a proteger la clave con la frase de contraseña del llavero"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Reprotéger la clé avec la phrase de passe du trousseau"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Riproteggi la chiave con la passphrase del portachiavi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "キーリングのパスフレーズで鍵を再保護する"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "키링 암호로 키 다시 보호"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Reproteger a chave com a frase-senha do chaveiro"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Перезащитить ключ парольной фразой связки ключей"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "使用钥匙串密码重新保护该密钥"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "使用鑰匙圈密語重新保護該金鑰"
+          }
+        }
+      }
+    },
+    "foreignPassphrase.wrong": {
+      "comment": "Error shown when the entered passphrase does not unlock the key.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The passphrase did not unlock the key. Please try again."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Passphrase konnte den Schlüssel nicht entsperren. Bitte erneut versuchen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La frase de contraseña no desbloqueó la clave. Inténtalo de nuevo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La phrase de passe n’a pas déverrouillé la clé. Veuillez réessayer."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La passphrase non ha sbloccato la chiave. Riprova."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "パスフレーズで鍵のロックを解除できませんでした。もう一度お試しください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "암호가 키 잠금을 해제하지 못했습니다. 다시 시도하세요."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A frase-senha não desbloqueou a chave. Tente novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Парольная фраза не разблокировала ключ. Повторите попытку."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "密码未能解锁该密钥,请重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "密語未能解鎖該金鑰,請重試。"
+          }
+        }
+      }
+    },
+    "foreignPassphrase.unlock": {
+      "comment": "Confirm button of the foreign passphrase prompt.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Entsperren"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Déverrouiller"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sblocca"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ロック解除"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "잠금 해제"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Desbloquear"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Разблокировать"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解锁"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "解鎖"
           }
         }
       }

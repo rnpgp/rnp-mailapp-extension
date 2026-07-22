@@ -32,11 +32,17 @@ public final class Rnp {
     /// "protect"). Return the passphrase, or `nil` to abort the operation.
     public typealias PassphraseProvider = (_ context: String) -> String?
 
+    /// Extended passphrase callback that also receives the fingerprint of
+    /// the key being unlocked (the primary key's fingerprint when librnp
+    /// asks on behalf of a subkey), or `nil` when the request is not tied to
+    /// a specific key. Allows answering with per-key passphrases.
+    public typealias KeyedPassphraseProvider = (_ context: String, _ keyFingerprint: String?) -> String?
+
     /// Internal so extensions in sibling files (e.g. Verification.swift) can
     /// run FFI operations on the context.
     let ffi: rnp_ffi_t
     /// Internal so the C passphrase callback (a free function) can reach it.
-    let passphraseProvider: PassphraseProvider
+    let keyedPassphraseProvider: KeyedPassphraseProvider
 
     /// Creates a context with empty in-memory keyrings.
     ///
@@ -48,12 +54,34 @@ public final class Rnp {
     ///     GnuPG 2.1+ format, which librnp cannot export back to OpenPGP
     ///     packets, so export/save operations require "GPG").
     ///   - passphraseProvider: passphrase callback, see `PassphraseProvider`.
-    public init(
+    public convenience init(
         publicKeyringFormat: String = "GPG",
         secretKeyringFormat: String = "GPG",
         passphraseProvider: @escaping PassphraseProvider
     ) throws {
-        self.passphraseProvider = passphraseProvider
+        try self.init(
+            publicKeyringFormat: publicKeyringFormat,
+            secretKeyringFormat: secretKeyringFormat,
+            keyedPassphraseProvider: { context, _ in passphraseProvider(context) }
+        )
+    }
+
+    /// Creates a context with empty in-memory keyrings and a passphrase
+    /// callback that is told which key is being unlocked.
+    ///
+    /// - Parameters:
+    ///   - publicKeyringFormat: public keyring format passed to
+    ///     `rnp_ffi_create` ("GPG" by default).
+    ///   - secretKeyringFormat: secret keyring format passed to
+    ///     `rnp_ffi_create` ("GPG" by default).
+    ///   - keyedPassphraseProvider: passphrase callback, see
+    ///     `KeyedPassphraseProvider`.
+    public init(
+        publicKeyringFormat: String = "GPG",
+        secretKeyringFormat: String = "GPG",
+        keyedPassphraseProvider: @escaping KeyedPassphraseProvider
+    ) throws {
+        self.keyedPassphraseProvider = keyedPassphraseProvider
         var handle: rnp_ffi_t?
         try rnpCheck(
             rnp_ffi_create(&handle, publicKeyringFormat, secretKeyringFormat),
@@ -241,7 +269,7 @@ public final class Rnp {
             operation: "subkey set expiration"
         )
 
-        guard let password = passphraseProvider("protect") else {
+        guard let password = keyedPassphraseProvider("protect", nil) else {
             throw RnpError.invalidArgument("passphrase provider returned nil for subkey protection")
         }
         try rnpCheck(
@@ -593,12 +621,12 @@ public final class Rnp {
     }
 }
 
-/// librnp passphrase callback bridging into `Rnp.passphraseProvider` via the
-/// application context pointer.
+/// librnp passphrase callback bridging into `Rnp.keyedPassphraseProvider` via
+/// the application context pointer.
 private func rnpPasswordCallback(
     _: rnp_ffi_t?,
     appContext: UnsafeMutableRawPointer?,
-    _: rnp_key_handle_t?,
+    key: rnp_key_handle_t?,
     pgpContext: UnsafePointer<CChar>?,
     buffer: UnsafeMutablePointer<CChar>?,
     bufferLength: Int
@@ -607,7 +635,11 @@ private func rnpPasswordCallback(
         return false
     }
     let rnp = Unmanaged<Rnp>.fromOpaque(appContext).takeUnretainedValue()
-    guard let passphrase = rnp.passphraseProvider(String(cString: pgpContext)) else {
+    let passphrase = rnp.keyedPassphraseProvider(
+        String(cString: pgpContext),
+        key.flatMap(callbackFingerprint(of:))
+    )
+    guard let passphrase else {
         return false
     }
     let utf8 = passphrase.utf8CString
@@ -622,4 +654,21 @@ private func rnpPasswordCallback(
         buffer.update(from: base, count: source.count)
         return true
     }
+}
+
+/// Fingerprint of the key librnp is unlocking. Subkey handles resolve to
+/// their primary key's fingerprint so per-key passphrases can be stored
+/// against the primary key; `rnp_key_get_primary_fprint` fails on primary
+/// keys, in which case the key's own fingerprint is used.
+private func callbackFingerprint(of key: rnp_key_handle_t) -> String? {
+    var buffer: UnsafeMutablePointer<CChar>?
+    if rnp_key_get_primary_fprint(key, &buffer) == rnpStatusSuccess, let buffer {
+        defer { rnp_buffer_destroy(buffer) }
+        return String(cString: buffer)
+    }
+    if rnp_key_get_fprint(key, &buffer) == rnpStatusSuccess, let buffer {
+        defer { rnp_buffer_destroy(buffer) }
+        return String(cString: buffer)
+    }
+    return nil
 }

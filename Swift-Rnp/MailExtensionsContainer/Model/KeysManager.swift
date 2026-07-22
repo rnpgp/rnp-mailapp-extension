@@ -37,10 +37,10 @@ final class KeysManager: ObservableObject {
     /// to use an isolated keyring (and trust store) instead of the shared
     /// app-group container.
     init() {
-        let provider: (String) -> String? = { _ in KeychainPassphraseStore.sharedPassphrase() }
+        let provider: Rnp.KeyedPassphraseProvider = KeychainPassphraseStore.resolvingProvider()
         if let manager = try? KeyManager(
             directory: Self.launchKeyringDirectory(),
-            passphraseProvider: provider
+            keyedPassphraseProvider: provider
         ) {
             keyManager = manager
         } else {
@@ -48,7 +48,7 @@ final class KeysManager: ObservableObject {
                 .appendingPathComponent("rnp-mail-extension-fallback")
             if let manager = try? KeyManager(
                 directory: fallback,
-                passphraseProvider: provider
+                keyedPassphraseProvider: provider
             ) {
                 keyManager = manager
             } else {
@@ -120,7 +120,9 @@ final class KeysManager: ObservableObject {
     }
 
     /// Imports armored or binary key data; reports the number of primary
-    /// keys imported.
+    /// keys imported. Imported secret keys whose passphrase differs from the
+    /// keyring passphrase are queued into `foreignPassphraseRequests` so the
+    /// UI can ask the user to unlock them.
     @discardableResult
     func importKeys(_ data: Data) -> [KeyInfo] {
         guard let keyManager else {
@@ -131,7 +133,98 @@ final class KeysManager: ObservableObject {
         perform {
             imported = try keyManager.importKeys(data)
         }
+        if !imported.isEmpty {
+            detectForeignPassphraseKeys(among: imported, keyManager: keyManager)
+        }
         return imported
+    }
+
+    // MARK: - Foreign passphrases
+
+    /// Imported secret keys still protected by a foreign passphrase, waiting
+    /// for the user to unlock them. Presented one at a time by the prompt
+    /// sheet; resolution removes entries.
+    @Published var foreignPassphraseRequests: [LockedSecretKeyInfo] = []
+
+    /// Queues unlock prompts for imported secret keys the keyring passphrase
+    /// cannot unlock. Keys that already have a stored per-key passphrase or
+    /// a pending request are skipped.
+    private func detectForeignPassphraseKeys(among imported: [KeyInfo], keyManager: KeyManager) {
+        let fingerprints = imported.filter(\.hasSecret).map(\.fingerprint)
+        guard !fingerprints.isEmpty else {
+            return
+        }
+        let locked = (try? keyManager.lockedSecretKeys(
+            keyringPassphrase: KeychainPassphraseStore.sharedPassphrase(),
+            among: fingerprints
+        )) ?? []
+        for info in locked where KeychainPassphraseStore.passphrase(forKeyFingerprint: info.fingerprint) == nil {
+            if !foreignPassphraseRequests.contains(info) {
+                foreignPassphraseRequests.append(info)
+            }
+        }
+    }
+
+    /// Verifies `passphrase` against the requested key and stores it in the
+    /// Keychain as the key's per-key passphrase.
+    ///
+    /// - Returns: `true` when the passphrase unlocked the key and was stored.
+    func storeForeignPassphrase(_ passphrase: String, for request: LockedSecretKeyInfo) -> Bool {
+        guard let keyManager else {
+            lastError = "error.keyringOpenFailed".localized
+            return false
+        }
+        do {
+            guard try keyManager.unlockSecretKey(fingerprint: request.fingerprint, passphrase: passphrase) else {
+                return false
+            }
+            if let warning = KeychainPassphraseStore.setPassphrase(passphrase, forKeyFingerprint: request.fingerprint) {
+                lastError = warning.message
+                return false
+            }
+            foreignPassphraseRequests.removeAll { $0 == request }
+            return true
+        } catch {
+            lastError = error.localizedDescription
+            return false
+        }
+    }
+
+    /// Verifies `passphrase` and re-protects the key with the keyring
+    /// passphrase, so no separate per-key passphrase is needed afterwards.
+    ///
+    /// - Returns: `true` when the passphrase unlocked the key and the key
+    ///   was re-protected.
+    func reprotectForeignKey(_ passphrase: String, for request: LockedSecretKeyInfo) -> Bool {
+        guard let keyManager else {
+            lastError = "error.keyringOpenFailed".localized
+            return false
+        }
+        do {
+            try keyManager.reprotectSecretKey(
+                fingerprint: request.fingerprint,
+                currentPassphrase: passphrase,
+                newPassphrase: KeychainPassphraseStore.sharedPassphrase()
+            )
+            // Re-protected with the keyring passphrase: a stale per-key entry
+            // for this fingerprint must not shadow it.
+            KeychainPassphraseStore.removePassphrase(forKeyFingerprint: request.fingerprint)
+            foreignPassphraseRequests.removeAll { $0 == request }
+            reload()
+            return true
+        } catch KeyManagerError.wrongPassphrase(_) {
+            return false
+        } catch {
+            lastError = error.localizedDescription
+            return false
+        }
+    }
+
+    /// Dismisses the unlock prompt for the key without storing a passphrase.
+    /// The key stays locked; signing and decryption with it will fail until
+    /// it is unlocked another way.
+    func skipForeignPassphrase(for request: LockedSecretKeyInfo) {
+        foreignPassphraseRequests.removeAll { $0 == request }
     }
 
     /// Armored public key export for the given fingerprint.
@@ -159,6 +252,8 @@ final class KeysManager: ObservableObject {
         }
         perform {
             try keyManager.deleteKey(fingerprint: key.fingerprint)
+            // Drop a per-key passphrase stored for the deleted key.
+            KeychainPassphraseStore.removePassphrase(forKeyFingerprint: key.fingerprint)
         }
     }
 
