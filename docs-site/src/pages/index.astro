@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import FingerprintTool from '../components/FingerprintTool.vue';
 import KeyserverLookup from '../components/KeyserverLookup.vue';
+import TrustStateDemo from '../components/TrustStateDemo.vue';
 
 const RELEASES_URL = 'https://github.com/rnpgp/swift-rnp/releases';
 const REPO_URL = 'https://github.com/rnpgp/swift-rnp';
@@ -99,6 +100,27 @@ const securityPoints = [
     text: 'The trust database is signed with Ed25519; any tampering fails closed to “unverified”, never to trust.',
   },
 ];
+
+const steps = [
+  {
+    title: 'Download & install',
+    text: 'Grab the signed, notarized DMG, drag RNP to Applications, and launch it once to register the Mail extension.',
+    href: '/getting-started/installation/',
+    link: 'Installation guide',
+  },
+  {
+    title: 'Create or import a key',
+    text: 'A friendly first-launch flow generates an Ed25519 key — or imports your existing GnuPG keyring.',
+    href: '/getting-started/first-launch/',
+    link: 'First-launch walkthrough',
+  },
+  {
+    title: 'Enable in Mail & send',
+    text: 'Flip on the extension in Mail → Settings → Extensions, then sign and encrypt right from the compose window.',
+    href: '/using-with-mail/',
+    link: 'Using with Mail',
+  },
+];
 ---
 
 <html lang="en" class="landing-root">
@@ -111,6 +133,10 @@ const securityPoints = [
       content="RNP brings OpenPGP signing, encryption, and key management to Apple Mail on macOS. Native, sandboxed, and free of telemetry."
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <script is:inline>
       // Apply the saved theme before first paint (shared with Starlight docs).
       (() => {
@@ -125,29 +151,30 @@ const securityPoints = [
       })();
     </script>
   </head>
-  <body class="bg-white text-slate-800 dark:bg-[#12151F] dark:text-slate-200">
+  <body class="bg-background font-sans text-foreground antialiased">
+    <a href="#main" class="skip-link btn btn-primary">Skip to content</a>
+
     <!-- ===================== Nav ===================== -->
-    <header
-      class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-[#12151F]/80"
-    >
+    <header class="sticky top-0 z-50 border-b border-line bg-background/85 backdrop-blur-md">
       <div class="mx-auto flex h-16 max-w-6xl items-center gap-6 px-6">
-        <a href="/" class="flex items-center gap-2.5 font-bold text-slate-900 dark:text-white">
-          <img src="/icon.png" alt="RNP logo" class="h-8 w-8 rounded-lg" width="32" height="32" />
+        <a href="/" class="flex items-center gap-2.5 font-bold text-foreground" aria-label="RNP home">
+          <img src="/rnp-symbol.svg" alt="" class="h-6 w-auto" width="40" height="24" />
           <span class="text-lg tracking-tight">RNP</span>
+          <span class="chip-outline chip hidden sm:inline-flex">for Apple Mail</span>
         </a>
         <nav class="ml-auto hidden items-center gap-6 text-sm font-medium md:flex">
-          <a href="#features" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Features</a>
-          <a href="#preview" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Preview</a>
-          <a href="#demos" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Try it</a>
-          <a href="/getting-started/installation/" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">User Guide</a>
-          <a href={REPO_URL} class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">GitHub</a>
+          <a href="#features" class="text-soft transition hover:text-brand">Features</a>
+          <a href="#preview" class="text-soft transition hover:text-brand">Preview</a>
+          <a href="#demos" class="text-soft transition hover:text-brand">Try it</a>
+          <a href="/getting-started/installation/" class="text-soft transition hover:text-brand">User Guide</a>
+          <a href={REPO_URL} class="text-soft transition hover:text-brand">GitHub</a>
         </nav>
         <div class="ml-auto flex items-center gap-3 md:ml-0">
           <button
             id="theme-toggle"
             type="button"
             aria-label="Toggle dark mode"
-            class="rounded-full border border-slate-300 p-2 text-slate-600 transition hover:border-[#1A7BEC] hover:text-[#1A7BEC] dark:border-slate-700 dark:text-slate-300 dark:hover:border-[#58A0F4] dark:hover:text-[#58A0F4]"
+            class="rounded-full border border-line p-2 text-soft transition hover:border-brand hover:text-brand"
           >
             <svg class="h-4 w-4 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
@@ -156,269 +183,408 @@ const securityPoints = [
               <path d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
             </svg>
           </button>
-          <a
-            href={RELEASES_URL}
-            class="rounded-full bg-[#1A7BEC] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0B54B8]"
-          >
-            Download
-          </a>
+          <a href={RELEASES_URL} class="btn btn-primary btn-sm">Download</a>
         </div>
       </div>
     </header>
 
-    <!-- ===================== Hero ===================== -->
-    <section class="relative overflow-hidden">
-      <div
-        class="hero-glow pointer-events-none absolute -top-40 left-1/2 h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-[#1A7BEC]/15 blur-3xl dark:bg-[#1A7BEC]/20"
-        aria-hidden="true"
-      >
-      </div>
-      <div class="relative mx-auto max-w-4xl px-6 pb-20 pt-24 text-center sm:pt-32">
+    <main id="main">
+      <!-- ===================== Hero ===================== -->
+      <section class="hero-band">
+        <div class="hero-grid" aria-hidden="true"></div>
         <img
-          src="/icon.png"
-          alt="RNP logo"
-          class="reveal mx-auto h-24 w-24 rounded-[1.6rem] shadow-xl shadow-[#1A7BEC]/20"
-          width="96"
-          height="96"
+          src="/rnp-symbol.svg"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute -right-24 -top-24 h-[420px] w-auto opacity-[0.07]"
         />
-        <h1
-          class="reveal mx-auto mt-8 max-w-2xl text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:text-6xl"
-        >
-          OpenPGP, natively inside <span class="text-[#1A7BEC] dark:text-[#58A0F4]">Apple&nbsp;Mail</span>
-        </h1>
-        <p class="reveal mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-          Sign, encrypt, decrypt, and verify email right inside Mail.app — with a key manager that
-          stays out of your way. Sandboxed, notarized, and completely free of telemetry.
-        </p>
-        <div class="reveal mt-10 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href={RELEASES_URL}
-            class="rounded-full bg-[#1A7BEC] px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-[#1A7BEC]/30 transition hover:-translate-y-0.5 hover:bg-[#0B54B8]"
-          >
-            Download for macOS
-          </a>
-          <a
-            href="/getting-started/installation/"
-            class="rounded-full border border-slate-300 px-7 py-3.5 text-base font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-[#1A7BEC] hover:text-[#1A7BEC] dark:border-slate-700 dark:text-slate-200 dark:hover:border-[#58A0F4] dark:hover:text-[#58A0F4]"
-          >
-            Read the manual
-          </a>
-        </div>
-        <p class="reveal mt-6 text-sm text-slate-500 dark:text-slate-400">
-          Free &amp; open · macOS 12+ · Developer ID signed &amp; notarized
-        </p>
-      </div>
-    </section>
+        <div class="relative mx-auto grid max-w-6xl items-center gap-14 px-6 pb-24 pt-20 lg:grid-cols-2 lg:pb-28 lg:pt-24">
+          <div>
+            <p class="mono-label !text-white/60">OpenPGP · Apple Mail · macOS</p>
+            <h1 class="mt-5 text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+              OpenPGP for Apple Mail,<br />
+              <span class="text-[#7db9f8]">native and polished.</span>
+            </h1>
+            <p class="mt-6 max-w-xl text-lg leading-relaxed text-white/75">
+              Sign, encrypt, decrypt, and verify email right inside Mail.app — with a key
+              manager that stays out of your way. Sandboxed, notarized, and completely
+              free of telemetry.
+            </p>
+            <div class="mt-9 flex flex-wrap items-center gap-3">
+              <a href={RELEASES_URL} class="btn btn-white btn-lg">Download for macOS</a>
+              <a href="/getting-started/installation/" class="btn btn-outline-white btn-lg">Read the manual</a>
+            </div>
+            <div class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-white/55">
+              <span class="inline-flex items-center gap-2">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#00dfb7]"></span>
+                Free &amp; open source
+              </span>
+              <span>macOS 12+</span>
+              <span>Developer ID signed &amp; notarized</span>
+            </div>
+          </div>
 
-    <!-- ===================== Features ===================== -->
-    <section id="features" class="border-t border-slate-200/70 bg-slate-50 py-24 dark:border-slate-800 dark:bg-[#181C2A]">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="reveal mx-auto max-w-2xl text-center">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-            Serious cryptography, friendly Mac app
-          </h2>
-          <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">
-            Built on <a href="https://github.com/rnpgp/rnp" class="font-medium text-[#1A7BEC] hover:underline dark:text-[#58A0F4]">librnp</a>,
-            the open-source OpenPGP (RFC 4880) library — with the polish you expect from a native Mac citizen.
-          </p>
-        </div>
-        <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {
-            features.map((feature) => (
-              <a
-                href={feature.href}
-                class="reveal group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition-all hover:-translate-y-1 hover:border-[#1A7BEC]/50 hover:shadow-lg hover:shadow-[#1A7BEC]/10 dark:border-slate-700 dark:bg-[#1D2233]"
-              >
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[#1A7BEC]/10 text-[#1A7BEC] transition group-hover:bg-[#1A7BEC] group-hover:text-white dark:bg-[#58A0F4]/10 dark:text-[#58A0F4] dark:group-hover:bg-[#1A7BEC]">
-                  <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d={feature.icon} />
-                  </svg>
+          <!-- Hero visual: mock Mail window with verified banner -->
+          <div class="reveal lg:justify-self-end">
+            <div class="window w-full max-w-lg text-left">
+              <div class="window-titlebar">
+                <span class="flex gap-2">
+                  <span class="tl-dot tl-red"></span>
+                  <span class="tl-dot tl-gold"></span>
+                  <span class="tl-dot tl-green"></span>
+                </span>
+                <span class="font-mono text-xs text-faint">Mail — Inbox</span>
+                <img src="/icon.png" alt="" class="ml-auto h-5 w-5 rounded" width="20" height="20" />
+              </div>
+              <div class="p-5">
+                <div class="flex items-baseline justify-between gap-4">
+                  <p class="text-sm font-semibold text-foreground">Alice &lt;alice@example.com&gt;</p>
+                  <p class="font-mono text-[0.7rem] text-faint">09:41</p>
                 </div>
-                <h3 class="mt-5 text-lg font-semibold text-slate-900 dark:text-white">{feature.title}</h3>
-                <p class="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{feature.description}</p>
-              </a>
-            ))
-          }
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== UI preview ===================== -->
-    <section id="preview" class="py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="reveal mx-auto max-w-2xl text-center">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-            Signature status at a glance
-          </h2>
-          <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">
-            Incoming signed mail is verified automatically. The banner above the message tells you
-            exactly where you stand — no jargon, no guesswork.
-          </p>
-        </div>
-        <div class="mt-14 grid gap-5 lg:grid-cols-3">
-          {
-            banners.map((banner) => (
-              <div
-                class="reveal rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-[#1D2233]"
-              >
-                <div class="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                <p class="mt-0.5 text-xs text-soft">Q3 report — signed &amp; encrypted</p>
+                <div class="mt-4 flex items-start gap-3 rounded-xl border p-3.5" style="background-color: rgba(14, 159, 110, 0.12); border-color: rgba(14, 159, 110, 0.4);">
+                  <svg class="mt-0.5 h-5 w-5 shrink-0" style="color: #0e9f6e;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.7-9.3a1 1 0 0 0-1.4-1.4L9 10.6 7.7 9.3a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l4-4Z" clip-rule="evenodd" />
                   </svg>
-                  Mail security banner
-                </div>
-                <div
-                  class="mt-3 rounded-xl border p-4"
-                  style={`background-color: ${banner.bg}; border-color: ${banner.border};`}
-                >
-                  <div class="flex items-center gap-2">
-                    <span class="inline-block h-2.5 w-2.5 rounded-full" style={`background-color: ${banner.color};`} />
-                    <span class="text-sm font-semibold" style={`color: ${banner.color};`}>{banner.line}</span>
+                  <div>
+                    <p class="text-sm font-semibold" style="color: #0e9f6e;">Signed by alice@example.com — verified key</p>
+                    <p class="mt-0.5 font-mono text-[0.7rem] text-soft">9F3B 7A2C 55E1 08D4 6C90 A3F7 12B8 4D6E C1A5 7F09</p>
                   </div>
-                  <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{banner.signer}</p>
-                  <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{banner.detail}</p>
+                </div>
+                <div class="mt-5 space-y-2.5" aria-hidden="true">
+                  <div class="h-2.5 w-11/12 rounded-full bg-surface-dim"></div>
+                  <div class="h-2.5 w-full rounded-full bg-surface-dim"></div>
+                  <div class="h-2.5 w-4/5 rounded-full bg-surface-dim"></div>
+                  <div class="h-2.5 w-3/5 rounded-full bg-surface-dim"></div>
+                </div>
+                <div class="mt-5 flex items-center gap-2">
+                  <span class="chip chip-teal">Encrypted</span>
+                  <span class="chip">Verified signature</span>
                 </div>
               </div>
-            ))
-          }
+            </div>
+          </div>
         </div>
-        <p class="reveal mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-          Styled after the real banner rendered by the extension — see
-          <a href="/using-with-mail/" class="font-medium text-[#1A7BEC] hover:underline dark:text-[#58A0F4]">Using with Mail</a>
-          for what each state means and what you can do about it.
-        </p>
-      </div>
-    </section>
+      </section>
 
-    <!-- ===================== Interactive demos ===================== -->
-    <section id="demos" class="border-t border-slate-200/70 bg-slate-50 py-24 dark:border-slate-800 dark:bg-[#181C2A]">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="reveal mx-auto max-w-2xl text-center">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-            Try the tools, right here
-          </h2>
-          <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">
-            Two small pieces of RNP, running in your browser. Nothing leaves this page.
+      <!-- ===================== librnp band ===================== -->
+      <section class="band-gold">
+        <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
+          <p class="text-sm font-medium text-foreground">
+            Built on <a href="https://github.com/rnpgp/rnp" class="font-bold text-brand-deep hover:underline">librnp</a> —
+            the open-source OpenPGP engine powering end-to-end encryption in Mozilla Thunderbird.
+          </p>
+          <a href="https://www.rnpgp.org" class="link-arrow text-sm">
+            rnpgp.org
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ===================== Features ===================== -->
+      <section id="features" class="scroll-mt-20 py-20 md:py-24">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="reveal">
+            <p class="mono-label">§ 01 — Features</p>
+            <h2 class="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              Serious cryptography, friendly Mac app
+            </h2>
+            <hr class="gradient-rule mt-5 w-16" />
+            <p class="mt-5 max-w-2xl text-lg leading-relaxed text-soft">
+              RFC 4880 OpenPGP, done the Mac way: native UI, sandboxed processes, and the
+              polish you expect from a first-class citizen of macOS.
+            </p>
+          </div>
+          <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {
+              features.map((feature) => (
+                <a href={feature.href} class="reveal card card-hover group block p-6">
+                  <div class="feature-icon">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d={feature.icon} />
+                    </svg>
+                  </div>
+                  <h3 class="mt-5 text-lg font-semibold text-foreground">{feature.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-soft">{feature.description}</p>
+                  <span class="link-arrow mt-4 text-sm">
+                    Learn more
+                    <span class="arrow" aria-hidden="true">→</span>
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== UI preview ===================== -->
+      <section id="preview" class="band-tint scroll-mt-20 py-20 md:py-24">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="reveal">
+            <p class="mono-label">§ 02 — The app</p>
+            <h2 class="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              Your keys, crystal clear
+            </h2>
+            <hr class="gradient-rule mt-5 w-16" />
+            <p class="mt-5 max-w-2xl text-lg leading-relaxed text-soft">
+              The key manager shows every key’s user ID, fingerprint, and trust state at a
+              glance. In Mail, a banner above each signed message tells you exactly where
+              you stand — no jargon, no guesswork.
+            </p>
+          </div>
+
+          <!-- Mock: RNP key manager window -->
+          <div class="reveal mt-12">
+            <div class="window">
+              <div class="window-titlebar">
+                <span class="flex gap-2">
+                  <span class="tl-dot tl-red"></span>
+                  <span class="tl-dot tl-gold"></span>
+                  <span class="tl-dot tl-green"></span>
+                </span>
+                <span class="font-mono text-xs text-faint">RNP — Key Manager</span>
+              </div>
+              <div class="grid sm:grid-cols-[16rem_1fr]">
+                <!-- Key list -->
+                <div class="border-b border-line bg-surface-dim p-3 sm:border-b-0 sm:border-r">
+                  <div class="flex items-center gap-2.5 rounded-lg bg-tint-blue px-3 py-2.5">
+                    <span class="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-brand font-mono text-xs font-bold text-white">A</span>
+                    <div class="min-w-0">
+                      <p class="truncate text-sm font-semibold text-foreground">Alice</p>
+                      <p class="truncate font-mono text-[0.68rem] text-faint">alice@example.com</p>
+                    </div>
+                    <span class="chip chip-teal ml-auto !px-2">Verified</span>
+                  </div>
+                  <div class="mt-1.5 flex items-center gap-2.5 rounded-lg px-3 py-2.5">
+                    <span class="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-surface font-mono text-xs font-bold text-soft ring-1 ring-line">B</span>
+                    <div class="min-w-0">
+                      <p class="truncate text-sm font-medium text-foreground">Bob</p>
+                      <p class="truncate font-mono text-[0.68rem] text-faint">bob@example.net</p>
+                    </div>
+                  </div>
+                  <div class="mt-1.5 flex items-center gap-2.5 rounded-lg px-3 py-2.5">
+                    <span class="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-surface font-mono text-xs font-bold text-soft ring-1 ring-line">C</span>
+                    <div class="min-w-0">
+                      <p class="truncate text-sm font-medium text-foreground">Carol</p>
+                      <p class="truncate font-mono text-[0.68rem] text-faint">carol@example.org</p>
+                    </div>
+                    <span class="chip chip-gold ml-auto !px-2">Conflict</span>
+                  </div>
+                </div>
+                <!-- Key detail -->
+                <div class="p-6">
+                  <div class="flex flex-wrap items-center gap-3">
+                    <h3 class="text-lg font-bold text-foreground">Alice &lt;alice@example.com&gt;</h3>
+                    <span class="chip">Ed25519</span>
+                    <span class="chip chip-teal">Verified</span>
+                  </div>
+                  <p class="mono-label mt-6">Fingerprint</p>
+                  <p class="mt-2 rounded-lg border border-line bg-surface-dim p-4 font-mono text-sm leading-loose tracking-wider text-foreground">
+                    9F3B 7A2C 55E1 08D4 6C90<br />A3F7 12B8 4D6E C1A5 7F09
+                  </p>
+                  <div class="mt-5 flex flex-wrap gap-2.5">
+                    <span class="btn btn-primary btn-sm">Copy fingerprint</span>
+                    <span class="btn btn-ghost btn-sm">Export public key</span>
+                    <span class="btn btn-ghost btn-sm">Publish to keyserver</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mail banner states -->
+          <div class="mt-10 grid gap-5 lg:grid-cols-3">
+            {
+              banners.map((banner) => (
+                <div class="reveal card p-5">
+                  <div class="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-faint">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+                    Mail security banner · {banner.state}
+                  </div>
+                  <div
+                    class="mt-3 rounded-xl border p-4"
+                    style={`background-color: ${banner.bg}; border-color: ${banner.border};`}
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="inline-block h-2.5 w-2.5 rounded-full" style={`background-color: ${banner.color};`} />
+                      <span class="text-sm font-semibold" style={`color: ${banner.color};`}>{banner.line}</span>
+                    </div>
+                    <p class="mt-2 text-sm text-soft">{banner.signer}</p>
+                    <p class="mt-1 text-xs text-faint">{banner.detail}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+          <p class="reveal mt-6 text-sm text-faint">
+            Styled after the real banner rendered by the extension — see{' '}
+            <a href="/using-with-mail/" class="font-medium text-brand-deep hover:underline">Using with Mail</a>{' '}
+            for what each state means and what you can do about it.
           </p>
         </div>
-        <div class="mt-14 grid gap-8 lg:grid-cols-2">
+      </section>
+
+      <!-- ===================== Interactive demos ===================== -->
+      <section id="demos" class="scroll-mt-20 py-20 md:py-24">
+        <div class="mx-auto max-w-6xl px-6">
           <div class="reveal">
-            <h3 class="mb-3 text-base font-semibold text-slate-900 dark:text-white">
-              Check a fingerprint
-            </h3>
-            <FingerprintTool client:visible />
+            <p class="mono-label">§ 03 — Try it</p>
+            <h2 class="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              Three small pieces of RNP, live in your browser
+            </h2>
+            <hr class="gradient-rule mt-5 w-16" />
+            <p class="mt-5 max-w-2xl text-lg leading-relaxed text-soft">
+              Everything below is computed locally on this page — nothing is sent anywhere,
+              just like in the app itself.
+            </p>
           </div>
-          <div class="reveal">
-            <h3 class="mb-3 text-base font-semibold text-slate-900 dark:text-white">
-              Where would my key be found?
-            </h3>
-            <KeyserverLookup client:visible />
+          <div class="mt-12 grid gap-8 lg:grid-cols-2">
+            <div class="reveal">
+              <FingerprintTool client:visible />
+            </div>
+            <div class="reveal">
+              <KeyserverLookup client:visible />
+            </div>
+          </div>
+          <div class="reveal mt-8">
+            <TrustStateDemo client:visible />
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ===================== Security ===================== -->
-    <section id="security" class="py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="grid items-center gap-12 lg:grid-cols-2">
-          <div class="reveal">
-            <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-              Security that assumes the worst
-            </h2>
-            <p class="mt-4 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-              RNP is engineered defense-in-depth: sandboxed processes, Keychain-held passphrases,
-              and a trust database that fails closed. If anything is tampered with, you lose
-              convenience — never security.
-            </p>
-            <a
-              href="/security/"
-              class="mt-6 inline-flex items-center gap-1.5 font-semibold text-[#1A7BEC] transition hover:gap-2.5 dark:text-[#58A0F4]"
-            >
-              Read the security model
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </a>
+      <!-- ===================== Security ===================== -->
+      <section id="security" class="band-tint scroll-mt-20 py-20 md:py-24">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="grid items-center gap-12 lg:grid-cols-2">
+            <div class="reveal">
+              <p class="mono-label">§ 04 — Security</p>
+              <h2 class="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                Security that assumes the worst
+              </h2>
+              <hr class="gradient-rule mt-5 w-16" />
+              <p class="mt-5 text-lg leading-relaxed text-soft">
+                RNP is engineered defense-in-depth: sandboxed processes, Keychain-held
+                passphrases, and a trust database that fails closed. If anything is
+                tampered with, you lose convenience — never security.
+              </p>
+              <a href="/security/" class="link-arrow mt-7">
+                Read the security model
+                <span class="arrow" aria-hidden="true">→</span>
+              </a>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              {
+                securityPoints.map((point) => (
+                  <div class="reveal card p-5">
+                    <h3 class="text-sm font-semibold text-foreground">{point.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-soft">{point.text}</p>
+                  </div>
+                ))
+              }
+            </div>
           </div>
-          <div class="grid gap-4 sm:grid-cols-2">
+        </div>
+      </section>
+
+      <!-- ===================== Get started ===================== -->
+      <section id="get-started" class="scroll-mt-20 py-20 md:py-24">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="reveal">
+            <p class="mono-label">§ 05 — Get started</p>
+            <h2 class="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              Encrypted mail in three steps
+            </h2>
+            <hr class="gradient-rule mt-5 w-16" />
+          </div>
+          <div class="mt-12 grid gap-5 md:grid-cols-3">
             {
-              securityPoints.map((point) => (
-                <div class="reveal rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-[#1D2233]">
-                  <h3 class="text-sm font-semibold text-slate-900 dark:text-white">{point.title}</h3>
-                  <p class="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{point.text}</p>
+              steps.map((step, i) => (
+                <div class="reveal card card-hover flex flex-col p-6">
+                  <span class="step-number">{String(i + 1).padStart(2, '0')}</span>
+                  <h3 class="mt-4 text-lg font-semibold text-foreground">{step.title}</h3>
+                  <p class="mt-2 flex-1 text-sm leading-relaxed text-soft">{step.text}</p>
+                  <a href={step.href} class="link-arrow mt-5 text-sm">
+                    {step.link}
+                    <span class="arrow" aria-hidden="true">→</span>
+                  </a>
                 </div>
               ))
             }
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ===================== Download CTA ===================== -->
-    <section id="download" class="border-t border-slate-200/70 bg-gradient-to-b from-[#1A7BEC]/5 to-transparent py-24 dark:border-slate-800 dark:from-[#1A7BEC]/10">
-      <div class="reveal mx-auto max-w-3xl px-6 text-center">
-        <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-          Take back your inbox privacy
-        </h2>
-        <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">
-          Download the signed, notarized DMG, create your key, and send your first encrypted mail
-          in minutes.
-        </p>
-        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href={RELEASES_URL}
-            class="rounded-full bg-[#1A7BEC] px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-[#1A7BEC]/30 transition hover:-translate-y-0.5 hover:bg-[#0B54B8]"
-          >
-            Download the latest release
-          </a>
-          <a
-            href="/getting-started/first-launch/"
-            class="rounded-full border border-slate-300 px-7 py-3.5 text-base font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-[#1A7BEC] hover:text-[#1A7BEC] dark:border-slate-700 dark:text-slate-200 dark:hover:border-[#58A0F4] dark:hover:text-[#58A0F4]"
-          >
-            First-launch walkthrough
-          </a>
+      <!-- ===================== Download CTA ===================== -->
+      <section id="download" class="hero-band scroll-mt-20">
+        <div class="hero-grid" aria-hidden="true"></div>
+        <div class="relative mx-auto max-w-3xl px-6 py-24 text-center">
+          <p class="mono-label !text-white/60">§ 06 — Download</p>
+          <h2 class="reveal mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+            Take back your inbox privacy
+          </h2>
+          <p class="reveal mx-auto mt-4 max-w-xl text-lg leading-relaxed text-white/75">
+            Download the signed, notarized DMG, create your key, and send your first
+            encrypted mail in minutes.
+          </p>
+          <div class="reveal mt-9 flex flex-wrap items-center justify-center gap-3">
+            <a href={RELEASES_URL} class="btn btn-white btn-lg">Download the latest release</a>
+            <a href="/getting-started/first-launch/" class="btn btn-outline-white btn-lg">First-launch walkthrough</a>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
     <!-- ===================== Footer ===================== -->
-    <footer class="border-t border-slate-200/70 py-12 dark:border-slate-800">
-      <div class="mx-auto grid max-w-6xl gap-10 px-6 sm:grid-cols-3">
-        <div>
-          <div class="flex items-center gap-2.5 font-bold text-slate-900 dark:text-white">
-            <img src="/icon.png" alt="" class="h-7 w-7 rounded-md" width="28" height="28" />
+    <footer class="site-footer">
+      <div class="gradient-rule"></div>
+      <div class="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 sm:grid-cols-2 md:grid-cols-4">
+        <div class="sm:col-span-2">
+          <a href="/" class="flex items-center gap-2.5 font-bold text-white" aria-label="RNP home">
+            <img src="/rnp-symbol.svg" alt="" class="h-6 w-auto" width="40" height="24" />
             RNP
-          </div>
-          <p class="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-            OpenPGP signing, encryption, and key management for Apple Mail on macOS, built on
-            <a href="https://github.com/rnpgp/rnp" class="text-[#1A7BEC] hover:underline dark:text-[#58A0F4]">librnp</a>.
+          </a>
+          <p class="mt-4 max-w-sm text-sm leading-relaxed">
+            OpenPGP signing, encryption, and key management for Apple Mail on macOS —
+            built on <a href="https://github.com/rnpgp/rnp" class="underline decoration-white/30 underline-offset-4">librnp</a>,
+            the engine behind Thunderbird’s end-to-end encryption.
           </p>
+          <div class="mt-5">
+            <a href={REPO_URL} aria-label="RNP on GitHub">
+              <svg viewBox="0 0 16 16" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+                <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" />
+              </svg>
+            </a>
+          </div>
         </div>
         <div>
-          <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Manual</h3>
-          <ul class="mt-3 space-y-2 text-sm">
-            <li><a href="/getting-started/installation/" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Installation</a></li>
-            <li><a href="/key-management/" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Key management</a></li>
-            <li><a href="/trust-verification/" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Trust &amp; verification</a></li>
-            <li><a href="/keyserver/" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Keyservers</a></li>
-            <li><a href="/troubleshooting/" class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Troubleshooting</a></li>
+          <h3 class="mono-label !text-[#5f6788]">Manual</h3>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            <li><a href="/getting-started/installation/">Installation</a></li>
+            <li><a href="/key-management/">Key management</a></li>
+            <li><a href="/trust-verification/">Trust &amp; verification</a></li>
+            <li><a href="/keyserver/">Keyservers</a></li>
+            <li><a href="/troubleshooting/">Troubleshooting</a></li>
+            <li><a href="/faq/">FAQ</a></li>
           </ul>
         </div>
         <div>
-          <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Project</h3>
-          <ul class="mt-3 space-y-2 text-sm">
-            <li><a href={REPO_URL} class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">GitHub repository</a></li>
-            <li><a href={RELEASES_URL} class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Releases</a></li>
-            <li><a href={`${REPO_URL}/issues`} class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Report an issue</a></li>
-            <li><a href={`${REPO_URL}/blob/main/docs/SECURITY.md`} class="text-slate-600 transition hover:text-[#1A7BEC] dark:text-slate-300">Security policy</a></li>
+          <h3 class="mono-label !text-[#5f6788]">Project</h3>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            <li><a href={REPO_URL}>GitHub repository</a></li>
+            <li><a href={RELEASES_URL}>Releases</a></li>
+            <li><a href={`${REPO_URL}/issues`}>Report an issue</a></li>
+            <li><a href={`${REPO_URL}/blob/main/docs/SECURITY-MODEL.md`}>Security policy</a></li>
+            <li><a href="https://www.rnpgp.org">rnpgp.org</a></li>
           </ul>
         </div>
       </div>
-      <p class="mx-auto mt-10 max-w-6xl px-6 text-xs text-slate-400 dark:text-slate-500">
-        RNP uses librnp, Botan, and json-c (BSD-2-Clause / MIT). See the repository for licensing
-        details.
-      </p>
+      <div class="mx-auto w-full max-w-6xl px-6 pb-10">
+        <p class="border-t border-white/10 pt-6 font-mono text-xs text-[#5f6788]">
+          RNP uses librnp, Botan, and json-c (BSD-2-Clause / MIT) · Fonts: IBM Plex (SIL OFL)
+        </p>
+      </div>
     </footer>
 
     <script is:inline>
