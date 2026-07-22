@@ -237,7 +237,7 @@ public final class MailSecurityBannerView: NSView {
             } else {
                 trust = .unverified
             }
-            model = mapSignerTrust(status: status, trust: trust ?? .unverified)
+            model = mapSignerTrust(status: status, trust: trust ?? .unverified, keyExpiration: signer.context?.keyExpiration)
         } else {
             model = SignerTrustViewModel(
                 label: "Trust state unavailable",

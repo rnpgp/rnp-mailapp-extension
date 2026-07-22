@@ -64,6 +64,10 @@ public final class MessageSecurityCore {
         // implicitly trusted (encrypt-to-self), so they must never be flagged
         // as a failing recipient.
         var issues: [RecipientTrustIssue] = []
+        // Recipients whose keys expired. librnp still encrypts to expired
+        // keys, so this stays a warning; it takes precedence over the
+        // unverified note because it carries the fetch/update remedies.
+        var expiredKeys: [ExpiredRecipientKey] = []
         for recipient in message.recipientAddresses where !status.missingRecipientKeys.contains(recipient) {
             if KeyManager.addressesMatch(recipient, message.fromAddress) {
                 continue
@@ -72,37 +76,48 @@ public final class MessageSecurityCore {
                 issues.append(RecipientTrustIssue(recipient: recipient, kind: .conflict))
                 continue
             }
-            switch trustStore.state(forEmail: recipient) {
-            case .problem:
+            let trustState = trustStore.state(forEmail: recipient)
+            if trustState == .problem {
                 issues.append(RecipientTrustIssue(recipient: recipient, kind: .problem))
-            case .unverified:
+                continue
+            }
+            if let expiration = expiredKeyExpiration(for: recipient) {
+                expiredKeys.append(ExpiredRecipientKey(recipient: recipient, expirationDate: expiration))
+                continue
+            }
+            if trustState == .unverified {
                 issues.append(RecipientTrustIssue(recipient: recipient, kind: .unverified))
-            case .verified:
-                break
             }
         }
 
         let warning = issues.isEmpty ? nil : RecipientTrustWarning(issues: issues)
         let blocked = warning?.blockedRecipients ?? []
+        let expiredWarning = expiredKeys.isEmpty ? nil : ExpiredRecipientKeysWarning(keys: expiredKeys)
 
-        // Missing keys get a fetch hint; combined with the trust warning
-        // when the message has both kinds of recipients. Only surfaced when
-        // the user actually asked for encryption; there is no point nagging
-        // about recipient keys for a plaintext send.
+        // Missing keys get a fetch hint; combined with the trust and expiry
+        // warnings when the message has several kinds of recipients. Only
+        // surfaced when the user actually asked for encryption; there is no
+        // point nagging about recipient keys for a plaintext send.
         let hint = status.missingRecipientKeys.isEmpty
             ? nil
             : MissingRecipientKeysHint(recipients: status.missingRecipientKeys)
         let securityError: Error?
         if composeContext.shouldEncrypt {
-            switch (warning, hint) {
-            case let (.some(warning), .some(hint)):
-                securityError = ComposeSecurityWarning(trustWarning: warning, missingKeyHint: hint)
-            case let (.some(warning), .none):
-                securityError = warning
-            case let (.none, .some(hint)):
-                securityError = hint
-            case (.none, .none):
+            switch (warning, hint, expiredWarning) {
+            case (.none, .none, .none):
                 securityError = nil
+            case let (.some(warning), .none, .none):
+                securityError = warning
+            case let (.none, .some(hint), .none):
+                securityError = hint
+            case let (.none, .none, .some(expiredWarning)):
+                securityError = expiredWarning
+            default:
+                securityError = ComposeSecurityWarning(
+                    trustWarning: warning,
+                    missingKeyHint: hint,
+                    expiredKeyWarning: expiredWarning
+                )
             }
         } else {
             securityError = nil
@@ -191,6 +206,81 @@ public final class MessageSecurityCore {
         }
         fetchAttempts[recipient] = now
         return true
+    }
+
+    // MARK: - Expired recipient keys
+
+    /// Expiration date of the recipient's key when it can no longer encrypt:
+    /// the primary key expired, or every encryption-capable subkey did.
+    /// `nil` when the recipient has no key or the key is still valid.
+    private func expiredKeyExpiration(for recipient: String) -> Date? {
+        try? engine.keyManager.withRnp { rnp in
+            guard let key = try engine.keyManager.publicKeyUnlocked(for: recipient, rnp: rnp) else {
+                return nil
+            }
+            return try Self.expiredForEncryption(key)
+        }
+    }
+
+    /// Whether `key` is expired for encryption, returning the relevant
+    /// expiration date. An expired primary kills the whole key; otherwise the
+    /// key is unusable once every encryption-capable subkey has expired (a
+    /// non-expiring subkey never does).
+    static func expiredForEncryption(_ key: RnpKey, now: Date = Date()) throws -> Date? {
+        if let primaryExpiry = try expirationDate(of: key), primaryExpiry < now {
+            return primaryExpiry
+        }
+        let encryptionSubkeys = try key.subkeys.filter { try $0.capabilities.contains("encrypt") }
+        var expirations: [Date] = []
+        for subkey in encryptionSubkeys {
+            guard let expiry = try expirationDate(of: subkey) else {
+                return nil
+            }
+            guard expiry < now else {
+                return nil
+            }
+            expirations.append(expiry)
+        }
+        return expirations.max()
+    }
+
+    /// Expiration date of a key or subkey, or `nil` when it does not expire.
+    static func expirationDate(of key: RnpKey) throws -> Date? {
+        let seconds = try key.expirationSeconds
+        guard seconds > 0 else { return nil }
+        return try key.creationDate.addingTimeInterval(TimeInterval(seconds))
+    }
+
+    /// Extends the expiry of the recipient's key — the "Update key" remedy
+    /// for an expired recipient key the user owns.
+    ///
+    /// Re-signing requires the secret key, so a recipient key that is public
+    /// only fails with `RecipientKeyUpdateError.keyNotOwned`; the remedy for
+    /// those is `fetchRecipientKey(for:)`. The primary key and all its
+    /// subkeys are extended, so an expired encryption subkey is rescued too.
+    /// Duplicates `KeyLifecycle.extendExpiry`, which this module cannot
+    /// import (KeyLifecycle depends on MailSecurityEngine, not vice versa).
+    public func extendRecipientKeyExpiry(for email: String, to newDate: Date) throws {
+        guard newDate > Date() else {
+            throw RecipientKeyUpdateError.invalidExpiryDate
+        }
+        try engine.keyManager.withRnp { rnp in
+            guard let key = try engine.keyManager.publicKeyUnlocked(for: email, rnp: rnp) else {
+                throw RecipientKeyUpdateError.keyNotFound(email)
+            }
+            guard (try? key.hasSecret) ?? false else {
+                throw RecipientKeyUpdateError.keyNotOwned(email)
+            }
+            let creation = try key.creationDate
+            let expirySeconds = UInt32(max(0, newDate.timeIntervalSince1970 - creation.timeIntervalSince1970))
+            try key.setExpirationSeconds(expirySeconds)
+            for subkey in try key.subkeys {
+                let subkeyCreation = try subkey.creationDate
+                let subkeyExpirySeconds = UInt32(max(0, newDate.timeIntervalSince1970 - subkeyCreation.timeIntervalSince1970))
+                try subkey.setExpirationSeconds(subkeyExpirySeconds)
+            }
+        }
+        try engine.keyManager.save()
     }
 
     // MARK: - Signer key fetch
@@ -343,7 +433,8 @@ public final class MessageSecurityCore {
                 status: signer.status.rawValue,
                 isEncrypted: decoded.security.isEncrypted,
                 encryptionError: decoded.security.encryptionError?.localizedDescription,
-                email: signer.userID.flatMap { KeyManager.emailAddress(from: $0) } ?? senderEmail
+                email: signer.userID.flatMap { KeyManager.emailAddress(from: $0) } ?? senderEmail,
+                keyExpiration: signer.fingerprint.flatMap { signerKeyExpiration(for: $0) }
             )
             let contextData = (try? JSONEncoder().encode(context)) ?? Data()
             return HandlerSignerInfo(
@@ -400,5 +491,17 @@ public final class MessageSecurityCore {
     public func signerContext(for signer: MailMessageSigner) -> SignerContext? {
         guard !signer.context.isEmpty else { return nil }
         return try? JSONDecoder().decode(SignerContext.self, from: signer.context)
+    }
+
+    /// Expiration date of the signing key with the given fingerprint, when
+    /// the key is in the keyring and has one. Best-effort: lookup failures
+    /// are treated as "no expiration known".
+    private func signerKeyExpiration(for fingerprint: String) -> Date? {
+        try? engine.keyManager.withRnp { rnp in
+            guard let key = try rnp.locateKey(fingerprint, type: .fingerprint) else {
+                return nil
+            }
+            return try Self.expirationDate(of: key)
+        }
     }
 }

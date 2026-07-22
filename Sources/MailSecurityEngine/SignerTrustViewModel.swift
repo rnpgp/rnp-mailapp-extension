@@ -52,10 +52,13 @@ public struct SignerTrustViewModel: Equatable, Sendable {
 /// presentation model for the Mail extension banner.
 ///
 /// The mapping is deliberately simple and does not include web-of-trust or
-/// ownertrust semantics.
+/// ownertrust semantics. `keyExpiration` — the signing key's expiration
+/// date, when known — is appended to the detail text of expired-signature
+/// states so the user sees when the key expired.
 public func mapSignerTrust(
     status: RnpSignatureStatus,
-    trust: TrustState
+    trust: TrustState,
+    keyExpiration: Date? = nil
 ) -> SignerTrustViewModel {
     switch (status, trust) {
     case (.valid, .verified):
@@ -82,21 +85,21 @@ public func mapSignerTrust(
     case (.expired, .verified):
         return SignerTrustViewModel(
             label: "Verified key, expired signature",
-            detail: "The key is verified, but the signature has expired.",
+            detail: expiredSignatureDetail("The key is verified, but the signature has expired.", keyExpiration: keyExpiration),
             intent: .caution,
             reviewDeepLink: false
         )
     case (.expired, .problem):
         return SignerTrustViewModel(
             label: "Key problem, expired signature",
-            detail: "The key is marked as having a problem and the signature has expired.",
+            detail: expiredSignatureDetail("The key is marked as having a problem and the signature has expired.", keyExpiration: keyExpiration),
             intent: .critical,
             reviewDeepLink: true
         )
     case (.expired, .unverified):
         return SignerTrustViewModel(
             label: "Key not verified, expired signature",
-            detail: "The signature has expired and the key has not been verified.",
+            detail: expiredSignatureDetail("The signature has expired and the key has not been verified.", keyExpiration: keyExpiration),
             intent: .caution,
             reviewDeepLink: true
         )
@@ -136,4 +139,11 @@ public func mapSignerTrust(
             reviewDeepLink: true
         )
     }
+}
+
+/// Appends the signing key's expiration date to an expired-signature detail
+/// text when the date is known.
+private func expiredSignatureDetail(_ base: String, keyExpiration: Date?) -> String {
+    guard let keyExpiration else { return base }
+    return "\(base) The key expired on \(formatKeyExpirationDate(keyExpiration))."
 }

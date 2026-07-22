@@ -33,18 +33,24 @@ public struct SignerContext: Codable, Equatable, Sendable {
     /// fallback. Used by the banner's "Fetch signer key" action when the
     /// fingerprint is unavailable.
     public let email: String?
+    /// Expiration date of the signing key, when the key is in the keyring
+    /// and has one. Lets the banner say when an expired signer's key
+    /// actually expired.
+    public let keyExpiration: Date?
 
     public init(
         fingerprint: String?,
         status: String,
         isEncrypted: Bool? = nil,
         encryptionError: String? = nil,
-        email: String? = nil
+        email: String? = nil,
+        keyExpiration: Date? = nil
     ) {
         self.fingerprint = fingerprint
         self.status = status
         self.isEncrypted = isEncrypted
         self.encryptionError = encryptionError
         self.email = email
+        self.keyExpiration = keyExpiration
     }
 }
