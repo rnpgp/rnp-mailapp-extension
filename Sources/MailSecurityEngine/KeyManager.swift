@@ -511,6 +511,7 @@ public final class KeyManager {
             try rnp.remove(key: key, public: true, secret: hasSecret, subkeys: true)
             try persist(rnp)
         }
+        try trustStore.removeRecords(forFpr: fingerprint)
     }
 
     // MARK: - Detail

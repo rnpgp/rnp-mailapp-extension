@@ -250,6 +250,11 @@ public final class MailSecurityEngine {
                 for recipient in request.recipients {
                     if let key = try keyManager.publicKeyUnlocked(for: recipient, rnp: rnp) {
                         let fingerprint = try key.fingerprint
+                        // Auto-flag expired or revoked recipient keys as problem so
+                        // the trust store surfaces them in the UI and the banner.
+                        if try key.isRevoked || key.isExpired {
+                            try keyManager.trustStore.markProblem(fingerprint: fingerprint)
+                        }
                         // The sender's own key is implicitly trusted
                         // (encrypt-to-self): a trust problem or key-change
                         // conflict recorded for the sender's address must not
