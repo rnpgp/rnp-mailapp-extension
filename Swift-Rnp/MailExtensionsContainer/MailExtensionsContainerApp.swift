@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Rnp
+import RnpMailUI
 
 @main
 struct MailExtensionsContainerApp: App {
@@ -63,6 +64,12 @@ struct MailExtensionsContainerApp: App {
             CommandGroup(after: .help) {
                 Button("menu.showOnboarding") {
                     model.reopenOnboarding()
+                }
+                Button("menu.keyservers") {
+                    NotificationCenter.default.post(
+                        name: .showKeyServerSettings,
+                        object: nil
+                    )
                 }
                 Button("menu.licenses") {
                     NotificationCenter.default.post(

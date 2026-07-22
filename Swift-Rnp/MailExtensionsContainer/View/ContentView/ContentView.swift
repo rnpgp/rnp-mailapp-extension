@@ -19,6 +19,7 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @ObservedObject var model: ContentViewModel
     @State private var showLicenses = false
+    @State private var showKeyServerSettings = false
 
     var body: some View {
         rootContent
@@ -87,6 +88,10 @@ struct ContentView: View {
             .sheet(isPresented: $showLicenses) {
                 LicensesView(sourcesMarkdown: LicensesView.loadSources())
             }
+            .sheet(isPresented: $showKeyServerSettings) {
+                KeyServerSettingsView()
+                    .frame(minWidth: 480, minHeight: 420)
+            }
             .alert("deleteKey.title", isPresented: $model.showDeleteConfirmation) {
                 Button("button.delete", role: .destructive) { model.deleteSelected() }
                 Button("button.cancel", role: .cancel) {}
@@ -121,6 +126,9 @@ struct ContentView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .showLicenses)) { _ in
                 showLicenses = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .showKeyServerSettings)) { _ in
+                showKeyServerSettings = true
             }
             .onOpenURL { url in
                 guard url.scheme == "rnpmail" else {

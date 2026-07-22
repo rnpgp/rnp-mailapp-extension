@@ -88,6 +88,30 @@ public final class URLSessionKeyServerClient: KeyServerClient {
         return try await fetchData(from: url)
     }
 
+    public func uploadHKPS(armoredKey: String, server: HKPSServer) async throws -> UploadReceipt {
+        guard let url = URL(string: server.addURL) else {
+            throw KeyServerError.invalidResponse
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        let encoded = armoredKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? armoredKey
+        request.httpBody = Data("keytext=\(encoded)".utf8)
+
+        let (data, response) = try await session.data(for: request)
+        let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+        let body = String(decoding: data, as: UTF8.self)
+
+        switch statusCode {
+        case 200:
+            return UploadReceipt(body: body)
+        case 400:
+            throw KeyServerError.malformedKey
+        default:
+            throw KeyServerError.server(statusCode: statusCode, message: body)
+        }
+    }
+
     private func fetchData(from url: URL) async throws -> Data {
         let (data, response) = try await session.data(from: url)
         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
