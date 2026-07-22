@@ -52,14 +52,57 @@ public final class KeyServerService: Sendable {
         }
     }
 
-    /// Looks up a key by fingerprint on VKS.
+    /// Looks up a key by fingerprint, trying VKS first, then HKP keyservers.
+    ///
+    /// VKS (keys.openpgp.org) only serves keys with verified user IDs, so a
+    /// key that was never uploaded there — or whose email was never verified —
+    /// is missed. HKP keyservers carry unverified uploads too and are tried
+    /// next, in `HKPSServer.allCases` order.
     public func discoverByFingerprint(_ fingerprint: String) async -> Result<FetchedKey, KeyServerError> {
         do {
             let data = try await client.fetchByFingerprint(fingerprint)
             return .success(FetchedKey(data: data, source: "keys.openpgp.org"))
         } catch {
-            return .failure(error as? KeyServerError ?? .network(underlying: error.localizedDescription))
+            // Fall through to HKP below.
         }
+        var lastError: KeyServerError = .notFound
+        for server in HKPSServer.allCases {
+            do {
+                let data = try await client.fetchHKPS(fingerprint: fingerprint, server: server)
+                return .success(FetchedKey(data: data, source: "\(server.rawValue) (HKPS)"))
+            } catch {
+                lastError = error as? KeyServerError ?? .network(underlying: error.localizedDescription)
+            }
+        }
+        return .failure(lastError)
+    }
+
+    /// Looks up a key by fingerprint, falling back to email discovery.
+    ///
+    /// Fingerprint lookup is tried first when a fingerprint is available —
+    /// it identifies the exact key, unlike an email search, which can return
+    /// any key carrying the address. When the fingerprint is unavailable or
+    /// not found on any server, the email path (`discoverByEmail`: WKD, then
+    /// VKS) is tried. Returns `.notFound` when neither identifier is given.
+    public func discover(fingerprint: String?, email: String?) async -> Result<FetchedKey, KeyServerError> {
+        var lastError: KeyServerError = .notFound
+        if let fingerprint, !fingerprint.isEmpty {
+            switch await discoverByFingerprint(fingerprint) {
+            case let .success(key):
+                return .success(key)
+            case let .failure(error):
+                lastError = error
+            }
+        }
+        if let email, !email.isEmpty {
+            switch await discoverByEmail(email) {
+            case let .success(key):
+                return .success(key)
+            case let .failure(error):
+                lastError = error
+            }
+        }
+        return .failure(lastError)
     }
 
     private func fetchWKD(email: String, advanced: Bool) async -> Result<Data, Error> {
