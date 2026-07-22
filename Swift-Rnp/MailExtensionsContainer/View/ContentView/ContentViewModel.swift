@@ -155,6 +155,17 @@ final class ContentViewModel: ObservableObject {
         set { UserDefaults.standard.set(newValue, forKey: "autoDetectClipboardImport") }
     }
 
+    /// Whether the Mail extension fetches missing recipient keys from
+    /// keyservers while composing. Stored in the app-group defaults so the
+    /// extension process reads the same value.
+    var autoFetchRecipientKeys: Bool {
+        get { RecipientKeyAutoFetch.isEnabled() }
+        set {
+            RecipientKeyAutoFetch.setEnabled(newValue)
+            objectWillChange.send()
+        }
+    }
+
     /// Called on launch to decide whether to show onboarding.
     func checkOnboarding() {
         if !hasOnboarded && manager.keys.isEmpty {
@@ -457,6 +468,17 @@ final class ContentViewModel: ObservableObject {
         showFetchSheet = false
         fetchQuery = ""
         fetchedKey = nil
+    }
+
+    /// Opens the fetch sheet pre-filled with an email address and starts the
+    /// keyserver search. Used by the `rnpmail://fetch/<email>` deep link,
+    /// e.g. from the Mail compose missing-key hint.
+    func openFetch(email: String) {
+        selectedTab = .recipients
+        fetchQuery = email
+        fetchedKey = nil
+        showFetchSheet = true
+        discoverKey()
     }
 
     // MARK: - Error / warning propagation

@@ -118,14 +118,27 @@ struct ContentView: View {
                 showLicenses = true
             }
             .onOpenURL { url in
-                guard url.scheme == "rnpmail",
-                      url.host == "review",
-                      let fingerprint = url.pathComponents.dropFirst().first,
-                      !fingerprint.isEmpty
-                else {
+                guard url.scheme == "rnpmail" else {
                     return
                 }
-                model.openReview(fingerprint: fingerprint)
+                switch url.host {
+                case "review":
+                    guard let fingerprint = url.pathComponents.dropFirst().first,
+                          !fingerprint.isEmpty
+                    else {
+                        return
+                    }
+                    model.openReview(fingerprint: fingerprint)
+                case "fetch":
+                    guard let email = url.pathComponents.dropFirst().first,
+                          !email.isEmpty
+                    else {
+                        return
+                    }
+                    model.openFetch(email: email.removingPercentEncoding ?? email)
+                default:
+                    return
+                }
             }
             .onChange(of: model.manager.keys) { _ in
                 if let fingerprint = model.pendingReviewFingerprint {
@@ -626,6 +639,15 @@ struct ContentView: View {
                 .textFieldStyle(.roundedBorder)
                 .frame(width: 340)
                 .accessibilityIdentifier("contentview.fetch.query")
+
+            Toggle(isOn: Binding(
+                get: { model.autoFetchRecipientKeys },
+                set: { model.autoFetchRecipientKeys = $0 }
+            )) {
+                Text("fetch.autoFetch")
+            }
+            .toggleStyle(.checkbox)
+            .accessibilityIdentifier("contentview.fetch.autofetch")
 
             if model.isDiscoveringKey {
                 HStack(spacing: 8) {

@@ -13348,6 +13348,77 @@
           }
         }
       }
+    },
+    "fetch.autoFetch": {
+      "comment": "Fetch sheet toggle: opt-in compose-time auto-fetch of missing recipient keys.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatically fetch missing recipient keys when composing"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fehlende Empfängerschlüssel beim Verfassen automatisch abrufen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Obtener automáticamente las claves de destinatario que falten al redactar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Récupérer automatiquement les clés de destinataire manquantes lors de la rédaction"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Recupera automaticamente le chiavi dei destinatari mancanti durante la composizione"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "作成時に不足している受信者の鍵を自動的に取得"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "작성할 때 누락된 수신자 키 자동으로 가져오기"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Obter automaticamente as chaves de destinatário em falta ao redigir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Автоматически загружать отсутствующие ключи получателей при написании письма"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "撰写时自动获取缺失的收件人密钥"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "撰寫時自動取得缺少的收件人密鑰"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
