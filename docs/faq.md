@@ -158,6 +158,15 @@ revocation certificate (kept as `<fingerprint>-revocation.asc` in the
 app-group container). Afterwards, re-upload the revoked key to the keyserver
 so others stop using it — see [Keyservers](keyserver.md).
 
+### Can I search encrypted mail by body?
+
+No. Spotlight can search From, To, Subject, and Date of encrypted mail
+but **not the body** — the body is encrypted at rest and Mail's indexer
+cannot read it. This is true for every PGP-encrypted mail product, not
+just RNP. For workarounds (descriptive Subject lines, folder-based
+filing, copying important bodies into Apple Notes) see
+[Encrypted mail and search](encrypted-mail-search.md).
+
 ## Problems and reporting
 
 ### Where do I report bugs?
