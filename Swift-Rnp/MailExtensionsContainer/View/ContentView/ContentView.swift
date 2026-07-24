@@ -243,6 +243,20 @@ struct ContentView: View {
                 .padding(.horizontal, RnpSpacing.md)
                 .padding(.top, RnpSpacing.xxs)
             keyList
+            if !model.archivedKeys.isEmpty {
+                Divider()
+                ArchivedKeysSection(viewModel: ArchivedKeysViewModel(
+                    keyManager: nil,
+                    onRestore: { fpr in
+                        try? model.manager.restoreArchivedKey(fingerprint: fpr)
+                    },
+                    onDeleteForever: { fpr in
+                        model.manager.deleteKeyForever(fingerprint: fpr)
+                    }
+                ))
+                .padding(.horizontal, RnpSpacing.sm)
+                .padding(.bottom, RnpSpacing.xs)
+            }
             Divider()
             NavigationLink {
                 RoadmapNavigationCoordinator()

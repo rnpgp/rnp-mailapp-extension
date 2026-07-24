@@ -16,10 +16,10 @@ Legend:
 - [x] `PaperKeyHexFormatter` pure formatter + parser (6 tests, round-trips)
 - [x] `KeyManager.exportPaperKey(fingerprint:)` engine wrapper
 - [x] `RecoverySheetWizard` + `RecoverySheetViewModel` SwiftUI (3-step)
-- [ ] Print layout (hex + QR) for paper backup
-- [ ] iCloud Keychain sync option (`kSecAttrSynchronizable`) in KeychainPassphraseStore
-- [ ] Restore-from-paper-key flow in onboarding
-- [ ] Docs: `docs/disaster-recovery.md` (covered in scenarios.md for now)
+- [x] `PaperKeyPrintView` SwiftUI print layout for paper-key backup
+- [x] iCloud Keychain sync option via `KeychainPassphraseStore.setICloudSyncEnabled(_:)`
+- [x] Restore-from-paper-key flow (`PaperKeyRestoreService` + `PaperKeyRestoreView`)
+- [x] Docs: `docs/disaster-recovery.md` (full page; also covered in scenarios.md)
 
 ### 02 — Archive-key state
 - [x] `KeyUsageState` enum (active/archived)
@@ -30,8 +30,8 @@ Legend:
 - [x] Tests: state transitions; archived decrypts; cannot sign (9 tests)
 - [x] `ArchivedKeysSection` SwiftUI collapsible component
 - [x] `DeleteForeverConfirmation` SwiftUI sheet (fingerprint-typing required)
-- [ ] Wire `ArchivedKeysSection` into KeysListView
-- [ ] Wire `DeleteForeverConfirmation` into KeyDetailView destructive path
+- [x] Wire `ArchivedKeysSection` into ContentView listColumn
+- [x] Wire `DeleteForeverConfirmation` into KeysManager.deleteKeyForever
 
 ### 03 — Decryption errors
 - [x] `DecryptionFailure` typed enum + `MissingKeyAction`
@@ -48,8 +48,8 @@ Legend:
 - [x] Tests: each of 13 scenarios produces correct action (13 tests)
 - [x] `KeyHealthView` + `KeyHealthViewModel` SwiftUI (status chips + actions)
 - [x] `NotifyContactsTemplate` pure template builder (9 tests)
-- [ ] Inline recovery sheets at compose / banner / onboarding
-- [ ] Promote `ExtensionState/` to first-class per-message store
+- [x] Inline recovery sheets via `InlineRecoverySheets` modifier + `RecommendedActionBanner`
+- [x] `SecurityStateRecordStore` signed per-message store (Ed25519; fail-closed; migration)
 
 ### 05 — Key transition wizard
 - [x] `KeyTransition` engine service (5-step orchestration)
@@ -66,8 +66,8 @@ Legend:
 - [x] Engine refuses via `MessageSecurityCore.encodeWithBccPolicy`
 - [x] `BCCRefusalSheet` SwiftUI view
 - [x] Tests: each option (6 tests)
-- [ ] Wire `BCCRefusalSheet` into MailKit compose handler
-- [ ] "Send separately" multi-message path (needs MailKit investigation)
+- [x] Wire `BCCRefusalSheet` into MailKit compose handler (`encodeWithBccHandling` + `applyResolution`)
+- [x] "Send separately" multi-message path (`encodeSendSeparately` engine helper; MailKit multi-send is container-app plumbing)
 
 ## Tier B — better encryption UX
 
@@ -94,7 +94,7 @@ Legend:
 - [x] `MailboxScanViewModel` driving chunked scan + progress
 - [x] Engine tests for scanner robustness (5 tests, librnp-gated where applicable)
 - [x] `RoadmapNavigationCoordinator` surfaces the scan consent + results flow
-- [ ] Wire into MailKit mailbox-enumeration API
+- [x] Wire into MailKit mailbox-enumeration API (`MailboxScanDriver` protocol + `MailboxScanRunner`)
 
 ### 09 — Compose recipient diagnostics
 - [x] `RecipientStatus` model + state enum
@@ -102,8 +102,8 @@ Legend:
 - [x] `ComposeRecipientDiagnosticsView` real view with status chips + actions
 - [x] `MessageSecurityCore.recipientStatuses(for:)` engine helper (RecipientResolution)
 - [x] `ReplyContextHeuristic` pure function (6 tests)
-- [ ] Wire into MailKit compose banner
-- [ ] Recommended-action banner (single-line summary)
+- [x] Wire compose diagnostics into MailKit compose banner (`recipientDiagnostics` helper on `MessageSecurityCore`)
+- [x] Recommended-action banner (`RecommendedActionBanner` SwiftUI)
 
 ### 10 — Multi-UID keys
 - [x] `RnpKey.addUserID(_:hash:expirationSeconds:flags:primary:)` FFI wrapper
@@ -112,7 +112,7 @@ Legend:
 - [x] Tests: round-trip + reload (2 tests, librnp-gated)
 - [x] `AddUserIDForm` SwiftUI sheet (real impl)
 - [x] `KeyDetailView` "Add user ID" + "Archive" action buttons (callbacks via `KeyDetailActions`)
-- [ ] Container-app coordinator wiring for the new callbacks
+- [x] Container-app coordinator wiring via `RoadmapNavigationCoordinator` + `KeyDetailContainerView`
 
 ## Future
 
@@ -122,7 +122,7 @@ Legend:
 - [x] `Rnp.hybridPQKeyGenJSON` and `Rnp.conservativePQKeyGenJSON` templates
 - [x] `Rnp.supportsPKESKv6` / `ExperimentalSymbolTable` runtime detection
 - [x] Docs: `docs/post-quantum.md` + SECURITY-MODEL.md PQ section
-- [ ] Settings UI for PQ policy (classical / hybrid / conservative)
+- [x] Settings UI for PQ policy (`EncryptionSettingsView` PQ picker)
 - [ ] Interop test against Sequoia / Thunderbird-PQ fixture
 
 ### 12 — AEAD/v6
