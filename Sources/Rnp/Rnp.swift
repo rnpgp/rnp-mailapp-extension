@@ -484,6 +484,46 @@ public final class Rnp {
         hash: String = "SHA256",
         armored: Bool = false
     ) throws -> Data {
+        try encrypt(
+            plaintext,
+            for: recipients,
+            cipher: cipher,
+            hash: hash,
+            aead: .none,
+            pkeskVersion: .v3,
+            armored: armored
+        )
+    }
+
+    /// AEAD algorithm choice for `encrypt(...:aead:pkeskVersion:...)`.
+    public enum EncryptAEAD: Equatable, Sendable {
+        /// Disable AEAD; emit legacy CFB + MDC. Compatibility max.
+        case none
+        /// AEAD-OCB (RFC 7253). Recommended modern default.
+        case ocb
+    }
+
+    /// PKESK version choice. v3 is the legacy visible-recipient form;
+    /// v6 hides the recipient key ID but is only parseable by modern
+    /// clients. v6 also implies SEIPDv2 (the modern Symmetrically
+    /// Encrypted Integrity Protected Data packet).
+    public enum EncryptPKESKVersion: Equatable, Sendable {
+        case v3
+        case v6
+    }
+
+    /// Encrypts data with explicit AEAD and PKESK-version control. Used
+    /// by the engine when `EncryptionEnvelopeResolver` has selected
+    /// anything other than the legacy default.
+    public func encrypt(
+        _ plaintext: Data,
+        for recipients: [RnpKey],
+        cipher: String = "AES256",
+        hash: String = "SHA256",
+        aead: EncryptAEAD,
+        pkeskVersion: EncryptPKESKVersion,
+        armored: Bool = false
+    ) throws -> Data {
         guard !recipients.isEmpty else {
             throw RnpError.invalidArgument("encrypt: at least one recipient key is required")
         }
@@ -505,6 +545,12 @@ public final class Rnp {
             try rnpCheck(rnp_op_encrypt_set_cipher(operation, cipher), operation: "encrypt set cipher")
             try rnpCheck(rnp_op_encrypt_set_hash(operation, hash), operation: "encrypt set hash")
             try rnpCheck(rnp_op_encrypt_set_armor(operation, armored), operation: "encrypt set armor")
+            if case .ocb = aead {
+                try rnpCheck(rnp_op_encrypt_set_aead(operation, "OCB"), operation: "encrypt set aead")
+            }
+            if pkeskVersion == .v6, let fn = ExperimentalSymbolTable.enablePKESKv6 {
+                try rnpCheck(fn(operation), operation: "encrypt enable pkesk v6")
+            }
             try rnpCheck(rnp_op_encrypt_execute(operation), operation: "encrypt execute")
             return try output.readData()
         }
@@ -516,6 +562,27 @@ public final class Rnp {
         return try withMemoryInput(encrypted, operation: "decrypt") { input in
             try rnpCheck(rnp_decrypt(ffi, input, output.handle), operation: "decrypt")
             return try output.readData()
+        }
+    }
+
+    // MARK: - Packet inspection
+
+    /// Dumps the OpenPGP packet structure of `data` as JSON (one object per
+    /// packet, with `type` fields like `"pkesk"`, `"seipd"`, etc.). Used to
+    /// classify decryption failures (missing recipient key, integrity
+    /// failure, unsupported algorithm) by inspecting PKESK packets and
+    /// key IDs without attempting to decrypt.
+    ///
+    /// Wraps `rnp_dump_packets_to_json` (`Sources/CRnp/rnp/rnp.h:2951`).
+    /// Flags default to `0` (no `RNP_DUMP_MPI` etc.).
+    public func dumpPacketsAsJSON(_ data: Data, flags: UInt32 = 0) throws -> String {
+        try withMemoryInput(data, operation: "dump packets") { input in
+            var resultPtr: UnsafeMutablePointer<CChar>?
+            try rnpCheck(
+                rnp_dump_packets_to_json(input, flags, &resultPtr),
+                operation: "dump packets"
+            )
+            return try rnpTakeString(resultPtr, operation: "dump packets")
         }
     }
 
