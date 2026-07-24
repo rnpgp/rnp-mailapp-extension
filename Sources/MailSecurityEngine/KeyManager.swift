@@ -12,8 +12,11 @@
 //
 
 import Foundation
+import KeyStateStore
 import Rnp
 import TrustStore
+
+/// Key usage state: active vs archived (decrypt-only).
 
 /// Key generation algorithms supported by `KeyManager.generateKey`.
 public enum KeyAlgorithm: String, CaseIterable {
@@ -23,6 +26,14 @@ public enum KeyAlgorithm: String, CaseIterable {
     case ecdsa = "ECDSA"
     /// Ed25519 signing primary with a Curve25519 encryption subkey.
     case ed25519 = "Ed25519"
+    /// Post-quantum hybrid: ML-DSA-65+ED25519 primary with
+    /// ML-KEM-768+X25519 encryption subkey. Larger keys; maximum
+    /// long-term confidentiality.
+    case hybridPQ = "HybridPQ"
+    /// Conservative post-quantum: SLH-DSA-SHA2 primary (hash-based, no
+    /// lattice assumptions) with classical ECDH-Curve25519 encryption
+    /// subkey. Very large signatures.
+    case conservativePQ = "ConservativePQ"
 }
 
 /// A snapshot description of one primary key in the keyring.
@@ -164,6 +175,9 @@ public final class KeyManager {
     public let directory: URL
     /// Trust store that records seen keys and conflicts for recipient keys.
     public let trustStore: TrustStore
+    /// Per-key usage-state store (active vs archived). Lazily created on
+    /// first access when the caller does not supply one in the initializer.
+    public private(set) var keyStateStore: KeyStateStore!
 
     private let lock = NSRecursiveLock()
     private let rnp: Rnp
@@ -226,6 +240,10 @@ public final class KeyManager {
                 keychainAccessGroup: keychainAccessGroup
             )
         }
+        self.keyStateStore = try KeyStateStore(
+            directory: directory.appendingPathComponent("KeyStateStore", isDirectory: true),
+            keychainAccessGroup: keychainAccessGroup
+        )
         rnp = try Rnp(keyedPassphraseProvider: keyedPassphraseProvider)
         try loadKeyring(publicKeyringURL, public: true, secret: false)
         try loadKeyring(secretKeyringURL, public: false, secret: true)
@@ -299,7 +317,7 @@ public final class KeyManager {
         }
     }
 
-    private func makeKeyInfo(key: RnpKey, primaryUserID: String) throws -> KeyInfo {
+    internal func makeKeyInfo(key: RnpKey, primaryUserID: String) throws -> KeyInfo {
         let fingerprint = try key.fingerprint
         let expirationSeconds = try key.expirationSeconds
         let expirationDate: Date? = expirationSeconds > 0
@@ -343,6 +361,10 @@ public final class KeyManager {
                 json = Rnp.ecdsaP256KeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
             case .ed25519:
                 json = Rnp.ed25519KeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
+            case .hybridPQ:
+                json = Rnp.hybridPQKeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
+            case .conservativePQ:
+                json = Rnp.conservativePQKeyGenJSON(userid: userID, expirationSeconds: expirationSeconds)
             }
             try rnp.generateKey(json: json)
             let key = try rnp.requireKey(userID)
@@ -512,6 +534,7 @@ public final class KeyManager {
             try persist(rnp)
         }
         try trustStore.removeRecords(forFpr: fingerprint)
+        try? keyStateStore.removeRecord(forFingerprint: fingerprint)
     }
 
     // MARK: - Detail
@@ -622,7 +645,7 @@ public final class KeyManager {
     /// Extracts the email address from a user ID of the form
     /// "Name <email@example.com>", or returns the input itself when it looks
     /// like a bare email address.
-    static func emailAddress(from userID: String) -> String? {
+    public static func emailAddress(from userID: String) -> String? {
         if let open = userID.lastIndex(of: "<"),
            let close = userID.lastIndex(of: ">"), open < close
         {
@@ -650,7 +673,7 @@ public final class KeyManager {
         try withRnp { try persist($0) }
     }
 
-    private func persist(_ rnp: Rnp) throws {
+    internal func persist(_ rnp: Rnp) throws {
         let publicKeys = try rnp.publicKeyCount > 0 ? rnp.savePublicKeys(armored: false) : nil
         let secretKeys = try rnp.secretKeyCount > 0 ? rnp.saveSecretKeys(armored: false) : nil
         try persistKeyring(publicKeys, to: publicKeyringURL)
