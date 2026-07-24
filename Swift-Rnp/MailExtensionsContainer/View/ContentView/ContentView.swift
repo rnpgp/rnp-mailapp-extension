@@ -243,6 +243,16 @@ struct ContentView: View {
                 .padding(.horizontal, RnpSpacing.md)
                 .padding(.top, RnpSpacing.xxs)
             keyList
+            Divider()
+            NavigationLink {
+                RoadmapNavigationCoordinator()
+                    .navigationTitle("title.tools")
+            } label: {
+                Label("nav.tools", systemImage: "wrench.and.screwdriver")
+                    .padding(.horizontal, RnpSpacing.sm)
+                    .padding(.vertical, RnpSpacing.xs)
+            }
+            .accessibilityIdentifier("contentview.tools-link")
         }
         .animation(.default, value: model.trustConflicts.count)
         .animation(.default, value: model.expiryReport().count)

@@ -97,7 +97,7 @@ public enum PassphraseReadResult: Equatable {
 
 /// Stores and retrieves the keyring passphrase in the login Keychain.
 public enum KeychainPassphraseStore {
-    private static let service = "RNP Mail Extension keyring"
+    static let service = "RNP Mail Extension keyring"
     /// Internal (not private) so `@testable` clients can probe individual
     /// items without going through the prompting read path.
     static let plainAccount = "keyring-passphrase"
