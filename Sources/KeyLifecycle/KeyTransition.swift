@@ -96,17 +96,28 @@ public final class KeyTransition {
             _ = try? keyManager.addUserID(uid, toKeyWithFingerprint: newInfo.fingerprint)
         }
 
-        // Step 3: certify each new UID with the old key.
-        //
-        // The transition certification is a Generic Certification (0x10)
-        // signature made by the OLD primary on the NEW UID+primary. The
-        // actual FFI call is `rnp_key_signature_sign`, which is non-
-        // trivial to wire correctly; the first version of this flow
-        // stubs the call out. Publish and notify still execute, and the
-        // user is told via the caller's UI that out-of-band fingerprint
-        // verification is required.
-        // TODO: wire `rnp_key_signature_sign` once its surface is verified.
-        let certificationAdded = false
+        // Step 3: certify each new UID with the old key. This produces
+        // a Generic Certification (RFC 4880 §5.2.1, type 0x10) over
+        // each new-key UID, signed by the old primary. Recipients who
+        // refresh see the certification and can treat the new key as
+        // related to the trusted old one.
+        var certificationAdded = false
+        do {
+            try keyManager.withRnp { rnp in
+                let old = try rnp.requireKey(oldFingerprint, type: .fingerprint)
+                let newKey = try rnp.requireKey(newInfo.fingerprint, type: .fingerprint)
+                let uidHandles = try newKey.userIDHandles
+                for uid in uidHandles {
+                    let signature = try old.makeCertification(of: uid, type: .generic)
+                    try signature.setHash(hash)
+                    try signature.finalize()
+                }
+            }
+            try keyManager.save()
+            certificationAdded = !userIDs.isEmpty
+        } catch {
+            throw KeyTransitionError.certificationFailed(error.localizedDescription)
+        }
 
         // Step 4: revoke the old key with reason `superseded`.
         do {
