@@ -78,10 +78,36 @@ RNP provides OpenPGP signing, encryption, and key management for Apple Mail on m
 
 - **Host compromise.** If an attacker controls the macOS kernel or the Mail.app process, they can observe plaintext while the extension processes messages.
 - **Metadata inside Mail.app.** Subject, headers, recipients, and message size are visible to Mail.app before encryption and after decryption. On the wire the Subject of encrypted messages is protected (see *What Is Protected*); recipients, sender, and date are not.
+- **BCC recipients in a single encrypted message.** PGP/MIME produces one ciphertext with one PKESK per recipient; any decrypting recipient can enumerate the recipient list. RNP refuses encrypted sends with BCC present and offers three recovery paths (send separately, drop encryption, remove BCC) per RFC 3156 §6.
 - **Keyserver availability or correctness.** The default keyserver can be unavailable or return attacker-controlled keys. Users must verify fingerprints out-of-band.
 - **Side channels.** RNP does not implement constant-time protections above those provided by librnp/Botan.
 - **Phishing / UI spoofing.** MailKit renders the security banner; RNP supplies status text but cannot guarantee that a malicious Mail.app build will display it faithfully.
 - **Backup security.** If the user backs up the app-group container without the Keychain, the secret keyring becomes unrecoverable. If the Keychain is backed up separately, restore it together with the keyring.
+- **Encrypted-mail body search.** Spotlight can search From/Subject/Date of encrypted mail but not the body. The body is encrypted at rest and Mail's indexer cannot read it. See [Encrypted mail and search](encrypted-mail-search.md).
+
+## Post-quantum considerations
+
+Email is uniquely vulnerable to "harvest now, decrypt later": messages
+encrypted today may still be sensitive in 2050, and an adversary who
+stores ciphertext now can decrypt it when a cryptographically relevant
+quantum computer becomes available.
+
+RNP addresses this through librnp's hybrid PQ support:
+
+- **Hybrid encryption (default-on, transparent).** When a recipient
+  advertises a hybrid KEM subkey (`ML-KEM-768+X25519` etc.), librnp
+  uses it automatically. Senders do not need to opt in.
+- **Hybrid signing (opt-in keygen).** Users who want PQ-secure
+  signatures can generate `ML-DSA-65+ED25519` keys via Settings →
+  Encryption → Post-quantum. Larger keys; interop with all modern
+  clients.
+- **Conservative signing (opt-in keygen).** Users who distrust lattice-
+  based crypto can generate `SLH-DSA-SHA2` keys. Very large signatures
+  (~50 KB); use sparingly.
+
+PQ algorithms are newer than classical ones and may receive more CVEs
+in the first few years. The librnp pin will track upstream PQ fixes
+promptly; see [Dependency policy](DEPENDENCIES.md).
 
 ## Memory Hygiene
 
