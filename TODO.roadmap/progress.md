@@ -80,9 +80,11 @@ Legend:
 - [x] `MessageDecoder` observes incoming headers via `MailSecurityEngine.autocryptStore`
 - [x] `AutocryptGossipHeader` + parser + `AutocryptStore.observeGossip` (level 1.1)
 - [x] `EncryptionSettingsView` Autocrypt prefer-encrypt picker
-- [x] `AccountKeyedPolicyStore` for per-account prefer-encrypt (7 tests)
-- [x] `AutocryptEmitPolicy.resolved(forAccount:from:)` account-aware resolution
-- [x] Tests: emit + parse round-trip; store update; mutual default (11 + 4 + 5 + 7 tests)
+- [x] `AccountKeyedPolicyStore` for per-account prefer-encrypt (5 tests)
+- [x] `AutocryptEmitPolicy.resolved(forAccount:from:)` account-aware resolution (4 tests)
+- [x] `AccountAutocryptSettingsView` SwiftUI for per-account overrides
+- [x] `RoadmapNavigationCoordinator` surfaces the per-account view
+- [x] Tests: emit + parse round-trip; store update; mutual default (11 + 4 + 5 + 5 + 4 tests)
 
 ### 08 — Mailbox key scan
 - [x] `MailboxKeyScanner` engine service (3 sources: Autocrypt, pgp-keys, signing key)
@@ -91,8 +93,8 @@ Legend:
 - [x] `MailboxScanResultsView` SwiftUI with Import / Ignore / Import all / Ignore all
 - [x] `MailboxScanViewModel` driving chunked scan + progress
 - [x] Engine tests for scanner robustness (5 tests, librnp-gated where applicable)
+- [x] `RoadmapNavigationCoordinator` surfaces the scan consent + results flow
 - [ ] Wire into MailKit mailbox-enumeration API
-- [ ] Settings → Re-run scan navigation entry
 
 ### 09 — Compose recipient diagnostics
 - [x] `RecipientStatus` model + state enum
@@ -146,7 +148,7 @@ Legend:
 - [x] License text files bundled in `Sources/RnpMailUI/Resources/Licenses/` (rnp, Botan, json-c, sexpp, zlib, bzip2)
 - [x] `LicensesView` updated to render bundled files via split-view navigation
 - [x] Package.swift declares `Resources/Licenses/` as a SwiftPM `.copy` resource — bundled automatically when linked
-- [ ] Promote `ExtensionState/` to first-class signed per-message store (deferred — touches test-harness contract)
+- [x] `SecurityStateRecordStore` adds Ed25519 signing to ExtensionState records (fail-closed on tamper; distinct Keychain signing key from TrustStore and KeyStateStore; backward-compatible migration of existing unsigned records)
 
 ### 15 — Deferred past 1.0
 - [x] Record file exists (no implementation work expected)
