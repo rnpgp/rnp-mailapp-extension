@@ -82,12 +82,21 @@ public final class SecurityStateRecordStore {
         var result: [(RecordedMessageSecurity, Bool)] = []
         for entry in entries where entry.pathExtension == "json" {
             let sigURL = entry.deletingPathExtension().appendingPathExtension("json.sig")
-            if let pair = try? loadVerified(recordURL: entry, signatureURL: sigURL) {
-                result.append((pair, true))
-            } else if let data = try? Data(contentsOf: entry),
-                      let record = try? JSONDecoder().decode(RecordedMessageSecurity.self, from: data)
-            {
-                result.append((record, false))
+            do {
+                if let signed = try loadVerified(recordURL: entry, signatureURL: sigURL) {
+                    result.append((signed, true))
+                    continue
+                }
+            } catch {
+                // Tampered or unparseable; fall through to the
+                // unsigned-attempt path below.
+            }
+            if let data = try? Data(contentsOf: entry) {
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                if let record = try? decoder.decode(RecordedMessageSecurity.self, from: data) {
+                    result.append((record, false))
+                }
             }
         }
         return result
@@ -131,7 +140,9 @@ public final class SecurityStateRecordStore {
             throw SecurityStateRecordStoreError.tampered
         }
         do {
-            return try JSONDecoder().decode(RecordedMessageSecurity.self, from: data)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            return try decoder.decode(RecordedMessageSecurity.self, from: data)
         } catch {
             throw SecurityStateRecordStoreError.persistenceFailed(error.localizedDescription)
         }
