@@ -17,6 +17,9 @@ import Foundation
 /// Function-pointer type matching `rnp_op_encrypt_enable_pkesk_v6`.
 public typealias EnablePKESKv6Fn = @convention(c) (rnp_op_encrypt_t) -> rnp_result_t
 
+/// Function-pointer type matching `rnp_op_generate_set_v6_key`.
+public typealias SetV6KeyFn = @convention(c) (rnp_op_generate_t) -> rnp_result_t
+
 /// Function-pointer table populated at startup from `dlsym`. Each
 /// property is `nil` when the linked librnp does not export the symbol.
 public enum ExperimentalSymbolTable {
@@ -24,6 +27,12 @@ public enum ExperimentalSymbolTable {
     /// `RNP_EXPERIMENTAL_CRYPTO_REFRESH` enabled.
     public static let enablePKESKv6: EnablePKESKv6Fn? = lookup(
         "rnp_op_encrypt_enable_pkesk_v6"
+    )
+
+    /// `rnp_op_generate_set_v6_key` — present when the build has
+    /// `RNP_EXPERIMENTAL_CRYPTO_REFRESH` enabled.
+    public static let setV6Key: SetV6KeyFn? = lookup(
+        "rnp_op_generate_set_v6_key"
     )
 
     private static func lookup<T>(_ name: String) -> T? {
@@ -36,4 +45,7 @@ public enum ExperimentalSymbolTable {
 public extension Rnp {
     /// True when the linked librnp exports PKESK v6 support.
     static var supportsPKESKv6: Bool { ExperimentalSymbolTable.enablePKESKv6 != nil }
+
+    /// True when the linked librnp exports v6 key-generation support.
+    static var supportsV6Keygen: Bool { ExperimentalSymbolTable.setV6Key != nil }
 }

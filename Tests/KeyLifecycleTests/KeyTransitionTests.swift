@@ -75,6 +75,7 @@ final class KeyTransitionTests: XCTestCase {
         XCTAssertEqual(result.oldFingerprint, original.fingerprint)
         XCTAssertNotEqual(result.oldFingerprint, result.newFingerprint)
         XCTAssertTrue(result.oldKeyArchived)
+        XCTAssertTrue(result.transitionCertificationAdded, "certification signature should be added when old secret is available")
 
         // Old key is now archived.
         XCTAssertEqual(km.usageState(forFingerprint: original.fingerprint), .archived)

@@ -21,6 +21,46 @@ import Foundation
 import Rnp
 
 public extension MailSecurityEngine {
+    /// Encodes a message in PGP/MIME form using the AEAD/v6 envelope
+    /// policy. Recipient capability is detected per-key via
+    /// `RnpKey.supportsAEAD` (which reads the primary UID's
+    /// self-signature features subpacket). v6 capability is
+    /// conservatively approximated as "key advertises AEAD" since
+    /// SEIPDv2 typically accompanies AEAD in modern clients. When the
+    /// policy refuses (force-AEAD with a non-AEAD-capable recipient),
+    /// this throws `EnvelopePolicyRefusalError`.
+    func encodePGPMime(
+        _ request: EncodingRequest,
+        signer: RnpKey?,
+        recipients: [RnpKey],
+        rnp: Rnp,
+        envelopePolicy: EncryptionEnvelopePolicy
+    ) throws -> EncodedMessage {
+        let capabilities = recipients.map { key in
+            let supportsAEAD = (try? key.supportsAEAD) ?? false
+            return RecipientEncryptionCapability(
+                address: "",
+                supportsAEAD: supportsAEAD,
+                supportsV6: supportsAEAD
+            )
+        }
+        let decision = EncryptionEnvelopeResolver.decide(
+            capabilities: capabilities,
+            policy: envelopePolicy
+        )
+        if case let .refused(addresses) = decision {
+            throw EnvelopePolicyRefusalError(failedAddresses: addresses)
+        }
+        let parameters = decision.encryptParameters ?? .legacy
+        return try encodePGPMime(
+            request,
+            signer: signer,
+            recipients: recipients,
+            rnp: rnp,
+            envelope: parameters
+        )
+    }
+
     /// Encodes a message in PGP/MIME form using a specific envelope.
     /// Used by callers that have already decided on the envelope (e.g.
     /// always-AEAD for a power user; legacy for backward compat).
@@ -101,5 +141,14 @@ public extension MailSecurityEngine {
             isSigned: legacyEncoded.isSigned,
             isEncrypted: true
         )
+    }
+}
+
+/// Error thrown when `forceAEAD` policy cannot be satisfied because one
+/// or more recipients lack AEAD support.
+public struct EnvelopePolicyRefusalError: Error, Equatable {
+    public let failedAddresses: [String]
+    public init(failedAddresses: [String]) {
+        self.failedAddresses = failedAddresses
     }
 }
