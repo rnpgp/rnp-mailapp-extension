@@ -206,6 +206,19 @@ stops and offers three paths:
 Pick option 1 if you need both encryption and BCC. See
 [Scenarios — BCC](scenarios.md#scenario-i-want-to-bcc-someone-on-an-encrypted-email).
 
+## Finding keys for your contacts
+
+RNP can scan your local mail to find public keys for people you
+already correspond with. Sources checked:
+
+- **Autocrypt headers** on incoming messages.
+- **`application/pgp-keys` attachments**.
+- **Embedded signing keys** in signed messages.
+
+The scan runs locally on your Mac; nothing is sent anywhere. On first
+launch, the consent gate offers to scan; later, you can re-run from
+**Settings → Encryption → Re-run mailbox scan**.
+
 ## Multiple email addresses on one key
 
 A single OpenPGP key can carry multiple user IDs. This is the right
@@ -239,6 +252,26 @@ Recipients still receive hybrid PQ encryption when their key advertises
 a hybrid KEM subkey — this happens automatically inside the engine. To
 generate your own hybrid key, see
 [Post-quantum cryptography](post-quantum.md).
+
+In **Settings → Encryption → Post-quantum** you can pick:
+
+- **Classical** (default; Ed25519, RSA, ECDSA)
+- **Hybrid PQ** (ML-DSA-65+ED25519 + ML-KEM-768+X25519; recommended for
+  long-term confidentiality)
+- **Conservative** (SLH-DSA-SHA2; very large signatures)
+
+## Reply defaults
+
+When you reply to an encrypted or signed message, RNP sets smart
+defaults based on the original message's security state:
+
+- Reply to **encrypted** mail → defaults to **encrypted + signed**
+  (when both parties have keys).
+- Reply to **signed** mail → defaults to **encrypted + signed** when
+  the original sender's key is in your keyring.
+- Reply to **plaintext unsigned** mail → defaults left at plaintext.
+
+Override the defaults via the compose toolbar security button.
 
 ## Encrypted mail and search
 
