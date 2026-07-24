@@ -14,6 +14,7 @@
 //
 
 import SwiftUI
+import Autocrypt
 import KeyLifecycle
 import MailSecurityEngine
 import RnpMailUI
@@ -26,7 +27,9 @@ public struct RoadmapNavigationCoordinator: View {
         case keyHealth
         case recoveryWizard(fingerprint: String)
         case encryptionSettings
+        case accountAutocrypt
         case mailboxScan
+        case mailboxScanConsent
         case transitionWizard(fingerprint: String, primaryUserID: String)
 
         var id: String {
@@ -34,7 +37,9 @@ public struct RoadmapNavigationCoordinator: View {
             case .keyHealth: return "keyHealth"
             case let .recoveryWizard(fpr): return "recoveryWizard-\(fpr)"
             case .encryptionSettings: return "encryptionSettings"
+            case .accountAutocrypt: return "accountAutocrypt"
             case .mailboxScan: return "mailboxScan"
+            case .mailboxScanConsent: return "mailboxScanConsent"
             case let .transitionWizard(fpr, _): return "transitionWizard-\(fpr)"
             }
         }
@@ -60,7 +65,14 @@ public struct RoadmapNavigationCoordinator: View {
                 .accessibilityIdentifier("nav.encryption-settings")
 
                 Button {
-                    presentedSheet = .mailboxScan
+                    presentedSheet = .accountAutocrypt
+                } label: {
+                    Label("Per-account Autocrypt", systemImage: "at")
+                }
+                .accessibilityIdentifier("nav.account-autocrypt")
+
+                Button {
+                    presentedSheet = .mailboxScanConsent
                 } label: {
                     Label("Find keys in mailbox", systemImage: "magnifyingglass")
                 }
@@ -108,6 +120,26 @@ public struct RoadmapNavigationCoordinator: View {
                 EncryptionSettingsView(viewModel: EncryptionSettingsViewModel(
                     storage: { _, _, _ in /* wire to UserDefaults */ }
                 ))
+            case .accountAutocrypt:
+                // The AccountKeyedPolicyStore URL is the engine's
+                // responsibility; the coordinator instantiates the
+                // store in the engine's app-group container when one
+                // is available. This is a sketch; the container app
+                // wires the actual store via EngineEnvironment.
+                let url = engine?.keyManager.directory
+                    .appendingPathComponent("Autocrypt", isDirectory: true)
+                    .appendingPathComponent("account-preferences.json")
+                if let url, let store = try? AccountKeyedPolicyStore(storeURL: url) {
+                    AccountAutocryptSettingsView(viewModel: AccountAutocryptSettingsViewModel(store: store))
+                } else {
+                    Text("Account Autocrypt settings unavailable (no engine).")
+                        .padding()
+                }
+            case .mailboxScanConsent:
+                MailboxScanConsentView(
+                    onScan: { presentedSheet = .mailboxScan },
+                    onSkip: { presentedSheet = nil }
+                )
             case .mailboxScan:
                 if let engine {
                     MailboxScanResultsView(viewModel: MailboxScanViewModel(engine: engine))
