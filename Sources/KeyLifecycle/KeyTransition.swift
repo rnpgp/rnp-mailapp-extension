@@ -42,9 +42,28 @@ public enum KeyTransitionError: Error, Equatable {
 /// Engine-layer orchestrator for key transitions.
 public final class KeyTransition {
     private let keyManager: KeyManager
+    private let publishQueue: OfflinePublishQueue?
+    private let publishAction: ((QueuedPublishAction) async throws -> Void)?
 
-    public init(keyManager: KeyManager) {
+    /// Creates a transition orchestrator.
+    ///
+    /// - Parameters:
+    ///   - keyManager: engine key manager.
+    ///   - publishQueue: optional offline-publish queue. When supplied,
+    ///     the orchestrator enqueues publish actions for the new and
+    ///     revoked-old keys instead of attempting them inline. The
+    ///     queue's publisher closure runs the actual keyserver call.
+    ///   - publishAction: optional inline publish closure. When both
+    ///     this and `publishQueue` are nil, publish is the caller's
+    ///     responsibility.
+    public init(
+        keyManager: KeyManager,
+        publishQueue: OfflinePublishQueue? = nil,
+        publishAction: ((QueuedPublishAction) async throws -> Void)? = nil
+    ) {
         self.keyManager = keyManager
+        self.publishQueue = publishQueue
+        self.publishAction = publishAction
     }
 
     /// Runs the full transition flow:
@@ -147,5 +166,48 @@ public final class KeyTransition {
             transitionCertificationAdded: certificationAdded,
             oldKeyArchived: true
         )
+    }
+
+    /// Async variant of `run(...)` that additionally enqueues publish
+    /// actions for the new and revoked-old keys via the configured
+    /// `OfflinePublishQueue`. Callers that supply a publish queue in
+    /// `init(...)` should call this instead of the sync `run(...)`.
+    @discardableResult
+    public func runAsync(
+        replacing oldFingerprint: String,
+        newKeyAlgorithm algorithm: KeyAlgorithm,
+        userIDsOverride: [String]? = nil,
+        hash: String = "SHA256"
+    ) async throws -> KeyTransitionResult {
+        let result = try run(
+            replacing: oldFingerprint,
+            newKeyAlgorithm: algorithm,
+            userIDsOverride: userIDsOverride,
+            hash: hash
+        )
+        await publishAfterTransition(newFingerprint: result.newFingerprint, oldFingerprint: oldFingerprint)
+        return result
+    }
+
+    /// Enqueues publish actions for the new key and the revoked old
+    /// key when a publish queue is configured. Best-effort; failures
+    /// are surfaced via the queue's retry mechanism, not propagated.
+    private func publishAfterTransition(newFingerprint: String, oldFingerprint: String) async {
+        guard let publishQueue else { return }
+        let newKeyArmored = (try? keyManager.exportKey(fingerprint: newFingerprint, secret: false))
+            .flatMap { String(data: $0, encoding: .ascii) } ?? ""
+        let oldKeyArmored = (try? keyManager.exportKey(fingerprint: oldFingerprint, secret: false))
+            .flatMap { String(data: $0, encoding: .ascii) } ?? ""
+        try? publishQueue.enqueue(QueuedPublishAction(
+            kind: .publishKey,
+            fingerprint: newFingerprint,
+            armoredKey: newKeyArmored
+        ))
+        try? publishQueue.enqueue(QueuedPublishAction(
+            kind: .publishRevokedKey,
+            fingerprint: oldFingerprint,
+            armoredKey: oldKeyArmored
+        ))
+        await publishQueue.runDueActions()
     }
 }
