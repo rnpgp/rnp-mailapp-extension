@@ -58,7 +58,10 @@ let package = Package(
         ),
         .target(
             name: "RnpMailUI",
-            dependencies: ["MailSecurityEngine", "KeyLifecycle", "KeyServerClient", "TrustStore", "KeyStateStore"]
+            dependencies: ["MailSecurityEngine", "KeyLifecycle", "KeyServerClient", "TrustStore", "KeyStateStore"],
+            resources: [
+                .copy("Resources/Licenses")
+            ]
         ),
         .target(
             name: "MailSecurityUI",
