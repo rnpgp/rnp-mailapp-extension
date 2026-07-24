@@ -38,8 +38,9 @@ Legend:
 - [x] `Rnp.dumpPacketsAsJSON(data:)` FFI wrapper
 - [x] `MessageDecoder` failure classifier (PKESK inspection)
 - [x] `Rnp.decryptSymmetric(_:passphrase:)` for symmetric-encrypted mail
-- [x] Tests: each failure type with fixtures (11 tests)
-- [ ] SwiftUI: banner action buttons (currently engine-layer only)
+- [x] `DecryptionFailurePresentation` mapping table + `DecryptionFailureAction`
+- [x] Tests: each failure type with fixtures (11 + 10 tests)
+- [ ] Wire `DecryptionFailurePresentation` into MailSecurityBannerView buttons
 
 ### 04 — Key expiry recovery
 - [x] `KeyHealthState` + `KeyRole` + `RecoveryAction` + `RecoveryRecommendation` models
@@ -55,7 +56,8 @@ Legend:
 - [x] Transition certification via `RnpKey.makeCertification` + `RnpSignature.finalize` (`rnp_key_certification_create` + `rnp_key_signature_sign`)
 - [x] Tests: end-to-end + public-only refusal + certification assertion (2 tests)
 - [x] `KeyTransitionWizardSheet` SwiftUI 5-step wizard
-- [ ] Failure-mode paths (old secret lost; offline publish)
+- [x] `OfflinePublishQueue` for offline-publish failure path (6 tests)
+- [ ] Wire offline queue into KeyTransition publish step
 
 ### 06 — BCC handling
 - [x] `MailMessage` extended with `toAddresses` / `ccAddresses` / `bccAddresses`
@@ -141,7 +143,7 @@ Legend:
 - [x] FAQ drift fix (Ed25519 + PQ hybrid + multi-UID + expiry + BCC + search entries)
 - [x] License text files bundled in `Sources/RnpMailUI/Resources/Licenses/` (rnp, Botan, json-c, sexpp, zlib, bzip2)
 - [x] `LicensesView` updated to render bundled files via split-view navigation
-- [ ] Xcode build phase to copy licenses into the app bundle's Resources
+- [x] Package.swift declares `Resources/Licenses/` as a SwiftPM `.copy` resource — bundled automatically when linked
 - [ ] Promote `ExtensionState/` to first-class signed per-message store (deferred — touches test-harness contract)
 
 ### 15 — Deferred past 1.0
