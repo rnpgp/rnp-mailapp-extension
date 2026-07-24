@@ -27,6 +27,8 @@ public struct KeyDetailActions {
     public var onRotateEncryption: () -> Void
     public var onRotateSigning: () -> Void
     public var onPublish: () -> Void
+    public var onAddUserID: () -> Void
+    public var onArchive: () -> Void
     public var onMarkVerified: () -> Void
     /// Rejects the key as the new binding for its address, keeping the
     /// previously recorded binding (key-change conflict resolution).
@@ -43,6 +45,8 @@ public struct KeyDetailActions {
         onRotateEncryption: @escaping () -> Void = {},
         onRotateSigning: @escaping () -> Void = {},
         onPublish: @escaping () -> Void = {},
+        onAddUserID: @escaping () -> Void = {},
+        onArchive: @escaping () -> Void = {},
         onMarkVerified: @escaping () -> Void = {},
         onRejectNewKey: @escaping () -> Void = {},
         onShowTrustHistory: @escaping () -> Void = {}
@@ -55,6 +59,8 @@ public struct KeyDetailActions {
         self.onRotateEncryption = onRotateEncryption
         self.onRotateSigning = onRotateSigning
         self.onPublish = onPublish
+        self.onAddUserID = onAddUserID
+        self.onArchive = onArchive
         self.onMarkVerified = onMarkVerified
         self.onRejectNewKey = onRejectNewKey
         self.onShowTrustHistory = onShowTrustHistory
@@ -546,9 +552,17 @@ public struct KeyDetailView: View {
                     Button("detail.rotateSigning") { actions.onRotateSigning() }
                         .accessibilityIdentifier("\(identifierPrefix).rotate-signing")
                 }
+                if !isRecipient {
+                    HStack(spacing: RnpSpacing.sm) {
+                        Button("detail.addUserID") { actions.onAddUserID() }
+                            .accessibilityIdentifier("\(identifierPrefix).add-userid")
+                    }
+                }
                 HStack(spacing: RnpSpacing.sm) {
                     Button("detail.revoke") { actions.onRevoke() }
                         .accessibilityIdentifier("\(identifierPrefix).revoke")
+                    Button("detail.archive") { actions.onArchive() }
+                        .accessibilityIdentifier("\(identifierPrefix).archive")
                     Button("detail.deleteKey", role: .destructive) { showDeleteConfirmation = true }
                         .accessibilityIdentifier("\(identifierPrefix).delete")
                 }

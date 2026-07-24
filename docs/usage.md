@@ -187,10 +187,81 @@ keyring passphrase.
   encrypted messages are protected on the wire (protected-headers="v1"), but
   Mail.app still sees them before encryption and after decryption.
 
+## BCC on encrypted mail
+
+PGP/MIME encrypts one ciphertext for all recipients and any decrypting
+recipient can enumerate the recipient list — including BCC — by
+inspecting the PKESK packets. RFC 3156 §6 calls this out explicitly.
+
+When you attempt to send an encrypted message with BCC recipients, RNP
+stops and offers three paths:
+
+1. **Send separately** — RNP creates one encrypted message for To+Cc
+   and one separate encrypted message per BCC recipient. Each BCC
+   recipient sees only themselves.
+2. **Remove encryption** — send plaintext (or signed-only) so BCC works
+   normally.
+3. **Remove BCC** — encrypt as a single message to To+Cc only.
+
+Pick option 1 if you need both encryption and BCC. See
+[Scenarios — BCC](scenarios.md#scenario-i-want-to-bcc-someone-on-an-encrypted-email).
+
+## Multiple email addresses on one key
+
+A single OpenPGP key can carry multiple user IDs. This is the right
+answer for "I have a work email and a personal email and want one
+identity."
+
+In the RNP app: open the key → **Add user ID**. Enter the second email
+address; optionally mark it as primary. The new UID is self-signed by
+the primary key. Publish so contacts refresh.
+
+See [Scenarios — Multi-UID](scenarios.md#scenario-i-want-one-key-for-both-my-work-and-personal-email).
+
+## Archive (decrypt-only) state
+
+Revoked or retired keys do not need to be deleted. Archiving makes them
+decrypt-only: they remain in the keyring so historical mail still
+decrypts, but they are hidden from the default key list and never
+selected for new operations.
+
+In the RNP app: open the key → **Archive**. To restore, find the key
+under Keys → Archived → **Restore to active**.
+
+"Delete forever" is a separate destructive action that requires typing
+the fingerprint to confirm; it orphans all mail encrypted to that key.
+
+See [Key lifecycle — Retirement](key-lifecycle.md#retirement-archive).
+
+## Post-quantum encryption
+
+Recipients still receive hybrid PQ encryption when their key advertises
+a hybrid KEM subkey — this happens automatically inside the engine. To
+generate your own hybrid key, see
+[Post-quantum cryptography](post-quantum.md).
+
+## Encrypted mail and search
+
+Spotlight can search From, To, Subject, and Date of encrypted mail but
+**not the body**. The body is encrypted at rest and Mail's indexer
+cannot read it. See [Encrypted mail and search](encrypted-mail-search.md)
+for the full picture and workarounds.
+
+## Disaster recovery
+
+Save your recovery materials before you need them. See
+[Disaster recovery](disaster-recovery.md) for the full manual.
+
 ## See also
 
 - [Installation](installation.md)
 - [Trust model](trust-model.md)
 - [Keyservers](keyserver.md)
+- [Key lifecycle](key-lifecycle.md)
+- [Autocrypt](autocrypt.md)
+- [Post-quantum cryptography](post-quantum.md)
+- [Disaster recovery](disaster-recovery.md)
+- [Encrypted mail and search](encrypted-mail-search.md)
+- [Scenarios](scenarios.md)
 - [Features](features.md)
 - [FAQ](faq.md)
