@@ -32,6 +32,14 @@ final class KeysManager: ObservableObject {
         keyManager.map { KeyLifecycle(keyManager: $0) }
     }
 
+    /// Archived (decrypt-only) keys for the Archived section.
+    var archivedKeys: [KeyInfo] {
+        (try? keyManager?.archivedKeys()) ?? []
+    }
+
+    /// Whether the engine keyManager is available.
+    var engineAvailable: Bool { keyManager != nil }
+
     /// Opens the shared keyring (app group container), creating it on first
     /// use. Falls back to a temporary directory if the keyring cannot be
     /// read. If both locations fail, the manager is left in a failed state
@@ -354,8 +362,25 @@ final class KeysManager: ObservableObject {
         }
         perform {
             try keyManager.deleteKey(fingerprint: key.fingerprint)
-            // Drop a per-key passphrase stored for the deleted key.
             KeychainPassphraseStore.removePassphrase(forKeyFingerprint: key.fingerprint)
+        }
+    }
+
+    /// Restores an archived key to active state.
+    func restoreArchivedKey(fingerprint: String) throws {
+        guard let keyManager else { return }
+        try keyManager.setUsageState(.active, forFingerprint: fingerprint, reason: "user restored from archive")
+    }
+
+    /// Deletes a key from the keyring permanently (after the user has
+    /// confirmed via `DeleteForeverConfirmation`). Also clears the
+    /// usage-state record and any per-key passphrase.
+    func deleteKeyForever(fingerprint: String) {
+        guard let keyManager else { return }
+        perform {
+            try keyManager.deleteKey(fingerprint: fingerprint)
+            try? keyManager.removeUsageRecord(forFingerprint: fingerprint)
+            KeychainPassphraseStore.removePassphrase(forKeyFingerprint: fingerprint)
         }
     }
 

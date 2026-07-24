@@ -126,6 +126,90 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         ))
     }
 
+    /// BCC-aware encode path. Catches `BccRequiresSpecialHandlingError`
+    /// and surfaces it as a structured `encryptionError` so the
+    /// container app can present `BCCRefusalSheet`. When the user
+    /// picks a resolution, the container app calls
+    /// `applyBccResolution(_:message:composeContext:sign:encrypt:)`.
+    func encodeWithBccHandling(
+        _ message: MEMessage,
+        composeContext: MEComposeContext,
+        completionHandler: @escaping (MEMessageEncodingResult) -> Void
+    ) {
+        guard let core = core else {
+            completionHandler(MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil))
+            return
+        }
+        do {
+            let result = try core.encodeWithBccPolicy(
+                MailKitMessage(message),
+                composeContext: MailKitComposeContext(composeContext),
+                bccPolicy: .refuse
+            )
+            let outgoing = result.encodedMessage.map {
+                MEEncodedOutgoingMessage(
+                    rawData: $0.rawData,
+                    isSigned: $0.isSigned,
+                    isEncrypted: $0.isEncrypted
+                )
+            }
+            completionHandler(MEMessageEncodingResult(
+                encodedMessage: outgoing,
+                signingError: result.signingError,
+                encryptionError: result.encryptionError
+            ))
+        } catch let error as BccRequiresSpecialHandlingError {
+            completionHandler(MEMessageEncodingResult(
+                encodedMessage: nil,
+                signingError: nil,
+                encryptionError: error
+            ))
+        } catch {
+            completionHandler(MEMessageEncodingResult(
+                encodedMessage: nil,
+                signingError: nil,
+                encryptionError: error
+            ))
+        }
+    }
+
+    /// Applies a user-chosen BCC resolution and returns the encoded
+    /// result. Called by the container app after presenting
+    /// `BCCRefusalSheet`.
+    func applyResolution(
+        _ resolution: BccResolution,
+        for message: MEMessage,
+        composeContext: MEComposeContext
+    ) -> MEMessageEncodingResult {
+        guard let core = core else {
+            return MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil)
+        }
+        let outcome = core.applyBccResolution(
+            resolution,
+            message: MailKitMessage(message),
+            composeContext: MailKitComposeContext(composeContext),
+            sign: composeContext.shouldSign,
+            encrypt: composeContext.shouldEncrypt
+        )
+        switch outcome {
+        case .cancelled:
+            return MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil)
+        case let .singleMessage(result):
+            let outgoing = result.encodedMessage.map {
+                MEEncodedOutgoingMessage(rawData: $0.rawData, isSigned: $0.isSigned, isEncrypted: $0.isEncrypted)
+            }
+            return MEMessageEncodingResult(
+                encodedMessage: outgoing,
+                signingError: result.signingError,
+                encryptionError: result.encryptionError
+            )
+        case .separateMessages:
+            // The container app should call the engine's
+            // encodeSendSeparately directly; this returns nil for now.
+            return MEMessageEncodingResult(encodedMessage: nil, signingError: nil, encryptionError: nil)
+        }
+    }
+
     // MARK: - Decoding Messages
 
     /// Encryption status of the most recently decoded OpenPGP message.
@@ -275,6 +359,9 @@ private struct MailKitMessage: MailMessage {
     var fromAddress: String { message.fromAddress.rawString }
     var recipientAddresses: [String] { message.allRecipientAddresses.map(\.rawString) }
     var isSending: Bool { message.state == .sending }
+    var toAddresses: [String] { message.toRecipients.map(\.rawString) }
+    var ccAddresses: [String] { message.ccRecipients.map(\.rawString) }
+    var bccAddresses: [String] { message.bccRecipients.map(\.rawString) }
 }
 
 /// Wraps `MEComposeContext`.
