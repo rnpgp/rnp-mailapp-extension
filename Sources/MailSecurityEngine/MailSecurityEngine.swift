@@ -11,6 +11,7 @@
 //  callbacks to this API.
 //
 
+import Autocrypt
 import Foundation
 import Rnp
 import TrustStore
@@ -57,7 +58,7 @@ public struct EncodingRequest {
 /// Result of an encode operation.
 public struct EncodedMessage {
     /// The encoded RFC 822 message data to hand back to Mail.
-    public let rawData: Data
+    public var rawData: Data
     public let isSigned: Bool
     public let isEncrypted: Bool
 
@@ -194,6 +195,22 @@ public final class MailSecurityEngine {
     /// The key manager backing this engine.
     public let keyManager: KeyManager
 
+    /// Per-address Autocrypt observation store, fed from incoming mail
+    /// by `MessageDecoder`. Lazily created on first access so existing
+    /// callers pay no cost. The store lives in the engine's keyring
+    /// directory (`<dir>/Autocrypt/autocrypt.json`).
+    public private(set) lazy var autocryptStore: AutocryptStore = {
+        let url = keyManager.directory
+            .appendingPathComponent("Autocrypt", isDirectory: true)
+            .appendingPathComponent("autocrypt.json")
+        if let store = try? AutocryptStore(storeURL: url) {
+            return store
+        }
+        // Fallback: in-memory only. The init only throws on a corrupted
+        // existing JSON file; with no URL there is nothing to load.
+        return try! AutocryptStore(storeURL: nil)
+    }()
+
     public init(keyManager: KeyManager) {
         self.keyManager = keyManager
     }
@@ -299,9 +316,33 @@ public final class MailSecurityEngine {
         guard !message.isEmpty else {
             return nil
         }
+        observeAutocryptIfPresent(in: message)
         return try keyManager.withRnp { rnp in
             try decodeUnlocked(message, rnp: rnp)
         }
+    }
+
+    /// Best-effort Autocrypt header observation on incoming mail. Runs
+    /// before the crypto decode so the store is updated for every
+    /// message, not just OpenPGP ones. Failures (no Autocrypt header,
+    /// malformed value, persistence error) are silently swallowed —
+    /// Autocrypt is opportunistic and must not block decode.
+    private func observeAutocryptIfPresent(in message: Data) {
+        let parsed = MimeMessage.parse(message)
+        let date = parseMessageDate(parsed) ?? Date()
+        for header in parsed.headers where header.name.lowercased() == "autocrypt" {
+            try? autocryptStore.observe(rawHeader: header.value, messageDate: date)
+        }
+    }
+
+    /// Parses the `Date:` header (RFC 5322 §3.6.1) into a `Date`.
+    /// Returns `nil` when the header is absent or unparseable.
+    private func parseMessageDate(_ message: MimeMessage) -> Date? {
+        guard let raw = message.header("Date") else { return nil }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
+        return formatter.date(from: raw.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 
     // MARK: - Shared helpers

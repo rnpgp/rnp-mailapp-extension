@@ -565,6 +565,22 @@ public final class Rnp {
         }
     }
 
+    /// Decrypts a symmetrically-encrypted message (one encrypted with a
+    /// shared passphrase, no public-key recipient). Spawns a fresh
+    /// `Rnp` context with a passphrase provider that answers every
+    /// prompt with `passphrase`; the symmetric session key derived by
+    /// librnp lets it decrypt the message without a keyring lookup.
+    ///
+    /// The caller is responsible for zeroing `passphrase` after use; we
+    /// do not perform explicit memory scrubbing (consistent with the
+    /// rest of the wrapper).
+    public func decryptSymmetric(_ encrypted: Data, passphrase: String) throws -> Data {
+        let symmetric = try Rnp(passphraseProvider: { _ in passphrase })
+        let publicRing = try savePublicKeys(armored: false)
+        try symmetric.loadKeys(publicRing, public: true, secret: false)
+        return try symmetric.decrypt(encrypted)
+    }
+
     // MARK: - Packet inspection
 
     /// Dumps the OpenPGP packet structure of `data` as JSON (one object per
