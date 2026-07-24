@@ -64,6 +64,54 @@ The design is in
 under "Decrypted-body search index." It will ship only after a threat-
 model review and only as opt-in.
 
+## Verification: how Mail actually handles decoded bodies
+
+The claims above about what Spotlight can and cannot search depend on
+how Mail re-indexes a message after `MEDecodedMessage.data` is handed
+back. We have not yet run the verification end-to-end; the manual test
+below is the canonical procedure. Once it has been run, update this
+section with the observed behavior.
+
+### Manual test procedure
+
+1. **Set up two Macs** (or two Mail accounts on one Mac).
+2. **Send three messages** from one account to the other:
+   - A plaintext control message containing a unique body string like
+     `zzz-test-plaintext-body-123`.
+   - An encrypted PGP/MIME message with the same unique body string
+     but a different marker (e.g., `zzz-test-encrypted-body-456`).
+   - An encrypted PGP/MIME message with protected headers, where the
+     unique Subject is `zzz-test-protected-subject-789` and the body
+     contains `zzz-test-protected-body-789`.
+3. **On the receiving Mac**: open each message in Mail so RNP decodes
+   it. Wait 30 seconds for Spotlight to index.
+4. **Search Spotlight** (⌘+Space) for each unique marker:
+   - Body markers from the plaintext message: should be found.
+   - Body markers from the encrypted message: verify whether found or
+     not.
+   - Protected-Subject markers: verify whether found in the Spotlight
+     index or only in Mail's own search.
+
+### What the results mean
+
+- If the encrypted body markers are **not** found: confirms our claim
+  above. Spotlight cannot index encrypted-mail bodies. Document the
+  finding and move on.
+- If the encrypted body markers **are** found after opening the
+  message once: Mail re-indexes with the decrypted bytes. This is a
+  major UX win; we should update this doc and `docs/features.md` to
+  call it out.
+- If the protected-Subject marker is found: confirms that protected
+  headers' decrypted Subject replaces the outer placeholder in
+  Spotlight's index.
+
+### Recording the result
+
+Once verified, add a row to `docs/encrypted-mail-search.md` stating
+the result with the test date and the macOS / Mail versions used. If
+the result differs from the current claims, update the "What works"
+and "What does not work" tables.
+
 ## See also
 
 - [Security model](SECURITY-MODEL.md) — what is and isn't protected
