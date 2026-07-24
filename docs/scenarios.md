@@ -280,6 +280,55 @@ RNP defaults replies to encrypted-and-signed when:
 The compose banner shows "Replying to an encrypted message; defaults
 set to encrypted + signed." Override via the toolbar if needed.
 
+## Recovery (continued)
+
+### Scenario: I want to restore from a paper-key backup
+
+If you saved a paper-key backup when you first generated your key:
+
+1. **Install RNP** on the new Mac.
+2. **Launch the app → Settings → Restore from backup** (or pick
+   "Restore" in onboarding if it appears).
+3. **Paste the paper-key text** into the restore sheet. Comment lines
+   starting with `#` are ignored; the parser is whitespace- and
+   case-insensitive.
+4. **Click Restore**. RNP parses the hex, reconstructs the secret-key
+   material, and imports it into the keyring.
+5. **Enter your keyring passphrase** when prompted. If you enabled
+   iCloud Keychain sync, this is automatic.
+
+All mail encrypted to the restored key now decrypts. See
+[Disaster recovery](disaster-recovery.md).
+
+### Scenario: I want to enable iCloud Keychain sync for my passphrase
+
+1. **Settings → Security → Keyring passphrase → iCloud Keychain sync**.
+2. Toggle **on**. RNP creates a synchronizable Keychain item holding
+   the passphrase.
+3. On any other Mac signed in to the same Apple ID, the passphrase is
+   available after the next iCloud Keychain sync.
+
+The passphrase alone is useless without the secret-key material; you
+still need a paper-key backup to restore on a new Mac. iCloud sync
+just removes the friction of remembering the passphrase.
+
+## Compose (continued)
+
+### Scenario: I want to encrypt and BCC someone
+
+When you attempt to send encrypted mail with BCC recipients, RNP
+stops and offers three paths:
+
+1. **Send separately** — RNP creates one encrypted message for To+Cc
+   and one separate encrypted message per BCC recipient. Each BCC
+   recipient sees only themselves in the PKESK recipient list.
+2. **Remove encryption** — send plaintext (or signed-only) so BCC
+   works normally.
+3. **Remove BCC** — encrypt as a single message to To+Cc only. The
+   BCC list goes via a separate plaintext path.
+
+See [BCC handling](usage.md#bcc-on-encrypted-mail).
+
 ## See also
 
 ## Settings
