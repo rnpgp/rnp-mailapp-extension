@@ -28,8 +28,10 @@ Legend:
 - [x] Auto-archive on revoke-with-superseded
 - [x] Migration on first launch for existing revoked keys
 - [x] Tests: state transitions; archived decrypts; cannot sign (9 tests)
-- [ ] SwiftUI: collapsible "Archived" section in KeysListView
-- [ ] "Delete forever" requires fingerprint typing
+- [x] `ArchivedKeysSection` SwiftUI collapsible component
+- [x] `DeleteForeverConfirmation` SwiftUI sheet (fingerprint-typing required)
+- [ ] Wire `ArchivedKeysSection` into KeysListView
+- [ ] Wire `DeleteForeverConfirmation` into KeyDetailView destructive path
 
 ### 03 — Decryption errors
 - [x] `DecryptionFailure` typed enum + `MissingKeyAction`
@@ -52,7 +54,7 @@ Legend:
 - [x] `KeyTransition` engine service (5-step orchestration)
 - [x] Transition certification via `RnpKey.makeCertification` + `RnpSignature.finalize` (`rnp_key_certification_create` + `rnp_key_signature_sign`)
 - [x] Tests: end-to-end + public-only refusal + certification assertion (2 tests)
-- [ ] SwiftUI multi-step wizard sheet
+- [x] `KeyTransitionWizardSheet` SwiftUI 5-step wizard
 - [ ] Failure-mode paths (old secret lost; offline publish)
 
 ### 06 — BCC handling
@@ -60,8 +62,9 @@ Legend:
 - [x] `BccPolicy` enum (refuse / sendSeparately / removeEncryption / removeBcc)
 - [x] `BccResolution` (user-facing options)
 - [x] Engine refuses via `MessageSecurityCore.encodeWithBccPolicy`
+- [x] `BCCRefusalSheet` SwiftUI view
 - [x] Tests: each option (6 tests)
-- [ ] SwiftUI refusal sheet
+- [ ] Wire `BCCRefusalSheet` into MailKit compose handler
 - [ ] "Send separately" multi-message path (needs MailKit investigation)
 
 ## Tier B — better encryption UX
@@ -75,16 +78,17 @@ Legend:
 - [x] `MessageDecoder` observes incoming headers via `MailSecurityEngine.autocryptStore`
 - [x] `AutocryptGossipHeader` + parser + `AutocryptStore.observeGossip` (level 1.1)
 - [x] Tests: emit + parse round-trip; store update; mutual default (11 + 4 + 5 tests)
-- [ ] Per-account `prefer-encrypt` setting in UI
+- [x] `EncryptionSettingsView` Autocrypt prefer-encrypt picker
+- [ ] Per-account `prefer-encrypt` setting (currently global)
 
 ### 08 — Mailbox key scan
 - [x] `MailboxKeyScanner` engine service (3 sources: Autocrypt, pgp-keys, signing key)
 - [x] Pure `[Data] -> MailboxScanReport` API (no MailKit dependency)
+- [x] `MailboxScanConsentView` SwiftUI (real)
+- [x] `MailboxScanResultsView` SwiftUI with Import / Ignore / Import all / Ignore all
+- [x] `MailboxScanViewModel` driving chunked scan + progress
 - [ ] Wire into MailKit mailbox-enumeration API
-- [ ] Consent gate SwiftUI view
-- [ ] Settings → Re-run scan
-- [ ] SwiftUI results list with Import / Ignore
-- [ ] MailKit API investigation
+- [ ] Settings → Re-run scan navigation entry
 
 ### 09 — Compose recipient diagnostics
 - [x] `RecipientStatus` model + state enum
@@ -125,7 +129,7 @@ Legend:
 - [x] `MessageEncoder.encodePGPMime(...:envelopePolicy:)` with per-recipient capability detection via `RnpKey.supportsAEAD`
 - [x] `Rnp.generatePrimaryKey(...:useV6Key:)` + `KeyManager.generateV6Key(...)` (v6 opt-in)
 - [x] Tests: capability detection, fallback to CFB (7 + 5 tests)
-- [ ] Settings UI for envelope policy
+- [x] `EncryptionSettingsView` envelope policy picker
 
 ### 13 — Search & archive documentation
 - [x] `docs/encrypted-mail-search.md` written (with verification caveat)
@@ -136,8 +140,9 @@ Legend:
 - [x] `scripts/release-preflight.sh` (executable; bash -n clean)
 - [x] FAQ drift fix (Ed25519 + PQ hybrid + multi-UID + expiry + BCC + search entries)
 - [x] License text files bundled in `Sources/RnpMailUI/Resources/Licenses/` (rnp, Botan, json-c, sexpp, zlib, bzip2)
-- [ ] Update `LicensesView` to render the bundled files
+- [x] `LicensesView` updated to render bundled files via split-view navigation
 - [ ] Xcode build phase to copy licenses into the app bundle's Resources
+- [ ] Promote `ExtensionState/` to first-class signed per-message store (deferred — touches test-harness contract)
 
 ### 15 — Deferred past 1.0
 - [x] Record file exists (no implementation work expected)
