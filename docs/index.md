@@ -15,10 +15,28 @@ step required.
   building from source.
 - [Usage](usage.md) — enable the extension, manage keys, sign and encrypt,
   verify signatures, and make trust decisions.
+- [Scenarios](scenarios.md) — step-by-step walkthroughs for ~25 common
+  situations: first encrypted email, recovery from Mac loss, expired key,
+  can't decrypt, key-change conflict, BCC, key transition, post-quantum
+  opt-in, multi-UID, multi-device, archive vs delete, settings tweaking.
+- [Settings](settings.md) — every Settings section documented: envelope,
+  Autocrypt prefer-encrypt, post-quantum, Touch ID, keyring passphrase,
+  keyservers, mailbox scan, notifications, diagnostics.
 - [Features](features.md) — the full feature list, mapped to OpenPGP and
   librnp capabilities.
 - [Trust model](trust-model.md) — trust-on-first-use, manual fingerprint
   verification, and key-change conflicts.
+- [Key lifecycle](key-lifecycle.md) — operational lifecycle: creation,
+  backup, distribution, verification, use, rotation, expiry, revocation,
+  retirement, migration.
+- [Disaster recovery](disaster-recovery.md) — paper-key, revocation
+  certificate, iCloud Keychain sync, restore flow, edge cases, threat model.
+- [Autocrypt](autocrypt.md) — level-1 interop with Thunderbird, K-9 Mail,
+  Delta Chat; prefer-encrypt; Autocrypt-Gossip.
+- [Post-quantum cryptography](post-quantum.md) — harvest-now-decrypt-later;
+  hybrid KEM and signing; classical / hybrid / conservative policies.
+- [Encrypted mail and search](encrypted-mail-search.md) — what Spotlight
+  can and cannot search; workarounds.
 - [Keyservers](keyserver.md) — publishing and discovering keys over VKS,
   HKPS, and WKD.
 - [FAQ](faq.md) — common questions and answers.
