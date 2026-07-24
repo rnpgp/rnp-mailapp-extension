@@ -19,6 +19,24 @@ public protocol MailMessage {
     var recipientAddresses: [String] { get }
     /// Whether the message is being sent (not a draft/received copy).
     var isSending: Bool { get }
+    /// To-recipient addresses only, raw strings. Defaulted to `[]` so
+    /// existing conformers continue to compile; consumers that care about
+    /// BCC handling should override.
+    var toAddresses: [String] { get }
+    /// Cc-recipient addresses only. See `toAddresses`.
+    var ccAddresses: [String] { get }
+    /// Bcc-recipient addresses only. See `toAddresses`.
+    var bccAddresses: [String] { get }
+}
+
+extension MailMessage {
+    /// Default To/Cc/Bcc split for conformers that have not been updated:
+    /// everything is in `recipientAddresses`, BCC and Cc are empty. This
+    /// preserves backward compatibility (no BCC handling) for existing
+    /// conformers while letting new conformers surface the breakdown.
+    public var toAddresses: [String] { recipientAddresses }
+    public var ccAddresses: [String] { [] }
+    public var bccAddresses: [String] { [] }
 }
 
 /// Compose context, mirroring `MEComposeContext`.

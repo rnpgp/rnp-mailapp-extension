@@ -18,6 +18,11 @@ extension MailSecurityEngine {
         var signers: [RnpSignatureInfo] = []
         var signingError: Error?
         var encryptionError: Error?
+        /// Typed decryption failure produced by the failure classifier.
+        /// `nil` on success paths. Set only when `encryptionError` is
+        /// also set; consumes the librnp error string and the packet
+        /// dump, if available.
+        var decryptionFailure: DecryptionFailure?
     }
 
     /// Entry point running under the key manager lock; see `decode(_:)`.
@@ -405,6 +410,10 @@ extension MailSecurityEngine {
     /// librnp, so sign+encrypt is handled in one pass; when librnp reports
     /// no signatures but the payload is itself OpenPGP data (implementations
     /// that do not verify nested signatures), one nested pass is attempted.
+    ///
+    /// On the failure path, the outcome carries a typed
+    /// `DecryptionFailure` derived from a packet-dump inspection of the
+    /// blob, so the Mail banner can offer the right one-click action.
     private func processOpenPGPBlob(
         _ blob: Data,
         rnp: Rnp
@@ -415,8 +424,10 @@ extension MailSecurityEngine {
             verification = try rnp.verifyDetailed(blob)
         } catch {
             // Not processable: undecryptable (wrong passphrase, missing key,
-            // broken integrity) or not OpenPGP data at all.
+            // broken integrity) or not OpenPGP data at all. Classify the
+            // failure so the banner can offer a recovery action.
             outcome.encryptionError = error
+            outcome.decryptionFailure = classifyFailure(error: error, blob: blob, rnp: rnp)
             return (nil, outcome)
         }
 
@@ -434,6 +445,25 @@ extension MailSecurityEngine {
         let meaningful = outcome.isEncrypted || !outcome.signers.isEmpty
         outcome.processedAny = meaningful
         return meaningful ? (payload, outcome) : (nil, outcome)
+    }
+
+    /// Builds a typed `DecryptionFailure` from a librnp error and a packet
+    /// dump of the blob. Best-effort: if dumping also fails (e.g., the
+    /// blob is not valid OpenPGP data), the classifier falls back to
+    /// `.unknown` or `.malformedArmor`.
+    private func classifyFailure(error: Error, blob: Data, rnp: Rnp) -> DecryptionFailure {
+        let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+        let dump: PacketDump?
+        if let json = try? rnp.dumpPacketsAsJSON(blob) {
+            dump = PacketDump.parse(json: json)
+        } else {
+            dump = nil
+        }
+        return DecryptionFailureClassifier.classify(
+            librnpError: message,
+            dump: dump,
+            context: .noOp
+        )
     }
 
     // MARK: - Small helpers
