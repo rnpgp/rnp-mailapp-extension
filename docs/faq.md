@@ -70,12 +70,59 @@ Keychain or to re-protect the key with the keyring passphrase — see
 
 ### Can I use a SmartCard or hardware token?
 
-No. Only software keys in the local keyring are supported.
+No. Only software keys in the local keyring are supported. Hardware-token
+support is on the post-1.0 roadmap — see `TODO.roadmap/15-deferred-post-1.0.md`.
 
 ### Which key algorithms can I generate?
 
-RSA-3072 (the librnp 0.18 default) and ECDSA P-256. librnp supports more
-through its API; the app surfaces the two most interoperable choices.
+RNP surfaces three algorithm families for new keys:
+
+- **RSA-3072** — maximum compatibility with old clients; larger keys.
+- **ECDSA P-256** — modern elliptic-curve primary with ECDH P-256
+  encryption subkey.
+- **Ed25519** — Ed25519 signing primary with Curve25519 encryption subkey.
+  Recommended for new keys.
+
+Post-quantum hybrid algorithms (ML-KEM-768+X25519 for encryption,
+ML-DSA-65+ED25519 for signing) are supported by librnp and used
+automatically when a recipient advertises a hybrid-capable key.
+Generating your own hybrid key is opt-in — see
+[Post-quantum cryptography](post-quantum.md).
+
+### Can one key cover multiple email addresses?
+
+Yes. A primary key can carry multiple user IDs (UIDs), so you can use one
+key for both work and personal email. Add UIDs from the key detail view in
+the RNP app. The engine picks the UID matching the From address when
+generating Autocrypt headers and resolving recipients.
+
+### What happens when my key expires?
+
+You can still decrypt and verify old mail — expiration does not affect
+read paths. You cannot sign new mail or be encrypted-to until you extend
+the key or rotate to a new subkey. The Key Health view in the RNP app
+shows expiring keys and offers one-click recovery:
+
+- **Extend expiry** (when you still have the secret material).
+- **Rotate subkey** (replaces the encryption or signing subkey; primary
+  identity is preserved).
+- **Migrate to a new key** (when the secret is lost; opens the key
+  transition wizard, which signs the new key with the old one and
+  revokes the old with reason `superseded`).
+
+See [Key lifecycle](key-lifecycle.md) for the full scenario table.
+
+### What is the BCC behavior on encrypted mail?
+
+Encrypted mail to BCC recipients is **refused by default**. PGP/MIME
+encrypts one ciphertext for all recipients, and any decrypting recipient
+can enumerate the recipient list — including BCC — by inspecting the
+PKESK packets. RFC 3156 §6 calls this out explicitly.
+
+When you attempt to send an encrypted message with BCC recipients, RNP
+stops and offers three paths: send separately (one encrypted message
+per BCC set), drop encryption for the whole message, or remove the BCC
+recipients. See [BCC handling](usage.md#bcc-on-encrypted-mail).
 
 ## Mail behavior
 
