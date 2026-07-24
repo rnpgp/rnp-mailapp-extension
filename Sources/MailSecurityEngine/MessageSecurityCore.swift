@@ -13,7 +13,7 @@ import TrustStore
 
 /// MailKit-independent message-security handler.
 public final class MessageSecurityCore {
-    private let engine: MailSecurityEngine
+    let engine: MailSecurityEngine
     /// Records decode outcomes for the end-to-end test harness, when set.
     private let stateRecorder: SecurityStateRecorder?
     /// Keyserver discovery used by recipient-key fetches.
