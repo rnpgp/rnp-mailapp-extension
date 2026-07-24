@@ -35,9 +35,9 @@ Legend:
 - [x] `DecryptionFailure` typed enum + `MissingKeyAction`
 - [x] `Rnp.dumpPacketsAsJSON(data:)` FFI wrapper
 - [x] `MessageDecoder` failure classifier (PKESK inspection)
+- [x] `Rnp.decryptSymmetric(_:passphrase:)` for symmetric-encrypted mail
 - [x] Tests: each failure type with fixtures (11 tests)
 - [ ] SwiftUI: banner action buttons (currently engine-layer only)
-- [ ] Symmetric-passphrase decrypt path
 
 ### 04 — Key expiry recovery
 - [x] `KeyHealthState` + `KeyRole` + `RecoveryAction` + `RecoveryRecommendation` models
@@ -71,9 +71,9 @@ Legend:
 - [x] `AutocryptHeader` model + parser/serializer
 - [x] `AutocryptStore` (level 1 latest-valid-key-wins)
 - [x] `AutocryptEmitPolicy` + `AutocryptHeaderBuilder`
-- [x] Tests: emit + parse round-trip; store update; mutual default (11 tests)
-- [ ] Wire emit into `MessageEncoder.encodePGPMime` (policy in place, call site pending)
-- [ ] Wire parse into `MessageDecoder` (AutocryptStore.observe on incoming)
+- [x] `MessageEncoder.encodePGPMime(...:autocryptPolicy:)` emit wiring
+- [x] `MessageDecoder` observes incoming headers via `MailSecurityEngine.autocryptStore`
+- [x] Tests: emit + parse round-trip; store update; mutual default (11 + 4 tests)
 - [ ] Per-account `prefer-encrypt` setting in UI
 - [ ] `Autocrypt-Gossip` (level 1.1)
 
@@ -100,7 +100,8 @@ Legend:
 - [x] `KeyManager.addUserID(...)` engine wrapper
 - [x] Tests: round-trip + reload (2 tests, librnp-gated)
 - [x] `AddUserIDForm` SwiftUI sheet (real impl)
-- [ ] Add to KeyDetailView as a presented sheet
+- [x] `KeyDetailView` "Add user ID" + "Archive" action buttons (callbacks via `KeyDetailActions`)
+- [ ] Container-app coordinator wiring for the new callbacks
 
 ## Future
 
@@ -119,10 +120,11 @@ Legend:
 - [x] `Rnp.EncryptAEAD` and `Rnp.EncryptPKESKVersion` enums
 - [x] `Rnp.encrypt(_:for:cipher:hash:aead:pkeskVersion:armored:)` FFI
 - [x] `EncryptionEnvelopeResolver.Decision.encryptParameters` bridge
+- [x] `MessageEncoder.encodePGPMime(...:envelope:)` overload using chosen envelope
 - [x] Tests: capability detection, fallback to CFB (7 + 5 tests)
-- [ ] Wire `encryptParameters` into `MessageEncoder.encodePGPMime`
 - [ ] Settings UI for envelope policy
 - [ ] v6 key generation opt-in (`rnp_op_generate_set_v6_key`)
+- [ ] Per-recipient capability detection via `rnp_signature_get_features`
 
 ### 13 — Search & archive documentation
 - [x] `docs/encrypted-mail-search.md` written (with verification caveat)
