@@ -50,8 +50,8 @@ Legend:
 
 ### 05 — Key transition wizard
 - [x] `KeyTransition` engine service (5-step orchestration)
-- [x] Tests: end-to-end + public-only refusal (2 tests)
-- [ ] Transition certification FFI wiring (`rnp_key_signature_sign`)
+- [x] Transition certification via `RnpKey.makeCertification` + `RnpSignature.finalize` (`rnp_key_certification_create` + `rnp_key_signature_sign`)
+- [x] Tests: end-to-end + public-only refusal + certification assertion (2 tests)
 - [ ] SwiftUI multi-step wizard sheet
 - [ ] Failure-mode paths (old secret lost; offline publish)
 
@@ -73,26 +73,27 @@ Legend:
 - [x] `AutocryptEmitPolicy` + `AutocryptHeaderBuilder`
 - [x] `MessageEncoder.encodePGPMime(...:autocryptPolicy:)` emit wiring
 - [x] `MessageDecoder` observes incoming headers via `MailSecurityEngine.autocryptStore`
-- [x] Tests: emit + parse round-trip; store update; mutual default (11 + 4 tests)
+- [x] `AutocryptGossipHeader` + parser + `AutocryptStore.observeGossip` (level 1.1)
+- [x] Tests: emit + parse round-trip; store update; mutual default (11 + 4 + 5 tests)
 - [ ] Per-account `prefer-encrypt` setting in UI
-- [ ] `Autocrypt-Gossip` (level 1.1)
 
 ### 08 — Mailbox key scan
-- [ ] `MailboxKeyScan` service (3 sources)
-- [ ] Consent gate (`MailboxScanConsentView` stub exists)
+- [x] `MailboxKeyScanner` engine service (3 sources: Autocrypt, pgp-keys, signing key)
+- [x] Pure `[Data] -> MailboxScanReport` API (no MailKit dependency)
+- [ ] Wire into MailKit mailbox-enumeration API
+- [ ] Consent gate SwiftUI view
 - [ ] Settings → Re-run scan
 - [ ] SwiftUI results list with Import / Ignore
-- [ ] Tests: synthetic mailbox with each source type
-- [ ] MailKit API investigation (may need to defer)
+- [ ] MailKit API investigation
 
 ### 09 — Compose recipient diagnostics
 - [x] `RecipientStatus` model + state enum
 - [x] `ComposeRecipientStatus` SwiftUI-typed status
 - [x] `ComposeRecipientDiagnosticsView` real view with status chips + actions
 - [x] `MessageSecurityCore.recipientStatuses(for:)` engine helper (RecipientResolution)
+- [x] `ReplyContextHeuristic` pure function (6 tests)
 - [ ] Wire into MailKit compose banner
 - [ ] Recommended-action banner (single-line summary)
-- [ ] Reply-context default-encrypted heuristic
 
 ### 10 — Multi-UID keys
 - [x] `RnpKey.addUserID(_:hash:expirationSeconds:flags:primary:)` FFI wrapper
@@ -121,23 +122,22 @@ Legend:
 - [x] `Rnp.encrypt(_:for:cipher:hash:aead:pkeskVersion:armored:)` FFI
 - [x] `EncryptionEnvelopeResolver.Decision.encryptParameters` bridge
 - [x] `MessageEncoder.encodePGPMime(...:envelope:)` overload using chosen envelope
+- [x] `MessageEncoder.encodePGPMime(...:envelopePolicy:)` with per-recipient capability detection via `RnpKey.supportsAEAD`
+- [x] `Rnp.generatePrimaryKey(...:useV6Key:)` + `KeyManager.generateV6Key(...)` (v6 opt-in)
 - [x] Tests: capability detection, fallback to CFB (7 + 5 tests)
 - [ ] Settings UI for envelope policy
-- [ ] v6 key generation opt-in (`rnp_op_generate_set_v6_key`)
-- [ ] Per-recipient capability detection via `rnp_signature_get_features`
 
 ### 13 — Search & archive documentation
 - [x] `docs/encrypted-mail-search.md` written (with verification caveat)
+- [x] FAQ entry for encrypted-mail body search
 - [ ] Verify Mail's actual decode-then-reindex behavior
-- [ ] FAQ entry
-- [ ] SECURITY-MODEL.md addition (done — see "Encrypted-mail body search" line)
 
 ### 14 — Pre-release cleanup
 - [x] `scripts/release-preflight.sh` (executable; bash -n clean)
-- [x] FAQ drift fix (Ed25519 + PQ hybrid + multi-UID + expiry + BCC entries)
-- [ ] Bundle full license texts (rnp, Botan, json-c, sexpp, zlib, bzip2)
-- [ ] Update `LicensesView` to render them
-- [ ] `docs/key-lifecycle.md` (done)
+- [x] FAQ drift fix (Ed25519 + PQ hybrid + multi-UID + expiry + BCC + search entries)
+- [x] License text files bundled in `Sources/RnpMailUI/Resources/Licenses/` (rnp, Botan, json-c, sexpp, zlib, bzip2)
+- [ ] Update `LicensesView` to render the bundled files
+- [ ] Xcode build phase to copy licenses into the app bundle's Resources
 
 ### 15 — Deferred past 1.0
 - [x] Record file exists (no implementation work expected)
