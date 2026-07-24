@@ -8,7 +8,6 @@
 import XCTest
 @testable import KeyLifecycle
 @testable import MailSecurityEngine
-
 final class KeyTransitionTests: XCTestCase {
     private var tempDir: URL!
 
@@ -97,5 +96,52 @@ final class KeyTransitionTests: XCTestCase {
         } catch {
             return false
         }
+    }
+
+    func testRunAsyncEnqueuesPublishActions() async throws {
+        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        let km = try KeyManager(directory: tempDir, password: "test-pass")
+        let original = try km.generateKey(
+            userID: "Alice <alice@example.org>",
+            algorithm: .ed25519,
+            expirationSeconds: 0
+        )
+
+        // Queue URL inside the temp dir so cleanup catches it.
+        let queueURL = tempDir.appendingPathComponent("publish-queue.json")
+        let recorder = PublishRecorder()
+        let queue = try OfflinePublishQueue(storeURL: queueURL) { action in
+            recorder.record(action.fingerprint)
+        }
+
+        let transition = KeyTransition(keyManager: km, publishQueue: queue)
+        let result = try await transition.runAsync(
+            replacing: original.fingerprint,
+            newKeyAlgorithm: .ed25519
+        )
+
+        // The queue's publisher should have been called for both the
+        // new and revoked-old keys.
+        let recorded = recorder.snapshot()
+        XCTAssertEqual(Set(recorded), Set([result.newFingerprint, original.fingerprint]))
+        XCTAssertTrue(queue.pending().isEmpty, "successful publishes should not stay queued")
+    }
+}
+
+/// Thread-safe recorder for the publish closure. The closure is
+/// `@Sendable` so a plain `var` capture would not compile.
+private final class PublishRecorder: @unchecked Sendable {
+    private let lock = NSLock()
+    private var fingerprints: [String] = []
+
+    func record(_ fingerprint: String) {
+        lock.lock()
+        defer { lock.unlock() }
+        fingerprints.append(fingerprint)
+    }
+
+    func snapshot() -> [String] {
+        lock.lock(); defer { lock.unlock() }
+        return fingerprints
     }
 }
