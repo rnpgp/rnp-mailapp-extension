@@ -13,7 +13,10 @@ let package = Package(
         .library(name: "KeyServerClient", targets: ["KeyServerClient"]),
         .library(name: "RnpMailUI", targets: ["RnpMailUI"]),
         .library(name: "MailSecurityUI", targets: ["MailSecurityUI"]),
-        .library(name: "TrustStore", targets: ["TrustStore"])
+        .library(name: "TrustStore", targets: ["TrustStore"]),
+        .library(name: "KeyStateStore", targets: ["KeyStateStore"]),
+        .library(name: "Autocrypt", targets: ["Autocrypt"]),
+        .library(name: "PostQuantum", targets: ["PostQuantum"])
     ],
     targets: [
         .systemLibrary(
@@ -34,8 +37,20 @@ let package = Package(
             dependencies: []
         ),
         .target(
+            name: "KeyStateStore",
+            dependencies: []
+        ),
+        .target(
+            name: "Autocrypt",
+            dependencies: []
+        ),
+        .target(
+            name: "PostQuantum",
+            dependencies: []
+        ),
+        .target(
             name: "MailSecurityEngine",
-            dependencies: ["Rnp", "KeyServerClient", "TrustStore"]
+            dependencies: ["Rnp", "KeyServerClient", "TrustStore", "KeyStateStore", "Autocrypt", "PostQuantum"]
         ),
         .target(
             name: "KeyLifecycle",
@@ -43,7 +58,7 @@ let package = Package(
         ),
         .target(
             name: "RnpMailUI",
-            dependencies: ["MailSecurityEngine", "KeyLifecycle", "KeyServerClient", "TrustStore"]
+            dependencies: ["MailSecurityEngine", "KeyLifecycle", "KeyServerClient", "TrustStore", "KeyStateStore"]
         ),
         .target(
             name: "MailSecurityUI",
@@ -83,6 +98,18 @@ let package = Package(
         .testTarget(
             name: "TrustStoreTests",
             dependencies: ["TrustStore"]
+        ),
+        .testTarget(
+            name: "KeyStateStoreTests",
+            dependencies: ["KeyStateStore"]
+        ),
+        .testTarget(
+            name: "AutocryptTests",
+            dependencies: ["Autocrypt"]
+        ),
+        .testTarget(
+            name: "PostQuantumTests",
+            dependencies: ["PostQuantum"]
         )
     ]
 )
