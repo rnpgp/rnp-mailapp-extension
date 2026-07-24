@@ -282,6 +282,80 @@ set to encrypted + signed." Override via the toolbar if needed.
 
 ## See also
 
+## Settings
+
+### Scenario: I want to switch from "automatic" envelope to "force AEAD"
+
+If you only correspond with modern clients and want to ensure no
+legacy encryption ever goes out, change the envelope policy:
+
+1. **Settings → Encryption → Envelope.**
+2. Choose **Force AEAD**.
+3. Recipients without AEAD-capable keys will be flagged at compose
+   time and encryption will be refused.
+
+See [Settings](settings.md).
+
+### Scenario: I want Autocrypt to be silent for my work account
+
+Per-account Autocrypt prefer-encrypt lets you opt out for specific
+addresses (e.g. a shared mailbox) without disabling Autocrypt
+globally.
+
+1. **Settings → Encryption → Autocrypt per-account.**
+2. Add an override for the address; pick **No preference** or
+   **Disable**.
+
+Outgoing mail from other addresses keeps its global setting.
+
+## Mailbox scan
+
+### Scenario: I want to populate my keyring from mail I already have
+
+1. **Settings → Mailbox scan → Re-run.**
+2. RNP scans local mail for Autocrypt headers, `application/pgp-keys`
+   attachments, and embedded signing keys.
+3. The results list shows each discovered key with its source.
+4. Click **Import** per key, or **Import all** for bulk.
+
+The scan runs locally; nothing is sent anywhere. See
+[Finding keys for your contacts](usage.md#finding-keys-for-your-contacts).
+
+## Post-quantum
+
+### Scenario: I want my new key to be post-quantum secure
+
+1. **Settings → Encryption → Post-quantum.**
+2. Pick **Hybrid PQ** (recommended) or **Conservative**.
+3. **Keys → Generate key**. New keys use the chosen algorithm family.
+4. Existing keys are not changed; encrypt-and-decrypt to them
+   continues normally.
+
+Recipients still receive hybrid PQ encryption when their key
+advertises a hybrid KEM subkey — that happens automatically inside
+the engine, regardless of this setting.
+
+See [Post-quantum cryptography](post-quantum.md).
+
+## Archive
+
+### Scenario: I want to retire a key but keep decrypting old mail
+
+1. **Keys → your key → Archive.**
+2. The key moves to the Archived section; it is no longer used for
+   new operations but old encrypted mail still decrypts.
+3. To reverse: **Keys → Archived → Restore to active**.
+
+### Scenario: I want to permanently delete a key
+
+1. **Keys → Archived → [the key] → Delete forever….**
+2. The sheet asks you to type the full fingerprint to confirm.
+3. All mail encrypted to the key becomes undecryptable.
+
+Use sparingly. Archive is reversible; delete-forever is not.
+
+## See also
+
 - [Usage](usage.md)
 - [FAQ](faq.md)
 - [Key lifecycle](key-lifecycle.md)

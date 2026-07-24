@@ -39,8 +39,8 @@ Legend:
 - [x] `MessageDecoder` failure classifier (PKESK inspection)
 - [x] `Rnp.decryptSymmetric(_:passphrase:)` for symmetric-encrypted mail
 - [x] `DecryptionFailurePresentation` mapping table + `DecryptionFailureAction`
+- [x] `MailSecurityBannerView+DecryptionFailureRow` AppKit button row
 - [x] Tests: each failure type with fixtures (11 + 10 tests)
-- [ ] Wire `DecryptionFailurePresentation` into MailSecurityBannerView buttons
 
 ### 04 — Key expiry recovery
 - [x] `KeyHealthState` + `KeyRole` + `RecoveryAction` + `RecoveryRecommendation` models
@@ -57,7 +57,7 @@ Legend:
 - [x] Tests: end-to-end + public-only refusal + certification assertion (2 tests)
 - [x] `KeyTransitionWizardSheet` SwiftUI 5-step wizard
 - [x] `OfflinePublishQueue` for offline-publish failure path (6 tests)
-- [ ] Wire offline queue into KeyTransition publish step
+- [x] `KeyTransition.runAsync(...)` enqueues publish actions via OfflinePublishQueue (1 test)
 
 ### 06 — BCC handling
 - [x] `MailMessage` extended with `toAddresses` / `ccAddresses` / `bccAddresses`
@@ -79,9 +79,10 @@ Legend:
 - [x] `MessageEncoder.encodePGPMime(...:autocryptPolicy:)` emit wiring
 - [x] `MessageDecoder` observes incoming headers via `MailSecurityEngine.autocryptStore`
 - [x] `AutocryptGossipHeader` + parser + `AutocryptStore.observeGossip` (level 1.1)
-- [x] Tests: emit + parse round-trip; store update; mutual default (11 + 4 + 5 tests)
 - [x] `EncryptionSettingsView` Autocrypt prefer-encrypt picker
-- [ ] Per-account `prefer-encrypt` setting (currently global)
+- [x] `AccountKeyedPolicyStore` for per-account prefer-encrypt (7 tests)
+- [x] `AutocryptEmitPolicy.resolved(forAccount:from:)` account-aware resolution
+- [x] Tests: emit + parse round-trip; store update; mutual default (11 + 4 + 5 + 7 tests)
 
 ### 08 — Mailbox key scan
 - [x] `MailboxKeyScanner` engine service (3 sources: Autocrypt, pgp-keys, signing key)
@@ -89,6 +90,7 @@ Legend:
 - [x] `MailboxScanConsentView` SwiftUI (real)
 - [x] `MailboxScanResultsView` SwiftUI with Import / Ignore / Import all / Ignore all
 - [x] `MailboxScanViewModel` driving chunked scan + progress
+- [x] Engine tests for scanner robustness (5 tests, librnp-gated where applicable)
 - [ ] Wire into MailKit mailbox-enumeration API
 - [ ] Settings → Re-run scan navigation entry
 
