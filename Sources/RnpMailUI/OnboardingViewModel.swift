@@ -31,6 +31,7 @@ public enum OnboardingStep: Equatable {
     case createOrImport
     case generateForm
     case importForm
+    case restoreFromBackup
     case done(URL?)
 }
 
@@ -83,9 +84,13 @@ public final class OnboardingViewModel: ObservableObject {
         currentStep = .importForm
     }
 
+    public func chooseRestore() {
+        currentStep = .restoreFromBackup
+    }
+
     public func goBack() {
         switch currentStep {
-        case .generateForm, .importForm:
+        case .generateForm, .importForm, .restoreFromBackup:
             currentStep = .createOrImport
         case .createOrImport:
             currentStep = .welcome
@@ -147,5 +152,11 @@ public final class OnboardingViewModel: ObservableObject {
         }
         let text = error.localizedDescription
         return text.isEmpty ? "error.generic".localized : text
+    }
+
+    /// Advances from the restore step to done. The PaperKeyRestoreView's
+    /// onComplete calls this after the service successfully imports the key.
+    public func finishRestore() {
+        currentStep = .done(nil)
     }
 }
