@@ -82,13 +82,17 @@ See [Keyservers](keyserver.md) for the full picture.
 
 - OpenPGP implementation: librnp 0.18.1+ (RFC 4880), with the Botan 3
   cryptographic backend.
-- Asymmetric algorithms exposed in the UI: Ed25519 (default), RSA-3072, and
-  ECDSA / ECDH on NIST P-256. librnp supports further algorithms (larger RSA,
-  DSA, ElGamal) through its key-generation JSON; the app currently surfaces
-  the three most interoperable choices.
+- Asymmetric algorithms exposed in the UI: Ed25519 (default), RSA-3072,
+  ECDSA / ECDH on NIST P-256, and post-quantum hybrids (ML-DSA-65+ED25519
+  signing + ML-KEM-768+X25519 encryption; SLH-DSA-SHA2 conservative
+  signing). See [Post-quantum cryptography](post-quantum.md).
+- librnp supports further algorithms (larger RSA, DSA, ElGamal) through
+  its key-generation JSON; the app surfaces the most interoperable choices.
 - Symmetric encryption, hashing, and compression for message protection are
   negotiated by librnp per recipient key preferences, per the OpenPGP
   standard.
+- AEAD-OCB authenticated encryption and v6 PKESK (SEIPDv2) are supported
+  via the envelope policy (automatic / force-AEAD / force-legacy).
 
 ## Testing and quality gates
 
