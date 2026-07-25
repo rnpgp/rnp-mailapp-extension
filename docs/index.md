@@ -40,6 +40,7 @@ step required.
 - [Keyservers](keyserver.md) — publishing and discovering keys over VKS,
   HKPS, and WKD.
 - [FAQ](faq.md) — common questions and answers.
+- [Troubleshooting](troubleshooting.md) — common problems and their fixes.
 
 ## Developer guides
 
