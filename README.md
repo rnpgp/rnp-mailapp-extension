@@ -317,13 +317,45 @@ data.
   text/plain parts, including inside multipart/mixed). Inline-PGP *encoding*
   is available in the engine (`MessageFormat.inlinePGP`) for single-part
   text messages only.
-- **One keyring passphrase.** All generated keys share a single random
-  passphrase stored in the Keychain; imported keys keep whatever protection
-  they arrived with, so their passphrases are not asked for — operations
-  needing such a key's secret material can fail. There is no per-key
-  passphrase UI.
 - **No SmartCard/HSM support.** Only software keys in the local keyring can
   be used; librnp's G10 keyring format is not used by the key manager.
+
+### Feature highlights
+
+Beyond the core sign/encrypt/decrypt/verify pipeline, RNP includes:
+
+- **[Disaster recovery](docs/disaster-recovery.md)** — paper-key export
+  with QR codes, iCloud Keychain sync, restore-from-backup in onboarding.
+- **[Key lifecycle](docs/key-lifecycle.md)** — subkey rotation, expiry
+  extension, revocation, key-transition wizard with certification, and
+  a Key Health dashboard with one-click recovery for every scenario.
+- **[Autocrypt](docs/autocrypt.md)** — level-1 header emit/parse, gossip
+  (1.1), per-account prefer-encrypt overrides.
+- **[Post-quantum](docs/post-quantum.md)** — hybrid ML-KEM-768+X25519
+  encryption and ML-DSA-65+ED25519 signing, opt-in key generation.
+- **[Trust model](docs/trust-model.md)** — TOFU + manual fingerprint
+  verification + hard stops on key changes; signed tamper-evident store.
+- **AEAD-OCB + v6 PKESK** — automatic envelope selection based on
+  recipient capability; force-AEAD and force-legacy policies.
+- **BCC protection** — refuses encrypted send when BCC would leak via
+  PKESK (RFC 3156 §6); offers send-separately, remove-encryption,
+  or remove-BCC paths.
+- **Typed decryption errors** — "Encrypted to a key you don't have
+  (key ID ABCDEF…). [Fetch]" instead of "undecryptable content."
+- **Multi-UID keys** — one key, multiple email addresses.
+- **Archive-key state** — revoked/retired keys remain decrypt-only so
+  historical mail stays readable.
+- **Compose diagnostics** — per-recipient status panel, recommended-action
+  banner, reply-context smart defaults.
+
+See [`docs/features.md`](docs/features.md) for the full feature list and
+[`docs/scenarios.md`](docs/scenarios.md) for step-by-step walkthroughs.
+
+### Next steps for the team
+
+All codeable work is complete across `TODO.impl/` and `TODO.roadmap/`.
+Remaining items are human-only (Apple account, manual testing, App Review)
+and are documented in [`TODO.human-work.md`](TODO.human-work.md).
 
 ## Security
 
