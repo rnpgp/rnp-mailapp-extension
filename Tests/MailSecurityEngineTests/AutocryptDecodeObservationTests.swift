@@ -29,21 +29,11 @@ final class AutocryptDecodeObservationTests: XCTestCase {
         super.tearDown()
     }
 
-    private func librnpAvailable() -> Bool {
-        let probe = FileManager.default.temporaryDirectory
-            .appendingPathComponent("librnp-probe-\(UUID().uuidString)", isDirectory: true)
-        try? FileManager.default.createDirectory(at: probe, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: probe) }
-        do {
-            _ = try KeyManager(directory: probe, password: "x")
-            return true
-        } catch { return false }
-    }
 
     /// A message with an Autocrypt header is parsed; the store gets
     /// an observation even though the message body isn't OpenPGP.
     func testAutocryptHeaderPopulatesStore() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         engine = try MailSecurityEngine(directory: tempDir, passphraseProvider: { _ in "test" })
         // Synthesize a message with a syntactically-valid Autocrypt
         // header pointing at alice@example.org. The keydata is fake
@@ -68,7 +58,7 @@ final class AutocryptDecodeObservationTests: XCTestCase {
 
     /// Messages without an Autocrypt header leave the store empty.
     func testMessageWithoutAutocryptLeavesStoreEmpty() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         engine = try MailSecurityEngine(directory: tempDir, passphraseProvider: { _ in "test" })
         let raw = """
         From: alice@example.org\r
@@ -83,7 +73,7 @@ final class AutocryptDecodeObservationTests: XCTestCase {
 
     /// Multiple messages from the same sender: latest wins.
     func testLatestAutocryptHeaderWins() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         engine = try MailSecurityEngine(directory: tempDir, passphraseProvider: { _ in "test" })
         let keydata1 = Data("X1".utf8).base64EncodedString()
         let keydata2 = Data("X2".utf8).base64EncodedString()

@@ -30,7 +30,7 @@ final class MultiUIDKeyManagerTests: XCTestCase {
     }
 
     func testAddingUserIDProducesVisibleUID() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
 
         let km = try KeyManager(directory: tempDir, password: "test-passphrase")
         let original = try km.generateKey(
@@ -52,7 +52,7 @@ final class MultiUIDKeyManagerTests: XCTestCase {
     }
 
     func testAddedUIDSurvivesReload() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
 
         let km = try KeyManager(directory: tempDir, password: "test-passphrase")
         let original = try km.generateKey(
@@ -78,16 +78,4 @@ final class MultiUIDKeyManagerTests: XCTestCase {
     /// CRnp directly without breaking the engine module boundary, so we
     /// use KeyManager's constructor (which builds an Rnp context) as a
     /// proxy: if it throws on an empty directory, librnp is missing.
-    private func librnpAvailable() -> Bool {
-        let probe = FileManager.default.temporaryDirectory
-            .appendingPathComponent("librnp-probe-\(UUID().uuidString)", isDirectory: true)
-        try? FileManager.default.createDirectory(at: probe, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: probe) }
-        do {
-            _ = try KeyManager(directory: probe, password: "x")
-            return true
-        } catch {
-            return false
-        }
-    }
 }
