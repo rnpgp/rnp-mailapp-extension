@@ -33,13 +33,6 @@ final class PQHybridKeygenInteropTests: XCTestCase {
         super.tearDown()
     }
 
-    private func librnpAvailable() -> Bool {
-        let probe = FileManager.default.temporaryDirectory
-            .appendingPathComponent("probe-\(UUID().uuidString)", isDirectory: true)
-        try? FileManager.default.createDirectory(at: probe, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: probe) }
-        do { _ = try KeyManager(directory: probe, password: "x"); return true } catch { return false }
-    }
 
     /// Generates an Ed25519 key, encrypts a message to it, then verifies
     /// the ciphertext's packet structure matches what a PGP-compliant
@@ -47,7 +40,7 @@ final class PQHybridKeygenInteropTests: XCTestCase {
     /// the classical path round-trips and the packet dump looks right,
     /// a PQ-capable recipient would handle our PQ keys the same way.
     func testClassicalKeyEncryptDecryptRoundTrip() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         let km = try KeyManager(directory: tempDir, password: "test-pass")
         let keyInfo = try km.generateKey(
             userID: "Interop Test <interop@test>",
@@ -74,7 +67,7 @@ final class PQHybridKeygenInteropTests: XCTestCase {
     /// key that librnp can load. If librnp's local build does not support
     /// PQ algorithms, the test is skipped gracefully.
     func testHybridPQKeygenProducesLoadableKey() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         let km = try KeyManager(directory: tempDir, password: "test-pass")
 
         // Attempt to generate a hybrid PQ key. If the librnp build does

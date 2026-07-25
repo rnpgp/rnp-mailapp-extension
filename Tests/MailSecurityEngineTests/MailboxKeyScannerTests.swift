@@ -31,23 +31,13 @@ final class MailboxKeyScannerTests: XCTestCase {
         super.tearDown()
     }
 
-    private func librnpAvailable() -> Bool {
-        let probe = FileManager.default.temporaryDirectory
-            .appendingPathComponent("librnp-probe-\(UUID().uuidString)", isDirectory: true)
-        try? FileManager.default.createDirectory(at: probe, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: probe) }
-        do {
-            _ = try KeyManager(directory: probe, password: "x")
-            return true
-        } catch { return false }
-    }
 
     private func bootstrapKeyring() throws {
         km = try KeyManager(directory: tempDir, password: "test-pass")
     }
 
     func testEmptyInputProducesEmptyReport() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         try bootstrapKeyring()
         let scanner = MailboxKeyScanner()
         let report = try km.withRnp { scanner.scan(messages: [], using: $0) }
@@ -56,7 +46,7 @@ final class MailboxKeyScannerTests: XCTestCase {
     }
 
     func testMessageWithoutAnyKeySourceIsEmpty() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         try bootstrapKeyring()
         let msg = Data("From: alice@x\r\nTo: bob@x\r\nSubject: Hi\r\n\r\nBody\r\n".utf8)
         let scanner = MailboxKeyScanner()
@@ -66,7 +56,7 @@ final class MailboxKeyScannerTests: XCTestCase {
     }
 
     func testAutocryptHeaderWithInvalidKeydataIsIgnored() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         try bootstrapKeyring()
         let msg = Data(
             "From: alice@x\r\nTo: bob@x\r\nAutocrypt: addr=alice@x; prefer-encrypt=mutual; keydata=NOT_BASE64\r\n\r\nBody\r\n".utf8
@@ -77,7 +67,7 @@ final class MailboxKeyScannerTests: XCTestCase {
     }
 
     func testScanSynthesizesMessagesScannedCountCorrectly() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         try bootstrapKeyring()
         let msg1 = Data("From: a@x\r\n\r\nBody 1\r\n".utf8)
         let msg2 = Data("From: b@x\r\n\r\nBody 2\r\n".utf8)
@@ -88,7 +78,7 @@ final class MailboxKeyScannerTests: XCTestCase {
     }
 
     func testScanDoesNotThrowOnMalformedMIME() throws {
-        try XCTSkipUnless(librnpAvailable(), "librnp not installed locally")
+        try XCTSkipUnless(TestSupport.librnpAvailable(), "librnp not installed locally")
         try bootstrapKeyring()
         let malformed = Data("garbage that is not RFC822\r\n\r\nmore garbage".utf8)
         let scanner = MailboxKeyScanner()

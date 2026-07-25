@@ -34,7 +34,7 @@ let package = Package(
         ),
         .target(
             name: "TrustStore",
-            dependencies: []
+            dependencies: ["KeyStateStore"]
         ),
         .target(
             name: "KeyStateStore",
