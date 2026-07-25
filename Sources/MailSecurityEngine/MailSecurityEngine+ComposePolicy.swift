@@ -80,17 +80,3 @@ public extension MailSecurityEngine {
         return withHeader
     }
 }
-
-/// MailMessage conformance helper: most messages carry their BCC list
-/// separately. The default protocol implementation in
-/// `MessageSecurityAbstractions` returns `[]` for BCC when the
-/// conformer does not override. EncodingRequest does not currently
-/// carry that breakdown, so this helper exposes it via the
-/// `EncodingRequest` extension below.
-public extension EncodingRequest {
-    /// BCC addresses inferred from the message's recipient list.
-    /// Empty by default because `EncodingRequest.recipients` is a
-    /// flat list; a future refactor will split it into To/Cc/Bcc on
-    /// the type itself.
-    var bccAddresses: [String] { [] }
-}
