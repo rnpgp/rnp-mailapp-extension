@@ -235,8 +235,11 @@ public struct RecoverySheetWizard: View {
 
             Toggle("Use iCloud Keychain sync for the keyring passphrase", isOn: $viewModel.icloudSyncChosen)
                 .accessibilityHint("When enabled, the keyring passphrase syncs across your Apple devices.")
+                .onChange(of: viewModel.icloudSyncChosen) { newValue in
+                    _ = KeychainPassphraseStore.setICloudSyncEnabled(newValue)
+                }
 
-            Text("This toggle records your choice. The actual Keychain item update is wired up by the container app's settings pane (TODO.roadmap/01-disaster-recovery.md).")
+            Text("When enabled, the keyring passphrase is stored in a synchronizable Keychain item. The passphrase alone is useless without your paper-key backup.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
