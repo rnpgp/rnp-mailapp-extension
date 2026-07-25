@@ -7,6 +7,7 @@
 
 import CryptoKit
 import Foundation
+import KeyStateStore
 import os
 import Security
 
@@ -77,28 +78,27 @@ public final class TrustStore {
     public let directory: URL
 
     /// Ed25519 private key used to sign the database.
-    public let privateKey: Curve25519.Signing.PrivateKey
+    public var privateKey: Curve25519.Signing.PrivateKey { jsonStore.privateKey }
 
     private let lock = NSRecursiveLock()
     private var database: TrustDatabase
+    private let jsonStore: SignedJSONStore<TrustDatabase>
     private let logger = Logger(subsystem: "com.rnpgp.RnpMail", category: "TrustStore")
 
     /// Creates a trust store in `directory` using the supplied signing key.
-    ///
-    /// The directory is created if it does not exist. Any existing database is
-    /// loaded and verified; if verification fails, the store resets to empty.
     public init(directory: URL, privateKey: Curve25519.Signing.PrivateKey) throws {
         self.directory = directory
-        self.privateKey = privateKey
-        try FileManager.default.createDirectory(
-            at: directory,
-            withIntermediateDirectories: true
-        )
-        self.database = try Self.loadVerified(
+        let store = try SignedJSONStore<TrustDatabase>(
             directory: directory,
-            publicKey: privateKey.publicKey,
-            logger: logger
+            databaseFilename: Self.databaseFilename,
+            signatureFilename: Self.signatureFilename,
+            privateKey: privateKey,
+            dateEncodingStrategy: .iso8601,
+            dateDecodingStrategy: .iso8601,
+            resetOnTamper: true
         )
+        self.jsonStore = store
+        self.database = (try? store.load()) ?? TrustDatabase()
     }
 
     /// Convenience initializer that uses a per-install Ed25519 signing key
@@ -109,13 +109,27 @@ public final class TrustStore {
     /// saved, the initializer throws `TrustStoreError.persistenceFailed`.
     /// This prevents an ephemeral in-process key from silently breaking
     /// cross-process trust verification.
-    public convenience init(
+    public init(
         directory: URL,
         keychainAccessGroup: String? = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String
     ) throws {
-        let key = try Self.loadOrCreateSigningKey(keychainAccessGroup: keychainAccessGroup)
-        try self.init(directory: directory, privateKey: key)
+        self.directory = directory
+        let store = try SignedJSONStore<TrustDatabase>(
+            directory: directory,
+            databaseFilename: Self.databaseFilename,
+            signatureFilename: Self.signatureFilename,
+            keychainService: Self.trustSigningKeyService,
+            keychainAccount: Self.trustSigningKeyAccount,
+            keychainAccessGroup: keychainAccessGroup,
+            dateEncodingStrategy: .iso8601,
+            dateDecodingStrategy: .iso8601
+        )
+        self.jsonStore = store
+        self.database = (try? store.load()) ?? TrustDatabase()
     }
+
+    private static let trustSigningKeyService = "RNP Mail Extension trust signing"
+    private static let trustSigningKeyAccount = "trust-signing-key"
 
     // MARK: - Queries
 
@@ -387,150 +401,12 @@ public final class TrustStore {
         directory.appendingPathComponent(Self.signatureFilename)
     }
 
+
     private func saveLocked() throws {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = .sortedKeys
-        let data: Data
-        do {
-            data = try encoder.encode(database)
-        } catch {
-            throw TrustStoreError.persistenceFailed("encode failed: \(error.localizedDescription)")
-        }
-
-        do {
-            try data.write(to: databaseURL, options: .atomic)
-            let signature = try privateKey.signature(for: data)
-            try signature.write(to: signatureURL, options: .atomic)
-        } catch let error as TrustStoreError {
-            throw error
-        } catch {
-            throw TrustStoreError.persistenceFailed("write failed: \(error.localizedDescription)")
-        }
+        try jsonStore.save(database)
     }
-
-    private static func loadVerified(
-        directory: URL,
-        publicKey: Curve25519.Signing.PublicKey,
-        logger: Logger
-    ) throws -> TrustDatabase {
-        let databaseURL = directory.appendingPathComponent(databaseFilename)
-        let signatureURL = directory.appendingPathComponent(signatureFilename)
-
-        guard let data = FileManager.default.contents(atPath: databaseURL.path),
-              let signature = FileManager.default.contents(atPath: signatureURL.path),
-              !data.isEmpty,
-              !signature.isEmpty
-        else {
-            return TrustDatabase()
-        }
-
-        guard publicKey.isValidSignature(signature, for: data) else {
-            logger.error("Trust database signature invalid; resetting to empty")
-            return TrustDatabase()
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        do {
-            let decoded = try decoder.decode(TrustDatabase.self, from: data)
-            return decoded
-        } catch {
-            logger.error("Trust database decode failed: \(error.localizedDescription); resetting to empty")
-            return TrustDatabase()
-        }
-    }
-
-    // MARK: - Signing key
-
-    private static let keychainService = "RNP Mail Extension trust signing"
-    private static let keychainAccount = "trust-signing-key"
-
-    private static func loadOrCreateSigningKey(keychainAccessGroup: String?) throws -> Curve25519.Signing.PrivateKey {
-        let data = try readKeychainData(
-            service: keychainService,
-            account: keychainAccount,
-            accessGroup: keychainAccessGroup
-        )
-        if let data = data {
-            guard let key = try? Curve25519.Signing.PrivateKey(rawRepresentation: data) else {
-                throw TrustStoreError.persistenceFailed("Trust signing key in Keychain is corrupt")
-            }
-            return key
-        }
-
-        let key = Curve25519.Signing.PrivateKey()
-        try storeKeychainData(
-            key.rawRepresentation,
-            service: keychainService,
-            account: keychainAccount,
-            accessGroup: keychainAccessGroup
-        )
-        return key
-    }
-
-    // MARK: - Helpers
 
     private static func normalizeEmail(_ email: String) -> String {
-        email.lowercased().trimmingCharacters(in: .whitespaces)
-    }
-}
-
-// MARK: - Keychain helpers
-
-/// Reads a single generic-password item from the Keychain.
-/// - Returns: the stored data, or `nil` if no item exists.
-/// - Throws: `TrustStoreError.persistenceFailed` if the Keychain query fails.
-private func readKeychainData(service: String, account: String, accessGroup: String?) throws -> Data? {
-    var query: [CFString: Any] = [
-        kSecClass: kSecClassGenericPassword,
-        kSecAttrService: service,
-        kSecAttrAccount: account,
-        kSecReturnData: true,
-        kSecMatchLimit: kSecMatchLimitOne,
-    ]
-    if let accessGroup = accessGroup {
-        query[kSecAttrAccessGroup] = accessGroup
-    }
-    var item: CFTypeRef?
-    let status = SecItemCopyMatching(query as CFDictionary, &item)
-    if status == errSecItemNotFound {
-        return nil
-    }
-    guard status == errSecSuccess else {
-        throw TrustStoreError.persistenceFailed("Keychain read failed (status \(status))")
-    }
-    guard let data = item as? Data else {
-        throw TrustStoreError.persistenceFailed("Keychain read succeeded but returned no data")
-    }
-    return data
-}
-
-/// Stores a generic-password item in the Keychain, replacing any existing item.
-/// - Throws: `TrustStoreError.persistenceFailed` if the Keychain write fails.
-private func storeKeychainData(_ data: Data, service: String, account: String, accessGroup: String?) throws {
-    var deleteQuery: [CFString: Any] = [
-        kSecClass: kSecClassGenericPassword,
-        kSecAttrService: service,
-        kSecAttrAccount: account,
-    ]
-    if let accessGroup = accessGroup {
-        deleteQuery[kSecAttrAccessGroup] = accessGroup
-    }
-    SecItemDelete(deleteQuery as CFDictionary)
-
-    var item: [CFString: Any] = [
-        kSecClass: kSecClassGenericPassword,
-        kSecAttrService: service,
-        kSecAttrAccount: account,
-        kSecValueData: data,
-        kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-    ]
-    if let accessGroup = accessGroup {
-        item[kSecAttrAccessGroup] = accessGroup
-    }
-    let status = SecItemAdd(item as CFDictionary, nil)
-    guard status == errSecSuccess else {
-        throw TrustStoreError.persistenceFailed("Keychain write failed (status \(status))")
+        email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
