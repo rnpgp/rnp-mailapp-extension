@@ -6,10 +6,8 @@
 //  to produce a standard Mac print dialog. The layout includes:
 //  - header with fingerprint, algorithm, date
 //  - the hex body in monospaced columns
+//  - QR codes for machine-readable scanning
 //  - instructions for restoration
-//
-//  QR code generation is deferred to a future iteration; the hex
-//  text alone is sufficient for the paperkey tool's restore path.
 //
 
 import MailSecurityEngine
@@ -18,7 +16,7 @@ import AppKit
 
 /// View formatted for printing the paper-key backup. The caller
 /// passes the paper-key text (from KeyManager.exportPaperKey) and
-/// the view renders it in a printable layout.
+/// the view renders it in a printable layout with hex + QR codes.
 public struct PaperKeyPrintView: View {
     public let paperKeyText: String
     public let fingerprint: String
@@ -53,7 +51,26 @@ public struct PaperKeyPrintView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .textSelection(.enabled)
             }
-            .frame(maxHeight: 400)
+            .frame(maxHeight: 300)
+
+            let qrChunks = QRCodeGenerator.chunkForQR(paperKeyText)
+            if !qrChunks.isEmpty {
+                Divider()
+                Text("QR codes (scan with a phone camera):")
+                    .font(.headline)
+                ScrollView(.horizontal) {
+                    HStack(spacing: 12) {
+                        ForEach(qrChunks.indices, id: \.self) { index in
+                            if let qr = QRCodeGenerator.generate(from: qrChunks[index], scale: 8) {
+                                Image(nsImage: qr)
+                                    .interpolation(.none)
+                                    .accessibilityLabel("QR code \(index + 1) of \(qrChunks.count)")
+                            }
+                        }
+                    }
+                }
+                .frame(maxHeight: 160)
+            }
         }
         .padding(40)
         .frame(width: 612, height: 792) // US Letter at 72dpi
