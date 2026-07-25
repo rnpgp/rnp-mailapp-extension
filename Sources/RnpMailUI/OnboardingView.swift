@@ -86,6 +86,11 @@ public struct OnboardingView: View {
                 onImport: { viewModel.importKeys(using: onImport) },
                 onBack: { viewModel.goBack() }
             )
+        case .restoreFromBackup:
+            PaperKeyRestoreView(viewModel: PaperKeyRestoreViewModel(
+                service: nil,
+                onComplete: { _ in viewModel.finishRestore() }
+            ))
         case .done(let url):
             donePage(revocationURL: url)
         }
@@ -98,7 +103,7 @@ public struct OnboardingView: View {
         switch viewModel.currentStep {
         case .welcome:
             return 0
-        case .createOrImport, .generateForm, .importForm:
+        case .createOrImport, .generateForm, .importForm, .restoreFromBackup:
             return 1
         case .done:
             return 2
@@ -117,6 +122,8 @@ public struct OnboardingView: View {
             return "generateForm"
         case .importForm:
             return "importForm"
+        case .restoreFromBackup:
+            return "restoreFromBackup"
         case .done:
             return "done"
         }
@@ -232,6 +239,12 @@ public struct OnboardingView: View {
                 )
             }
             .padding(.top, RnpSpacing.xs)
+            Button("onboarding.restoreFromBackup") {
+                viewModel.chooseRestore()
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .accessibilityIdentifier("onboarding.restore")
             Spacer()
             Spacer()
         }
