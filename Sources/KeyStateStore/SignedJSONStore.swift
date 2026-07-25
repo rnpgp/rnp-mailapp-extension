@@ -45,20 +45,58 @@ public final class SignedJSONStore<T: Codable> {
 
     private let lock = NSLock()
     private var cache: T?
+    private let dateEncodingStrategy: JSONEncoder.DateEncodingStrategy?
+    private let dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?
 
-    /// Creates the store, creating the directory and loading any
-    /// existing signed database.
+    /// Creates the store with an externally-supplied signing key.
+    /// Used by callers that manage their own key lifecycle (e.g.
+    /// TrustStore tests that create a fresh key per test).
+    ///
+    /// - Parameters:
+    ///   - resetOnTamper: when `true`, tampered existing data is
+    ///     silently ignored and the store starts empty (TrustStore's
+    ///     fail-closed-to-empty behavior). When `false` (default),
+    ///     tampered data throws `.tampered` during init.
+    public init(
+        directory: URL,
+        databaseFilename: String,
+        signatureFilename: String,
+        privateKey: Curve25519.Signing.PrivateKey,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil,
+        resetOnTamper: Bool = false
+    ) throws {
+        self.directory = directory
+        self.databaseFilename = databaseFilename
+        self.signatureFilename = signatureFilename
+        self.privateKey = privateKey
+        self.dateEncodingStrategy = dateEncodingStrategy
+        self.dateDecodingStrategy = dateDecodingStrategy
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        do {
+            if let verified = try load() { cache = verified }
+        } catch SignedJSONStoreError.tampered where resetOnTamper {
+            // Ignore tampered data; start fresh.
+        }
+    }
+
+    /// Creates the store, creating or loading the signing key from the
+    /// Keychain via the supplied service + account pair.
     public init(
         directory: URL,
         databaseFilename: String,
         signatureFilename: String,
         keychainService: String,
         keychainAccount: String,
-        keychainAccessGroup: String? = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String
+        keychainAccessGroup: String? = Bundle.main.object(forInfoDictionaryKey: "RNPMAILKeychainAccessGroup") as? String,
+        dateEncodingStrategy: JSONEncoder.DateEncodingStrategy? = nil,
+        dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil
     ) throws {
         self.directory = directory
         self.databaseFilename = databaseFilename
         self.signatureFilename = signatureFilename
+        self.dateEncodingStrategy = dateEncodingStrategy
+        self.dateDecodingStrategy = dateDecodingStrategy
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let key = try KeychainSigningKeyHelper.loadOrCreate(
             service: keychainService,
@@ -66,9 +104,6 @@ public final class SignedJSONStore<T: Codable> {
             keychainAccessGroup: keychainAccessGroup
         )
         self.privateKey = key
-        // Eagerly verify existing data during init so tamper is
-        // detected at construction time, matching the behavior the
-        // existing callers and tests expect.
         if let verified = try load() {
             cache = verified
         }
@@ -103,7 +138,9 @@ public final class SignedJSONStore<T: Codable> {
             throw SignedJSONStoreError.tampered
         }
         do {
-            let value = try JSONDecoder().decode(T.self, from: data)
+            let decoder = JSONDecoder()
+            if let strategy = dateDecodingStrategy { decoder.dateDecodingStrategy = strategy }
+            let value = try decoder.decode(T.self, from: data)
             lock.lock(); cache = value; lock.unlock()
             return value
         } catch {
@@ -116,6 +153,7 @@ public final class SignedJSONStore<T: Codable> {
     public func save(_ value: T) throws {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys, .prettyPrinted]
+        if let strategy = dateEncodingStrategy { encoder.dateEncodingStrategy = strategy }
         let data: Data
         do {
             data = try encoder.encode(value)
