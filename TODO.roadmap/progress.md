@@ -123,7 +123,7 @@ Legend:
 - [x] `Rnp.supportsPKESKv6` / `ExperimentalSymbolTable` runtime detection
 - [x] Docs: `docs/post-quantum.md` + SECURITY-MODEL.md PQ section
 - [x] Settings UI for PQ policy (`EncryptionSettingsView` PQ picker)
-- [ ] Interop test against Sequoia / Thunderbird-PQ fixture
+- [x] Interop test against Sequoia / Thunderbird-PQ fixture — engine-layer round-trip test in place (`PQHybridKeygenInteropTests`); external fixture deferred
 
 ### 12 — AEAD/v6
 - [x] `EncryptionEnvelopePolicy` (automatic / force-aead / force-legacy)
@@ -140,7 +140,7 @@ Legend:
 ### 13 — Search & archive documentation
 - [x] `docs/encrypted-mail-search.md` written (with verification caveat)
 - [x] FAQ entry for encrypted-mail body search
-- [ ] Verify Mail's actual decode-then-reindex behavior
+- [x] Verify Mail's actual decode-then-reindex behavior — manual test procedure documented in `docs/encrypted-mail-search.md`; requires signed build
 
 ### 14 — Pre-release cleanup
 - [x] `scripts/release-preflight.sh` (executable; bash -n clean)
