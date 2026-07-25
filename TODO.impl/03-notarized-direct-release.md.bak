@@ -1,6 +1,6 @@
 # 03 — Notarized direct distribution (GH Releases DMG)
 
-Status: implemented (release workflow ready; needs Apple secrets for notarization dry-run) · Milestone: M1c · Depends on: 01, 02 · Needs: Apple secrets
+Status: pending · Milestone: M1c · Depends on: 01, 02 · Needs: Apple secrets
 (00-overview checklist items 3–5)
 
 ## Goal
