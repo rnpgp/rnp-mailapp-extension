@@ -53,6 +53,15 @@ public final class AutocryptStore {
         }
     }
 
+    /// Non-throwing convenience for creating an in-memory-only store.
+    /// Use when persistence is not needed (tests, fallbacks, previews).
+    public static func inMemory() -> AutocryptStore {
+        // Safe to force-try: init only throws on corrupted existing
+        // JSON; with nil URL there is nothing to load.
+        // swiftlint:disable:next force_try
+        try! AutocryptStore(storeURL: nil)
+    }
+
     /// Records an observation. Following level 1: a newer messageDate
     /// replaces an older one; an older or equal-date message is ignored.
     public func observe(

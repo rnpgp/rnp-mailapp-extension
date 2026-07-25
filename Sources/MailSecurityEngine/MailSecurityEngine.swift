@@ -213,9 +213,7 @@ public final class MailSecurityEngine {
         if let store = try? AutocryptStore(storeURL: url) {
             return store
         }
-        // Fallback: in-memory only. The init only throws on a corrupted
-        // existing JSON file; with no URL there is nothing to load.
-        return try! AutocryptStore(storeURL: nil)
+        return AutocryptStore.inMemory()
     }()
 
     public init(keyManager: KeyManager) {
