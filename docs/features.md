@@ -92,13 +92,19 @@ See [Keyservers](keyserver.md) for the full picture.
 
 ## Testing and quality gates
 
-- Swift package test suite covering the engine, MIME parser, trust store,
-  keyserver client, key lifecycle, and banner UI (`swift test`).
+- Swift package test suite: **497 tests** covering the engine, MIME parser,
+  trust store, keyserver client, key lifecycle, key state store, Autocrypt,
+  post-quantum catalog, decryption-failure classifier, BCC policy, encryption
+  envelope resolver, reply-context heuristic, notify-contacts template,
+  mailbox scanner driver, paper-key formatter, offline publish queue, signed
+  security-state store, and compose-policy aggregate (`swift test`).
 - Snapshot tests for the Mail banner (`Tests/MailSecurityUITests/`).
 - Container-app UI tests including onboarding, key generation, and
   accessibility audits.
 - Sandbox/entitlement audit (`scripts/sandbox-audit.sh`) and a release
   pipeline dry-run (`scripts/ci-release-dry-run.sh`).
+- Local release-preflight (`scripts/release-preflight.sh`) — shape-checks
+  codesign, otool, plutil, and framework embedding without Apple secrets.
 - End-to-end harness against a local IMAP/SMTP server
   (`scripts/local-mail-server.sh`, `scripts/test-mail-e2e.sh`).
 
