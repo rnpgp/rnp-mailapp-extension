@@ -14,23 +14,42 @@ extension. The repository contains two things that work together:
 Package.swift                  SwiftPM manifest
 Sources/
   CRnp/                        system-library target (pkg-config → librnp)
-  Rnp/                         Swift bindings for librnp
-  MailSecurityEngine/          PGP/MIME + inline-PGP encode/decode, KeyManager
+  Rnp/                         Swift bindings for librnp (FFI wrappers,
+                               paper-key, multi-UID, Autocrypt export,
+                               v6 keygen, AEAD/v6 encrypt, certification)
+  MailSecurityEngine/          PGP/MIME + inline-PGP encode/decode,
+                               KeyManager, BCC policy, decryption errors,
+                               encryption envelope policy, compose policy,
+                               key health, notify-contacts, mailbox scanner,
+                               offline publish queue, reply heuristic,
+                               signed security-state store
   MailSecurityUI/              AppKit security banner (MailKit-free, testable)
-  KeyLifecycle/                subkey rotation, expiry extension, revocation
+  KeyLifecycle/                subkey rotation, expiry extension, revocation,
+                               key transition with certification
   KeyServerClient/             VKS / HKPS / WKD client
   TrustStore/                  TOFU trust records, signed trust.json
-  RnpMailUI/                   shared app UI (design system, key views)
+  KeyStateStore/               active/archived usage state, signed key-states.json
+  Autocrypt/                   level-1 header parser/serializer, observation
+                               store, gossip (1.1), per-account policy store
+  PostQuantum/                 PQ algorithm catalog (ML-KEM, ML-DSA, SLH-DSA)
+  RnpMailUI/                   shared app UI: KeyHealth, RecoveryWizard,
+                               AddUserID, ComposeDiagnostics, BCCRefusal,
+                               MailboxScan, EncryptionSettings, TransitionWizard,
+                               PaperKeyRestore, DeleteForever, ArchivedKeys,
+                               EngineEnvironment, InlineRecoverySheets,
+                               RecommendedActionBanner
 Swift-Rnp/
   Swift-Rnp.xcodeproj/         container app + Mail extension project
-  MailExtensionsContainer/     the RNP container app (target "RNP")
-  MailPlugin/                  the MailKit extension target
+  MailExtensionsContainer/     the RNP container app (target "RNP"),
+                               including RoadmapNavigationCoordinator
+  MailPlugin/                  the MailKit extension target (BCC-aware handler)
   Shared/IDs.xcconfig          single source for bundle IDs and app group
   Config/                      build configurations (Direct, AppStore)
-Tests/                         package tests, fixtures, banner snapshots
+Tests/                         497 tests across 20+ files, fixtures, snapshots
 Vendor/                        RNPFramework.xcframework + pkg-config stubs
-scripts/                       framework build, release, audit, e2e harnesses
-docs/                          this documentation
+scripts/                       framework build, release preflight, audit, e2e
+docs/                          user-facing documentation (12 pages)
+TODO.roadmap/                  16 design docs + progress tracker (108/108 done)
 ```
 
 ## Prerequisites
