@@ -36,8 +36,9 @@ public enum QRCodeGenerator {
     ///     RNP/1/5/<hex-data>
     ///     ...
     public static func chunkForQR(_ string: String, maxPerChunk: Int = 800) -> [String] {
+        guard !string.isEmpty else { return [] }
         guard string.count > maxPerChunk else {
-            return string.isEmpty ? [] : [string]
+            return ["RNP/0/1/\(string)"]
         }
         var chunks: [String] = []
         var index = 0
