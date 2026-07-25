@@ -354,7 +354,8 @@ public final class MessageSecurityCore {
             sender: message.fromAddress,
             recipients: encryptionRecipients(for: message, composeContext: composeContext),
             sign: composeContext.shouldSign,
-            encrypt: composeContext.shouldEncrypt
+            encrypt: composeContext.shouldEncrypt,
+            bccAddresses: message.bccAddresses
         )
         do {
             let encoded = try engine.encode(request)

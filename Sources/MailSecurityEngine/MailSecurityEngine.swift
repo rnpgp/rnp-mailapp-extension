@@ -34,6 +34,11 @@ public struct EncodingRequest {
     public var sender: String
     /// Recipient addresses; encryption keys are resolved from them.
     public var recipients: [String]
+    /// BCC recipient addresses, when known separately from the flat
+    /// `recipients` list. The BCC policy reads this to decide whether
+    /// encrypted send should be refused. Empty by default (back-compat
+    /// with callers that only supply the flat list).
+    public var bccAddresses: [String]
     public var sign: Bool
     public var encrypt: Bool
     public var format: MessageFormat
@@ -44,7 +49,8 @@ public struct EncodingRequest {
         recipients: [String],
         sign: Bool,
         encrypt: Bool,
-        format: MessageFormat = .pgpMime
+        format: MessageFormat = .pgpMime,
+        bccAddresses: [String] = []
     ) {
         self.message = message
         self.sender = sender
@@ -52,6 +58,7 @@ public struct EncodingRequest {
         self.sign = sign
         self.encrypt = encrypt
         self.format = format
+        self.bccAddresses = bccAddresses
     }
 }
 
