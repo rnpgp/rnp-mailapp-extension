@@ -51,7 +51,7 @@ fi
 MARKETING_VERSION="$(grep 'MARKETING_VERSION' "${VERSION_FILE}" | awk -F'= ' '{print $2}' | tr -d ' ')"
 EXPECTED_TAG="v${MARKETING_VERSION}"
 
-if [[ -n "${GITHUB_REF_NAME:-}" && "${GITHUB_REF_NAME}" != *_merge* && "${GITHUB_REF_NAME}" != pr/* ]]; then
+if [[ -n "${GITHUB_REF_NAME:-}" && "${GITHUB_REF_NAME}" != */merge && ! "${GITHUB_REF_NAME}" =~ ^[0-9]+/merge$ ]]; then
     if [[ "${GITHUB_REF_NAME}" != "${EXPECTED_TAG}" ]]; then
         echo "Tag mismatch: expected ${EXPECTED_TAG}, got ${GITHUB_REF_NAME}" >&2
         exit 1
