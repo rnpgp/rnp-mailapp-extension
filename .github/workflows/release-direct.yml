@@ -19,7 +19,11 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_16.3.app/Contents/Developer
     steps:
     - name: Select Xcode 16.3
-      run: sudo xcode-select -s "${DEVELOPER_DIR}"
+      run: |
+        sudo xcode-select -s "${DEVELOPER_DIR}" || true
+        echo "Available Xcode versions:"
+        ls /Applications/ | grep -i xcode || true
+        xcodebuild -version || true
     - name: Checkout swift-rnp
       uses: actions/checkout@v4
 
