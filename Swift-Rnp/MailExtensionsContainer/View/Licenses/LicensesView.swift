@@ -81,7 +81,7 @@ struct LicensesView: View {
         return sourcesMarkdown
     }
 
-    private mutating func loadLicensesIfNeeded() {
+    private func loadLicensesIfNeeded() {
         guard licenses.isEmpty else { return }
         for license in Self.bundledLicenses {
             if let url = Bundle.main.url(forResource: license.filename, withExtension: nil, subdirectory: "Licenses")

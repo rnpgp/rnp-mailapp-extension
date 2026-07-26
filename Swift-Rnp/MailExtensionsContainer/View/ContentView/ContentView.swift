@@ -243,7 +243,7 @@ struct ContentView: View {
                 .padding(.horizontal, RnpSpacing.md)
                 .padding(.top, RnpSpacing.xxs)
             keyList
-            if !model.archivedKeys.isEmpty {
+            if !model.manager.archivedKeys.isEmpty {
                 Divider()
                 ArchivedKeysSection(viewModel: ArchivedKeysViewModel(
                     keyManager: nil,
