@@ -1,0 +1,7 @@
+name: list-xcode
+on: workflow_dispatch
+jobs:
+  list:
+    runs-on: macos-15
+    steps:
+      - run: ls /Applications/ | grep -i xcode
