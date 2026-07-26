@@ -7,3 +7,9 @@
 RNPFRAMEWORK_SEARCH_PATHS = $(PROJECT_DIR)/../Vendor
 
 LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/../Frameworks @loader_path/../Frameworks
+
+// Asset catalog does not contain named colors/images that would need Swift
+// symbol extensions; disable generation so Xcode does not add a phantom
+// GeneratedAssetSymbols.swift to compile sources on Xcode 16+ runners.
+ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_BUNDLE_NAMES = NO;
