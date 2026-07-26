@@ -129,7 +129,7 @@ MARKETING_VERSION="$(grep 'MARKETING_VERSION' "${VERSION_FILE}" | awk -F'= ' '{p
 CURRENT_PROJECT_VERSION="$(grep 'CURRENT_PROJECT_VERSION' "${VERSION_FILE}" | awk -F'= ' '{print $2}' | tr -d ' ')"
 EXPECTED_TAG="v${MARKETING_VERSION}"
 
-if [[ -n "${TAG}" ]]; then
+if [[ -n "${TAG}" && ! "${TAG}" =~ ^[0-9]+/merge$ ]]; then
     if [[ "${TAG}" != "${EXPECTED_TAG}" ]]; then
         echo "Tag mismatch: expected ${EXPECTED_TAG}, got ${TAG}" >&2
         exit 1
