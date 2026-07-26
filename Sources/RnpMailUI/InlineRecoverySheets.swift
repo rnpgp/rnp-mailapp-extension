@@ -50,7 +50,7 @@ public extension RecoveryAction {
         case let .extendExpiry(fpr, _): return .extendExpiry(fingerprint: fpr)
         case let .rotateEncryptionSubkey(fpr): return .rotateEncryptionSubkey(fingerprint: fpr)
         case let .rotateSigningSubkey(fpr): return .rotateSigningSubkey(fingerprint: fpr)
-        case let .generateReplacementKey: return .generateReplacementKey
+        case .generateReplacementKey: return .generateReplacementKey
         case let .fetchLatestFromKeyserver(addr): return .fetchLatestFromKeyserver(address: addr)
         case let .verifyFingerprint(fpr): return .verifyFingerprint(fingerprint: fpr)
         case let .archiveKey(fpr): return .archiveKey(fingerprint: fpr)
