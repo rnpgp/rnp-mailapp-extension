@@ -86,6 +86,8 @@ jobs:
   xcodebuild:
     runs-on: macos-latest
     steps:
+    - name: List available Xcode versions
+      run: ls /Applications/ | grep -i xcode || true
     - name: Checkout swift-rnp
       uses: actions/checkout@v4
 
