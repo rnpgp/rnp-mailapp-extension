@@ -308,7 +308,7 @@
 				AA3000000000000000000008 /* ContentView */,
 				AA3000000000000000000009 /* KeysList */,
 				36AF7617F543DF15DF4C5336 /* Licenses */,
-				AA300000000000000000000B /* RoadmapNavigationCoordinator */,
+				1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -330,7 +330,7 @@
 			path = KeysList;
 			sourceTree = "<group>";
 		};
-		AA300000000000000000000B /* RoadmapNavigationCoordinator */ = {
+		1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */ = {
 			isa = PBXGroup;
 			children = (
 				0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */,
