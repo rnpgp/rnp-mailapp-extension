@@ -45,7 +45,7 @@ jobs:
         APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
       run: |
         mkdir -p "${RUNNER_TEMP}/asc"
-        echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
+        printf '%s' "${APPLE_ASC_API_KEY_P8}" > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
 
     - name: Build and notarize release
       env:
