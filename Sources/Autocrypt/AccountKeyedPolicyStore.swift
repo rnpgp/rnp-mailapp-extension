@@ -38,6 +38,11 @@ public final class AccountKeyedPolicyStore {
         }
     }
 
+    /// Non-throwing convenience for creating an in-memory-only store.
+    public static func inMemory() -> AccountKeyedPolicyStore {
+        try! AccountKeyedPolicyStore(storeURL: nil)
+    }
+
     /// Returns the per-account prefer-encrypt, or `default` when the
     /// account has no override.
     public func preferEncrypt(forAccount address: String, default fallback: AutocryptPreferEncrypt) -> AutocryptPreferEncrypt {
