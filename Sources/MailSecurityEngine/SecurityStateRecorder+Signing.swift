@@ -16,6 +16,7 @@
 
 import CryptoKit
 import Foundation
+import KeyStateStore
 import Security
 
 /// Errors thrown by `SecurityStateRecordStore` (the reader for signed
@@ -38,6 +39,9 @@ public final class SecurityStateRecordStore {
     public static let lastMessageSignatureFilename = "last-message.json.sig"
     public static let messagesSubdirectory = "messages"
 
+    private static let signingKeyService = "RNP Mail Extension state signing key"
+    private static let signingKeyAccount = "security-state"
+
     public let directory: URL
     public let privateKey: Curve25519.Signing.PrivateKey
 
@@ -49,7 +53,11 @@ public final class SecurityStateRecordStore {
     ) throws {
         self.directory = directory
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        let key = try Self.loadOrCreateSigningKey(keychainAccessGroup: keychainAccessGroup)
+        let key = try KeychainSigningKeyHelper.loadOrCreate(
+            service: Self.signingKeyService,
+            account: Self.signingKeyAccount,
+            keychainAccessGroup: keychainAccessGroup
+        )
         self.privateKey = key
     }
 
@@ -157,79 +165,6 @@ public final class SecurityStateRecordStore {
         else { return }
         try? signature.write(to: signatureURL, options: [.atomic])
     }
-
-    // MARK: - Signing key
-
-    /// Keychain item service for the per-install signing key. Distinct
-    /// from TrustStore's and KeyStateStore's.
-    private static let signingKeyService = "RNP Mail Extension state signing key"
-    private static let signingKeyAccount = "security-state"
-
-    private static func loadOrCreateSigningKey(
-        keychainAccessGroup: String?
-    ) throws -> Curve25519.Signing.PrivateKey {
-        if let existing = try? readSigningKey(keychainAccessGroup: keychainAccessGroup) {
-            return existing
-        }
-        let key = Curve25519.Signing.PrivateKey()
-        try storeSigningKey(key, keychainAccessGroup: keychainAccessGroup)
-        return key
-    }
-
-    private static func readSigningKey(
-        keychainAccessGroup: String?
-    ) throws -> Curve25519.Signing.PrivateKey {
-        var query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: signingKeyService,
-            kSecAttrAccount as String: signingKeyAccount,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-        ]
-        if let group = keychainAccessGroup, !group.isEmpty {
-            query[kSecAttrAccessGroup as String] = group
-        }
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        guard status == errSecSuccess, let data = item as? Data else {
-            throw SecurityStateRecordStoreError.persistenceFailed("signing key not found")
-        }
-        return try Curve25519.Signing.PrivateKey(rawRepresentation: data)
-    }
-
-    private static func storeSigningKey(
-        _ key: Curve25519.Signing.PrivateKey,
-        keychainAccessGroup: String?
-    ) throws {
-        var addQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: signingKeyService,
-            kSecAttrAccount as String: signingKeyAccount,
-            kSecValueData as String: key.rawRepresentation,
-        ]
-        if let group = keychainAccessGroup, !group.isEmpty {
-            addQuery[kSecAttrAccessGroup as String] = group
-        }
-        let status = SecItemAdd(addQuery as CFDictionary, nil)
-        if status == errSecDuplicateItem {
-            let updateQuery: [String: Any] = [
-                kSecClass as String: kSecClassGenericPassword,
-                kSecAttrService as String: signingKeyService,
-                kSecAttrAccount as String: signingKeyAccount,
-            ]
-            let updateAttributes: [String: Any] = [
-                kSecValueData as String: key.rawRepresentation,
-            ]
-            let updateStatus = SecItemUpdate(updateQuery as CFDictionary, updateAttributes as CFDictionary)
-            guard updateStatus == errSecSuccess else {
-                throw SecurityStateRecordStoreError.persistenceFailed("signing key update failed (\(updateStatus))")
-            }
-            return
-        }
-        guard status == errSecSuccess else {
-            throw SecurityStateRecordStoreError.persistenceFailed("signing key store failed (\(status))")
-        }
-    }
 }
 
 /// Additive convenience: SecurityStateRecorder gains a `signedRecorder`
@@ -256,11 +191,7 @@ public extension SecurityStateRecorder {
         guard let data = try? Data(contentsOf: recordURL),
               let signature = try? store.privateKey.signature(for: data)
         else { return }
-        let sigURL = recordURL.appendingPathComponent(".sig", isDirectory: false)
-        // The above appends ".sig" as a path component; we actually
-        // want "<name>.json.sig", so build it manually.
         let actualSigURL = recordURL.deletingPathExtension().appendingPathExtension("json.sig")
-        _ = sigURL  // suppress unused
         try? signature.write(to: actualSigURL, options: [.atomic])
     }
 }
