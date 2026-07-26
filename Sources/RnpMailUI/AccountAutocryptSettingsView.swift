@@ -131,9 +131,7 @@ public struct AccountAutocryptSettingsView: View {
     if let s = try? AccountKeyedPolicyStore(storeURL: url) {
         store = s
     } else {
-        // Fallback: in-memory only store. The init only throws on
-        // corrupted existing JSON; with nil URL there's nothing to load.
-        store = try! AccountKeyedPolicyStore(storeURL: nil)
+        store = AccountKeyedPolicyStore.inMemory()
     }
     let vm = AccountAutocryptSettingsViewModel(store: store)
     return AccountAutocryptSettingsView(viewModel: vm)
