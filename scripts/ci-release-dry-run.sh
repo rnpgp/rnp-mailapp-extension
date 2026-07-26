@@ -83,11 +83,12 @@ xcodebuild \
     -project "${PROJECT}" \
     -scheme RNP \
     -configuration Direct \
+    -derivedDataPath "${BUILD_DIR}/DerivedData" \
     build \
     CODE_SIGNING_ALLOWED=NO
 
 echo "=== Signing with self-signed certificate ==="
-APP_BUNDLE="${BUILD_DIR}/Products/Direct/RNP.app"
+APP_BUNDLE="${BUILD_DIR}/DerivedData/Build/Products/Direct/RNP.app"
 if [[ ! -d "${APP_BUNDLE}" ]]; then
     echo "Built app not found at ${APP_BUNDLE}" >&2
     exit 1
@@ -96,7 +97,7 @@ codesign --sign "${CERT_NAME}" --force --deep --keychain "${KEYCHAIN_PATH}" "${A
 codesign --verify --deep --strict --verbose=2 "${APP_BUNDLE}"
 
 echo "=== Running sandbox audit ==="
-AUDIT_APP_PATH="${BUILD_DIR}/Products/Direct/RNP.app" \
+AUDIT_APP_PATH="${BUILD_DIR}/DerivedData/Build/Products/Direct/RNP.app" \
     "${SCRIPT_DIR}/sandbox-audit.sh"
 
 echo "=== Release direct dry-run ==="
