@@ -12,11 +12,11 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Cache RNPFramework.xcframework
         id: framework-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: Vendor/RNPFramework.xcframework
           key: rnp-${{ env.RNP_REF }}-framework-${{ hashFiles('scripts/build-rnp-framework.sh', 'Vendor/SOURCES.md') }}

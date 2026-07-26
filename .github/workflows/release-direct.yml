@@ -17,11 +17,11 @@ jobs:
     runs-on: macos-14
     steps:
     - name: Checkout swift-rnp
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Cache RNPFramework.xcframework
       id: framework-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: Vendor/RNPFramework.xcframework
         key: rnp-${{ env.RNP_REF }}-framework-${{ hashFiles('scripts/build-rnp-framework.sh', 'Vendor/SOURCES.md') }}
@@ -34,19 +34,11 @@ jobs:
       run: brew install create-dmg
 
     - name: Import signing certificate
-      env:
-        APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
-        APPLE_CERTIFICATE_P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
-        APPLE_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
-      run: |
-        CERTIFICATE_PATH="${RUNNER_TEMP}/build_certificate.p12"
-        KEYCHAIN_PATH="${RUNNER_TEMP}/app-signing.keychain-db"
-        echo -n "${APPLE_CERTIFICATE_P12}" | base64 --decode > "${CERTIFICATE_PATH}"
-        security create-keychain -p "${APPLE_KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
-        security set-keychain-settings -lut 21600 "${KEYCHAIN_PATH}"
-        security unlock-keychain -p "${APPLE_KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
-        security import "${CERTIFICATE_PATH}" -P "${APPLE_CERTIFICATE_P12_PASSWORD}" -A -t cert -f pkcs12 -k "${KEYCHAIN_PATH}"
-        security list-keychain -d user -s "${KEYCHAIN_PATH}"
+      uses: Apple-Actions/import-codesign-certs@v7
+      with:
+        p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+        p12-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+        keychain-password: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
 
     - name: Write App Store Connect API key
       env:
@@ -63,27 +55,21 @@ jobs:
         ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
       run: ./scripts/release-direct.sh
 
-    - name: Clean up keychain
-      if: always()
-      run: |
-        KEYCHAIN_PATH="${RUNNER_TEMP}/app-signing.keychain-db"
-        security delete-keychain "${KEYCHAIN_PATH}" || true
-
-    - name: Create GitHub Release
+    - name: Create or update GitHub Release
+      uses: softprops/action-gh-release@v3
+      with:
+        files: dist/*
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        if gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-          echo "Release ${GITHUB_REF_NAME} already exists; uploading assets"
-          gh release upload "${GITHUB_REF_NAME}" dist/* --repo "${GITHUB_REPOSITORY}" --clobber
-        else
-          gh release create "${GITHUB_REF_NAME}" dist/* --repo "${GITHUB_REPOSITORY}" --generate-notes
-        fi
 
   smoke-test:
     needs: build-and-release
     runs-on: macos-14
     steps:
+    - name: Checkout swift-rnp
+      uses: actions/checkout@v7
+
     - name: Download release DMG
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

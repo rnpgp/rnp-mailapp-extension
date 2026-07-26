@@ -48,7 +48,7 @@ jobs:
       run: brew install botan json-c
 
     - name: Checkout rnp
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: rnpgp/rnp
         path: rnp
@@ -68,7 +68,7 @@ jobs:
       run:  sudo cmake --install rnp/build
 
     - name: Checkout swift-rnp
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Build swift-rnp
       run:  swift build
@@ -87,11 +87,11 @@ jobs:
     runs-on: macos-14
     steps:
     - name: Checkout swift-rnp
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Cache RNPFramework.xcframework
       id: framework-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: Vendor/RNPFramework.xcframework
         key: rnp-${{ env.RNP_REF }}-framework-${{ hashFiles('scripts/build-rnp-framework.sh', 'Vendor/SOURCES.md') }}
