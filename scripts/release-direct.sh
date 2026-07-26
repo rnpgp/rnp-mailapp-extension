@@ -51,14 +51,14 @@ fi
 MARKETING_VERSION="$(grep 'MARKETING_VERSION' "${VERSION_FILE}" | awk -F'= ' '{print $2}' | tr -d ' ')"
 EXPECTED_TAG="v${MARKETING_VERSION}"
 
-if [[ -n "${GITHUB_REF_NAME:-}" ]]; then
+if [[ -n "${GITHUB_REF_NAME:-}" && "${GITHUB_REF_NAME}" != *_merge* && "${GITHUB_REF_NAME}" != pr/* ]]; then
     if [[ "${GITHUB_REF_NAME}" != "${EXPECTED_TAG}" ]]; then
         echo "Tag mismatch: expected ${EXPECTED_TAG}, got ${GITHUB_REF_NAME}" >&2
         exit 1
     fi
     echo "Releasing ${EXPECTED_TAG}"
 else
-    echo "Local run: expected tag is ${EXPECTED_TAG} (no GITHUB_REF_NAME, continuing)"
+    echo "Local or PR run: expected tag is ${EXPECTED_TAG} (skipping tag check)"
 fi
 
 # ------------------------------------------------------------------
