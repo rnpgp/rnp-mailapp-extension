@@ -14,7 +14,7 @@ env:
 
 jobs:
   build-and-release:
-    runs-on: macos-15
+    runs-on: macos-14
     steps:
     - name: Checkout swift-rnp
       uses: actions/checkout@v4
@@ -82,7 +82,7 @@ jobs:
 
   smoke-test:
     needs: build-and-release
-    runs-on: macos-15
+    runs-on: macos-14
     steps:
     - name: Download release DMG
       env:
