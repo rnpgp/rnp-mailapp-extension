@@ -165,9 +165,9 @@ package above:
 - **`Swift-Rnp`** (CLI target) — small `Rnp` demo: version print plus a
   generate/encrypt/decrypt smoke roundtrip.
 
-The shared keyring lives in the app group container `group.com.rnpgp.RnpMail`
+The shared keyring lives in the app group container `group.com.rnpgp.RNPForMail`
 so both processes see the same keys; key passphrases are stored in the
-Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RnpMail`), never
+Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RNPForMail`), never
 in UserDefaults.
 
 ### Install librnp
@@ -196,7 +196,7 @@ For a first local try-out no Apple Developer account is needed:
 2. Select the **RNP** scheme and build/run it
    (Product → Run). Unsigned local builds work; Xcode simply embeds no
    entitlements, and the keyring then lives in
-   `~/Library/Application Support/RNP Mail Extension` instead of the app
+   `~/Library/Application Support/RNP for Mail` instead of the app
    group container.
 3. In the app, generate a key pair (＋ menu → RSA-3072 or ECDSA P-256) with
    a user ID matching your mail address ("Alice <alice@example.com>"), or
@@ -206,11 +206,11 @@ For Mail.app to actually load the extension you must sign both targets:
 
 4. In each target's **Signing & Capabilities** tab, set your
    **DEVELOPMENT_TEAM** (the project deliberately ships with it empty).
-   The default bundle IDs are `com.rnpgp.RnpMail` (container) and
-   `com.rnpgp.RnpMail.MailExtension` (extension). IDs are single-sourced in
+   The default bundle IDs are `com.rnpgp.RNPForMail` (container) and
+   `com.rnpgp.RNPForMail.MailExtension` (extension). IDs are single-sourced in
    `Swift-Rnp/Shared/IDs.xcconfig` and injected into both targets' entitlements
    and Info.plist at build time. If you change them, keep the extension ID
-   prefixed by the app ID, and update the app group `group.com.rnpgp.RnpMail`
+   prefixed by the app ID, and update the app group `group.com.rnpgp.RNPForMail`
    in `Swift-Rnp/Shared/IDs.xcconfig` to a group registered to your team.
 5. Run the **RNP** scheme once more so the signed extension is
    embedded and registered, then enable it in

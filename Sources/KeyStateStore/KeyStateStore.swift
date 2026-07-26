@@ -18,7 +18,7 @@ public final class KeyStateStore {
     public static let signatureFilename = "key-states.json.sig"
 
     /// Keychain item service for the per-install signing key.
-    private static let signingKeyService = "RNP Mail Extension key-state signing key"
+    private static let signingKeyService = "RNP for Mail key-state signing key"
     /// Keychain item account. Distinct from TrustStore's account so the two
     /// never share a key.
     private static let signingKeyAccount = "key-state-store"

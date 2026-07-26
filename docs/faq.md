@@ -55,7 +55,7 @@ decide. See [Trust model](trust-model.md#key-change-warnings-and-conflicts).
 ### Where are my keys and passphrases stored?
 
 Keys live in a GPG-compatible keyring in the shared app-group container
-(`group.com.rnpgp.RnpMail`), accessible to both the app and the Mail
+(`group.com.rnpgp.RNPForMail`), accessible to both the app and the Mail
 extension. The keyring passphrase is a random value stored in the macOS
 Keychain — never in preferences or plain files. Details and the full threat
 model are in [Security model](SECURITY-MODEL.md).

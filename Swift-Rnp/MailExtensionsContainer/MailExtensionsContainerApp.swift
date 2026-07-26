@@ -1,8 +1,8 @@
 //
 //  MailExtensionsContainerApp.swift
-//  RNP
+//  RNP for Mail
 //
-//  Container app for the RNP Mail extension: manages the shared OpenPGP
+//  Container app for the RNP for Mail extension: manages the shared OpenPGP
 //  keyring (generate, import, export, delete).
 //
 
@@ -22,7 +22,7 @@ struct MailExtensionsContainerApp: App {
     }
 
     var body: some Scene {
-        WindowGroup("RNP") {
+        WindowGroup("RNP for Mail") {
             ContentView(model: model)
                 .onAppear {
                     model.checkOnboarding()
@@ -88,7 +88,7 @@ struct MailExtensionsContainerApp: App {
     }
 
     private static func runSelfTest() {
-        print("RnpMail self-test starting...")
+        print("RNP for Mail self-test starting...")
         print("librnp \(Rnp.versionStringFull)")
         do {
             let rnp = try Rnp(password: "self-test-password")
@@ -108,6 +108,6 @@ struct MailExtensionsContainerApp: App {
             fputs("self-test error: \(error.localizedDescription)\n", stderr)
             exit(1)
         }
-        print("RnpMail self-test passed")
+        print("RNP for Mail self-test passed")
     }
 }

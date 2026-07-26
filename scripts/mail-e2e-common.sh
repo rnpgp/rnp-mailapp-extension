@@ -54,14 +54,14 @@ E2E_SENDER_FPR=""
 E2E_USER_FPR=""
 
 e2e_group_container() {
-    printf '%s/Library/Group Containers/group.com.rnpgp.RnpMail' "${HOME}"
+    printf '%s/Library/Group Containers/group.com.rnpgp.RNPForMail' "${HOME}"
 }
 
 # Sets E2E_STATE_DIR and E2E_BANNER_REQUIRED.
 e2e_detect_state_dir() {
     local group_dir fallback_dir
     group_dir="$(e2e_group_container)/ExtensionState"
-    fallback_dir="${HOME}/Library/Application Support/RNP Mail Extension/ExtensionState"
+    fallback_dir="${HOME}/Library/Application Support/RNP for Mail/ExtensionState"
     if [ -n "${RNPMAIL_STATE_DIR:-}" ]; then
         E2E_STATE_DIR="${RNPMAIL_STATE_DIR}"
     elif [ -d "${group_dir}" ]; then
@@ -85,7 +85,7 @@ e2e_detect_state_dir() {
 e2e_detect_keyring_dir() {
     local group_dir fallback_dir
     group_dir="$(e2e_group_container)/Keyrings"
-    fallback_dir="${HOME}/Library/Application Support/RNP Mail Extension"
+    fallback_dir="${HOME}/Library/Application Support/RNP for Mail"
     if [ -n "${RNPMAIL_KEYRING_DIR:-}" ]; then
         E2E_KEYRING_DIR="${RNPMAIL_KEYRING_DIR}"
     elif [ -d "${group_dir}" ]; then

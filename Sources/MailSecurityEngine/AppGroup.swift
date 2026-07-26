@@ -21,7 +21,7 @@ public enum AppGroup {
            !value.hasPrefix("$(") {
             return value
         }
-        return "group.com.rnpgp.RnpMail"
+        return "group.com.rnpgp.RNPForMail"
     }()
 
     /// Directory holding the shared OpenPGP keyring (pubring.gpg and
@@ -38,7 +38,7 @@ public enum AppGroup {
             return container.appendingPathComponent("Keyrings", isDirectory: true)
         }
         let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return support.appendingPathComponent("RNP Mail Extension", isDirectory: true)
+        return support.appendingPathComponent("RNP for Mail", isDirectory: true)
     }
 
     /// Directory holding the extension's message-security state records
@@ -54,6 +54,6 @@ public enum AppGroup {
             return container.appendingPathComponent("ExtensionState", isDirectory: true)
         }
         let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return support.appendingPathComponent("RNP Mail Extension/ExtensionState", isDirectory: true)
+        return support.appendingPathComponent("RNP for Mail/ExtensionState", isDirectory: true)
     }
 }

@@ -13,7 +13,7 @@ import SwiftUI
 
 extension Notification.Name {
     /// Posted to open the keyserver settings sheet.
-    public static let showKeyServerSettings = Notification.Name("com.rnpgp.RnpMail.showKeyServerSettings")
+    public static let showKeyServerSettings = Notification.Name("com.rnpgp.RNPForMail.showKeyServerSettings")
 }
 
 /// Editable view over `KeyServerSettings`.

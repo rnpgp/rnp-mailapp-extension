@@ -183,6 +183,6 @@ public final class KeyServerSettingsStore: @unchecked Sendable {
            !value.hasPrefix("$(") {
             return value
         }
-        return "group.com.rnpgp.RnpMail"
+        return "group.com.rnpgp.RNPForMail"
     }()
 }

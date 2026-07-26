@@ -109,7 +109,7 @@ the secret keyring is unreadable, even with the paper-key.
 
 If you enabled iCloud Keychain sync and you still have access to your
 Apple ID, the passphrase is still there — open Keychain Access on any
-Mac signed in to the same iCloud and look for "RNP Mail Extension
+Mac signed in to the same iCloud and look for "RNP for Mail
 keyring."
 
 Otherwise: the situation is unrecoverable. Generate a new key, revoke

@@ -7,7 +7,7 @@ RNP consists of two parts that work together:
 - the **RNP OpenPGP Mail extension** — signs and encrypts outgoing mail, and
   decrypts and verifies incoming mail, from inside Mail.app.
 
-Both share one keyring through the app group `group.com.rnpgp.RnpMail`, so a
+Both share one keyring through the app group `group.com.rnpgp.RNPForMail`, so a
 key created in the app is immediately available to Mail.
 
 ## Enabling the extension
@@ -143,7 +143,7 @@ expired or expiring soon, and lets you:
 ## Passphrases and the Keychain
 
 Generated keys share a single keyring passphrase stored in the macOS
-Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RnpMail`) —
+Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RNPForMail`) —
 never in preferences or plain files.
 
 When you enable Touch ID during onboarding, the passphrase is stored only in

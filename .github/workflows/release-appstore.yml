@@ -41,22 +41,22 @@ jobs:
     - name: Check Apple credentials
       if: startsWith(env.TAG, 'v')
       env:
-        ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
-        ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
-        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-        TEAM_ID: ${{ secrets.TEAM_ID }}
-        MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
-        MACOS_CERTIFICATE_P12_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}
-        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
+        APPLE_ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        APPLE_ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+        APPLE_CERTIFICATE_P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+        APPLE_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
       run: |
         missing=()
-        [[ -n "${ASC_API_KEY_P8}" ]] || missing+=("ASC_API_KEY_P8")
-        [[ -n "${ASC_API_KEY_ID}" ]] || missing+=("ASC_API_KEY_ID")
-        [[ -n "${ASC_ISSUER_ID}" ]] || missing+=("ASC_ISSUER_ID")
-        [[ -n "${TEAM_ID}" ]] || missing+=("TEAM_ID")
-        [[ -n "${MACOS_CERTIFICATE_P12}" ]] || missing+=("MACOS_CERTIFICATE_P12")
-        [[ -n "${MACOS_CERTIFICATE_P12_PASSWORD}" ]] || missing+=("MACOS_CERTIFICATE_P12_PASSWORD")
-        [[ -n "${KEYCHAIN_PASSWORD}" ]] || missing+=("KEYCHAIN_PASSWORD")
+        [[ -n "${APPLE_ASC_API_KEY_P8}" ]] || missing+=("APPLE_ASC_API_KEY_P8")
+        [[ -n "${APPLE_ASC_API_KEY_ID}" ]] || missing+=("APPLE_ASC_API_KEY_ID")
+        [[ -n "${APPLE_ASC_ISSUER_ID}" ]] || missing+=("APPLE_ASC_ISSUER_ID")
+        [[ -n "${APPLE_TEAM_ID}" ]] || missing+=("APPLE_TEAM_ID")
+        [[ -n "${APPLE_CERTIFICATE_P12}" ]] || missing+=("APPLE_CERTIFICATE_P12")
+        [[ -n "${APPLE_CERTIFICATE_P12_PASSWORD}" ]] || missing+=("APPLE_CERTIFICATE_P12_PASSWORD")
+        [[ -n "${APPLE_KEYCHAIN_PASSWORD}" ]] || missing+=("APPLE_KEYCHAIN_PASSWORD")
         if [[ ${#missing[@]} -gt 0 ]]; then
           echo "Missing secrets required for the Mac App Store upload: ${missing[*]}" >&2
           exit 1
@@ -77,34 +77,34 @@ jobs:
     - name: Write App Store Connect API key
       if: startsWith(env.TAG, 'v')
       env:
-        ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
       run: |
         mkdir -p "${RUNNER_TEMP}/asc"
-        echo -n "${ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8"
+        echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
 
     - name: Import signing certificate
       if: startsWith(env.TAG, 'v')
       env:
-        MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
-        MACOS_CERTIFICATE_P12_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_P12_PASSWORD }}
-        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+        APPLE_CERTIFICATE_P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+        APPLE_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
       run: |
         CERTIFICATE_PATH="${RUNNER_TEMP}/build_certificate.p12"
         KEYCHAIN_PATH="${RUNNER_TEMP}/app-signing.keychain-db"
-        echo -n "${MACOS_CERTIFICATE_P12}" | base64 --decode > "${CERTIFICATE_PATH}"
-        security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+        echo -n "${APPLE_CERTIFICATE_P12}" | base64 --decode > "${CERTIFICATE_PATH}"
+        security create-keychain -p "${APPLE_KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
         security set-keychain-settings -lut 21600 "${KEYCHAIN_PATH}"
-        security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
-        security import "${CERTIFICATE_PATH}" -P "${MACOS_CERTIFICATE_P12_PASSWORD}" -A -t cert -f pkcs12 -k "${KEYCHAIN_PATH}"
+        security unlock-keychain -p "${APPLE_KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+        security import "${CERTIFICATE_PATH}" -P "${APPLE_CERTIFICATE_P12_PASSWORD}" -A -t cert -f pkcs12 -k "${KEYCHAIN_PATH}"
         security list-keychain -d user -s "${KEYCHAIN_PATH}"
 
     - name: Build and export App Store archive
       if: startsWith(env.TAG, 'v')
       env:
-        DEVELOPMENT_TEAM: ${{ secrets.TEAM_ID }}
-        ASC_API_KEY_P8: "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8"
-        ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
-        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        ASC_API_KEY_P8: "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
+        ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         BUILD_NUMBER: ${{ github.run_number }}
         TAG: ${{ env.TAG }}
         SKIP_UPLOAD: 1
@@ -119,10 +119,10 @@ jobs:
     - name: Upload to App Store
       if: startsWith(env.TAG, 'v')
       env:
-        DEVELOPMENT_TEAM: ${{ secrets.TEAM_ID }}
-        ASC_API_KEY_P8: "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.ASC_API_KEY_ID }}.p8"
-        ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
-        ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        ASC_API_KEY_P8: "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
+        ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         UPLOAD_ONLY: 1
       run: ./scripts/release-appstore.sh
 

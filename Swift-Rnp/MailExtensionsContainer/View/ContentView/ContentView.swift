@@ -1080,7 +1080,7 @@ private struct KeyringUnlockSheet: View {
 
 extension Notification.Name {
     /// Posted to open the security settings sheet.
-    static let showSecuritySettings = Notification.Name("com.rnpgp.RnpMail.showSecuritySettings")
+    static let showSecuritySettings = Notification.Name("com.rnpgp.RNPForMail.showSecuritySettings")
 }
 
 /// Security settings sheet: the opt-in per-operation verification toggle
