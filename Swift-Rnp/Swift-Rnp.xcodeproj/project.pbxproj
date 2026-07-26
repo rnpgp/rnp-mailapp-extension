@@ -26,6 +26,7 @@
 		AA1000000000000000000009 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000A /* ContentView.swift */; };
 		AA100000000000000000000A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000B /* ContentViewModel.swift */; };
 		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
+		0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */; };
 		AA100000000000000000000E /* RNP.icns in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* RNP.icns */; };
 		AA1000000000000000000010 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA1000000000000000000011 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000001 /* Rnp */; };
@@ -117,6 +118,7 @@
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapNavigationCoordinator.swift; sourceTree = "<group>"; };
 		AA200000000000000000000D /* RNP.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = RNP.icns; sourceTree = "<group>"; };
 		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppGroup.swift; path = ../../Sources/MailSecurityEngine/AppGroup.swift; sourceTree = "<group>"; };
 		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainPassphraseStore.swift; path = ../../Sources/MailSecurityEngine/KeychainPassphraseStore.swift; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 				AA3000000000000000000008 /* ContentView */,
 				AA3000000000000000000009 /* KeysList */,
 				36AF7617F543DF15DF4C5336 /* Licenses */,
+				AA300000000000000000000B /* RoadmapNavigationCoordinator */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -325,6 +328,14 @@
 				AA200000000000000000000C /* KeysListView.swift */,
 			);
 			path = KeysList;
+			sourceTree = "<group>";
+		};
+		AA300000000000000000000B /* RoadmapNavigationCoordinator */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */,
+			);
+			path = RoadmapNavigationCoordinator;
 			sourceTree = "<group>";
 		};
 		AA300000000000000000000A /* Preview Content */ = {
@@ -558,6 +569,7 @@
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
 				0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */,
+				0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
