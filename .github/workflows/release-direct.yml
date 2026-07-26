@@ -47,6 +47,19 @@ jobs:
         mkdir -p "${RUNNER_TEMP}/asc"
         echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
 
+    - name: Decode ASC API key to PEM for Actions that want raw PKCS8
+      id: asc-key
+      env:
+        APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
+      run: |
+        raw="$(echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode)"
+        # Multi-line value; use EOF delimiter per GitHub Actions spec.
+        {
+          echo "pem<<EOF"
+          echo "${raw}"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+
     - name: Download container app provisioning profile
       id: container-profile
       uses: Apple-Actions/download-provisioning-profiles@v6
@@ -55,7 +68,7 @@ jobs:
         profile-type: MAC_APP_DIRECT
         issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-        api-private-key: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
+        api-private-key: ${{ steps.asc-key.outputs.pem }}
 
     - name: Download Mail extension provisioning profile
       id: extension-profile
@@ -65,7 +78,7 @@ jobs:
         profile-type: MAC_APP_DIRECT
         issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-        api-private-key: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
+        api-private-key: ${{ steps.asc-key.outputs.pem }}
 
     - name: Parse provisioning profile UDIDs
       id: udid
