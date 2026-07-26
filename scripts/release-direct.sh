@@ -52,11 +52,12 @@ MARKETING_VERSION="$(grep 'MARKETING_VERSION' "${VERSION_FILE}" | awk -F'= ' '{p
 EXPECTED_TAG="v${MARKETING_VERSION}"
 
 if [[ -n "${GITHUB_REF_NAME:-}" && "${GITHUB_REF_NAME}" != */merge && ! "${GITHUB_REF_NAME}" =~ ^[0-9]+/merge$ ]]; then
-    if [[ "${GITHUB_REF_NAME}" != "${EXPECTED_TAG}" ]]; then
-        echo "Tag mismatch: expected ${EXPECTED_TAG}, got ${GITHUB_REF_NAME}" >&2
+    # Allow pre-release suffixes (e.g. v0.9.0-test, v1.0.0-rc1) on the same version.
+    if [[ "${GITHUB_REF_NAME}" != "${EXPECTED_TAG}" && ! "${GITHUB_REF_NAME}" =~ ^${EXPECTED_TAG}-.+ ]]; then
+        echo "Tag mismatch: expected ${EXPECTED_TAG} (or ${EXPECTED_TAG}-<suffix>), got ${GITHUB_REF_NAME}" >&2
         exit 1
     fi
-    echo "Releasing ${EXPECTED_TAG}"
+    echo "Releasing ${GITHUB_REF_NAME}"
 else
     echo "Local or PR run: expected tag is ${EXPECTED_TAG} (skipping tag check)"
 fi

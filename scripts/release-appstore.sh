@@ -130,11 +130,12 @@ CURRENT_PROJECT_VERSION="$(grep 'CURRENT_PROJECT_VERSION' "${VERSION_FILE}" | aw
 EXPECTED_TAG="v${MARKETING_VERSION}"
 
 if [[ -n "${TAG}" && ! "${TAG}" =~ ^[0-9]+/merge$ ]]; then
-    if [[ "${TAG}" != "${EXPECTED_TAG}" ]]; then
-        echo "Tag mismatch: expected ${EXPECTED_TAG}, got ${TAG}" >&2
+    # Allow pre-release suffixes (e.g. v0.9.0-test, v1.0.0-rc1) on the same version.
+    if [[ "${TAG}" != "${EXPECTED_TAG}" && ! "${TAG}" =~ ^${EXPECTED_TAG}-.+ ]]; then
+        echo "Tag mismatch: expected ${EXPECTED_TAG} (or ${EXPECTED_TAG}-<suffix>), got ${TAG}" >&2
         exit 1
     fi
-    echo "Releasing ${EXPECTED_TAG} (build ${CURRENT_PROJECT_VERSION})"
+    echo "Releasing ${TAG} (build ${CURRENT_PROJECT_VERSION})"
 else
     echo "Local run: expected tag is ${EXPECTED_TAG} (build ${CURRENT_PROJECT_VERSION}); continuing"
 fi
