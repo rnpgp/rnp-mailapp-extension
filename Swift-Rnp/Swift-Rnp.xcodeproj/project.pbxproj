@@ -34,6 +34,9 @@
 		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
 		AA1000000000000000000015 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000005 /* MailSecurityEngine */; };
 		AA1000000000000000000016 /* MailSecurityUI in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000006 /* MailSecurityUI */; };
+		AA1000000000000000000017 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000007 /* TrustStore */; };
+		AA1000000000000000000018 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000008 /* TrustStore */; };
+		AA1000000000000000000019 /* KeyLifecycle in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000009 /* KeyLifecycle */; };
 		BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
@@ -158,6 +161,7 @@
 				AA1000000000000000000012 /* Rnp in Frameworks */,
 				AA1000000000000000000013 /* MailSecurityEngine in Frameworks */,
 				AA1000000000000000000016 /* MailSecurityUI in Frameworks */,
+				AA1000000000000000000017 /* TrustStore in Frameworks */,
 				BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -170,6 +174,8 @@
 				AA1000000000000000000015 /* MailSecurityEngine in Frameworks */,
 				7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */,
 				C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */,
+				AA1000000000000000000018 /* TrustStore in Frameworks */,
+				AA1000000000000000000019 /* KeyLifecycle in Frameworks */,
 				73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -389,6 +395,7 @@
 				AAC000000000000000000002 /* Rnp */,
 				AAC000000000000000000003 /* MailSecurityEngine */,
 				AAC000000000000000000006 /* MailSecurityUI */,
+				AAC000000000000000000007 /* TrustStore */,
 			);
 			productName = MailPlugin;
 			productReference = AA5000000000000000000002 /* MailPlugin.appex */;
@@ -414,6 +421,8 @@
 				AAC000000000000000000004 /* Rnp */,
 				AAC000000000000000000005 /* MailSecurityEngine */,
 				F7F139FFDED467A772241EBC /* RnpMailUI */,
+				AAC000000000000000000008 /* TrustStore */,
+				AAC000000000000000000009 /* KeyLifecycle */,
 			);
 			productName = RNP;
 			productReference = AA5000000000000000000003 /* RNP.app */;
@@ -1220,6 +1229,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
 			productName = MailSecurityUI;
+		};
+		AAC000000000000000000007 /* TrustStore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			productName = TrustStore;
+		};
+		AAC000000000000000000008 /* TrustStore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			productName = TrustStore;
+		};
+		AAC000000000000000000009 /* KeyLifecycle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			productName = KeyLifecycle;
 		};
 		F7F139FFDED467A772241EBC /* RnpMailUI */ = {
 			isa = XCSwiftPackageProductDependency;
