@@ -111,7 +111,8 @@ xcodebuild \
     archive \
     -archivePath "${ARCHIVE_PATH}" \
     "${AUTH_ARGS[@]}" \
-    DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM}"
+    DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM}" \
+    CODE_SIGN_STYLE=Manual
 
 xcodebuild \
     -exportArchive \

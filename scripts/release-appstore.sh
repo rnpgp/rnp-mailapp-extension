@@ -196,6 +196,7 @@ xcodebuild \
     -archivePath "${ARCHIVE_PATH}" \
     "${AUTH_ARGS[@]}" \
     DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM}" \
+    CODE_SIGN_STYLE=Manual \
     "${CODE_SIGN_ARGS[@]}"
 
 xcodebuild \
