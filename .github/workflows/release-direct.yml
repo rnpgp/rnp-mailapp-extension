@@ -47,12 +47,51 @@ jobs:
         mkdir -p "${RUNNER_TEMP}/asc"
         echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
 
+    - name: Download container app provisioning profile
+      id: container-profile
+      uses: Apple-Actions/download-provisioning-profiles@v6
+      with:
+        bundle-id: com.rnpgp.RNPForMail
+        profile-type: MAC_APP_DIRECT
+        issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        api-private-key: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
+
+    - name: Download Mail extension provisioning profile
+      id: extension-profile
+      uses: Apple-Actions/download-provisioning-profiles@v6
+      with:
+        bundle-id: com.rnpgp.RNPForMail.MailExtension
+        profile-type: MAC_APP_DIRECT
+        issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        api-private-key: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
+
+    - name: Parse provisioning profile UDIDs
+      id: udid
+      env:
+        CONTAINER_PROFILES: ${{ steps.container-profile.outputs.profiles }}
+        EXTENSION_PROFILES: ${{ steps.extension-profile.outputs.profiles }}
+      run: |
+        echo "Container profiles: ${CONTAINER_PROFILES}"
+        echo "Extension profiles: ${EXTENSION_PROFILES}"
+        CONTAINER_UDID="$(printf '%s' "${CONTAINER_PROFILES}" | jq -r '.[0].udid // empty')"
+        EXTENSION_UDID="$(printf '%s' "${EXTENSION_PROFILES}" | jq -r '.[0].udid // empty')"
+        if [[ -z "${CONTAINER_UDID}" || -z "${EXTENSION_UDID}" ]]; then
+          echo "ERROR: missing provisioning profile udid" >&2
+          exit 1
+        fi
+        echo "container_udid=${CONTAINER_UDID}" >> "$GITHUB_OUTPUT"
+        echo "extension_udid=${EXTENSION_UDID}" >> "$GITHUB_OUTPUT"
+
     - name: Build and notarize release
       env:
         DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         ASC_API_KEY_P8: "${{ runner.temp }}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
         ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
         ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        CONTAINER_UDID: ${{ steps.udid.outputs.container_udid }}
+        EXTENSION_UDID: ${{ steps.udid.outputs.extension_udid }}
       run: ./scripts/release-direct.sh
 
     - name: Create or update GitHub Release
