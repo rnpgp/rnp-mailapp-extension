@@ -359,9 +359,9 @@ private struct MailKitMessage: MailMessage {
     var fromAddress: String { message.fromAddress.rawString }
     var recipientAddresses: [String] { message.allRecipientAddresses.map(\.rawString) }
     var isSending: Bool { message.state == .sending }
-    var toAddresses: [String] { message.toRecipients.map(\.rawString) }
-    var ccAddresses: [String] { message.ccRecipients.map(\.rawString) }
-    var bccAddresses: [String] { message.bccRecipients.map(\.rawString) }
+    var toAddresses: [String] { message.toAddresses.map(\.rawString) }
+    var ccAddresses: [String] { message.ccAddresses.map(\.rawString) }
+    var bccAddresses: [String] { message.bccAddresses.map(\.rawString) }
 }
 
 /// Wraps `MEComposeContext`.

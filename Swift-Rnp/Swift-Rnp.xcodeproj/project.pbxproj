@@ -26,8 +26,7 @@
 		AA1000000000000000000009 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000A /* ContentView.swift */; };
 		AA100000000000000000000A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000B /* ContentViewModel.swift */; };
 		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
-		AA100000000000000000000E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* Assets.xcassets */; };
-		AA100000000000000000000F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000E /* Preview Assets.xcassets */; };
+		AA100000000000000000000E /* RNP.icns in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* RNP.icns */; };
 		AA1000000000000000000010 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA1000000000000000000011 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000001 /* Rnp */; };
 		AA1000000000000000000012 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000002 /* Rnp */; };
@@ -115,8 +114,7 @@
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
-		AA200000000000000000000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		AA200000000000000000000E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		AA200000000000000000000D /* RNP.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = RNP.icns; sourceTree = "<group>"; };
 		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppGroup.swift; path = ../../Sources/MailSecurityEngine/AppGroup.swift; sourceTree = "<group>"; };
 		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainPassphraseStore.swift; path = ../../Sources/MailSecurityEngine/KeychainPassphraseStore.swift; sourceTree = "<group>"; };
 		AA5000000000000000000001 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -277,7 +275,7 @@
 				AA3000000000000000000006 /* Model */,
 				AA3000000000000000000007 /* View */,
 				AA2000000000000000000008 /* MailExtensionsContainerApp.swift */,
-				AA200000000000000000000D /* Assets.xcassets */,
+				AA200000000000000000000D /* RNP.icns */,
 				AA300000000000000000000A /* Preview Content */,
 				F1B5C106AE83671ABFEEFD4A /* Direct.entitlements */,
 				218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */,
@@ -326,7 +324,6 @@
 		AA300000000000000000000A /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				AA200000000000000000000E /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -506,8 +503,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA100000000000000000000F /* Preview Assets.xcassets in Resources */,
-				AA100000000000000000000E /* Assets.xcassets in Resources */,
+				AA100000000000000000000E /* RNP.icns in Resources */,
 				4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */,
 				BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */,
 				FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */,
@@ -600,8 +596,6 @@
 		1EFE3883392AEE6D159EB242 /* Direct */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/Direct.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -685,7 +679,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -700,7 +694,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
@@ -731,7 +725,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
@@ -793,7 +787,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -849,7 +843,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -945,8 +939,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/Direct.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -973,8 +965,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/Direct.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1027,7 +1017,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
@@ -1083,7 +1073,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -1095,8 +1085,6 @@
 		EDFE0BFC0B52510C474B9D61 /* AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MailExtensionsContainer/AppStore.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1125,7 +1113,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
