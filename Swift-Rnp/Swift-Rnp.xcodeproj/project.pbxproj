@@ -119,7 +119,7 @@
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapNavigationCoordinator.swift; sourceTree = "<group>"; };
-		AA200000000000000000000D /* RNP.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = RNP.icns; sourceTree = "<group>"; };
+		AA200000000000000000000D /* RNP.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "Resources/RNP.icns"; sourceTree = "<group>"; };
 		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppGroup.swift; path = ../../Sources/MailSecurityEngine/AppGroup.swift; sourceTree = "<group>"; };
 		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainPassphraseStore.swift; path = ../../Sources/MailSecurityEngine/KeychainPassphraseStore.swift; sourceTree = "<group>"; };
 		AA5000000000000000000001 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
