@@ -50,7 +50,7 @@ jobs:
     - name: Build and notarize release
       env:
         DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-        ASC_API_KEY_P8: "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
+        ASC_API_KEY_P8: "${{ runner.temp }}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
         ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
         ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
       run: ./scripts/release-direct.sh
