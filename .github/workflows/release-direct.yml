@@ -97,6 +97,26 @@ jobs:
         echo "container_udid=${CONTAINER_UDID}" >> "$GITHUB_OUTPUT"
         echo "extension_udid=${EXTENSION_UDID}" >> "$GITHUB_OUTPUT"
 
+    - name: Install profiles to the user Library path
+      run: |
+        USER_LIB="$HOME/Library/MobileDevice/Provisioning Profiles"
+        SYSTEM_LIB="/Library/MobileDevice/Provisioning Profiles"
+        mkdir -p "$USER_LIB"
+        # The Apple-Actions/download-provisioning-profiles Action writes to the
+        # system /Library path; xcodebuild looks in the user $HOME path. Copy
+        # (or move if writable) to bridge the two.
+        if [[ -d "$SYSTEM_LIB" ]]; then
+          shopt -s nullglob
+          for src in "$SYSTEM_LIB"/*.provisionprofile; do
+            [[ -e "$src" ]] || continue
+            cp -f "$src" "$USER_LIB/$(basename "$src")"
+            echo "Copied $src -> $USER_LIB"
+          done
+          ls -la "$USER_LIB" || true
+        else
+          echo "No system profile dir at $SYSTEM_LIB"
+        fi
+
     - name: Build and notarize release
       env:
         DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
