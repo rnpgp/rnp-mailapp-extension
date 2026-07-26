@@ -1,8 +1,8 @@
-// Shared identifiers for the RnpMail container app and Mail extension.
+// Shared identifiers for the RNP for Mail container app and Mail extension.
 // Included by the channel xcconfigs (Config/Direct.xcconfig and
 // Config/AppStore.xcconfig) so the IDs live in one place.
 
-RNPMAIL_BUNDLE_ID_CONTAINER = com.rnpgp.RnpMail
-RNPMAIL_BUNDLE_ID_EXTENSION = com.rnpgp.RnpMail.MailExtension
-RNPMAIL_APP_GROUP = group.com.rnpgp.RnpMail
+RNPMAIL_BUNDLE_ID_CONTAINER = com.rnpgp.RNPForMail
+RNPMAIL_BUNDLE_ID_EXTENSION = com.rnpgp.RNPForMail.MailExtension
+RNPMAIL_APP_GROUP = group.com.rnpgp.RNPForMail
 RNPMAIL_KEYCHAIN_ACCESS_GROUP = $(AppIdentifierPrefix)$(RNPMAIL_APP_GROUP)

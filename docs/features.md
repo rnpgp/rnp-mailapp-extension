@@ -69,7 +69,7 @@ See [Keyservers](keyserver.md) for the full picture.
 
 | Feature | Implementation |
 |---|---|
-| Shared keyring | GPG-compatible `pubring.gpg` / `secring.gpg` in the app group `group.com.rnpgp.RnpMail`, shared by the app and the extension |
+| Shared keyring | GPG-compatible `pubring.gpg` / `secring.gpg` in the app group `group.com.rnpgp.RNPForMail`, shared by the app and the extension |
 | Passphrase storage | Random keyring passphrase in the macOS Keychain access group; never in UserDefaults or files |
 | Touch ID | Optional biometric unlock, offered during onboarding |
 | App sandbox | `com.apple.security.app-sandbox` with only app-groups, network-client (keyservers), and user-selected file read/write entitlements |

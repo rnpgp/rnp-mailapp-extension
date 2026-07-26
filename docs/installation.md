@@ -69,7 +69,7 @@ open Swift-Rnp/Swift-Rnp.xcodeproj
 For a first local try-out no Apple Developer account is needed: select the
 **RNP** scheme and run it (Product → Run). Unsigned local builds
 work, but Mail.app will not load an unsigned or ad-hoc-signed extension, and
-the keyring then lives in `~/Library/Application Support/RNP Mail Extension`
+the keyring then lives in `~/Library/Application Support/RNP for Mail`
 instead of the shared app-group container.
 
 ### 3. Sign for Mail integration
@@ -78,10 +78,10 @@ For Mail.app to load the extension, both targets must be signed:
 
 1. In each target's **Signing & Capabilities** tab, set your
    **DEVELOPMENT_TEAM** (the project deliberately ships with it empty).
-2. The default bundle identifiers are `com.rnpgp.RnpMail` (container) and
-   `com.rnpgp.RnpMail.MailExtension` (extension), single-sourced in
+2. The default bundle identifiers are `com.rnpgp.RNPForMail` (container) and
+   `com.rnpgp.RNPForMail.MailExtension` (extension), single-sourced in
    `Swift-Rnp/Shared/IDs.xcconfig`. If you change them, keep the extension ID
-   prefixed by the app ID, and update the app group `group.com.rnpgp.RnpMail`
+   prefixed by the app ID, and update the app group `group.com.rnpgp.RNPForMail`
    in the same file to a group registered to your team.
 3. Run the **RNP** scheme again so the signed extension is
    embedded and registered.
@@ -121,6 +121,6 @@ the extension in Mail, and send your first signed and encrypted message.
 2. Move the RNP app from Applications to the Trash.
 3. Optionally delete the shared data (keyring, trust database, revocation
    certificates) from the app-group container
-   `~/Library/Group Containers/group.com.rnpgp.RnpMail`, and the keyring
+   `~/Library/Group Containers/group.com.rnpgp.RNPForMail`, and the keyring
    passphrase item from the Keychain. **This permanently destroys your secret
    keys** — export them first if you might need them again.

@@ -1,4 +1,4 @@
-# RNP Mail Extension Documentation
+# RNP for Mail Documentation
 
 RNP is an OpenPGP security extension for Apple Mail on macOS, together with its
 companion key-manager app. It signs, encrypts, decrypts, and verifies mail

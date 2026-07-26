@@ -39,7 +39,7 @@ public final class SecurityStateRecordStore {
     public static let lastMessageSignatureFilename = "last-message.json.sig"
     public static let messagesSubdirectory = "messages"
 
-    private static let signingKeyService = "RNP Mail Extension state signing key"
+    private static let signingKeyService = "RNP for Mail state signing key"
     private static let signingKeyAccount = "security-state"
 
     public let directory: URL

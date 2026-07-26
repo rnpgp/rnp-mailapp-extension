@@ -589,7 +589,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.MailExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -616,7 +616,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail;
 				PRODUCT_NAME = RNP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MAIN = YES;
@@ -701,7 +701,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
@@ -732,7 +732,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
@@ -908,7 +908,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.MailExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -933,7 +933,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.MailExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -961,7 +961,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail;
 				PRODUCT_NAME = RNP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MAIN = YES;
@@ -989,7 +989,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail;
 				PRODUCT_NAME = RNP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MAIN = YES;
@@ -1013,7 +1013,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.MailExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1028,7 +1028,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
@@ -1111,7 +1111,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail;
 				PRODUCT_NAME = RNP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MAIN = YES;
@@ -1126,7 +1126,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RnpMail.UITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.UITests;
 				PRODUCT_NAME = "Ribose containerUITests";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;

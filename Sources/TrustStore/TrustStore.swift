@@ -83,7 +83,7 @@ public final class TrustStore {
     private let lock = NSRecursiveLock()
     private var database: TrustDatabase
     private let jsonStore: SignedJSONStore<TrustDatabase>
-    private let logger = Logger(subsystem: "com.rnpgp.RnpMail", category: "TrustStore")
+    private let logger = Logger(subsystem: "com.rnpgp.RNPForMail", category: "TrustStore")
 
     /// Creates a trust store in `directory` using the supplied signing key.
     public init(directory: URL, privateKey: Curve25519.Signing.PrivateKey) throws {
@@ -128,7 +128,7 @@ public final class TrustStore {
         self.database = (try? store.load()) ?? TrustDatabase()
     }
 
-    private static let trustSigningKeyService = "RNP Mail Extension trust signing"
+    private static let trustSigningKeyService = "RNP for Mail trust signing"
     private static let trustSigningKeyAccount = "trust-signing-key"
 
     // MARK: - Queries

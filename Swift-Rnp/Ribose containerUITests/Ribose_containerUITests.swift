@@ -172,7 +172,7 @@ final class Ribose_containerUITests: XCTestCase {
         // container tmp keep every test isolated from the others and from
         // the user's real keyring.
         let containerTmp = NSHomeDirectory()
-            .appending("/Library/Containers/com.rnpgp.RnpMail/Data/tmp")
+            .appending("/Library/Containers/com.rnpgp.RNPForMail/Data/tmp")
         try? FileManager.default.createDirectory(
             atPath: containerTmp,
             withIntermediateDirectories: true

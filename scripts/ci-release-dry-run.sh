@@ -56,7 +56,15 @@ openssl req -x509 -newkey rsa:2048 \
     -days 1 -nodes \
     -config "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/ci-dry-run-cert.conf"
 
-openssl pkcs12 -export -legacy \
+# OpenSSL 3.x emits the modern PKCS#12 format by default; macOS `security`
+# on modern runners reads it fine. Older OpenSSL (LibreSSL on macOS-native)
+# doesn't recognize the -legacy flag, so probe before using it.
+LEGACY_FLAG=""
+if openssl pkcs12 -help 2>&1 | grep -q -- '-legacy'; then
+    LEGACY_FLAG="-legacy"
+fi
+
+openssl pkcs12 -export ${LEGACY_FLAG} \
     -out "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/ci-dry-run.p12" \
     -inkey "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/ci-dry-run.key" \
     -in "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/ci-dry-run.crt" \

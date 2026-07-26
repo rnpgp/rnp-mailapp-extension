@@ -17,7 +17,7 @@ RNP provides OpenPGP signing, encryption, and key management for Apple Mail on m
 | Asset | Location | Sensitivity |
 |---|---|---|
 | OpenPGP secret keys | Shared app-group keyring (`pubring.gpg`, `secring.gpg`) | Critical: loss or extraction allows decryption and impersonation. |
-| Keyring passphrase | macOS Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RnpMail`) | Critical: protects secret key material in the keyring. |
+| Keyring passphrase | macOS Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RNPForMail`) | Critical: protects secret key material in the keyring. |
 | Per-key passphrases | macOS Keychain, one generic-password item per key fingerprint | Critical: protects imported keys that were not re-protected with the keyring passphrase. |
 | Trust database | Shared app-group container (`trust.json` + `trust.json.sig`) | High: tampering can downgrade a key from verified to unverified or cause denial of service. |
 | Revocation certificates | Shared app-group container (`<fingerprint>-revocation.asc`) | High: loss prevents future revocation of the corresponding key. |
@@ -63,7 +63,7 @@ RNP provides OpenPGP signing, encryption, and key management for Apple Mail on m
 - **App group container is shared.** Both the container app and the Mail extension run with the same app-group identifier. Any process with access to that group could read public keys and the trust database. Secret keys remain encrypted by the keyring passphrase.
 - **Keychain is the root of trust for the passphrase.** The keyring passphrase is stored in the user's default keychain via `KeychainPassphraseStore`. It is never written to UserDefaults, preferences files, or logs. With Touch ID enabled, the passphrase additionally sits behind a biometric access control; the Mail extension may then show a system Touch ID prompt the first time it needs the passphrase in its process, and a cancelled prompt fails that sign/decrypt operation gracefully instead of exposing the passphrase. A manual passphrase fallback (verified against the secret keys, without downgrading the Keychain protection) is offered in the container app.
 - **Keyserver network boundary.** Key upload, discovery, and revocation-check queries travel over HTTPS to the configured keyserver (default: `keys.openpgp.org`). No other network calls are made.
-- **Extension state records.** On every OpenPGP message it decodes, the extension writes a small JSON record (subject, Message-ID, sender, signature/trust status, encryption flag — never message bodies) to `ExtensionState/` in the app group container. These records exist so the end-to-end test harness can assert the banner state from outside Mail, and they carry the same metadata Mail already shows in the message list. They live in the same protection domain as the keyring; unsigned fallback builds use `~/Library/Application Support/RNP Mail Extension/ExtensionState` instead.
+- **Extension state records.** On every OpenPGP message it decodes, the extension writes a small JSON record (subject, Message-ID, sender, signature/trust status, encryption flag — never message bodies) to `ExtensionState/` in the app group container. These records exist so the end-to-end test harness can assert the banner state from outside Mail, and they carry the same metadata Mail already shows in the message list. They live in the same protection domain as the keyring; unsigned fallback builds use `~/Library/Application Support/RNP for Mail/ExtensionState` instead.
 
 ## What Is Protected
 
