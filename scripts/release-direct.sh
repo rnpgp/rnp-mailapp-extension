@@ -97,7 +97,6 @@ rm -rf "${ARCHIVE_PATH}" "${EXPORT_PATH}"
 AUTH_ARGS=()
 if [[ -n "${ASC_API_KEY_P8}" && -n "${ASC_API_KEY_ID}" && -n "${ASC_ISSUER_ID}" ]]; then
     AUTH_ARGS=(
-        -allowProvisioningUpdates
         -authenticationKeyPath "${ASC_API_KEY_P8}"
         -authenticationKeyID "${ASC_API_KEY_ID}"
         -authenticationKeyIssuerID "${ASC_ISSUER_ID}"
