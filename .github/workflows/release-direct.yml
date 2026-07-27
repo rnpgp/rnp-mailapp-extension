@@ -19,6 +19,12 @@ jobs:
     - name: Checkout swift-rnp
       uses: actions/checkout@v7
 
+    - name: Set up Ruby + fastlane
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: true
+
     - name: Cache RNPFramework.xcframework
       id: framework-cache
       uses: actions/cache@v6
@@ -33,136 +39,16 @@ jobs:
     - name: Install create-dmg
       run: brew install create-dmg
 
-    - name: Import signing certificate
-      uses: Apple-Actions/import-codesign-certs@v7
-      with:
-        p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
-        p12-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
-        keychain-password: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
-
-    - name: Write App Store Connect API key
+    - name: Build, sign, notarize, package
       env:
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APPLE_ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        APPLE_ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
-      run: |
-        mkdir -p "${RUNNER_TEMP}/asc"
-        echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
-
-    - name: Decode ASC API key to PEM for Actions that want raw PKCS8
-      id: asc-key
-      env:
-        APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
-      run: |
-        raw="$(echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode)"
-        # Multi-line value; use EOF delimiter per GitHub Actions spec.
-        {
-          echo "pem<<EOF"
-          echo "${raw}"
-          echo "EOF"
-        } >> "$GITHUB_OUTPUT"
-
-    - name: Download container app provisioning profile
-      id: container-profile
-      uses: Apple-Actions/download-provisioning-profiles@v6
-      with:
-        bundle-id: com.rnpgp.RNPForMail
-        profile-type: MAC_APP_DIRECT
-        issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-        api-private-key: ${{ steps.asc-key.outputs.pem }}
-
-    - name: Download Mail extension provisioning profile
-      id: extension-profile
-      uses: Apple-Actions/download-provisioning-profiles@v6
-      with:
-        bundle-id: com.rnpgp.RNPForMail.MailExtension
-        profile-type: MAC_APP_DIRECT
-        issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-        api-private-key: ${{ steps.asc-key.outputs.pem }}
-
-    - name: Parse provisioning profile UDIDs
-      id: udid
-      env:
-        CONTAINER_PROFILES: ${{ steps.container-profile.outputs.profiles }}
-        EXTENSION_PROFILES: ${{ steps.extension-profile.outputs.profiles }}
-      run: |
-        echo "Container profiles: ${CONTAINER_PROFILES}"
-        echo "Extension profiles: ${EXTENSION_PROFILES}"
-        CONTAINER_NAME="$(printf '%s' "${CONTAINER_PROFILES}" | jq -r '.[0].name // empty')"
-        EXTENSION_NAME="$(printf '%s' "${EXTENSION_PROFILES}" | jq -r '.[0].name // empty')"
-        CONTAINER_UUID="$(printf '%s' "${CONTAINER_PROFILES}" | jq -r '.[0].udid // empty')"
-        EXTENSION_UUID="$(printf '%s' "${EXTENSION_PROFILES}" | jq -r '.[0].udid // empty')"
-        if [[ -z "${CONTAINER_NAME}" || -z "${EXTENSION_NAME}" || -z "${CONTAINER_UUID}" || -z "${EXTENSION_UUID}" ]]; then
-          echo "ERROR: missing provisioning profile name or udid" >&2
-          exit 1
-        fi
-        echo "container_name=${CONTAINER_NAME}" >> "$GITHUB_OUTPUT"
-        echo "extension_name=${EXTENSION_NAME}" >> "$GITHUB_OUTPUT"
-        echo "container_uuid=${CONTAINER_UUID}" >> "$GITHUB_OUTPUT"
-        echo "extension_uuid=${EXTENSION_UUID}" >> "$GITHUB_OUTPUT"
-
-    - name: Debug — inspect downloaded provisioning profiles
-      run: |
-        echo "=== Installed profiles ==="
-        ls -la "$HOME/Library/MobileDevice/Provisioning Profiles/" || true
-        echo ""
-        echo "=== Profile contents ==="
-        for f in "$HOME/Library/MobileDevice/Provisioning Profiles/"*.provisionprofile; do
-          [[ -e "$f" ]] || continue
-          echo "--- $(basename "$f") ---"
-          # Extract the embedded plist from the profile.
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract AppIDName raw -o - - \
-            | sed 's/^/  AppIDName: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract TeamIdentifier raw -o - - \
-            | sed 's/^/  TeamIdentifier: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Entitlements.application-identifiers raw -o - - \
-            | sed 's/^/  application-identifiers: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Entitlements.com.apple.security.application-groups raw -o - - \
-            | sed 's/^/  application-groups: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Name raw -o - - \
-            | sed 's/^/  Name: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract UUID raw -o - - \
-            | sed 's/^/  UUID: /' || true
-        done
-
-    - name: Install profiles to the user Library path
-      run: |
-        USER_LIB="$HOME/Library/MobileDevice/Provisioning Profiles"
-        SYSTEM_LIB="/Library/MobileDevice/Provisioning Profiles"
-        mkdir -p "$USER_LIB"
-        # The Apple-Actions/download-provisioning-profiles Action writes to the
-        # system /Library path; xcodebuild looks in the user $HOME path. Copy
-        # (or move if writable) to bridge the two. Also create .mobileprovision
-        # symlinks because some Xcode versions only scan that extension.
-        shopt -s nullglob
-        for src in "$USER_LIB"/*.provisionprofile "$SYSTEM_LIB"/*.provisionprofile; do
-          [[ -e "$src" ]] || continue
-          base="$(basename "$src" .provisionprofile)"
-          # Copy to system path if it was only in user (no-op if already there).
-          [[ -e "$SYSTEM_LIB/${base}.provisionprofile" ]] || cp -f "$src" "$SYSTEM_LIB/${base}.provisionprofile" 2>/dev/null || true
-          # Add .mobileprovision alongside — Xcode sometimes only scans this extension.
-          cp -f "$src" "$USER_LIB/${base}.mobileprovision"
-          echo "Installed: $USER_LIB/${base}.mobileprovision"
-        done
-        ls -la "$USER_LIB" || true
-
-    - name: Build and notarize release
-      env:
-        DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-        ASC_API_KEY_P8: "${{ runner.temp }}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
-        ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-        ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        CONTAINER_NAME: ${{ steps.udid.outputs.container_name }}
-        EXTENSION_NAME: ${{ steps.udid.outputs.extension_name }}
-        CONTAINER_UUID: ${{ steps.udid.outputs.container_uuid }}
-        EXTENSION_UUID: ${{ steps.udid.outputs.extension_uuid }}
-      run: ./scripts/release-direct.sh
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+        MATCH_GIT_BASIC_AUTH_B64: ${{ secrets.MATCH_GIT_BASIC_AUTH_B64 }}
+      run: bundle exec fastlane mac release_direct
 
     - name: Create or update GitHub Release
       uses: softprops/action-gh-release@v3
