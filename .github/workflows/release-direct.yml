@@ -88,14 +88,14 @@ jobs:
       run: |
         echo "Container profiles: ${CONTAINER_PROFILES}"
         echo "Extension profiles: ${EXTENSION_PROFILES}"
-        CONTAINER_UDID="$(printf '%s' "${CONTAINER_PROFILES}" | jq -r '.[0].udid // empty')"
-        EXTENSION_UDID="$(printf '%s' "${EXTENSION_PROFILES}" | jq -r '.[0].udid // empty')"
-        if [[ -z "${CONTAINER_UDID}" || -z "${EXTENSION_UDID}" ]]; then
-          echo "ERROR: missing provisioning profile udid" >&2
+        CONTAINER_NAME="$(printf '%s' "${CONTAINER_PROFILES}" | jq -r '.[0].name // empty')"
+        EXTENSION_NAME="$(printf '%s' "${EXTENSION_PROFILES}" | jq -r '.[0].name // empty')"
+        if [[ -z "${CONTAINER_NAME}" || -z "${EXTENSION_NAME}" ]]; then
+          echo "ERROR: missing provisioning profile name" >&2
           exit 1
         fi
-        echo "container_udid=${CONTAINER_UDID}" >> "$GITHUB_OUTPUT"
-        echo "extension_udid=${EXTENSION_UDID}" >> "$GITHUB_OUTPUT"
+        echo "container_name=${CONTAINER_NAME}" >> "$GITHUB_OUTPUT"
+        echo "extension_name=${EXTENSION_NAME}" >> "$GITHUB_OUTPUT"
 
     - name: Install profiles to the user Library path
       run: |
@@ -123,8 +123,8 @@ jobs:
         ASC_API_KEY_P8: "${{ runner.temp }}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
         ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
         ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        CONTAINER_UDID: ${{ steps.udid.outputs.container_udid }}
-        EXTENSION_UDID: ${{ steps.udid.outputs.extension_udid }}
+        CONTAINER_NAME: ${{ steps.udid.outputs.container_name }}
+        EXTENSION_NAME: ${{ steps.udid.outputs.extension_name }}
       run: ./scripts/release-direct.sh
 
     - name: Create or update GitHub Release
