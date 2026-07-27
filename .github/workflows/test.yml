@@ -38,18 +38,18 @@ jobs:
 
     - name: Resolve SwiftPM packages
       run: >
-        xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -resolvePackageDependencies
+        xcodebuild -project MailApp/RnpMail.xcodeproj -resolvePackageDependencies
 
     - name: Build MailPlugin scheme
       run: >
-        xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
+        xcodebuild -project MailApp/RnpMail.xcodeproj
         -scheme MailPlugin -configuration Direct build CODE_SIGNING_ALLOWED=NO
       env:
         PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
 
     - name: Build container app scheme
       run: >
-        xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
+        xcodebuild -project MailApp/RnpMail.xcodeproj
         -scheme RNP -configuration Direct build CODE_SIGNING_ALLOWED=NO
       env:
         PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
@@ -57,7 +57,7 @@ jobs:
     - name: Run container app UI tests
       continue-on-error: true
       run: >
-        xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj
+        xcodebuild -project MailApp/RnpMail.xcodeproj
         -scheme RNP -configuration Debug test CODE_SIGNING_ALLOWED=NO
       env:
         PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig

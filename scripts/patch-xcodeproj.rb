@@ -4,7 +4,7 @@
 
 require 'xcodeproj'
 
-project_path = File.expand_path('../Swift-Rnp/Swift-Rnp.xcodeproj', __dir__)
+project_path = File.expand_path('../MailApp/RnpMail.xcodeproj', __dir__)
 project = Xcodeproj::Project.open(project_path)
 
 root_group = project.main_group
@@ -16,7 +16,7 @@ if old_xcconfig_ref
   old_xcconfig_ref.remove_from_project
 end
 
-new_xcconfig_path = File.expand_path('../Swift-Rnp/Shared/RNPFramework.xcconfig', __dir__)
+new_xcconfig_path = File.expand_path('../MailApp/Shared/RNPFramework.xcconfig', __dir__)
 new_xcconfig_ref = shared_group.new_file('RNPFramework.xcconfig')
 
 # Add the xcframework reference at the project root.

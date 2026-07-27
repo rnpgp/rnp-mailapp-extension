@@ -4,7 +4,7 @@
 
 require 'xcodeproj'
 
-project_path = 'Swift-Rnp/Swift-Rnp.xcodeproj'
+project_path = 'MailApp/RnpMail.xcodeproj'
 project = Xcodeproj::Project.open(project_path)
 
 target = project.targets.find { |t| t.name == 'Ribose containerUITests' }

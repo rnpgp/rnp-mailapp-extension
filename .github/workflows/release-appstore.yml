@@ -105,14 +105,14 @@ jobs:
     - name: Sandbox audit
       if: startsWith(env.TAG, 'v')
       env:
-        AUDIT_APP_PATH: ${{ github.workspace }}/Swift-Rnp/Build/RNP-AppStore.xcarchive/Products/Applications/RNP.app
+        AUDIT_APP_PATH: ${{ github.workspace }}/MailApp/Build/RNP-AppStore.xcarchive/Products/Applications/RNP.app
       run: ./scripts/sandbox-audit.sh
 
     - name: Upload to App Store Connect
       if: startsWith(env.TAG, 'v')
       uses: Apple-Actions/upload-testflight-build@v5
       with:
-        app-paths: ${{ github.workspace }}/Swift-Rnp/Build/RNP-AppStore.xcarchive/Products/Applications/RNP.app
+        app-paths: ${{ github.workspace }}/MailApp/Build/RNP-AppStore.xcarchive/Products/Applications/RNP.app
         issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
         api-private-key: ${{ secrets.APPLE_ASC_API_KEY_P8 }}

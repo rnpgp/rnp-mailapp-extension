@@ -5,7 +5,7 @@ Recreates the RNP logo (the two overlapping circles with the teal lens and
 the "rnp" wordmark from `icon.png` at the repo root) at icon-set resolution
 on a macOS-style rounded tile, then writes every slot of
 
-    Swift-Rnp/MailExtensionsContainer/Assets.xcassets/AppIcon.appiconset
+    MailApp/MailExtensionsContainer/Assets.xcassets/AppIcon.appiconset
 
 Run from the repo root:
 
@@ -23,7 +23,7 @@ from PIL import Image, ImageDraw, ImageFont
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ICONSET = os.path.join(
     REPO_ROOT,
-    "Swift-Rnp/MailExtensionsContainer/Assets.xcassets/AppIcon.appiconset",
+    "MailApp/MailExtensionsContainer/Assets.xcassets/AppIcon.appiconset",
 )
 
 # Brand colors sampled from icon.png.

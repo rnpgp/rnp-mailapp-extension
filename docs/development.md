@@ -5,7 +5,7 @@ extension. The repository contains two things that work together:
 
 1. a **Swift Package Manager package** with the Swift bindings for librnp and
    all non-MailKit logic, and
-2. an **Xcode project** (`Swift-Rnp/Swift-Rnp.xcodeproj`) with the container
+2. an **Xcode project** (`MailApp/RnpMail.xcodeproj`) with the container
    app and the MailKit extension, built entirely on that package.
 
 ## Repository layout
@@ -38,7 +38,7 @@ Sources/
                                PaperKeyRestore, DeleteForever, ArchivedKeys,
                                EngineEnvironment, InlineRecoverySheets,
                                RecommendedActionBanner
-Swift-Rnp/
+MailApp/
   Swift-Rnp.xcodeproj/         container app + Mail extension project
   MailExtensionsContainer/     the RNP container app (target "RNP"),
                                including RoadmapNavigationCoordinator
@@ -88,13 +88,13 @@ tests).
 export PKG_CONFIG_PATH="$(pwd)/Vendor/pkgconfig"
 
 # Container app + Mail extension (compile checks; no signing)
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin \
+xcodebuild -project MailApp/RnpMail.xcodeproj -scheme MailPlugin \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP \
+xcodebuild -project MailApp/RnpMail.xcodeproj -scheme RNP \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
 
 # Container app UI tests (onboarding, key generation, accessibility audits)
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP \
+xcodebuild -project MailApp/RnpMail.xcodeproj -scheme RNP \
     test CODE_SIGNING_ALLOWED=NO
 ```
 
@@ -129,7 +129,7 @@ container so the harness can assert banner state from outside Mail.
 ## Release pipeline
 
 Two channels, both from tags (`v$MARKETING_VERSION`, checked against
-`Swift-Rnp/Config/Version.xcconfig`):
+`MailApp/Config/Version.xcconfig`):
 
 - **Direct** (`.github/workflows/release-direct.yml`) — builds the `Direct`
   configuration, signs with Developer ID, notarizes and staples, creates

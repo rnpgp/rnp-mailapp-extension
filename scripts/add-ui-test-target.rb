@@ -6,7 +6,7 @@
 
 require 'xcodeproj'
 
-project_path = 'Swift-Rnp/Swift-Rnp.xcodeproj'
+project_path = 'MailApp/RnpMail.xcodeproj'
 project = Xcodeproj::Project.open(project_path)
 
 # Find the container app target.
@@ -49,7 +49,7 @@ ui_target.build_configurations.each do |config|
 end
 
 # Add the target to the scheme's test action.
-scheme_path = 'Swift-Rnp/Swift-Rnp.xcodeproj/xcshareddata/xcschemes/Ribose container.xcscheme'
+scheme_path = 'MailApp/RnpMail.xcodeproj/xcshareddata/xcschemes/Ribose container.xcscheme'
 if File.exist?(scheme_path)
   scheme = Xcodeproj::XCScheme.new(scheme_path)
   scheme.add_test_target(ui_target)
