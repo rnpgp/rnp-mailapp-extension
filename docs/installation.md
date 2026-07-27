@@ -63,7 +63,7 @@ sudo cmake --install rnp/build   # installs into /usr/local
 ```sh
 git clone https://github.com/rnpgp/swift-rnp.git
 cd swift-rnp
-open Swift-Rnp/Swift-Rnp.xcodeproj
+open MailApp/RnpMail.xcodeproj
 ```
 
 For a first local try-out no Apple Developer account is needed: select the
@@ -80,7 +80,7 @@ For Mail.app to load the extension, both targets must be signed:
    **DEVELOPMENT_TEAM** (the project deliberately ships with it empty).
 2. The default bundle identifiers are `com.rnpgp.RNPForMail` (container) and
    `com.rnpgp.RNPForMail.MailExtension` (extension), single-sourced in
-   `Swift-Rnp/Shared/IDs.xcconfig`. If you change them, keep the extension ID
+   `MailApp/Shared/IDs.xcconfig`. If you change them, keep the extension ID
    prefixed by the app ID, and update the app group `group.com.rnpgp.RNPForMail`
    in the same file to a group registered to your team.
 3. Run the **RNP** scheme again so the signed extension is
@@ -90,9 +90,9 @@ Command-line builds (as used in CI) work without signing configuration:
 
 ```sh
 export PKG_CONFIG_PATH="$(pwd)/Vendor/pkgconfig"
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin \
+xcodebuild -project MailApp/RnpMail.xcodeproj -scheme MailPlugin \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP \
+xcodebuild -project MailApp/RnpMail.xcodeproj -scheme RNP \
     -configuration Direct build CODE_SIGNING_ALLOWED=NO
 ```
 

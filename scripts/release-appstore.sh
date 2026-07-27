@@ -27,10 +27,10 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-PROJECT="${REPO_ROOT}/Swift-Rnp/Swift-Rnp.xcodeproj"
+PROJECT="${REPO_ROOT}/MailApp/RnpMail.xcodeproj"
 SCHEME="RNP"
 CONFIG="AppStore"
-BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build"
+BUILD_DIR="${REPO_ROOT}/MailApp/Build"
 ARCHIVE_PATH="${BUILD_DIR}/RNP-AppStore.xcarchive"
 EXPORT_PATH="${BUILD_DIR}/Export-AppStore"
 
@@ -99,7 +99,7 @@ fi
 # ------------------------------------------------------------------
 # Version handling.
 # ------------------------------------------------------------------
-VERSION_FILE="${REPO_ROOT}/Swift-Rnp/Config/Version.xcconfig"
+VERSION_FILE="${REPO_ROOT}/MailApp/Config/Version.xcconfig"
 if [[ ! -f "${VERSION_FILE}" ]]; then
     echo "Missing version file: ${VERSION_FILE}" >&2
     exit 1
@@ -180,7 +180,7 @@ if [[ -n "${SIGNING_IDENTITY}" ]]; then
 fi
 
 # Prepare a temporary export-options plist with the literal Team ID substituted.
-EXPORT_OPTIONS_TEMPLATE="${REPO_ROOT}/Swift-Rnp/Config/ExportAppStore.plist"
+EXPORT_OPTIONS_TEMPLATE="${REPO_ROOT}/MailApp/Config/ExportAppStore.plist"
 EXPORT_OPTIONS_PLIST="${BUILD_DIR}/ExportOptions-AppStore.plist"
 if [[ -n "${DEVELOPMENT_TEAM}" ]]; then
     sed "s/__TEAM_ID__/${DEVELOPMENT_TEAM}/g" "${EXPORT_OPTIONS_TEMPLATE}" > "${EXPORT_OPTIONS_PLIST}"

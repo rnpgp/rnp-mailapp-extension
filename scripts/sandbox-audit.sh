@@ -6,14 +6,14 @@
 #   ./scripts/sandbox-audit.sh
 #
 # Override the build directory if you built a Release/AppStore archive:
-#   BUILD_DIR=Swift-Rnp/Build/Products/Release ./scripts/sandbox-audit.sh
+#   BUILD_DIR=MailApp/Build/Products/Release ./scripts/sandbox-audit.sh
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-DEFAULT_BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build/Products/Debug"
+DEFAULT_BUILD_DIR="${REPO_ROOT}/MailApp/Build/Products/Debug"
 APP_BUNDLE="${AUDIT_APP_PATH:-${BUILD_DIR:-${DEFAULT_BUILD_DIR}}/RNP.app}"
 APP_BIN="${APP_BUNDLE}/Contents/MacOS/RNP"
 
@@ -28,8 +28,8 @@ fi
 APPEX_NAME="$(basename "${APPEX_BUNDLE}" .appex)"
 APPEX_BIN="${APPEX_BUNDLE}/Contents/MacOS/${APPEX_NAME}"
 
-ENTITLEMENTS_CONTAINER="${REPO_ROOT}/Swift-Rnp/MailExtensionsContainer/AppStore.entitlements"
-ENTITLEMENTS_APPEX="${REPO_ROOT}/Swift-Rnp/MailPlugin/AppStore.entitlements"
+ENTITLEMENTS_CONTAINER="${REPO_ROOT}/MailApp/MailExtensionsContainer/AppStore.entitlements"
+ENTITLEMENTS_APPEX="${REPO_ROOT}/MailApp/MailPlugin/AppStore.entitlements"
 
 FAIL=0
 

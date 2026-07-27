@@ -14,8 +14,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-PROJECT="${REPO_ROOT}/Swift-Rnp/Swift-Rnp.xcodeproj"
-BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build"
+PROJECT="${REPO_ROOT}/MailApp/RnpMail.xcodeproj"
+BUILD_DIR="${REPO_ROOT}/MailApp/Build"
 
 echo "=== Building unsigned ==="
 PKG_CONFIG_PATH="${REPO_ROOT}/Vendor/pkgconfig" \

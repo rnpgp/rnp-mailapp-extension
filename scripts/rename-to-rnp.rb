@@ -7,7 +7,7 @@
 require 'xcodeproj'
 require 'fileutils'
 
-PROJECT_PATH = 'Swift-Rnp/Swift-Rnp.xcodeproj'
+PROJECT_PATH = 'MailApp/RnpMail.xcodeproj'
 SCHEMES_DIR = File.join(PROJECT_PATH, 'xcshareddata', 'xcschemes')
 OLD_NAME = 'Ribose container'
 NEW_NAME = 'RNP'

@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'Swift-Rnp/MailPlugin/**'
-      - 'Swift-Rnp/MailExtensionsContainer/**'
+      - 'MailApp/MailPlugin/**'
+      - 'MailApp/MailExtensionsContainer/**'
       - 'scripts/test-mail-e2e.sh'
       - 'scripts/test-mail-e2e-docker.sh'
       - 'scripts/mail-e2e-common.sh'
@@ -33,7 +33,7 @@ jobs:
       - name: Build signed app and extension
         run: |
           PKG_CONFIG_PATH=${{ github.workspace }}/Vendor/pkgconfig \
-          xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj \
+          xcodebuild -project MailApp/RnpMail.xcodeproj \
             -scheme RNP \
             -configuration Direct \
             build \

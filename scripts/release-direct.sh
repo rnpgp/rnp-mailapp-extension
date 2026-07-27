@@ -23,10 +23,10 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-PROJECT="${REPO_ROOT}/Swift-Rnp/Swift-Rnp.xcodeproj"
+PROJECT="${REPO_ROOT}/MailApp/RnpMail.xcodeproj"
 SCHEME="RNP"
 CONFIG="Direct"
-BUILD_DIR="${REPO_ROOT}/Swift-Rnp/Build"
+BUILD_DIR="${REPO_ROOT}/MailApp/Build"
 ARCHIVE_PATH="${BUILD_DIR}/RNP.xcarchive"
 EXPORT_PATH="${BUILD_DIR}/Export"
 DIST_DIR="${REPO_ROOT}/dist"
@@ -43,7 +43,7 @@ mkdir -p "${BUILD_DIR}" "${DIST_DIR}"
 # ------------------------------------------------------------------
 # Version sanity check: tag must be v$MARKETING_VERSION.
 # ------------------------------------------------------------------
-VERSION_FILE="${REPO_ROOT}/Swift-Rnp/Config/Version.xcconfig"
+VERSION_FILE="${REPO_ROOT}/MailApp/Config/Version.xcconfig"
 if [[ ! -f "${VERSION_FILE}" ]]; then
     echo "Missing version file: ${VERSION_FILE}" >&2
     exit 1
@@ -127,7 +127,7 @@ xcodebuild \
     -exportArchive \
     -archivePath "${ARCHIVE_PATH}" \
     -exportPath "${EXPORT_PATH}" \
-    -exportOptionsPlist "${REPO_ROOT}/Swift-Rnp/Config/ExportDirect.plist"
+    -exportOptionsPlist "${REPO_ROOT}/MailApp/Config/ExportDirect.plist"
 
 APP_BUNDLE="$(find "${EXPORT_PATH}" -name 'RNP.app' -maxdepth 1 | head -n1)"
 if [[ -z "${APP_BUNDLE}" ]]; then

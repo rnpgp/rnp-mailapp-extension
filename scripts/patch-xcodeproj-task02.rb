@@ -5,7 +5,7 @@
 
 require 'xcodeproj'
 
-project_path = File.expand_path('../Swift-Rnp/Swift-Rnp.xcodeproj', __dir__)
+project_path = File.expand_path('../MailApp/RnpMail.xcodeproj', __dir__)
 project = Xcodeproj::Project.open(project_path)
 
 root_group = project.main_group
