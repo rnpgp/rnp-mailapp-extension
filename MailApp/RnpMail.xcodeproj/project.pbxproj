@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		04EC615718EE893F2D8F7D8C /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F15FAC74F11C17A481229F /* LicensesView.swift */; };
+		0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */; };
 		1EA4CD8D67D36E8FCC08669A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */; };
 		28F770227CACA2BDEC4D0190 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
@@ -26,7 +27,6 @@
 		AA1000000000000000000009 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000A /* ContentView.swift */; };
 		AA100000000000000000000A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000B /* ContentViewModel.swift */; };
 		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
-		0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */; };
 		AA100000000000000000000E /* RNP.icns in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* RNP.icns */; };
 		AA1000000000000000000010 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA1000000000000000000011 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000001 /* Rnp */; };
@@ -99,6 +99,7 @@
 
 /* Begin PBXFileReference section */
 		08B0CCA210850092A9DCB536 /* Direct.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Direct.xcconfig; path = Config/Direct.xcconfig; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapNavigationCoordinator.swift; sourceTree = "<group>"; };
 		218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
 		2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UniformTypeIdentifiers.framework; sourceTree = "<group>"; };
@@ -118,11 +119,9 @@
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapNavigationCoordinator.swift; sourceTree = "<group>"; };
-		AA200000000000000000000D /* RNP.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "Resources/RNP.icns"; sourceTree = "<group>"; };
+		AA200000000000000000000D /* RNP.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Resources/RNP.icns; sourceTree = "<group>"; };
 		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppGroup.swift; path = ../../Sources/MailSecurityEngine/AppGroup.swift; sourceTree = "<group>"; };
 		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainPassphraseStore.swift; path = ../../Sources/MailSecurityEngine/KeychainPassphraseStore.swift; sourceTree = "<group>"; };
-		AA5000000000000000000001 /* Swift-Rnp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Swift-Rnp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5000000000000000000002 /* MailPlugin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailPlugin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5000000000000000000003 /* RNP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD1480B5CAD3FF9C8EC9FB44 /* Version.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Version.xcconfig; path = Config/Version.xcconfig; sourceTree = "<group>"; };
@@ -144,15 +143,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FA94A049D51D12E96C274DF /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		AA6000000000000000000002 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				AA1000000000000000000011 /* Rnp in Frameworks */,
-				28F770227CACA2BDEC4D0190 /* RNPFramework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,6 +182,14 @@
 			);
 			name = "Ribose containerUITests";
 			path = "Ribose containerUITests";
+			sourceTree = "<group>";
+		};
+		1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */,
+			);
+			path = RoadmapNavigationCoordinator;
 			sourceTree = "<group>";
 		};
 		36AF7617F543DF15DF4C5336 /* Licenses */ = {
@@ -247,7 +245,6 @@
 		AA3000000000000000000002 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA5000000000000000000001 /* Swift-Rnp */,
 				AA5000000000000000000002 /* MailPlugin.appex */,
 				AA5000000000000000000003 /* RNP.app */,
 				B0DF31866344739AFF3A2A9D /* Ribose containerUITests.xctest */,
@@ -330,14 +327,6 @@
 			path = KeysList;
 			sourceTree = "<group>";
 		};
-		1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */,
-			);
-			path = RoadmapNavigationCoordinator;
-			sourceTree = "<group>";
-		};
 		AA300000000000000000000A /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
@@ -369,25 +358,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA4000000000000000000001 /* Swift-Rnp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = AA9000000000000000000002 /* Build configuration list for PBXNativeTarget "Swift-Rnp" */;
-			buildPhases = (
-				AA6000000000000000000001 /* Sources */,
-				AA6000000000000000000002 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Swift-Rnp";
-			packageProductDependencies = (
-				AAC000000000000000000001 /* Rnp */,
-			);
-			productName = "Swift-Rnp";
-			productReference = AA5000000000000000000001 /* Swift-Rnp */;
-			productType = "com.apple.product-type.tool";
-		};
 		AA4000000000000000000002 /* MailPlugin */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA9000000000000000000003 /* Build configuration list for PBXNativeTarget "MailPlugin" */;
@@ -479,7 +449,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AA9000000000000000000001 /* Build configuration list for PBXProject "Swift-Rnp" */;
+			buildConfigurationList = AA9000000000000000000001 /* Build configuration list for PBXProject "RnpMail" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -495,7 +465,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA4000000000000000000001 /* Swift-Rnp */,
 				AA4000000000000000000002 /* MailPlugin */,
 				AA4000000000000000000003 /* RNP */,
 				C11C7952369D291DC9FDE728 /* Ribose containerUITests */,
@@ -538,14 +507,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				89D5174051747C352D8BE078 /* Ribose_containerUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		AA6000000000000000000001 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				AA1000000000000000000001 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1143,24 +1104,13 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA9000000000000000000001 /* Build configuration list for PBXProject "Swift-Rnp" */ = {
+		AA9000000000000000000001 /* Build configuration list for PBXProject "RnpMail" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA8000000000000000000001 /* Debug */,
 				AA8000000000000000000002 /* Release */,
 				51AF907481105A1AE23C17DA /* Direct */,
 				E0D878249195D085A48A5653 /* AppStore */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		AA9000000000000000000002 /* Build configuration list for PBXNativeTarget "Swift-Rnp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				AA8000000000000000000003 /* Debug */,
-				AA8000000000000000000004 /* Release */,
-				2518961D477068B77FC00BC8 /* Direct */,
-				78E7508BB0ADD4F1EF4A859F /* AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1203,7 +1153,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = https://github.com/rnpgp/swift-rnp.git;
+			repositoryURL = "https://github.com/rnpgp/swift-rnp.git";
 			requirement = {
 				branch = main;
 				kind = branch;
