@@ -5,9 +5,6 @@ on:
   push:
     branches: [ main ]
     tags: [ v* ]
-  repository_dispatch:
-    types: [ 'rnp update' ]
-  workflow_dispatch:
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
@@ -19,74 +16,13 @@ env:
 jobs:
   prepare:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-    - name: Setup test matrix
-      id: matrix
-      run: |
-        if [ "${{ github.event.client_payload }}" != "" ]; then
-          echo "matrix=[ '${{ github.event.client_payload.tag }}' ]" >> $GITHUB_OUTPUT
-        else
-          echo "matrix=[ 'v0.18.1', '' ]" >> $GITHUB_OUTPUT
-        fi
-
-  swift-test:
-    needs: prepare
-    strategy:
-      fail-fast: false
-      matrix:
-        rnp: ${{ fromJson(needs.prepare.outputs.matrix) }}
-
-    # macOS-only for now: the Swift toolchain is preinstalled on GHA macOS
-    # runners, while a Linux leg would require an unverified Swift install
-    # step. See README.md.
-    runs-on: macos-latest
-    steps:
-    - name: Install packages MacOS
-#     Already installed on GHA: cmake make pkg-config
-      run: brew install botan json-c
-
-    - name: Checkout rnp
-      uses: actions/checkout@v7
-      with:
-        repository: rnpgp/rnp
-        path: rnp
-        submodules: true
-        ref: ${{ matrix.rnp }}
-
-    # Homebrew botan is Botan 3, hence CRYPTO_BACKEND=botan3.
-    - name: Configure rnp
-      run: >
-        cmake -B rnp/build -DCRYPTO_BACKEND=botan3 -DBUILD_TESTING=OFF
-        -DENABLE_DOC=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release rnp
-
-    - name: Build rnp
-      run:  cmake --build rnp/build --parallel
-
-    - name: Install rnp
-      run:  sudo cmake --install rnp/build
-
-    - name: Checkout swift-rnp
-      uses: actions/checkout@v7
-
-    - name: Build swift-rnp
-      run:  swift build
-      env:
-        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
-
-    # An explicit rpath is passed because the Xcode test runner binaries are
-    # signed with the hardened runtime, which makes dyld ignore
-    # DYLD_LIBRARY_PATH.
-    - name: Test
-      run:  swift test -Xlinker -rpath -Xlinker /usr/local/lib
-      env:
-        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+    - run: echo "noop"
 
   xcodebuild:
     runs-on: macos-14
     steps:
-    - name: Checkout swift-rnp
+    - name: Checkout rnp-mailapp-extension
       uses: actions/checkout@v7
 
     - name: Cache RNPFramework.xcframework
@@ -119,8 +55,6 @@ jobs:
         PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
 
     - name: Run container app UI tests
-      # UI tests are experimental on GitHub-hosted runners (signing/GUI
-      # session constraints); do not block the PR on their result.
       continue-on-error: true
       run: >
         xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj

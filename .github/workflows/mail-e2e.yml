@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - 'Swift-Rnp/MailPlugin/**'
-      - 'Sources/MailSecurityEngine/**'
+      - 'Swift-Rnp/MailExtensionsContainer/**'
       - 'scripts/test-mail-e2e.sh'
       - 'scripts/test-mail-e2e-docker.sh'
       - 'scripts/mail-e2e-common.sh'
