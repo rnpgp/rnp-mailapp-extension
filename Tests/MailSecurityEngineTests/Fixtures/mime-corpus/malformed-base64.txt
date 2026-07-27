@@ -1,5 +1,0 @@
-Content-Type: text/plain
-Content-Transfer-Encoding: base64
-
-SGVsbG8gV29ybGQh!@#$%^&*()_+==
-TWFu

@@ -489,7 +489,7 @@
 			);
 			mainGroup = AA3000000000000000000001;
 			packageReferences = (
-				AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */,
+				AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */,
 			);
 			productRefGroup = AA3000000000000000000002 /* Products */;
 			projectDirPath = "";
@@ -1200,62 +1200,66 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ..;
+/* Begin XCRemoteSwiftPackageReference section */
+		AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = https://github.com/rnpgp/swift-rnp.git;
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		AAC000000000000000000001 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = Rnp;
 		};
 		AAC000000000000000000002 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = Rnp;
 		};
 		AAC000000000000000000003 /* MailSecurityEngine */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = MailSecurityEngine;
 		};
 		AAC000000000000000000004 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = Rnp;
 		};
 		AAC000000000000000000005 /* MailSecurityEngine */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = MailSecurityEngine;
 		};
 		AAC000000000000000000006 /* MailSecurityUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = MailSecurityUI;
 		};
 		AAC000000000000000000007 /* TrustStore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = TrustStore;
 		};
 		AAC000000000000000000008 /* TrustStore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = TrustStore;
 		};
 		AAC000000000000000000009 /* KeyLifecycle */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = KeyLifecycle;
 		};
 		F7F139FFDED467A772241EBC /* RnpMailUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCLocalSwiftPackageReference ".." */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = RnpMailUI;
 		};
 /* End XCSwiftPackageProductDependency section */
