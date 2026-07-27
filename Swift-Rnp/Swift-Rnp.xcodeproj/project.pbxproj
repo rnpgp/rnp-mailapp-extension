@@ -1204,8 +1204,10 @@
 		AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = https://github.com/rnpgp/swift-rnp.git;
-			requirement = branch;
-			branch = main;
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
