@@ -101,36 +101,6 @@ jobs:
         echo "container_uuid=${CONTAINER_UUID}" >> "$GITHUB_OUTPUT"
         echo "extension_uuid=${EXTENSION_UUID}" >> "$GITHUB_OUTPUT"
 
-    - name: Debug — inspect downloaded provisioning profiles
-      run: |
-        echo "=== Installed profiles ==="
-        ls -la "$HOME/Library/MobileDevice/Provisioning Profiles/" || true
-        echo ""
-        echo "=== Profile contents ==="
-        for f in "$HOME/Library/MobileDevice/Provisioning Profiles/"*.provisionprofile; do
-          [[ -e "$f" ]] || continue
-          echo "--- $(basename "$f") ---"
-          # Extract the embedded plist from the profile.
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract AppIDName raw -o - - \
-            | sed 's/^/  AppIDName: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract TeamIdentifier raw -o - - \
-            | sed 's/^/  TeamIdentifier: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Entitlements.application-identifiers raw -o - - \
-            | sed 's/^/  application-identifiers: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Entitlements.com.apple.security.application-groups raw -o - - \
-            | sed 's/^/  application-groups: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Name raw -o - - \
-            | sed 's/^/  Name: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract UUID raw -o - - \
-            | sed 's/^/  UUID: /' || true
-        done
-
     - name: Install profiles to the user Library path
       run: |
         USER_LIB="$HOME/Library/MobileDevice/Provisioning Profiles"
