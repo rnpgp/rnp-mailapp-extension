@@ -1,64 +1,29 @@
-name: release
+name: release-direct
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to release, e.g. 0.9.1 (with or without leading v). If the tag already exists, the workflow rebuilds and re-publishes the release for it; otherwise it errors.'
-        required: true
-        type: string
   push:
     tags:
       - 'v*'
 
 concurrency:
-  group: '${{ github.workflow }}-${{ github.event_name }}-${{ github.ref || github.event.inputs.version }}'
+  group: '${{ github.workflow }}-${{ github.ref_name }}'
   cancel-in-progress: false
 
 env:
   RNP_REF: v0.18.1
-  # Pinned: Xcode 15.4 disttool segfaults on our archive (PR #147).
-  # Bump deliberately — a fallback to "latest installed" masked the original
-  # segfault for weeks. When upgrading, run a tag release to verify first.
-  XCODE_APP: Xcode_16.4.app
 
 jobs:
   build-and-release:
-    runs-on: macos-15
-    outputs:
-      tag: ${{ steps.ver.outputs.tag }}
+    runs-on: macos-14
     steps:
-    - name: Resolve and validate version
-      id: ver
-      run: |
-        if [[ -n "${{ github.event.inputs.version }}" ]]; then
-          v="${{ github.event.inputs.version }}"
-          v="${v#v}"
-        else
-          v="${GITHUB_REF_NAME#v}"
-        fi
-        if ! [[ "${v}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo "ERROR: '${v}' is not x.y.z SemVer" >&2
-          exit 1
-        fi
-        echo "version=${v}" >> "$GITHUB_OUTPUT"
-        echo "tag=v${v}"     >> "$GITHUB_OUTPUT"
-
-    - name: Checkout
+    - name: Checkout swift-rnp
       uses: actions/checkout@v7
-      with:
-        ref: ${{ steps.ver.outputs.tag }}
 
-    - name: Select pinned Xcode
-      run: |
-        if [[ ! -d "/Applications/${XCODE_APP}" ]]; then
-          echo "ERROR: /Applications/${XCODE_APP} not present on runner" >&2
-          echo "Installed Xcode versions:" >&2
-          ls -d /Applications/Xcode_*.app >&2 || true
-          exit 1
-        fi
-        sudo xcode-select -s "/Applications/${XCODE_APP}/Contents/Developer"
-        xcodebuild -version
+    - name: Set up Ruby + fastlane
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: true
 
     - name: Cache RNPFramework.xcframework
       id: framework-cache
@@ -74,100 +39,20 @@ jobs:
     - name: Install create-dmg
       run: brew install create-dmg
 
-    - name: Import signing certificate
-      uses: Apple-Actions/import-codesign-certs@v7
-      with:
-        p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
-        p12-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
-        keychain-password: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
-
-    - name: Write App Store Connect API key
+    - name: Build, sign, notarize, package
       env:
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APPLE_ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        APPLE_ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
-      run: |
-        mkdir -p "${RUNNER_TEMP}/asc"
-        echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
-
-    - name: Decode ASC API key to PEM for Actions that want raw PKCS8
-      id: asc-key
-      env:
-        APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
-      run: |
-        raw="$(echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode)"
-        {
-          echo "pem<<EOF"
-          echo "${raw}"
-          echo "EOF"
-        } >> "$GITHUB_OUTPUT"
-
-    - name: Download container app provisioning profile
-      id: container-profile
-      uses: Apple-Actions/download-provisioning-profiles@v6
-      with:
-        bundle-id: com.rnpgp.RNPForMail
-        profile-type: MAC_APP_DIRECT
-        issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-        api-private-key: ${{ steps.asc-key.outputs.pem }}
-
-    - name: Download Mail extension provisioning profile
-      id: extension-profile
-      uses: Apple-Actions/download-provisioning-profiles@v6
-      with:
-        bundle-id: com.rnpgp.RNPForMail.MailExtension
-        profile-type: MAC_APP_DIRECT
-        issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-        api-private-key: ${{ steps.asc-key.outputs.pem }}
-
-    - name: Install profiles and dump entitlements
-      env:
-        CONTAINER_PROFILES: ${{ steps.container-profile.outputs.profiles }}
-        EXTENSION_PROFILES: ${{ steps.extension-profile.outputs.profiles }}
-      run: |
-        USER_LIB="$HOME/Library/MobileDevice/Provisioning Profiles"
-        SYSTEM_LIB="/Library/MobileDevice/Provisioning Profiles"
-        mkdir -p "$USER_LIB"
-
-        echo "Container profiles: ${CONTAINER_PROFILES}"
-        echo "Extension profiles: ${EXTENSION_PROFILES}"
-        CONTAINER_NAME="$(printf '%s' "${CONTAINER_PROFILES}" | jq -r '.[0].name // empty')"
-        EXTENSION_NAME="$(printf '%s' "${EXTENSION_PROFILES}" | jq -r '.[0].name // empty')"
-        if [[ -z "${CONTAINER_NAME}" || -z "${EXTENSION_NAME}" ]]; then
-          echo "ERROR: missing provisioning profile name" >&2
-          exit 1
-        fi
-        echo "Using container profile: ${CONTAINER_NAME}"
-        echo "Using extension profile: ${EXTENSION_NAME}"
-
-        shopt -s nullglob
-        for src in "$USER_LIB"/*.provisionprofile "$SYSTEM_LIB"/*.provisionprofile; do
-          [[ -e "$src" ]] || continue
-          base="$(basename "$src" .provisionprofile)"
-          cp -f "$src" "$USER_LIB/${base}.mobileprovision"
-          echo "Installed: $USER_LIB/${base}.mobileprovision"
-          # Dump Entitlements from the profile for debugging
-          security cms -D -i "$src" 2>/dev/null | plutil -extract Entitlements xml1 -o - - 2>/dev/null \
-            || echo "(could not dump entitlements for $base)"
-        done
-        ls -la "$USER_LIB" || true
-
-    - name: Build and notarize release
-      env:
-        # release-direct.sh prefers RELEASE_TAG over GITHUB_REF_NAME so the
-        # workflow_dispatch path (where GITHUB_REF_NAME is the dispatch
-        # branch, e.g. main) can still pass the resolved tag.
-        RELEASE_TAG: ${{ steps.ver.outputs.tag }}
-        DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-        ASC_API_KEY_P8: "${{ runner.temp }}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
-        ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-        ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-      run: ./scripts/release-direct.sh
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+        MATCH_GIT_BASIC_AUTH_B64: ${{ secrets.MATCH_GIT_BASIC_AUTH_B64 }}
+      run: bundle exec fastlane mac release_direct
 
     - name: Create or update GitHub Release
       uses: softprops/action-gh-release@v3
       with:
-        tag_name: ${{ steps.ver.outputs.tag }}
         files: dist/*
         generate_release_notes: true
       env:
@@ -175,26 +60,16 @@ jobs:
 
   smoke-test:
     needs: build-and-release
-    runs-on: macos-15
-    env:
-      RELEASE_TAG: ${{ needs.build-and-release.outputs.tag }}
+    runs-on: macos-14
     steps:
-    - name: Checkout
+    - name: Checkout swift-rnp
       uses: actions/checkout@v7
-
-    - name: Select pinned Xcode
-      run: |
-        if [[ ! -d "/Applications/${XCODE_APP}" ]]; then
-          echo "ERROR: /Applications/${XCODE_APP} not present on runner" >&2
-          exit 1
-        fi
-        sudo xcode-select -s "/Applications/${XCODE_APP}/Contents/Developer"
 
     - name: Download release DMG
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release download "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" -p '*.dmg' -D "${RUNNER_TEMP}/dist"
+        gh release download "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" -p '*.dmg' -D "${RUNNER_TEMP}/dist"
 
     - name: Attach DMG and verify Gatekeeper
       run: |
@@ -204,34 +79,4 @@ jobs:
         APP="${VOLUME}/RNP.app"
         spctl -a -t exec -vv "${APP}"
         "${APP}/Contents/MacOS/RNP" --self-test
-        hdiutil detach "${VOLUME}"
-
-    - name: Register MailPlugin via pluginkit
-      run: |
-        DMG="$(find "${RUNNER_TEMP}/dist" -name '*.dmg' | head -n1)"
-        VOLUME="/Volumes/RNP Installer"
-        hdiutil attach "${DMG}" -nobrowse
-        APP="${VOLUME}/RNP.app"
-        APPEX="${APP}/Contents/PlugIns/MailPlugin.appex"
-
-        # Register the extension with LaunchServices. pluginkit -a requires
-        # the bundle to be on a mounted volume; the DMG mount satisfies that
-        # without modifying the runner's /Applications.
-        pluginkit -a "${APPEX}"
-
-        # Give launchd a moment to pick it up.
-        sleep 3
-
-        # List Mail extension plugins and confirm ours is registered.
-        echo "=== Registered Mail extensions ==="
-        pluginkit -m -p com.apple.email-extension
-        echo "=== Looking for com.rnpgp.RNPForMail.MailExtension ==="
-        if ! pluginkit -m -v -i com.rnpgp.RNPForMail.MailExtension >/dev/null 2>&1; then
-          echo "FAIL: MailPlugin did not register with pluginkit" >&2
-          pluginkit -m -p com.apple.email-extension >&2
-          exit 1
-        fi
-        echo "OK: MailPlugin registered"
-        pluginkit -m -v -i com.rnpgp.RNPForMail.MailExtension
-
         hdiutil detach "${VOLUME}"
