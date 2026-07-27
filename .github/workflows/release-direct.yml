@@ -106,25 +106,11 @@ jobs:
         for f in "$HOME/Library/MobileDevice/Provisioning Profiles/"*.provisionprofile; do
           [[ -e "$f" ]] || continue
           echo "--- $(basename "$f") ---"
-          # Extract the embedded plist from the profile.
+          # Dump the full entitlements dict as JSON so we see exactly what
+          # application-identifier / app-groups / team-identifier are present.
           /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract AppIDName raw -o - - \
-            | sed 's/^/  AppIDName: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract TeamIdentifier raw -o - - \
-            | sed 's/^/  TeamIdentifier: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Entitlements.application-identifiers raw -o - - \
-            | sed 's/^/  application-identifiers: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Entitlements.com.apple.security.application-groups raw -o - - \
-            | sed 's/^/  application-groups: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract Name raw -o - - \
-            | sed 's/^/  Name: /' || true
-          /usr/bin/security cms -D -i "$f" 2>/dev/null \
-            | /usr/bin/plutil -extract UUID raw -o - - \
-            | sed 's/^/  UUID: /' || true
+            | /usr/bin/plutil -convert json -o - - \
+            | /usr/bin/jq '.Name, .AppIDName, .TeamIdentifier, .Platform, .Entitlements'
         done
 
     - name: Install profiles to the user Library path
