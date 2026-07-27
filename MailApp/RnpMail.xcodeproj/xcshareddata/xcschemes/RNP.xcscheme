@@ -17,7 +17,7 @@
                BlueprintIdentifier = "AA4000000000000000000003"
                BuildableName = "RNP.app"
                BlueprintName = "RNP"
-               ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+               ReferencedContainer = "container:RnpMail.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "C11C7952369D291DC9FDE728"
                BuildableName = "Ribose containerUITests.xctest"
                BlueprintName = "Ribose containerUITests"
-               ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+               ReferencedContainer = "container:RnpMail.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,7 +57,7 @@
             BlueprintIdentifier = "AA4000000000000000000003"
             BuildableName = "RNP.app"
             BlueprintName = "RNP"
-            ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            ReferencedContainer = "container:RnpMail.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -74,7 +74,7 @@
             BlueprintIdentifier = "AA4000000000000000000003"
             BuildableName = "RNP.app"
             BlueprintName = "RNP"
-            ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            ReferencedContainer = "container:RnpMail.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

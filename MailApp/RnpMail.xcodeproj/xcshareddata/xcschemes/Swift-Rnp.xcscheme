@@ -17,7 +17,7 @@
                BlueprintIdentifier = "AA4000000000000000000001"
                BuildableName = "Swift-Rnp"
                BlueprintName = "Swift-Rnp"
-               ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+               ReferencedContainer = "container:RnpMail.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "AA4000000000000000000001"
             BuildableName = "Swift-Rnp"
             BlueprintName = "Swift-Rnp"
-            ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            ReferencedContainer = "container:RnpMail.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "AA4000000000000000000001"
             BuildableName = "Swift-Rnp"
             BlueprintName = "Swift-Rnp"
-            ReferencedContainer = "container:Swift-Rnp.xcodeproj">
+            ReferencedContainer = "container:RnpMail.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
