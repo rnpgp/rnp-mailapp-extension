@@ -1,0 +1,65 @@
+default_platform(:mac)
+
+# fastlane match storage lives in a private repo. Configure via env:
+#   MATCH_PASSWORD         — encryption passphrase for the match repo
+#   MATCH_GIT_URL          — git URL of the private match storage repo
+#   MATCH_GIT_BASIC_AUTH_B64 — base64("username:pat") for HTTPS auth (optional,
+#                             if the repo needs a PAT instead of SSH)
+#
+# Apple-identity inputs (all from GitHub secrets):
+#   APPLE_TEAM_ID          — Developer Program team ID
+#   APPLE_ASC_API_KEY_ID   — App Store Connect API Key ID
+#   APPLE_ASC_ISSUER_ID    — App Store Connect Issuer ID
+#   APPLE_ASC_API_KEY_P8   — base64-encoded .p8 file (decoded below before use)
+
+before_all do
+  ENV["MATCH_FORCE_ENTERPRISE"] = "0"
+  ENV["MATCH_READONLY"] = "false" if ENV["MATCH_READONLY"].nil?
+end
+
+desc "Build, sign, notarize, package the macOS app for direct distribution"
+lane :release_direct do
+  setup_ci if ENV["CI"]
+
+  # Decode the base64 ASC API key so fastlane can use it.
+  api_key_p8_path = File.join(Dir.mktmpdir, "AuthKey_#{ENV['APPLE_ASC_API_KEY_ID']}.p8")
+  File.binwrite(api_key_p8_path, Base64.decode64(ENV.fetch("APPLE_ASC_API_KEY_P8")))
+  api_key = app_store_connect_api_key(
+    key_id: ENV["APPLE_ASC_API_KEY_ID"],
+    issuer_id: ENV["APPLE_ASC_ISSUER_ID"],
+    key_filepath: api_key_p8_path,
+    in_house: false,
+  )
+
+  # Pull signing cert + provisioning profiles from the match repo.
+  match(
+    type: "developer_id",
+    readonly: true,
+    api_key: api_key,
+    git_url: ENV.fetch("MATCH_GIT_URL"),
+  )
+
+  # Build + archive.
+  gym(
+    project: "Swift-Rnp/Swift-Rnp.xcodeproj",
+    scheme: "RNP",
+    configuration: "Direct",
+    export_method: "developer-id",
+    clean: true,
+    skip_package_ipa: true,
+    output_directory: "build/",
+  )
+
+  # Notarize + staple.
+  notarize(
+    package: "build/RNP.app",
+    api_key: api_key,
+    staple: true,
+  )
+
+  # Bundle into a DMG for distribution.
+  create_dmg(
+    output_path: "dist/RNP-for-Mail-#{get_version_number(target: 'RNP')}.dmg",
+    app_path: "build/RNP.app",
+  )
+end
