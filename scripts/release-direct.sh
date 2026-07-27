@@ -113,7 +113,11 @@ xcodebuild \
     "${AUTH_ARGS[@]}" \
     DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM}" \
     CODE_SIGN_STYLE=Manual \
+    RNP_CODE_SIGN_STYLE=Manual \
+    MailPlugin_CODE_SIGN_STYLE=Manual \
     CODE_SIGN_IDENTITY="Developer ID Application" \
+    RNP_CODE_SIGN_IDENTITY="Developer ID Application" \
+    MailPlugin_CODE_SIGN_IDENTITY="Developer ID Application" \
     PROVISIONING_PROFILE_SPECIFIER="" \
     "RNP_PROVISIONING_PROFILE_SPECIFIER=${CONTAINER_NAME:-}" \
     "MailPlugin_PROVISIONING_PROFILE_SPECIFIER=${EXTENSION_NAME:-}"
