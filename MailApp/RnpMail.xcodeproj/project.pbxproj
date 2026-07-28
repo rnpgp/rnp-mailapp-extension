@@ -11,14 +11,12 @@
 		0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F15FAC74F11C17A481229F /* LicensesView.swift */; };
 		0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */; };
 		1EA4CD8D67D36E8FCC08669A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */; };
-		28F770227CACA2BDEC4D0190 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
 		5D19619FE8621311F0402F37 /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */; };
 		89D5174051747C352D8BE078 /* Ribose_containerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8C3F584EC5EDB6BF983F76 /* Ribose_containerUITests.swift */; };
 		8FA94A049D51D12E96C274DF /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAFFEC46C22FE2A0FBFA3E4E /* Cocoa.framework */; };
-		AA1000000000000000000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000001 /* main.swift */; };
 		AA1000000000000000000002 /* MailExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000003 /* MailExtension.swift */; };
 		AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000004 /* MessageSecurityHandler.swift */; };
 		AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000005 /* MessageSecurityViewController.swift */; };
@@ -29,7 +27,6 @@
 		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
 		AA100000000000000000000E /* RNP.icns in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* RNP.icns */; };
 		AA1000000000000000000010 /* MailPlugin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		AA1000000000000000000011 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000001 /* Rnp */; };
 		AA1000000000000000000012 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000002 /* Rnp */; };
 		AA1000000000000000000013 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000003 /* MailSecurityEngine */; };
 		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
@@ -569,6 +566,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "RNP for Mail Extension Direct";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -593,23 +591,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail;
 				PRODUCT_NAME = RNP;
+				PROVISIONING_PROFILE_SPECIFIER = "RNP for Mail Direct";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_MAIN = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Direct;
-		};
-		2518961D477068B77FC00BC8 /* Direct */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(RNPFRAMEWORK_SEARCH_PATHS)",
-				);
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Direct;
@@ -684,21 +668,6 @@
 				USES_XCTRUNNER = YES;
 			};
 			name = Release;
-		};
-		78E7508BB0ADD4F1EF4A859F /* AppStore */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(RNPFRAMEWORK_SEARCH_PATHS)",
-				);
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-			};
-			name = AppStore;
 		};
 		90264AB3832F43511F485410 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -830,39 +799,6 @@
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-			};
-			name = Release;
-		};
-		AA8000000000000000000003 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(RNPFRAMEWORK_SEARCH_PATHS)",
-				);
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		AA8000000000000000000004 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(RNPFRAMEWORK_SEARCH_PATHS)",
-				);
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1156,17 +1092,12 @@
 			repositoryURL = "https://github.com/rnpgp/swift-rnp.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.0;
+				minimumVersion = 0.2.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		AAC000000000000000000001 /* Rnp */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
-			productName = Rnp;
-		};
 		AAC000000000000000000002 /* Rnp */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
