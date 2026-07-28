@@ -109,11 +109,32 @@ xcodebuild \
     CODE_SIGN_STYLE=Manual \
     CODE_SIGN_IDENTITY="Developer ID Application"
 
+# Generate the export options plist with the real team ID substituted in.
+# Static $(TEAM_ID) in ExportDirect.plist is not resolved by -exportArchive
+# and a literal placeholder triggers a segfault inside disttool/xcodebuild.
+EXPORT_OPTIONS_PLIST="${BUILD_DIR}/ExportOptions.plist"
+cat > "${EXPORT_OPTIONS_PLIST}" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>developer-id</string>
+    <key>teamID</key>
+    <string>${DEVELOPMENT_TEAM}</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>stripSwiftSymbols</key>
+    <true/>
+</dict>
+</plist>
+PLIST
+
 xcodebuild \
     -exportArchive \
     -archivePath "${ARCHIVE_PATH}" \
     -exportPath "${EXPORT_PATH}" \
-    -exportOptionsPlist "${REPO_ROOT}/MailApp/Config/ExportDirect.plist"
+    -exportOptionsPlist "${EXPORT_OPTIONS_PLIST}"
 
 APP_BUNDLE="$(find "${EXPORT_PATH}" -name 'RNP.app' -maxdepth 1 | head -n1)"
 if [[ -z "${APP_BUNDLE}" ]]; then
