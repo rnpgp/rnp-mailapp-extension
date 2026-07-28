@@ -94,14 +94,10 @@ fi
 # ------------------------------------------------------------------
 rm -rf "${ARCHIVE_PATH}" "${EXPORT_PATH}"
 
-AUTH_ARGS=()
-if [[ -n "${ASC_API_KEY_P8}" && -n "${ASC_API_KEY_ID}" && -n "${ASC_ISSUER_ID}" ]]; then
-    AUTH_ARGS=(
-        -authenticationKeyPath "${ASC_API_KEY_P8}"
-        -authenticationKeyID "${ASC_API_KEY_ID}"
-        -authenticationKeyIssuerID "${ASC_ISSUER_ID}"
-    )
-fi
+# The pbxproj already has CODE_SIGN_STYLE=Manual, CODE_SIGN_IDENTITY,
+# and PROVISIONING_PROFILE_SPECIFIER set for the Direct config.
+# Don't override at command line — it caused conflicts on CI
+# (DVTPortal session validation, per-target override confusion).
 
 xcodebuild \
     -project "${PROJECT}" \
@@ -109,19 +105,9 @@ xcodebuild \
     -configuration "${CONFIG}" \
     archive \
     -archivePath "${ARCHIVE_PATH}" \
-    "${AUTH_ARGS[@]}" \
     DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM}" \
     CODE_SIGN_STYLE=Manual \
-    RNP_CODE_SIGN_STYLE=Manual \
-    MailPlugin_CODE_SIGN_STYLE=Manual \
-    CODE_SIGN_IDENTITY="Developer ID Application" \
-    RNP_CODE_SIGN_IDENTITY="Developer ID Application" \
-    MailPlugin_CODE_SIGN_IDENTITY="Developer ID Application" \
-    PROVISIONING_PROFILE_SPECIFIER="" \
-    "RNP_PROVISIONING_PROFILE_SPECIFIER=${CONTAINER_NAME:-}" \
-    "MailPlugin_PROVISIONING_PROFILE_SPECIFIER=${EXTENSION_NAME:-}" \
-    "RNP_PROVISIONING_PROFILE=${CONTAINER_UUID:-}" \
-    "MailPlugin_PROVISIONING_PROFILE=${EXTENSION_UUID:-}"
+    CODE_SIGN_IDENTITY="Developer ID Application"
 
 xcodebuild \
     -exportArchive \
