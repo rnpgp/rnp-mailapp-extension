@@ -47,6 +47,70 @@ jobs:
         mkdir -p "${RUNNER_TEMP}/asc"
         echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode > "${RUNNER_TEMP}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
 
+    - name: Decode ASC API key to PEM for Actions that want raw PKCS8
+      id: asc-key
+      env:
+        APPLE_ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY_P8 }}
+      run: |
+        raw="$(echo -n "${APPLE_ASC_API_KEY_P8}" | base64 --decode)"
+        {
+          echo "pem<<EOF"
+          echo "${raw}"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Download container app provisioning profile
+      id: container-profile
+      uses: Apple-Actions/download-provisioning-profiles@v6
+      with:
+        bundle-id: com.rnpgp.RNPForMail
+        profile-type: MAC_APP_DIRECT
+        issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        api-private-key: ${{ steps.asc-key.outputs.pem }}
+
+    - name: Download Mail extension provisioning profile
+      id: extension-profile
+      uses: Apple-Actions/download-provisioning-profiles@v6
+      with:
+        bundle-id: com.rnpgp.RNPForMail.MailExtension
+        profile-type: MAC_APP_DIRECT
+        issuer-id: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+        api-private-key: ${{ steps.asc-key.outputs.pem }}
+
+    - name: Install profiles and dump entitlements
+      env:
+        CONTAINER_PROFILES: ${{ steps.container-profile.outputs.profiles }}
+        EXTENSION_PROFILES: ${{ steps.extension-profile.outputs.profiles }}
+      run: |
+        USER_LIB="$HOME/Library/MobileDevice/Provisioning Profiles"
+        SYSTEM_LIB="/Library/MobileDevice/Provisioning Profiles"
+        mkdir -p "$USER_LIB"
+
+        echo "Container profiles: ${CONTAINER_PROFILES}"
+        echo "Extension profiles: ${EXTENSION_PROFILES}"
+        CONTAINER_NAME="$(printf '%s' "${CONTAINER_PROFILES}" | jq -r '.[0].name // empty')"
+        EXTENSION_NAME="$(printf '%s' "${EXTENSION_PROFILES}" | jq -r '.[0].name // empty')"
+        if [[ -z "${CONTAINER_NAME}" || -z "${EXTENSION_NAME}" ]]; then
+          echo "ERROR: missing provisioning profile name" >&2
+          exit 1
+        fi
+        echo "Using container profile: ${CONTAINER_NAME}"
+        echo "Using extension profile: ${EXTENSION_NAME}"
+
+        shopt -s nullglob
+        for src in "$USER_LIB"/*.provisionprofile "$SYSTEM_LIB"/*.provisionprofile; do
+          [[ -e "$src" ]] || continue
+          base="$(basename "$src" .provisionprofile)"
+          cp -f "$src" "$USER_LIB/${base}.mobileprovision"
+          echo "Installed: $USER_LIB/${base}.mobileprovision"
+          # Dump Entitlements from the profile for debugging
+          security cms -D -i "$src" 2>/dev/null | plutil -extract Entitlements xml1 -o - - 2>/dev/null \
+            || echo "(could not dump entitlements for $base)"
+        done
+        ls -la "$USER_LIB" || true
+
     - name: Build and notarize release
       env:
         DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
