@@ -126,6 +126,13 @@ cat > "${EXPORT_OPTIONS_PLIST}" <<PLIST
     <string>manual</string>
     <key>stripSwiftSymbols</key>
     <true/>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.rnpgp.RNPForMail</key>
+        <string>RNP for Mail Direct</string>
+        <key>com.rnpgp.RNPForMail.MailExtension</key>
+        <string>RNP for Mail Extension Direct</string>
+    </dict>
 </dict>
 </plist>
 PLIST
