@@ -19,9 +19,15 @@ KEY_ID="783G93WNFD"
 ISSUER_ID="69a6de7d-2c76-47e3-e053-5b8c7c11a4d1"
 KEY_PATH="$HOME/src/rnp/apple-mail-ext-certs/integration-team-key/rnp-mailapp-ci/AuthKey_${KEY_ID}.p8"
 
-echo "=== 1/6: Clean DerivedData ==="
+echo "=== 1/6: Clean ALL stale caches ==="
+# DerivedData (includes SPM SourcePackages + binary target artifacts)
 rm -rf ~/Library/Developer/Xcode/DerivedData/RnpMail-*
+# SPM global caches (partial/failed binary downloads persist here)
+rm -rf ~/Library/Caches/org.swift.swiftpm
+rm -rf ~/Library/org.swift.swiftpm
+# Previous build outputs
 rm -rf "$ARCHIVE_PATH" "$EXPORT_PATH"
+echo "Done."
 
 echo "=== 2/6: Archive ==="
 xcodebuild \

@@ -7,13 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		04EC615718EE893F2D8F7D8C /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F15FAC74F11C17A481229F /* LicensesView.swift */; };
 		0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */; };
 		1EA4CD8D67D36E8FCC08669A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */; };
 		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
-		5D19619FE8621311F0402F37 /* RNPFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */; };
 		89D5174051747C352D8BE078 /* Ribose_containerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8C3F584EC5EDB6BF983F76 /* Ribose_containerUITests.swift */; };
 		8FA94A049D51D12E96C274DF /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAFFEC46C22FE2A0FBFA3E4E /* Cocoa.framework */; };
@@ -35,7 +32,6 @@
 		AA1000000000000000000017 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000007 /* TrustStore */; };
 		AA1000000000000000000018 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000008 /* TrustStore */; };
 		AA1000000000000000000019 /* KeyLifecycle in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000009 /* KeyLifecycle */; };
-		BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -65,7 +61,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				04EC615718EE893F2D8F7D8C /* RNPFramework.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -87,7 +82,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				5D19619FE8621311F0402F37 /* RNPFramework.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -127,7 +121,6 @@
 		BD8C3F584EC5EDB6BF983F76 /* Ribose_containerUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Ribose_containerUITests.swift; sourceTree = "<group>"; };
 		CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNPFramework.xcconfig; sourceTree = "<group>"; };
 		D7F15FAC74F11C17A481229F /* LicensesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LicensesView.swift; path = Licenses/LicensesView.swift; sourceTree = "<group>"; };
-		DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcframework; name = RNPFramework.xcframework; path = ../Vendor/RNPFramework.xcframework; sourceTree = "<group>"; };
 		DFB75871C424635C7D11D05F /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = Resources/Localizable.xcstrings; sourceTree = "<group>"; };
 		EAFFEC46C22FE2A0FBFA3E4E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		EF97ABD297996C4EA5033642 /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
@@ -151,7 +144,6 @@
 				AA1000000000000000000013 /* MailSecurityEngine in Frameworks */,
 				AA1000000000000000000016 /* MailSecurityUI in Frameworks */,
 				AA1000000000000000000017 /* TrustStore in Frameworks */,
-				BACC21F1B5C280E89ED28324 /* RNPFramework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,7 +153,6 @@
 			files = (
 				AA1000000000000000000014 /* Rnp in Frameworks */,
 				AA1000000000000000000015 /* MailSecurityEngine in Frameworks */,
-				7201B9EA7C3ED6CB28C4818A /* RNPFramework.xcframework in Frameworks */,
 				C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */,
 				AA1000000000000000000018 /* TrustStore in Frameworks */,
 				AA1000000000000000000019 /* KeyLifecycle in Frameworks */,
@@ -232,7 +223,6 @@
 				AA3000000000000000000004 /* MailPlugin */,
 				AA3000000000000000000005 /* MailExtensionsContainer */,
 				AA3000000000000000000002 /* Products */,
-				DD1763A41E1D7FAA45325DF3 /* RNPFramework.xcframework */,
 				D1FD6E190D06FD101DB4D932 /* Config */,
 				83D422EEE84562769B515115 /* Frameworks */,
 				1568869A2FB764000596C6B8 /* Ribose containerUITests */,
@@ -1092,7 +1082,7 @@
 			repositoryURL = "https://github.com/rnpgp/swift-rnp.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.0;
+				minimumVersion = 0.2.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
