@@ -16756,6 +16756,50 @@
           }
         }
       }
+    },
+    "onboarding.skip.button": {
+      "comment": "Dismiss onboarding without completing (Skip for now).",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip for now"
+          }
+        }
+      }
+    },
+    "generateForm.name.label": {
+      "comment": "Caption label above the name + email row in the generate-key form.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your name and email"
+          }
+        }
+      }
+    },
+    "generateForm.passphrase.label": {
+      "comment": "Caption label above the passphrase field in the generate-key form.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passphrase"
+          }
+        }
+      }
+    },
+    "generateForm.confirm.label": {
+      "comment": "Caption label above the confirm-passphrase field in the generate-key form.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm passphrase"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
