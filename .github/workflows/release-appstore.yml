@@ -1,11 +1,11 @@
 name: release-appstore
 
 # Run after the direct-download release workflow has successfully completed.
-# release-direct is itself triggered by v* tags, so this effectively uploads
-# a matching Mac App Store build for every version tag.
+# release is itself triggered by v* tags (or workflow_dispatch for retries), so
+# this effectively uploads a matching Mac App Store build for every version tag.
 on:
   workflow_run:
-    workflows: [release-direct]
+    workflows: [release]
     types: [completed]
 
 concurrency:
