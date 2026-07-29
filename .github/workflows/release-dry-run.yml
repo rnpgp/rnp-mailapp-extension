@@ -1,7 +1,10 @@
 name: release-dry-run
 
+# Superseded by ci.yml (one-job-per-PR). Kept as workflow_dispatch only so it
+# can still be triggered manually for debugging; no longer fires on PRs.
+# Safe to delete once ci.yml has been verified across several PRs.
+
 on:
-  pull_request:
   workflow_dispatch:
 
 jobs:

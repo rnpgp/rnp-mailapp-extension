@@ -1,10 +1,11 @@
 name: test
 
+# Superseded by ci.yml (one-job-per-PR). Kept as workflow_dispatch only so it
+# can still be triggered manually for debugging; no longer fires on PRs or
+# pushes. Safe to delete once ci.yml has been verified across several PRs.
+
 on:
-  pull_request:
-  push:
-    branches: [ main ]
-    tags: [ v* ]
+  workflow_dispatch:
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
