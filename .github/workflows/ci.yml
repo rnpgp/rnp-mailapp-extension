@@ -1,0 +1,79 @@
+name: ci
+
+# Single job per PR. Supersedes test.yml + release-dry-run.yml, which are
+# now manual-only. Release tag builds are still owned by release-direct.yml.
+#
+# CodeQL is a separate GitHub-configured workflow (dynamic/github-code-scanning/
+# codeql) and is not under this file's control — disable in repo Settings ->
+# Code Security if it is firing unwanted jobs.
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: ci-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  RNP_REF: v0.18.1
+  XCODE_APP: Xcode_16.4.app
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Select pinned Xcode
+        run: |
+          if [[ ! -d "/Applications/${XCODE_APP}" ]]; then
+            echo "ERROR: /Applications/${XCODE_APP} not present on runner" >&2
+            ls -d /Applications/Xcode_*.app >&2 || true
+            exit 1
+          fi
+          sudo xcode-select -s "/Applications/${XCODE_APP}/Contents/Developer"
+          xcodebuild -version
+
+      - name: Cache RNPFramework.xcframework
+        id: framework-cache
+        uses: actions/cache@v6
+        with:
+          path: Vendor/RNPFramework.xcframework
+          key: rnp-${{ env.RNP_REF }}-framework-${{ hashFiles('scripts/build-rnp-framework.sh', 'Vendor/SOURCES.md') }}
+
+      - name: Build RNPFramework.xcframework
+        if: steps.framework-cache.outputs.cache-hit != 'true'
+        run: ./scripts/build-rnp-framework.sh
+
+      - name: Resolve SwiftPM packages
+        run: >
+          xcodebuild -project MailApp/RnpMail.xcodeproj -resolvePackageDependencies
+
+      - name: Build MailPlugin scheme
+        run: >
+          xcodebuild -project MailApp/RnpMail.xcodeproj
+          -scheme MailPlugin -configuration Direct build CODE_SIGNING_ALLOWED=NO
+        env:
+          PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
+
+      - name: Build container app scheme
+        run: >
+          xcodebuild -project MailApp/RnpMail.xcodeproj
+          -scheme RNP -configuration Direct build CODE_SIGNING_ALLOWED=NO
+        env:
+          PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
+
+      - name: Run container app UI tests
+        continue-on-error: true
+        run: >
+          xcodebuild -project MailApp/RnpMail.xcodeproj
+          -scheme RNP -configuration Debug test CODE_SIGNING_ALLOWED=NO
+        env:
+          PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
+
+      - name: Release dry-run
+        continue-on-error: true
+        run: ./scripts/ci-release-dry-run.sh
