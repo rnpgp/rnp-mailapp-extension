@@ -6,61 +6,151 @@ on:
     paths:
       - 'MailApp/MailPlugin/**'
       - 'MailApp/MailExtensionsContainer/**'
-      - 'scripts/test-mail-e2e.sh'
+      - 'scripts/test-mail-e2e-docker.sh'
+      - 'scripts/mail-e2e-common.sh'
       - '.github/workflows/mail-e2e-docker.yml'
 
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.ref_name }}'
+  cancel-in-progress: true
+
+env:
+  RNP_REF: v0.18.1
+  XCODE_APP: Xcode_16.4.app
+  GREENMAIL_IMAGE: greenmail/standalone:2.0.1
+  GREENMAIL_CONTAINER: rnpmail-greenmail
+  SMTP_PORT: '3025'
+  IMAP_PORT: '3143'
+  TEST_USER: test
+  TEST_PASSWORD: test
+  TEST_EMAIL: test@localhost
+
 jobs:
-  e2e:
-    # Requires a self-hosted macOS runner with a valid Apple development
-    # certificate and Mail.app configured. Docker is used for the local
-    # mail server (GreenMail) via colima.
-    runs-on: [self-hosted, macos]
+  docker-mail-roundtrip:
+    # Phase 1: prove Docker + GreenMail work on the GHA macOS runner.
+    # Mail.app / extension coverage tracked in #108 — currently blocked on
+    # AppleScript TCC permissions for headless Mail.app automation.
+    runs-on: macos-15
+    timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+    - name: Checkout
+      uses: actions/checkout@v7
 
-      - name: Build RNPFramework.xcframework
-        run: ./scripts/build-rnp-framework.sh
-        env:
-          RNP_REF: v0.18.1
+    - name: Select pinned Xcode
+      run: |
+        if [[ ! -d "/Applications/${XCODE_APP}" ]]; then
+          echo "ERROR: /Applications/${XCODE_APP} not present on runner" >&2
+          ls -d /Applications/Xcode_*.app >&2 || true
+          exit 1
+        fi
+        sudo xcode-select -s "/Applications/${XCODE_APP}/Contents/Developer"
+        xcodebuild -version
 
-      - name: Install dependencies
-        run: |
-          brew install colima docker
+    - name: Start Docker daemon (colima)
+      run: |
+        brew install colima docker || brew upgrade colima docker || true
+        colima start --cpu 2 --memory 4 --disk 10
+        # Wait for Docker to be ready (up to 3 minutes).
+        for i in $(seq 1 60); do
+          if docker info >/dev/null 2>&1; then
+            echo "Docker ready after ${i}s"
+            docker version
+            exit 0
+          fi
+          sleep 3
+        done
+        echo "Docker failed to come up" >&2
+        colima status || true
+        colima logs || true
+        exit 1
 
-      - name: Start Docker daemon
-        run: |
-          colima start --cpu 2 --memory 4
-          docker info
+    - name: Start GreenMail
+      run: |
+        docker run -d --name "${GREENMAIL_CONTAINER}" \
+          -p "${SMTP_PORT}:3025" \
+          -p "${IMAP_PORT}:3143" \
+          -e GREENMAIL_OPTS='-Dgreenmail.setup.test.all -Dgreenmail.auth.disabled -Dgreenmail.verbose' \
+          "${GREENMAIL_IMAGE}"
 
-      - name: Start GreenMail server
-        run: |
-          docker run -d --name greenmail \
-            -p 3025:3025 -p 3143:3143 \
-            greenmail/standalone:2.0.0
-          sleep 5
-          docker ps
+        # Wait for GreenMail to accept connections (up to 2 minutes).
+        for i in $(seq 1 40); do
+          if nc -z localhost "${SMTP_PORT}" && nc -z localhost "${IMAP_PORT}"; then
+            echo "GreenMail ready after ${i}*3s"
+            docker ps --filter "name=${GREENMAIL_CONTAINER}"
+            exit 0
+          fi
+          sleep 3
+        done
+        echo "GreenMail failed to come up" >&2
+        docker logs "${GREENMAIL_CONTAINER}" || true
+        exit 1
 
-      - name: Build signed app and extension
-        run: |
-          PKG_CONFIG_PATH=${{ github.workspace }}/Vendor/pkgconfig \
-          xcodebuild -project MailApp/RnpMail.xcodeproj \
-            -scheme RNP \
-            -configuration Direct \
-            build \
-            CODE_SIGNING_ALLOWED=YES \
-            DEVELOPMENT_TEAM=${{ secrets.TEAM_ID }}
-        env:
-          PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
+    - name: SMTP → IMAP roundtrip via Python
+      run: |
+        set -euo pipefail
+        python3 << PY
+        import smtplib, imaplib, email, time, sys, os
+        smtp_host = "localhost"
+        imap_host = "localhost"
+        smtp_port = int(os.environ["SMTP_PORT"])
+        imap_port = int(os.environ["IMAP_PORT"])
+        user = os.environ["TEST_USER"]
+        password = os.environ["TEST_PASSWORD"]
+        sender = os.environ["TEST_EMAIL"]
+        recipient = os.environ["TEST_EMAIL"]
+        subject = f"rnp-e2e-{int(time.time())}"
+        body = "GreenMail roundtrip on GHA macos runner OK"
 
-      - name: Run end-to-end Mail test
-        run: ./scripts/test-mail-e2e-docker.sh
-        env:
-          GREENMAIL_SMTP_PORT: 3025
-          GREENMAIL_IMAP_PORT: 3143
-          TEST_EMAIL: test@localhost
-          TEST_PASSWORD: test
+        msg = f"From: {sender}\r\nTo: {recipient}\r\nSubject: {subject}\r\n\r\n{body}\r\n"
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as s:
+            s.sendmail(sender, [recipient], msg)
+        print(f"sent: subject={subject!r}")
 
-      - name: Stop GreenMail
-        if: always()
-        run: docker stop greenmail && docker rm greenmail
+        # IMAP poll — GreenMail needs a moment to file the message into the mailbox.
+        found = False
+        for attempt in range(20):
+            time.sleep(1)
+            try:
+                with imaplib.IMAP4(imap_host, imap_port) as imap:
+                    imap.login(user, password)
+                    imap.select("INBOX")
+                    typ, data = imap.search(None, "ALL")
+                    if typ != "OK":
+                        continue
+                    for num in data[0].split():
+                        typ, msgdata = imap.fetch(num, "(RFC822)")
+                        if typ != "OK":
+                            continue
+                        parsed = email.message_from_bytes(msgdata[0][1])
+                        if parsed.get("Subject") == subject:
+                            found = True
+                            print(f"received: subject={parsed.get('Subject')!r}")
+                            for part in parsed.walk():
+                                if part.get_content_type() == "text/plain":
+                                    payload = part.get_payload(decode=True).decode().strip()
+                                    assert payload == body, f"body mismatch: {payload!r}"
+                                    print(f"body matches: {payload!r}")
+                                    break
+                            break
+                    imap.logout()
+                if found:
+                    break
+            except Exception as e:
+                print(f"attempt {attempt}: {e!r}")
+                continue
+        if not found:
+            print("FAIL: message never appeared in IMAP", file=sys.stderr)
+            sys.exit(1)
+        print("roundtrip OK")
+        PY
+
+    - name: Dump GreenMail logs
+      if: always()
+      run: docker logs "${GREENMAIL_CONTAINER}" || true
+
+    - name: Stop GreenMail
+      if: always()
+      run: |
+        docker stop "${GREENMAIL_CONTAINER}" >/dev/null 2>&1 || true
+        docker rm "${GREENMAIL_CONTAINER}" >/dev/null 2>&1 || true
+        colima stop 2>/dev/null || true
