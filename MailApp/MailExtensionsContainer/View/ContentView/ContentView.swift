@@ -18,32 +18,11 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @ObservedObject var model: ContentViewModel
-    @State private var showLicenses = false
-    @State private var showKeyServerSettings = false
-    @State private var showSecuritySettings = false
 
     var body: some View {
         rootContent
             .frame(minWidth: 760, minHeight: 480)
             .toolbar { toolbarItems }
-            .sheet(isPresented: $model.showGenerateSheet) {
-                GenerateKeySheet(algorithm: model.generateAlgorithm) { userID, algorithm in
-                    model.generate(userID: userID, algorithm: algorithm)
-                }
-            }
-            .sheet(isPresented: $model.showDetailSheet) {
-                if let key = model.selectedKey {
-                    KeyDetailView(
-                        key: key,
-                        subkeys: model.manager.subkeys(for: key),
-                        isRecipient: model.selectedTab == .recipients,
-                        trustState: model.trustState(for: key),
-                        hasPendingKeyChange: model.hasPendingKeyChange(for: key),
-                        actions: detailActions(for: key)
-                    )
-                    .frame(minWidth: 560, minHeight: 520)
-                }
-            }
             .sheet(isPresented: $model.showOnboarding) {
                 OnboardingView(
                     isPresented: $model.showOnboarding,
@@ -64,24 +43,6 @@ struct ContentView: View {
                     }
                 )
             }
-            .sheet(isPresented: $model.showClipboardImport) {
-                clipboardImportSheet
-            }
-            .sheet(isPresented: $model.showExtendExpirySheet) {
-                extendExpirySheet
-            }
-            .sheet(isPresented: $model.showRevokeConfirmation) {
-                revokeConfirmationSheet
-            }
-            .sheet(isPresented: $model.showRotateSheet) {
-                rotateConfirmationSheet
-            }
-            .sheet(isPresented: $model.showPublishSheet) {
-                publishSheet
-            }
-            .sheet(isPresented: $model.showFetchSheet) {
-                fetchSheet
-            }
             .sheet(isPresented: Binding(
                 get: { model.foreignPassphraseRequest != nil },
                 set: { isPresented in
@@ -94,22 +55,8 @@ struct ContentView: View {
             )) {
                 ForeignPassphraseSheet(model: model)
             }
-            .sheet(isPresented: $model.showTrustHistorySheet) {
-                TrustHistoryView(email: model.trustHistoryEmail, records: model.trustHistoryRecords)
-                    .frame(minWidth: 520, minHeight: 420)
-            }
-            .sheet(isPresented: $model.showKeyringUnlockSheet) {
-                KeyringUnlockSheet(model: model)
-            }
-            .sheet(isPresented: $showLicenses) {
-                LicensesView(sourcesMarkdown: LicensesView.loadSources())
-            }
-            .sheet(isPresented: $showKeyServerSettings) {
-                KeyServerSettingsView()
-                    .frame(minWidth: 480, minHeight: 420)
-            }
-            .sheet(isPresented: $showSecuritySettings) {
-                SecuritySettingsSheet(model: model)
+            .sheet(item: $model.currentSheet) { sheet in
+                sheetView(for: sheet)
             }
             .alert("deleteKey.title", isPresented: $model.showDeleteConfirmation) {
                 Button("button.delete", role: .destructive) { model.deleteSelected() }
@@ -143,15 +90,6 @@ struct ContentView: View {
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
                 model.checkClipboardForPGP()
             }
-            .onReceive(NotificationCenter.default.publisher(for: .showLicenses)) { _ in
-                showLicenses = true
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .showKeyServerSettings)) { _ in
-                showKeyServerSettings = true
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .showSecuritySettings)) { _ in
-                showSecuritySettings = true
-            }
             .onOpenURL { url in
                 guard url.scheme == "rnpmail" else {
                     return
@@ -180,6 +118,54 @@ struct ContentView: View {
                     model.openReview(fingerprint: fingerprint)
                 }
             }
+    }
+
+    @ViewBuilder
+    private func sheetView(for sheet: Sheet) -> some View {
+        switch sheet {
+        case .generate:
+            GenerateKeySheet(algorithm: model.generateAlgorithm) { userID, algorithm in
+                model.generate(userID: userID, algorithm: algorithm)
+            }
+        case .detail:
+            if let key = model.selectedKey {
+                KeyDetailView(
+                    key: key,
+                    subkeys: model.manager.subkeys(for: key),
+                    isRecipient: model.selectedTab == .recipients,
+                    trustState: model.trustState(for: key),
+                    hasPendingKeyChange: model.hasPendingKeyChange(for: key),
+                    actions: detailActions(for: key)
+                )
+                .frame(minWidth: 560, minHeight: 520)
+            }
+        case .clipboardImport:
+            clipboardImportSheet
+        case .extendExpiry:
+            extendExpirySheet
+        case .revoke:
+            revokeConfirmationSheet
+        case .rotate(let kind):
+            rotateConfirmationSheet(kind: kind)
+        case .publish:
+            publishSheet
+        case .fetch:
+            fetchSheet
+        case .foreignPassphrase:
+            ForeignPassphraseSheet(model: model)
+        case .trustHistory:
+            TrustHistoryView(email: model.trustHistoryEmail, records: model.trustHistoryRecords)
+                .frame(minWidth: 520, minHeight: 420)
+        case .keyringUnlock:
+            KeyringUnlockSheet(model: model)
+        case .licenses:
+            LicensesView(sourcesMarkdown: LicensesView.loadSources())
+        case .keyServerSettings:
+            KeyServerSettingsView()
+                .frame(minWidth: 480, minHeight: 420)
+        case .securitySettings:
+            SecuritySettingsSheet(model: model)
+        }
     }
 
     // MARK: - Layout
@@ -342,7 +328,7 @@ struct ContentView: View {
             trustState: { key in
                 key.hasSecret ? nil : model.trustState(for: key)
             },
-            onDoubleTap: { _ in model.showDetailSheet = true },
+            onDoubleTap: { _ in model.currentSheet = .detail },
             onExport: { key in model.exportPublicToPasteboard(key) },
             onCopyFingerprint: { key in model.copyFingerprint(key) },
             onDelete: { key in model.confirmDelete(key) },
@@ -397,7 +383,7 @@ struct ContentView: View {
                 ) {
                     HStack(spacing: RnpSpacing.sm) {
                         Button("emptyState.recipients.fetch") {
-                            model.showFetchSheet = true
+                            model.currentSheet = .fetch
                         }
                         .buttonStyle(.borderedProminent)
                         .accessibilityIdentifier("contentview.empty.fetch")
@@ -440,7 +426,7 @@ struct ContentView: View {
                     .accessibilityIdentifier("contentview.import-file")
                 if model.selectedTab == .recipients {
                     Button("import.fromKeyserver") {
-                        model.showFetchSheet = true
+                        model.currentSheet = .fetch
                     }
                     .accessibilityIdentifier("contentview.import-keyserver")
                 }
@@ -463,7 +449,7 @@ struct ContentView: View {
             .accessibilityLabel("toolbar.export.help")
 
             Button {
-                model.showDetailSheet = true
+                model.currentSheet = .detail
             } label: {
                 Label("toolbar.details.help", systemImage: "info.circle")
             }
@@ -498,31 +484,24 @@ struct ContentView: View {
             onExportPublic: { model.exportSelectedPublicToPasteboard() },
             onExportSecret: { model.exportSelectedSecretToPasteboard() },
             onDelete: {
-                model.showDetailSheet = false
+                model.currentSheet = nil
                 model.showDeleteConfirmation = true
             },
             onExtendExpiry: {
-                model.showDetailSheet = false
-                model.showExtendExpirySheet = true
+                model.currentSheet = .extendExpiry
             },
             onRevoke: {
-                model.showDetailSheet = false
-                model.showRevokeConfirmation = true
+                model.currentSheet = .revoke
             },
             onRotateEncryption: {
-                model.showDetailSheet = false
-                model.rotateMessage = "rotate.encryption.message"
-                model.showRotateSheet = true
+                model.currentSheet = .rotate(kind: .encryption)
             },
             onRotateSigning: {
-                model.showDetailSheet = false
-                model.rotateMessage = "rotate.signing.message"
-                model.showRotateSheet = true
+                model.currentSheet = .rotate(kind: .signing)
             },
             onPublish: {
-                model.showDetailSheet = false
                 model.publishMessage = "publish.uploading"
-                model.showPublishSheet = true
+                model.currentSheet = .publish
                 model.publishSelectedKey()
             },
             onMarkVerified: {
@@ -551,7 +530,7 @@ struct ContentView: View {
                         tint: RnpBrand.critical,
                         text: "banner.keyringLocked".localized,
                         actionTitle: "banner.keyringLocked.unlock",
-                        action: { model.showKeyringUnlockSheet = true },
+                        action: { model.currentSheet = .keyringUnlock },
                         actionIdentifier: "contentview.keyring-locked.unlock"
                     )
                     .accessibilityIdentifier("contentview.keyring-locked-banner")
@@ -606,11 +585,10 @@ struct ContentView: View {
             .accessibilityIdentifier("contentview.extendexpiry.datepicker")
             HStack(spacing: 12) {
                 Spacer()
-                Button("button.cancel") { model.showExtendExpirySheet = false }
+                Button("button.cancel") { model.currentSheet = nil }
                     .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("contentview.extendexpiry.cancel")
                 Button("button.extend") {
-                    model.showExtendExpirySheet = false
                     model.extendSelectedExpiry()
                 }
                 .keyboardShortcut(.defaultAction)
@@ -637,11 +615,10 @@ struct ContentView: View {
                 .accessibilityIdentifier("contentview.revoke.reason")
             HStack(spacing: 12) {
                 Spacer()
-                Button("button.cancel") { model.showRevokeConfirmation = false }
+                Button("button.cancel") { model.currentSheet = nil }
                     .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("contentview.revoke.cancel")
                 Button("button.revoke", role: .destructive) {
-                    model.showRevokeConfirmation = false
                     model.revokeSelected()
                 }
                 .keyboardShortcut(.defaultAction)
@@ -653,25 +630,24 @@ struct ContentView: View {
         .frame(width: 420)
     }
 
-    private var rotateConfirmationSheet: some View {
-        VStack(spacing: 16) {
+    private func rotateConfirmationSheet(kind: RotateKind) -> some View {
+        let messageKey: String = kind == .encryption ? "rotate.encryption.message" : "rotate.signing.message"
+        return VStack(spacing: 16) {
             Text("rotate.title")
                 .font(.headline)
-            Text(model.rotateMessage.localized)
+            Text(messageKey.localized)
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             HStack(spacing: 12) {
                 Spacer()
-                Button("button.cancel") { model.showRotateSheet = false }
+                Button("button.cancel") { model.currentSheet = nil }
                     .keyboardShortcut(.cancelAction)
                     .accessibilityIdentifier("contentview.rotate.cancel")
                 Button("button.rotate") {
-                    model.showRotateSheet = false
-                    if model.rotateMessage == "rotate.encryption.message" {
-                        model.rotateEncryptionSubkey()
-                    } else {
-                        model.rotateSigningSubkey()
+                    switch kind {
+                    case .encryption: model.rotateEncryptionSubkey()
+                    case .signing: model.rotateSigningSubkey()
                     }
                 }
                 .keyboardShortcut(.defaultAction)
@@ -698,7 +674,7 @@ struct ContentView: View {
             }
             HStack(spacing: 12) {
                 Spacer()
-                Button("button.ok") { model.showPublishSheet = false }
+                Button("button.ok") { model.currentSheet = nil }
                     .keyboardShortcut(.defaultAction)
                     .disabled(model.isPublishing)
                     .accessibilityIdentifier("contentview.publish.ok")
@@ -748,7 +724,7 @@ struct ContentView: View {
             HStack(spacing: 12) {
                 Spacer()
                 Button("button.cancel") {
-                    model.showFetchSheet = false
+                    model.currentSheet = nil
                     model.fetchQuery = ""
                     model.fetchedKey = nil
                 }
@@ -789,7 +765,7 @@ struct ContentView: View {
             HStack(spacing: 12) {
                 Spacer()
                 Button("button.cancel") {
-                    model.showClipboardImport = false
+                    model.currentSheet = nil
                     model.clipboardText = ""
                 }
                 .keyboardShortcut(.cancelAction)
@@ -1076,11 +1052,6 @@ private struct KeyringUnlockSheet: View {
             }
         }
     }
-}
-
-extension Notification.Name {
-    /// Posted to open the security settings sheet.
-    static let showSecuritySettings = Notification.Name("com.rnpgp.RNPForMail.showSecuritySettings")
 }
 
 /// Security settings sheet: the opt-in per-operation verification toggle

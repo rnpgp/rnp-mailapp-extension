@@ -66,22 +66,13 @@ struct MailExtensionsContainerApp: App {
                     model.reopenOnboarding()
                 }
                 Button("menu.keyservers") {
-                    NotificationCenter.default.post(
-                        name: .showKeyServerSettings,
-                        object: nil
-                    )
+                    model.currentSheet = .keyServerSettings
                 }
                 Button("menu.security") {
-                    NotificationCenter.default.post(
-                        name: .showSecuritySettings,
-                        object: nil
-                    )
+                    model.currentSheet = .securitySettings
                 }
                 Button("menu.licenses") {
-                    NotificationCenter.default.post(
-                        name: .showLicenses,
-                        object: nil
-                    )
+                    model.currentSheet = .licenses
                 }
             }
         }

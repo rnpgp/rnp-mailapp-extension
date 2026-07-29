@@ -8,11 +8,6 @@
 
 import SwiftUI
 
-extension Notification.Name {
-    /// Posted by the Help menu to present the Licenses sheet.
-    static let showLicenses = Notification.Name("com.rnpgp.RNPForMail.showLicenses")
-}
-
 /// One bundled license entry. The `filename` is looked up in the
 /// app bundle's `Resources/Licenses/` directory.
 struct BundledLicense: Identifiable, Hashable {

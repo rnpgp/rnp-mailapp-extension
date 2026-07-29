@@ -31,21 +31,9 @@ enum KeyTab: String, CaseIterable {
 
 final class ContentViewModel: ObservableObject {
     @Published var selection: KeyInfo.ID?
-    @Published var showGenerateSheet = false
+    @Published var currentSheet: Sheet?
     @Published var showDeleteConfirmation = false
-    @Published var showDetailSheet = false
     @Published var showOnboarding = false
-    @Published var showClipboardImport = false
-    @Published var showExtendExpirySheet = false
-    @Published var showRevokeConfirmation = false
-    @Published var showRotateSheet = false
-    @Published var rotateMessage = ""
-    @Published var showPublishSheet = false
-    @Published var publishMessage = ""
-    @Published var showFetchSheet = false
-    @Published var fetchQuery = ""
-    @Published var fetchedKey: FetchedKey?
-    @Published var clipboardText = ""
     @Published var errorMessage: String?
     @Published var warningMessage: String?
     @Published private(set) var generateAlgorithm: KeyAlgorithm = .ed25519
@@ -55,21 +43,24 @@ final class ContentViewModel: ObservableObject {
     @Published var extendExpiryDate = Date().addingTimeInterval(365 * 24 * 60 * 60)
     @Published var pendingReviewFingerprint: String?
     /// Trust history sheet state.
-    @Published var showTrustHistorySheet = false
     @Published private(set) var trustHistoryEmail = ""
     @Published private(set) var trustHistoryRecords: [TrustRecord] = []
-    /// Whether the keyring unlock sheet (Touch ID / manual passphrase) is
-    /// presented. Shown from the locked-keyring banner.
-    @Published var showKeyringUnlockSheet = false
     /// Whether a keyserver discovery (fetch sheet) is in flight.
     @Published var isDiscoveringKey = false
     /// Whether a keyserver publish is in flight.
     @Published var isPublishing = false
+    /// Publish progress / result message, updated during the operation.
+    @Published var publishMessage = ""
     /// Sidebar search query; filters the visible key list.
     @Published var searchText = ""
     /// Import failure shown as an inline banner in the sidebar (instead of a
     /// modal alert) so the user can fix the data and retry.
     @Published var importError: String?
+    /// Fetch-sheet form state.
+    @Published var fetchQuery = ""
+    @Published var fetchedKey: FetchedKey?
+    /// Clipboard-import sheet pending text.
+    @Published var clipboardText = ""
 
     let manager: KeysManager
     private var lastClipboardHash: String?
@@ -92,7 +83,7 @@ final class ContentViewModel: ObservableObject {
         if let key = manager.keys.first(where: { $0.fingerprint.compare(fingerprint, options: .caseInsensitive) == .orderedSame }) {
             selectedTab = key.hasSecret ? .myKeys : .recipients
             selection = key.id
-            showDetailSheet = true
+            currentSheet = .detail
             pendingReviewFingerprint = nil
         }
     }
@@ -144,7 +135,7 @@ final class ContentViewModel: ObservableObject {
         }
         trustHistoryEmail = email
         trustHistoryRecords = manager.trustHistory(forEmail: email)
-        showTrustHistorySheet = true
+        currentSheet = .trustHistory
     }
 
     /// Keys visible in the current tab.
@@ -270,7 +261,7 @@ final class ContentViewModel: ObservableObject {
 
     func beginGenerate(algorithm: KeyAlgorithm) {
         generateAlgorithm = algorithm
-        showGenerateSheet = true
+        currentSheet = .generate
     }
 
     func generate(userID: String, algorithm: KeyAlgorithm) {
@@ -404,7 +395,7 @@ final class ContentViewModel: ObservableObject {
         guard hash != lastClipboardHash else { return }
         lastClipboardHash = hash
         clipboardText = text
-        showClipboardImport = true
+        currentSheet = .clipboardImport
     }
 
     private static func clipboardHash(_ text: String) -> String {
@@ -414,7 +405,7 @@ final class ContentViewModel: ObservableObject {
 
     func confirmClipboardImport() {
         importKeys(Data(clipboardText.utf8))
-        showClipboardImport = false
+        currentSheet = nil
         clipboardText = ""
     }
 
@@ -500,18 +491,21 @@ final class ContentViewModel: ObservableObject {
     func rotateEncryptionSubkey() {
         guard let key = selectedKey else { return }
         manager.rotateEncryptionSubkey(for: key)
+        currentSheet = nil
         propagateError()
     }
 
     func rotateSigningSubkey() {
         guard let key = selectedKey else { return }
         manager.rotateSigningSubkey(for: key)
+        currentSheet = nil
         propagateError()
     }
 
     func extendSelectedExpiry() {
         guard let key = selectedKey else { return }
         manager.extendExpiry(for: key, to: extendExpiryDate)
+        currentSheet = nil
         propagateError()
     }
 
@@ -524,6 +518,7 @@ final class ContentViewModel: ObservableObject {
         manager.revoke(key, code: .noReason, reason: revokeReason)
         revokeFingerprintInput = ""
         revokeReason = ""
+        currentSheet = nil
         propagateError()
     }
 
@@ -577,7 +572,7 @@ final class ContentViewModel: ObservableObject {
     func importFetchedKey() {
         guard let key = fetchedKey else { return }
         importKeys(key.data)
-        showFetchSheet = false
+        currentSheet = nil
         fetchQuery = ""
         fetchedKey = nil
     }
@@ -589,7 +584,7 @@ final class ContentViewModel: ObservableObject {
         selectedTab = .recipients
         fetchQuery = email
         fetchedKey = nil
-        showFetchSheet = true
+        currentSheet = .fetch
         discoverKey()
     }
 
