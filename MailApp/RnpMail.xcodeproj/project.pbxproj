@@ -32,6 +32,8 @@
 		AA1000000000000000000017 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000007 /* TrustStore */; };
 		AA1000000000000000000018 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000008 /* TrustStore */; };
 		AA1000000000000000000019 /* KeyLifecycle in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000009 /* KeyLifecycle */; };
+		AA100000000000000000001A /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
+		AA100000000000000000001B /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -107,6 +109,7 @@
 		AA2000000000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA2000000000000000000008 /* MailExtensionsContainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtensionsContainerApp.swift; sourceTree = "<group>"; };
 		AA2000000000000000000009 /* KeysManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysManager.swift; sourceTree = "<group>"; };
+		AA2000000000000000000007 /* SharedKeyring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedKeyring.swift; sourceTree = "<group>"; };
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
@@ -282,6 +285,7 @@
 			isa = PBXGroup;
 			children = (
 				AA2000000000000000000009 /* KeysManager.swift */,
+				AA2000000000000000000007 /* SharedKeyring.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -504,6 +508,7 @@
 				AA1000000000000000000002 /* MailExtension.swift in Sources */,
 				AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */,
 				AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */,
+				AA100000000000000000001B /* SharedKeyring.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -513,6 +518,7 @@
 			files = (
 				AA1000000000000000000007 /* MailExtensionsContainerApp.swift in Sources */,
 				AA1000000000000000000008 /* KeysManager.swift in Sources */,
+				AA100000000000000000001A /* SharedKeyring.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
