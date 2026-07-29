@@ -16921,6 +16921,39 @@
           }
         }
       }
+    },
+    "detail.addUserID": {
+      "comment": "Context-menu / detail action: add a user ID to the selected key.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add user ID"
+          }
+        }
+      }
+    },
+    "detail.archive": {
+      "comment": "Context-menu / detail action: archive the selected key (decrypt-only).",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Archive"
+          }
+        }
+      }
+    },
+    "onboarding.restoreFromBackup": {
+      "comment": "Onboarding option to restore from a paper-key backup.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore from backup"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
