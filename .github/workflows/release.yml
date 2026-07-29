@@ -154,10 +154,10 @@ jobs:
 
     - name: Build and notarize release
       env:
-        # release-direct.sh reads GITHUB_REF_NAME for its tag-vs-MARKETING_VERSION
-        # sanity check; on the workflow_dispatch path GITHUB_REF_NAME is the
-        # dispatch branch (e.g. main), so override it with the resolved tag.
-        GITHUB_REF_NAME: ${{ steps.ver.outputs.tag }}
+        # release-direct.sh prefers RELEASE_TAG over GITHUB_REF_NAME so the
+        # workflow_dispatch path (where GITHUB_REF_NAME is the dispatch
+        # branch, e.g. main) can still pass the resolved tag.
+        RELEASE_TAG: ${{ steps.ver.outputs.tag }}
         DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         ASC_API_KEY_P8: "${{ runner.temp }}/asc/AuthKey_${{ secrets.APPLE_ASC_API_KEY_ID }}.p8"
         ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
