@@ -16800,6 +16800,127 @@
           }
         }
       }
+    },
+    "nav.tools": {
+      "comment": "Navigation label for the Tools tab.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tools"
+          }
+        }
+      }
+    },
+    "title.tools": {
+      "comment": "Navigation title for the Tools tab.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tools"
+          }
+        }
+      }
+    },
+    "Archived": {
+      "comment": "Label for the archived-keys section header.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Archived"
+          }
+        }
+      }
+    },
+    "Autocrypt": {
+      "comment": "Settings section header for Autocrypt options.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autocrypt"
+          }
+        }
+      }
+    },
+    "Done": {
+      "comment": "Button label marking a flow as complete.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+    "Envelope": {
+      "comment": "Settings section header for envelope (AEAD/v6) options.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envelope"
+          }
+        }
+      }
+    },
+    "Imported": {
+      "comment": "Status badge: key has been imported.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imported"
+          }
+        }
+      }
+    },
+    "Instructions": {
+      "comment": "Section header above the paper-key instructions.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instructions"
+          }
+        }
+      }
+    },
+    "Mutual": {
+      "comment": "Autocrypt prefer-encrypt mode: mutual.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mutual"
+          }
+        }
+      }
+    },
+    "Refresh": {
+      "comment": "Toolbar button: refresh key data.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
+          }
+        }
+      }
+    },
+    "Restore": {
+      "comment": "Button label for the restore-from-backup action.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
