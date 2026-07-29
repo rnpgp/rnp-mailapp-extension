@@ -32,6 +32,7 @@
 		AA1000000000000000000017 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000007 /* TrustStore */; };
 		AA1000000000000000000018 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000008 /* TrustStore */; };
 		AA1000000000000000000019 /* KeyLifecycle in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000009 /* KeyLifecycle */; };
+		0A786852E497990EF1B7EC11 /* SheetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC12 /* SheetRouter.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -91,6 +92,7 @@
 /* Begin PBXFileReference section */
 		08B0CCA210850092A9DCB536 /* Direct.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Direct.xcconfig; path = Config/Direct.xcconfig; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapNavigationCoordinator.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC12 /* SheetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetRouter.swift; sourceTree = "<group>"; };
 		218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
 		2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UniformTypeIdentifiers.framework; sourceTree = "<group>"; };
@@ -302,6 +304,7 @@
 			children = (
 				AA200000000000000000000A /* ContentView.swift */,
 				AA200000000000000000000B /* ContentViewModel.swift */,
+				0A786852E497990EF1B7EC12 /* SheetRouter.swift */,
 			);
 			path = ContentView;
 			sourceTree = "<group>";
@@ -518,6 +521,7 @@
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
 				0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */,
 				0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */,
+				0A786852E497990EF1B7EC11 /* SheetRouter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,9 +18,7 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @ObservedObject var model: ContentViewModel
-    @State private var showLicenses = false
-    @State private var showKeyServerSettings = false
-    @State private var showSecuritySettings = false
+    @ObservedObject var sheetRouter: SheetRouter
 
     var body: some View {
         rootContent
@@ -101,15 +99,16 @@ struct ContentView: View {
             .sheet(isPresented: $model.showKeyringUnlockSheet) {
                 KeyringUnlockSheet(model: model)
             }
-            .sheet(isPresented: $showLicenses) {
-                LicensesView(sourcesMarkdown: LicensesView.loadSources())
-            }
-            .sheet(isPresented: $showKeyServerSettings) {
-                KeyServerSettingsView()
-                    .frame(minWidth: 480, minHeight: 420)
-            }
-            .sheet(isPresented: $showSecuritySettings) {
-                SecuritySettingsSheet(model: model)
+            .sheet(item: $sheetRouter.current) { sheet in
+                switch sheet {
+                case .licenses:
+                    LicensesView(sourcesMarkdown: LicensesView.loadSources())
+                case .keyServerSettings:
+                    KeyServerSettingsView()
+                        .frame(minWidth: 480, minHeight: 420)
+                case .securitySettings:
+                    SecuritySettingsSheet(model: model)
+                }
             }
             .alert("deleteKey.title", isPresented: $model.showDeleteConfirmation) {
                 Button("button.delete", role: .destructive) { model.deleteSelected() }
@@ -142,15 +141,6 @@ struct ContentView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
                 model.checkClipboardForPGP()
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .showLicenses)) { _ in
-                showLicenses = true
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .showKeyServerSettings)) { _ in
-                showKeyServerSettings = true
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .showSecuritySettings)) { _ in
-                showSecuritySettings = true
             }
             .onOpenURL { url in
                 guard url.scheme == "rnpmail" else {
@@ -1078,11 +1068,6 @@ private struct KeyringUnlockSheet: View {
     }
 }
 
-extension Notification.Name {
-    /// Posted to open the security settings sheet.
-    static let showSecuritySettings = Notification.Name("com.rnpgp.RNPForMail.showSecuritySettings")
-}
-
 /// Security settings sheet: the opt-in per-operation verification toggle
 /// ("require Touch ID for each sign/encrypt/decrypt operation") and its
 /// session timeout. Both are stored in the app-group defaults, so the Mail
@@ -1155,7 +1140,7 @@ private struct SecuritySettingsSheet: View {
 #if DEBUG
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(model: ContentViewModel(manager: KeysManager()))
+        ContentView(model: ContentViewModel(manager: KeysManager()), sheetRouter: SheetRouter())
     }
 }
 #endif

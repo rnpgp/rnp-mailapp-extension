@@ -13,6 +13,7 @@ import RnpMailUI
 @main
 struct MailExtensionsContainerApp: App {
     @StateObject private var model = ContentViewModel(manager: KeysManager())
+    @StateObject private var sheetRouter = SheetRouter()
 
     init() {
         if CommandLine.arguments.contains("--self-test") {
@@ -23,7 +24,7 @@ struct MailExtensionsContainerApp: App {
 
     var body: some Scene {
         WindowGroup("RNP for Mail") {
-            ContentView(model: model)
+            ContentView(model: model, sheetRouter: sheetRouter)
                 .onAppear {
                     model.checkOnboarding()
                 }
@@ -66,22 +67,13 @@ struct MailExtensionsContainerApp: App {
                     model.reopenOnboarding()
                 }
                 Button("menu.keyservers") {
-                    NotificationCenter.default.post(
-                        name: .showKeyServerSettings,
-                        object: nil
-                    )
+                    sheetRouter.present(.keyServerSettings)
                 }
                 Button("menu.security") {
-                    NotificationCenter.default.post(
-                        name: .showSecuritySettings,
-                        object: nil
-                    )
+                    sheetRouter.present(.securitySettings)
                 }
                 Button("menu.licenses") {
-                    NotificationCenter.default.post(
-                        name: .showLicenses,
-                        object: nil
-                    )
+                    sheetRouter.present(.licenses)
                 }
             }
         }
