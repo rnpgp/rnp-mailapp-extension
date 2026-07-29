@@ -46,22 +46,30 @@ jobs:
         sudo xcode-select -s "/Applications/${XCODE_APP}/Contents/Developer"
         xcodebuild -version
 
-    - name: Start Docker daemon (colima)
+    - name: Start Docker daemon (Docker Desktop)
       run: |
-        brew install colima docker || brew upgrade colima docker || true
-        colima start --cpu 2 --memory 4 --disk 10
-        # Wait for Docker to be ready (up to 3 minutes).
-        for i in $(seq 1 60); do
+        # Docker Desktop is pre-installed on the macos-15 runner image but
+        # doesn't autostart. colima's VZ driver is broken in CI (nested virt
+        # quirks — "error starting vm: error at 'creating and starting'");
+        # Docker Desktop is more reliable here.
+        DESKTOP="/Applications/Docker.app/Contents/MacOS/Docker"
+        if [[ -x "${DESKTOP}" ]]; then
+          ( "${DESKTOP}" >/dev/null 2>&1 & )
+        else
+          open -a Docker || true
+        fi
+
+        for i in $(seq 1 90); do
           if docker info >/dev/null 2>&1; then
-            echo "Docker ready after ${i}s"
-            docker version
+            echo "Docker ready after ${i}*2s"
+            docker version --format 'Client: {{.Client.Version}} | Server: {{.Server.Version}}'
             exit 0
           fi
-          sleep 3
+          sleep 2
         done
         echo "Docker failed to come up" >&2
-        colima status || true
-        colima logs || true
+        ls -d /Applications/Docker.app 2>/dev/null || echo "Docker.app not found"
+        tail -n 30 ~/Library/Containers/com.docker.docker/Data/log/host/com.docker.backend.log 2>/dev/null || true
         exit 1
 
     - name: Start GreenMail
@@ -153,4 +161,4 @@ jobs:
       run: |
         docker stop "${GREENMAIL_CONTAINER}" >/dev/null 2>&1 || true
         docker rm "${GREENMAIL_CONTAINER}" >/dev/null 2>&1 || true
-        colima stop 2>/dev/null || true
+        osascript -e 'quit app "Docker"' 2>/dev/null || true
