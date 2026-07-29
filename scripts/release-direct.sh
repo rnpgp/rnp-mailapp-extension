@@ -51,13 +51,21 @@ fi
 MARKETING_VERSION="$(grep 'MARKETING_VERSION' "${VERSION_FILE}" | awk -F'= ' '{print $2}' | tr -d ' ')"
 EXPECTED_TAG="v${MARKETING_VERSION}"
 
-if [[ -n "${GITHUB_REF_NAME:-}" && "${GITHUB_REF_NAME}" != */merge && ! "${GITHUB_REF_NAME}" =~ ^[0-9]+/merge$ ]]; then
-    # Allow pre-release suffixes (e.g. v0.9.0-test, v1.0.0-rc1) on the same version.
-    if [[ "${GITHUB_REF_NAME}" != "${EXPECTED_TAG}" && ! "${GITHUB_REF_NAME}" =~ ^${EXPECTED_TAG}-.+ ]]; then
-        echo "Tag mismatch: expected ${EXPECTED_TAG} (or ${EXPECTED_TAG}-<suffix>), got ${GITHUB_REF_NAME}" >&2
-        exit 1
+if [[ -n "${RELEASE_TAG:-}${GITHUB_REF_NAME:-}" ]]; then
+    # RELEASE_TAG (workflow_dispatch retries) wins over GITHUB_REF_NAME
+    # (tag-push triggers); GITHUB_REF_NAME cannot be reliably overridden
+    # at step level because GitHub Actions preserves its default value.
+    REF_TAG="${RELEASE_TAG:-${GITHUB_REF_NAME}}"
+    if [[ "${REF_TAG}" != */merge && ! "${REF_TAG}" =~ ^[0-9]+/merge$ ]]; then
+        # Allow pre-release suffixes (e.g. v0.9.0-test, v1.0.0-rc1) on the same version.
+        if [[ "${REF_TAG}" != "${EXPECTED_TAG}" && ! "${REF_TAG}" =~ ^${EXPECTED_TAG}-.+ ]]; then
+            echo "Tag mismatch: expected ${EXPECTED_TAG} (or ${EXPECTED_TAG}-<suffix>), got ${REF_TAG}" >&2
+            exit 1
+        fi
+        echo "Releasing ${REF_TAG}"
+    else
+        echo "Local or PR run: expected tag is ${EXPECTED_TAG} (skipping tag check)"
     fi
-    echo "Releasing ${GITHUB_REF_NAME}"
 else
     echo "Local or PR run: expected tag is ${EXPECTED_TAG} (skipping tag check)"
 fi
