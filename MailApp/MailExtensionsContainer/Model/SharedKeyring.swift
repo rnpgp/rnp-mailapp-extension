@@ -14,6 +14,7 @@
 
 import Foundation
 import MailSecurityEngine
+import Rnp
 
 enum SharedKeyring {
     /// Build a KeyManager on `directory` using the shared Keychain
