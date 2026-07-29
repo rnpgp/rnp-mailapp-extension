@@ -49,24 +49,9 @@ final class KeysManager: ObservableObject {
     /// to use an isolated keyring (and trust store) instead of the shared
     /// app-group container.
     init() {
-        let provider: Rnp.KeyedPassphraseProvider = KeychainPassphraseStore.resolvingProvider()
-        if let manager = try? KeyManager(
-            directory: Self.launchKeyringDirectory(),
-            keyedPassphraseProvider: provider
-        ) {
-            keyManager = manager
-        } else {
-            let fallback = FileManager.default.temporaryDirectory
-                .appendingPathComponent("rnp-mail-extension-fallback")
-            if let manager = try? KeyManager(
-                directory: fallback,
-                keyedPassphraseProvider: provider
-            ) {
-                keyManager = manager
-            } else {
-                keyManager = nil
-                lastError = "error.keyringOpenFailed".localized
-            }
+        keyManager = SharedKeyring.makeKeyManager(directory: Self.launchKeyringDirectory())
+        if keyManager == nil {
+            lastError = "error.keyringOpenFailed".localized
         }
         reload()
         keyringLocked = Self.computeKeyringLocked()

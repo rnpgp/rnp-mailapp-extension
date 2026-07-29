@@ -46,24 +46,12 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     /// passphrase, so every sign/encrypt/decrypt operation is freshly
     /// authorized.
     private static func makeCore() -> MessageSecurityCore? {
-        let provider: Rnp.KeyedPassphraseProvider = KeychainPassphraseStore.resolvingProvider()
-        let stateRecorder = SecurityStateRecorder(directory: AppGroup.extensionStateDirectory())
-        if let engine = try? makeEngine(directory: AppGroup.keyringDirectory(), provider: provider) {
-            return MessageSecurityCore(engine: engine, stateRecorder: stateRecorder)
-        }
-        let fallback = FileManager.default.temporaryDirectory
-            .appendingPathComponent("rnp-mail-extension-fallback")
-        guard let engine = try? makeEngine(directory: fallback, provider: provider) else {
+        guard let keyManager = SharedKeyring.makeKeyManager(directory: AppGroup.keyringDirectory()) else {
             return nil
         }
+        let engine = MailSecurityEngine(keyManager: keyManager)
+        let stateRecorder = SecurityStateRecorder(directory: AppGroup.extensionStateDirectory())
         return MessageSecurityCore(engine: engine, stateRecorder: stateRecorder)
-    }
-
-    private static func makeEngine(
-        directory: URL,
-        provider: @escaping Rnp.KeyedPassphraseProvider
-    ) throws -> MailSecurityEngine {
-        MailSecurityEngine(keyManager: try KeyManager(directory: directory, keyedPassphraseProvider: provider))
     }
 
     // MARK: - Encoding Messages
