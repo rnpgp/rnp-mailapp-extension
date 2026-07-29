@@ -172,3 +172,33 @@ jobs:
         spctl -a -t exec -vv "${APP}"
         "${APP}/Contents/MacOS/RNP" --self-test
         hdiutil detach "${VOLUME}"
+
+    - name: Register MailPlugin via pluginkit
+      run: |
+        DMG="$(find "${RUNNER_TEMP}/dist" -name '*.dmg' | head -n1)"
+        VOLUME="/Volumes/RNP Installer"
+        hdiutil attach "${DMG}" -nobrowse
+        APP="${VOLUME}/RNP.app"
+        APPEX="${APP}/Contents/PlugIns/MailPlugin.appex"
+
+        # Register the extension with LaunchServices. pluginkit -a requires
+        # the bundle to be on a mounted volume; the DMG mount satisfies that
+        # without modifying the runner's /Applications.
+        pluginkit -a "${APPEX}"
+
+        # Give launchd a moment to pick it up.
+        sleep 3
+
+        # List Mail extension plugins and confirm ours is registered.
+        echo "=== Registered Mail extensions ==="
+        pluginkit -m -p com.apple.email-extension
+        echo "=== Looking for com.rnpgp.RNPForMail.MailExtension ==="
+        if ! pluginkit -m -v -i com.rnpgp.RNPForMail.MailExtension >/dev/null 2>&1; then
+          echo "FAIL: MailPlugin did not register with pluginkit" >&2
+          pluginkit -m -p com.apple.email-extension >&2
+          exit 1
+        fi
+        echo "OK: MailPlugin registered"
+        pluginkit -m -v -i com.rnpgp.RNPForMail.MailExtension
+
+        hdiutil detach "${VOLUME}"
