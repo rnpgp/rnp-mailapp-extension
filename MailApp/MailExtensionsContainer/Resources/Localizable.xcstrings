@@ -16954,6 +16954,38 @@
           }
         }
       }
+    },
+    "import.fromKeyring": {
+      "extractionState": "manual",
+      "localizations": {}
+    },
+    "importFromKeyring.title": {
+      "extractionState": "manual",
+      "localizations": {}
+    },
+    "importFromKeyring.message": {
+      "extractionState": "manual",
+      "localizations": {}
+    },
+    "importFromKeyring.scanning": {
+      "extractionState": "manual",
+      "localizations": {}
+    },
+    "importFromKeyring.none": {
+      "extractionState": "manual",
+      "localizations": {}
+    },
+    "importFromKeyring.importButton": {
+      "extractionState": "manual",
+      "localizations": {}
+    },
+    "importFromKeyring.importing": {
+      "extractionState": "manual",
+      "localizations": {}
+    },
+    "importFromKeyring.secret": {
+      "extractionState": "manual",
+      "localizations": {}
     }
   },
   "version": "1.0"
