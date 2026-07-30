@@ -35,7 +35,7 @@
 		AA100000000000000000001A /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
 		AA100000000000000000001B /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
 		0A786852E497990EF1B7EC11 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC12 /* Sheet.swift */; };
-		0A786852E497990EF1B7EC13 /* LocalizationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef: 0A786852E497990EF1B7EC14 /* LocalizationContractTests.swift */; };
+		0A786852E497990EF1B7EC13 /* LocalizationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC14 /* LocalizationContractTests.swift */; };
 		0A786852E497990EF1B7EC15 /* KeyringScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC16 /* KeyringScanner.swift */; };
 		0A786852E497990EF1B7EC17 /* ImportFromKeyringSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
