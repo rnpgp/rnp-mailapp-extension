@@ -14,6 +14,7 @@
 
 import Foundation
 import MailSecurityEngine
+import Rnp
 
 enum KeyringSource: String, CaseIterable, Hashable {
     case gnupg
