@@ -187,7 +187,7 @@ enum KeyringScanner {
     private static func scanRNP(at home: URL) -> [DiscoveredKey]? {
         // Open the keyring directory with a no-op passphrase provider —
         // listing public keys does not require a passphrase.
-        let provider: Rnp.KeyedPassphraseProvider = { _ in nil }
+        let provider: Rnp.KeyedPassphraseProvider = { _, _ in nil }
         guard let manager = try? KeyManager(directory: home, keyedPassphraseProvider: provider) else {
             return nil
         }
@@ -204,7 +204,7 @@ enum KeyringScanner {
 
     private static func exportRNP(fingerprint: String, secret: Bool) -> Data? {
         guard let home = KeyringSource.rnp.homePath else { return nil }
-        let provider: Rnp.KeyedPassphraseProvider = { _ in nil }
+        let provider: Rnp.KeyedPassphraseProvider = { _, _ in nil }
         guard let manager = try? KeyManager(directory: home, keyedPassphraseProvider: provider) else {
             return nil
         }
