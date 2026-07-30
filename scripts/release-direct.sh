@@ -159,10 +159,41 @@ fi
 APP_NAME="$(basename "${APP_BUNDLE}")"
 
 # ------------------------------------------------------------------
+# Re-sign with Hardened Runtime version 14.0.
+#
+# Xcode 16.4 embeds Runtime Version=15.5.0 (the macOS SDK it was built
+# against) into every Mach-O binary's code signature. macOS 14.0–14.3
+# pluginkit rejects Mail extensions whose runtime version exceeds the
+# system's macOS version, so the .appex fails to register with
+# "SecStaticCodeCreateWithPath failed -67028" / "errSecCSReqFailed
+# -67062" in Console. Fixed in macOS 14.4+, but we want to support
+# 14.0–14.3 users too.
+#
+# `codesign --runtime-version 14.0` re-stamps the runtime version
+# without touching anything else (entitlements, provisioning profile,
+# CDHash algorithm all preserved via --preserve-metadata). The result
+# is a binary that macOS 14.x pluginkit accepts.
+# ------------------------------------------------------------------
+echo "=== Re-signing with Hardened Runtime version 14.0 ==="
+for bundle in \
+    "${APP_BUNDLE}" \
+    "${APP_BUNDLE}/Contents/Frameworks/RNPFramework.framework" \
+    "${APP_BUNDLE}/Contents/PlugIns/MailPlugin.appex"; do
+    [[ -e "${bundle}" ]] || continue
+    codesign --force --options runtime --runtime-version 14.0 \
+        --preserve-metadata=identifier,requirements,entitlements,flags,resource-rules \
+        --sign "Developer ID Application" \
+        "${bundle}"
+done
+
+# ------------------------------------------------------------------
 # Verification.
 # ------------------------------------------------------------------
 echo "=== Code signature ==="
 codesign --verify --deep --strict --verbose=2 "${APP_BUNDLE}" || true
+
+echo "=== Runtime version (must be 14.0.0) ==="
+codesign -d --verbose=4 "${APP_BUNDLE}/Contents/PlugIns/MailPlugin.appex" 2>&1 | grep -E "Runtime|VersionSDK" || true
 
 echo "=== Linked libraries ==="
 APPEX="${APP_BUNDLE}/Contents/PlugIns/MailPlugin.appex/Contents/MacOS/MailPlugin"
