@@ -11,6 +11,10 @@ default_platform(:mac)
 #   APPLE_ASC_API_KEY_ID   — App Store Connect API Key ID
 #   APPLE_ASC_ISSUER_ID    — App Store Connect Issuer ID
 #   APPLE_ASC_API_KEY_P8   — base64-encoded .p8 file (decoded below before use)
+#
+# RELEASE_TAG              — the tag being built (workflow_dispatch retries
+#                            reuse an existing tag; main's GITHUB_REF_NAME is
+#                            the dispatch branch, not the tag)
 
 before_all do
   ENV["MATCH_FORCE_ENTERPRISE"] = "0"
@@ -32,6 +36,9 @@ lane :release_direct do
   )
 
   # Pull signing cert + provisioning profiles from the match repo.
+  # match handles keychain import + profile installation; no separate
+  # Apple-Actions/import-codesign-certs or download-provisioning-profiles
+  # steps needed.
   match(
     type: "developer_id",
     readonly: true,
@@ -39,9 +46,10 @@ lane :release_direct do
     git_url: ENV.fetch("MATCH_GIT_URL"),
   )
 
-  # Build + archive.
+  # Build + archive + export. MailPlugin.appex is embedded automatically
+  # via the project's "Embed Foundation Extensions" build phase.
   gym(
-    project: "Swift-Rnp/Swift-Rnp.xcodeproj",
+    project: "MailApp/RnpMail.xcodeproj",
     scheme: "RNP",
     configuration: "Direct",
     export_method: "developer-id",
@@ -49,6 +57,12 @@ lane :release_direct do
     skip_package_ipa: true,
     output_directory: "build/",
   )
+
+  # Re-stamp Hardened Runtime version to 14.0 so macOS 14.0-14.3 pluginkit
+  # accepts the Mail extension signature. Without this, the .appex fails to
+  # register with "SecStaticCodeCreateWithPath failed -67028" in Console.
+  # See PR #164 for the original shell-based version of this fix.
+  sh("scripts/lower-runtime-version.sh build/RNP.app")
 
   # Notarize + staple.
   notarize(
@@ -58,8 +72,10 @@ lane :release_direct do
   )
 
   # Bundle into a DMG for distribution.
+  version = ENV.fetch("RELEASE_TAG", "")[1..] || get_version_number(target: "RNP")
+  sh("mkdir -p dist")
   create_dmg(
-    output_path: "dist/RNP-for-Mail-#{get_version_number(target: 'RNP')}.dmg",
+    output_path: "dist/RNP-#{version}.dmg",
     app_path: "build/RNP.app",
   )
 end

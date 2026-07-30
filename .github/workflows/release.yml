@@ -1,23 +1,64 @@
-name: release-direct
+name: release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 0.9.1 (with or without leading v). If the tag already exists, the workflow rebuilds and re-publishes the release for it; otherwise it errors.'
+        required: true
+        type: string
   push:
     tags:
       - 'v*'
 
 concurrency:
-  group: '${{ github.workflow }}-${{ github.ref_name }}'
+  group: '${{ github.workflow }}-${{ github.event_name }}-${{ github.ref || github.event.inputs.version }}'
   cancel-in-progress: false
 
 env:
   RNP_REF: v0.18.1
+  # Pinned: Xcode 15.4 disttool segfaults on our archive (PR #147).
+  # Bump deliberately — a fallback to "latest installed" masked the original
+  # segfault for weeks. When upgrading, run a tag release to verify first.
+  XCODE_APP: Xcode_16.4.app
 
 jobs:
   build-and-release:
-    runs-on: macos-14
+    runs-on: macos-15
+    outputs:
+      tag: ${{ steps.ver.outputs.tag }}
     steps:
-    - name: Checkout swift-rnp
+    - name: Resolve and validate version
+      id: ver
+      run: |
+        if [[ -n "${{ github.event.inputs.version }}" ]]; then
+          v="${{ github.event.inputs.version }}"
+          v="${v#v}"
+        else
+          v="${GITHUB_REF_NAME#v}"
+        fi
+        if ! [[ "${v}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "ERROR: '${v}' is not x.y.z SemVer" >&2
+          exit 1
+        fi
+        echo "version=${v}" >> "$GITHUB_OUTPUT"
+        echo "tag=v${v}"     >> "$GITHUB_OUTPUT"
+
+    - name: Checkout
       uses: actions/checkout@v7
+      with:
+        ref: ${{ steps.ver.outputs.tag }}
+
+    - name: Select pinned Xcode
+      run: |
+        if [[ ! -d "/Applications/${XCODE_APP}" ]]; then
+          echo "ERROR: /Applications/${XCODE_APP} not present on runner" >&2
+          echo "Installed Xcode versions:" >&2
+          ls -d /Applications/Xcode_*.app >&2 || true
+          exit 1
+        fi
+        sudo xcode-select -s "/Applications/${XCODE_APP}/Contents/Developer"
+        xcodebuild -version
 
     - name: Set up Ruby + fastlane
       uses: ruby/setup-ruby@v1
@@ -39,8 +80,9 @@ jobs:
     - name: Install create-dmg
       run: brew install create-dmg
 
-    - name: Build, sign, notarize, package
+    - name: Build, sign, notarize, package (fastlane)
       env:
+        RELEASE_TAG: ${{ steps.ver.outputs.tag }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APPLE_ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
         APPLE_ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
@@ -53,6 +95,7 @@ jobs:
     - name: Create or update GitHub Release
       uses: softprops/action-gh-release@v3
       with:
+        tag_name: ${{ steps.ver.outputs.tag }}
         files: dist/*
         generate_release_notes: true
       env:
@@ -60,16 +103,26 @@ jobs:
 
   smoke-test:
     needs: build-and-release
-    runs-on: macos-14
+    runs-on: macos-15
+    env:
+      RELEASE_TAG: ${{ needs.build-and-release.outputs.tag }}
     steps:
-    - name: Checkout swift-rnp
+    - name: Checkout
       uses: actions/checkout@v7
+
+    - name: Select pinned Xcode
+      run: |
+        if [[ ! -d "/Applications/${XCODE_APP}" ]]; then
+          echo "ERROR: /Applications/${XCODE_APP} not present on runner" >&2
+          exit 1
+        fi
+        sudo xcode-select -s "/Applications/${XCODE_APP}/Contents/Developer"
 
     - name: Download release DMG
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release download "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" -p '*.dmg' -D "${RUNNER_TEMP}/dist"
+        gh release download "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" -p '*.dmg' -D "${RUNNER_TEMP}/dist"
 
     - name: Attach DMG and verify Gatekeeper
       run: |
@@ -79,4 +132,34 @@ jobs:
         APP="${VOLUME}/RNP.app"
         spctl -a -t exec -vv "${APP}"
         "${APP}/Contents/MacOS/RNP" --self-test
+        hdiutil detach "${VOLUME}"
+
+    - name: Register MailPlugin via pluginkit
+      run: |
+        DMG="$(find "${RUNNER_TEMP}/dist" -name '*.dmg' | head -n1)"
+        VOLUME="/Volumes/RNP Installer"
+        hdiutil attach "${DMG}" -nobrowse
+        APP="${VOLUME}/RNP.app"
+        APPEX="${APP}/Contents/PlugIns/MailPlugin.appex"
+
+        # Register the extension with LaunchServices. pluginkit -a requires
+        # the bundle to be on a mounted volume; the DMG mount satisfies that
+        # without modifying the runner's /Applications.
+        pluginkit -a "${APPEX}"
+
+        # Give launchd a moment to pick it up.
+        sleep 3
+
+        # List Mail extension plugins and confirm ours is registered.
+        echo "=== Registered Mail extensions ==="
+        pluginkit -m -p com.apple.email-extension
+        echo "=== Looking for com.rnpgp.RNPForMail.MailExtension ==="
+        if ! pluginkit -m -v -i com.rnpgp.RNPForMail.MailExtension >/dev/null 2>&1; then
+          echo "FAIL: MailPlugin did not register with pluginkit" >&2
+          pluginkit -m -p com.apple.email-extension >&2
+          exit 1
+        fi
+        echo "OK: MailPlugin registered"
+        pluginkit -m -v -i com.rnpgp.RNPForMail.MailExtension
+
         hdiutil detach "${VOLUME}"
