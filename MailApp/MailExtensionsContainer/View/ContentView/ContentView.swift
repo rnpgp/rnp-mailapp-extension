@@ -113,7 +113,7 @@ struct ContentView: View {
                     return
                 }
             }
-            .onChange(of: model.manager.keys) { _ in
+            .onChange(of: model.manager.keys, initial: false) { _, _ in
                 if let fingerprint = model.pendingReviewFingerprint {
                     model.openReview(fingerprint: fingerprint)
                 }
@@ -1051,7 +1051,7 @@ private struct KeyringUnlockSheet: View {
         .frame(width: 420)
         // Touch ID unlock is asynchronous; once the keyring opens (from
         // either path), close the sheet.
-        .onChange(of: model.keyringLocked) { locked in
+        .onChange(of: model.keyringLocked, initial: false) { _, locked in
             if !locked {
                 dismiss()
             }
