@@ -48,6 +48,9 @@ enum Sheet: Hashable, Identifiable {
     case keyServerSettings
     /// Security settings sheet (require Touch ID per operation, timeout).
     case securitySettings
+    /// Auto-detect existing keyrings (~/.gnupg, ~/.rnp) and let the
+    /// user pick keys to import. Read-only against the source.
+    case importFromKeyring
 
     var id: Self { self }
 }

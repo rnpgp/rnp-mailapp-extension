@@ -35,7 +35,9 @@
 		AA100000000000000000001A /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
 		AA100000000000000000001B /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
 		0A786852E497990EF1B7EC11 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC12 /* Sheet.swift */; };
-		0A786852E497990EF1B7EC13 /* LocalizationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC14 /* LocalizationContractTests.swift */; };
+		0A786852E497990EF1B7EC13 /* LocalizationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef: 0A786852E497990EF1B7EC14 /* LocalizationContractTests.swift */; };
+		0A786852E497990EF1B7EC15 /* KeyringScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC16 /* KeyringScanner.swift */; };
+		0A786852E497990EF1B7EC17 /* ImportFromKeyringSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -114,6 +116,8 @@
 		AA2000000000000000000007 /* SharedKeyring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedKeyring.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC12 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC14 /* LocalizationContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationContractTests.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC16 /* KeyringScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringScanner.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportFromKeyringSheet.swift; sourceTree = "<group>"; };
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
@@ -291,6 +295,7 @@
 			children = (
 				AA2000000000000000000009 /* KeysManager.swift */,
 				AA2000000000000000000007 /* SharedKeyring.swift */,
+				0A786852E497990EF1B7EC16 /* KeyringScanner.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -300,10 +305,19 @@
 			children = (
 				AA3000000000000000000008 /* ContentView */,
 				AA3000000000000000000009 /* KeysList */,
+				0A786852E497990EF1B7EC19 /* Import */,
 				36AF7617F543DF15DF4C5336 /* Licenses */,
 				1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC19 /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */,
+			);
+			path = Import;
 			sourceTree = "<group>";
 		};
 		AA3000000000000000000008 /* ContentView */ = {
@@ -527,6 +541,8 @@
 				AA1000000000000000000008 /* KeysManager.swift in Sources */,
 				AA100000000000000000001A /* SharedKeyring.swift in Sources */,
 				0A786852E497990EF1B7EC11 /* Sheet.swift in Sources */,
+				0A786852E497990EF1B7EC15 /* KeyringScanner.swift in Sources */,
+				0A786852E497990EF1B7EC17 /* ImportFromKeyringSheet.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
 				AA100000000000000000000B /* KeysListView.swift in Sources */,

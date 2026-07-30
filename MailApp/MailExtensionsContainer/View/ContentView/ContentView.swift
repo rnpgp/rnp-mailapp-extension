@@ -165,6 +165,8 @@ struct ContentView: View {
                 .frame(minWidth: 480, minHeight: 420)
         case .securitySettings:
             SecuritySettingsSheet(model: model)
+        case .importFromKeyring:
+            ImportFromKeyringSheet(model: model)
         }
     }
 
@@ -420,6 +422,9 @@ struct ContentView: View {
             .accessibilityLabel("toolbar.generate.help")
 
             Menu {
+                Button("import.fromKeyring") { model.currentSheet = .importFromKeyring }
+                    .accessibilityIdentifier("contentview.import-keyring")
+                Divider()
                 Button("import.fromClipboard") { model.importFromPasteboard() }
                     .accessibilityIdentifier("contentview.import-clipboard")
                 Button("import.fromFile") { model.importFromFile() }
