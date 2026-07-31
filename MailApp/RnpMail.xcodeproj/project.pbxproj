@@ -40,6 +40,7 @@
 		0A786852E497990EF1B7EC17 /* ImportFromKeyringSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */; };
 		0A786852E497990EF1B7EC1A /* LocalizationAuditTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC1B /* LocalizationAuditTests.swift */; };
 		0A786852E497990EF1B7EC1C /* FileToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC1D /* FileToolsView.swift */; };
+		0A786852E497990EF1B7EC1F /* FileEncryptionIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -122,6 +123,7 @@
 		0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportFromKeyringSheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC1B /* LocalizationAuditTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationAuditTests.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC1D /* FileToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileToolsView.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileEncryptionIntents.swift; sourceTree = "<group>"; };
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
@@ -311,10 +313,19 @@
 				AA3000000000000000000009 /* KeysList */,
 				0A786852E497990EF1B7EC19 /* Import */,
 				0A786852E497990EF1B7EC1E /* FileTools */,
+				0A786852E497990EF1B7EC21 /* Intents */,
 				36AF7617F543DF15DF4C5336 /* Licenses */,
 				1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC21 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */,
+			);
+			path = Intents;
 			sourceTree = "<group>";
 		};
 		0A786852E497990EF1B7EC1E /* FileTools */ = {
@@ -554,6 +565,7 @@
 				0A786852E497990EF1B7EC15 /* KeyringScanner.swift in Sources */,
 				0A786852E497990EF1B7EC17 /* ImportFromKeyringSheet.swift in Sources */,
 				0A786852E497990EF1B7EC1C /* FileToolsView.swift in Sources */,
+				0A786852E497990EF1B7EC1F /* FileEncryptionIntents.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
