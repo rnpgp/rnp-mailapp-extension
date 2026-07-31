@@ -250,14 +250,14 @@ struct ContentView: View {
                 .padding(.bottom, RnpSpacing.xs)
             }
             Divider()
-            Button {
-                NotificationCenter.default.post(name: .openFileTools, object: nil)
+            NavigationLink {
+                FileToolsView(model: model)
+                    .navigationTitle("fileTools.windowTitle")
             } label: {
                 Label("nav.fileTools", systemImage: "lock.doc")
                     .padding(.horizontal, RnpSpacing.sm)
                     .padding(.vertical, RnpSpacing.xs)
             }
-            .buttonStyle(.plain)
             .accessibilityIdentifier("contentview.file-tools-link")
             NavigationLink {
                 RoadmapNavigationCoordinator()

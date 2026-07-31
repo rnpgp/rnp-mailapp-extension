@@ -200,11 +200,13 @@ public struct RoadmapNavigationCoordinator: View {
         [
             Tool(
                 title: "Encrypt & decrypt files",
-                description: "Drop a file to encrypt it for people in your keyring, or decrypt a .pgp file.",
+                description: "Click \"Files\" in the sidebar to drop a file and encrypt it for people in your keyring.",
                 systemImage: "lock.doc",
                 identifier: "nav.file-tools",
                 action: {
-                    NotificationCenter.default.post(name: .openFileTools, object: nil)
+                    // Hint: user should click "Files" in the sidebar.
+                    // The Tools hub is itself in the detail column, so we
+                    // can't navigate from here; the sidebar is the entry.
                 }
             ),
             Tool(

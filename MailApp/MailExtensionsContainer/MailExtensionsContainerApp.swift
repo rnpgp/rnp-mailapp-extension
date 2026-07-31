@@ -33,12 +33,7 @@ struct MailExtensionsContainerApp: App {
                 .onAppear {
                     model.checkOnboarding()
                 }
-                .background(WindowOpener())
         }
-        WindowGroup("fileTools.windowTitle".localized, id: "file-tools") {
-            FileToolsView(model: model)
-        }
-        .defaultSize(width: 640, height: 520)
         .commands {
             CommandGroup(after: .newItem) {
                 Button("menu.newKey") {
@@ -71,13 +66,6 @@ struct MailExtensionsContainerApp: App {
                     model.refresh()
                 }
                 .keyboardShortcut("r", modifiers: .command)
-
-                Divider()
-
-                Button("menu.fileTools") {
-                    NotificationCenter.default.post(name: .openFileTools, object: nil)
-                }
-                .keyboardShortcut("f", modifiers: [.command, .shift])
             }
             CommandGroup(after: .help) {
                 Button("menu.showOnboarding") {
@@ -118,21 +106,5 @@ struct MailExtensionsContainerApp: App {
             exit(1)
         }
         print("RNP self-test passed")
-    }
-}
-
-extension Notification.Name {
-    static let openFileTools = Notification.Name("com.rnpgp.RNPForMail.openFileTools")
-}
-
-private struct WindowOpener: View {
-    @Environment(\.openWindow) private var openWindow
-
-    var body: some View {
-        Color.clear
-            .frame(width: 0, height: 0)
-            .onReceive(NotificationCenter.default.publisher(for: .openFileTools)) { _ in
-                openWindow(id: "file-tools")
-            }
     }
 }
