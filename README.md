@@ -27,9 +27,10 @@ MailKit integration).
 - **Decrypt and verify** incoming PGP/MIME mail inline — the message
   body renders as readable text, signatures show green/red in Mail's
   security banner.
-- **Encrypted attachments** — incoming `.pgp`/`.gpg` attachments are
-  decrypted automatically; outgoing attachments can be encrypted to
-  recipients.
+- **Encrypt and decrypt files** — open **File → Encrypt & Decrypt Files…**
+  (⌘⇧F) for a dedicated window. Drop any file to encrypt it for people
+  in your keyring, or drop a `.pgp`/`.gpg`/`.asc` file to decrypt it.
+  Same keyring Mail uses — no separate app, no GPG Suite.
 - **Auto-discover keys via WKD** — when you compose to a recipient
   whose key isn't in your keyring, RNP fetches it automatically from
   Web Key Directory (WKD) or keys.openpgp.org. No manual keyserver
