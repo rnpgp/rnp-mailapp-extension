@@ -199,6 +199,15 @@ public struct RoadmapNavigationCoordinator: View {
     private var discoverTools: [Tool] {
         [
             Tool(
+                title: "Encrypt & decrypt files",
+                description: "Drop a file to encrypt it for people in your keyring, or decrypt a .pgp file.",
+                systemImage: "lock.doc",
+                identifier: "nav.file-tools",
+                action: {
+                    NotificationCenter.default.post(name: .openFileTools, object: nil)
+                }
+            ),
+            Tool(
                 title: "Scan mailbox for keys",
                 description: "Find public keys in received mail and decide which to import.",
                 systemImage: "envelope.open.badge",

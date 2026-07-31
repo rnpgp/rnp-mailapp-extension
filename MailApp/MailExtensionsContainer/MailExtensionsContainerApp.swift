@@ -2,8 +2,14 @@
 //  MailExtensionsContainerApp.swift
 //  RNP for Mail
 //
-//  Container app for the RNP for Mail extension: manages the shared OpenPGP
-//  keyring (generate, import, export, delete).
+//  Container app for the RNP for Mail product: manages the shared OpenPGP
+//  keyring, hosts the Mail extension, and provides File Tools for
+//  encrypting/decrypting files outside of Mail.
+//
+//  Branding: the product is "RNP for Mail". Every user-visible window
+//  title, menu label, and DMG name uses that name. Bundle IDs stay
+//  com.rnpgp.RNPForMail (implementation detail). The RNP technology
+//  brand is reserved for librnp / the OpenPGP engine.
 //
 
 import SwiftUI
@@ -22,12 +28,20 @@ struct MailExtensionsContainerApp: App {
     }
 
     var body: some Scene {
+        // Primary window: key manager.
         WindowGroup("RNP for Mail") {
             ContentView(model: model)
                 .onAppear {
                     model.checkOnboarding()
                 }
+                .background(WindowOpener())
         }
+        // File Tools: standalone workspace. Same product brand, distinct
+        // window title so the two don't collide in the Window menu.
+        WindowGroup("fileTools.windowTitle".localized, id: "file-tools") {
+            FileToolsView(model: model)
+        }
+        .defaultSize(width: 640, height: 520)
         .commands {
             CommandGroup(after: .newItem) {
                 Button("menu.newKey") {
@@ -60,6 +74,13 @@ struct MailExtensionsContainerApp: App {
                     model.refresh()
                 }
                 .keyboardShortcut("r", modifiers: .command)
+
+                Divider()
+
+                Button("menu.fileTools") {
+                    NotificationCenter.default.post(name: .openFileTools, object: nil)
+                }
+                .keyboardShortcut("f", modifiers: [.command, .shift])
             }
             CommandGroup(after: .help) {
                 Button("menu.showOnboarding") {
@@ -100,5 +121,25 @@ struct MailExtensionsContainerApp: App {
             exit(1)
         }
         print("RNP for Mail self-test passed")
+    }
+}
+
+extension Notification.Name {
+    /// Posted to open (or focus) the File Tools window.
+    static let openFileTools = Notification.Name("com.rnpgp.RNPForMail.openFileTools")
+}
+
+/// Invisible helper that holds the openWindow environment action so
+/// menu items (which live outside the View hierarchy) can open the
+/// File Tools WindowGroup by posting `.openFileTools`.
+private struct WindowOpener: View {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Color.clear
+            .frame(width: 0, height: 0)
+            .onReceive(NotificationCenter.default.publisher(for: .openFileTools)) { _ in
+                openWindow(id: "file-tools")
+            }
     }
 }

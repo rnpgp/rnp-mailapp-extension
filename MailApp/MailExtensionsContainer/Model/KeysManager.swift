@@ -340,6 +340,52 @@ final class KeysManager: ObservableObject {
         return try? keyManager.exportKey(fingerprint: fingerprint, secret: true)
     }
 
+    // MARK: - File encrypt / decrypt
+
+    /// Encrypts `plaintext` for the given recipient fingerprints and returns
+    /// the armored ciphertext. Used by the File Tools window.
+    func encryptFile(_ plaintext: Data, for fingerprints: [String]) throws -> Data {
+        guard let keyManager else {
+            throw FileToolsError.keyringUnavailable
+        }
+        return try keyManager.withRnp { rnp in
+            var recipients: [RnpKey] = []
+            for fpr in fingerprints {
+                guard let key = try? rnp.requireKey(fpr, type: .fingerprint) else {
+                    throw FileToolsError.recipientNotFound(fpr)
+                }
+                recipients.append(key)
+            }
+            guard !recipients.isEmpty else {
+                throw FileToolsError.noRecipients
+            }
+            return try rnp.encrypt(plaintext, for: recipients, armored: true)
+        }
+    }
+
+    /// Decrypts OpenPGP-encrypted `ciphertext` and returns the plaintext.
+    /// The keyring passphrase provider is consulted for protected secret keys.
+    func decryptFile(_ ciphertext: Data) throws -> Data {
+        guard let keyManager else {
+            throw FileToolsError.keyringUnavailable
+        }
+        return try keyManager.withRnp { rnp in
+            try rnp.decrypt(ciphertext)
+        }
+    }
+
+    /// Verifies a signed message and returns the recovered payload (or the
+    /// original data when no payload was extracted).
+    func verifyFile(_ signed: Data) throws -> (payload: Data, valid: Bool) {
+        guard let keyManager else {
+            throw FileToolsError.keyringUnavailable
+        }
+        return try keyManager.withRnp { rnp in
+            let verification = try rnp.verifyDetailed(signed)
+            return (payload: verification.payload ?? signed, valid: verification.hasValidSignature)
+        }
+    }
+
     func delete(_ key: KeyInfo) {
         guard let keyManager else {
             lastError = "error.keyringOpenFailed".localized
@@ -562,6 +608,30 @@ final class KeysManager: ObservableObject {
             reload()
         } catch {
             lastError = error.localizedDescription
+        }
+    }
+}
+
+/// Errors raised by the File Tools encrypt/decrypt path.
+enum FileToolsError: Error, LocalizedError {
+    case keyringUnavailable
+    case noRecipients
+    case recipientNotFound(String)
+    case readFailed(String)
+    case writeFailed(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .keyringUnavailable:
+            return "error.keyringOpenFailed".localized
+        case .noRecipients:
+            return "fileTools.error.noRecipients".localized
+        case .recipientNotFound(let fpr):
+            return String(format: "fileTools.error.recipientNotFound".localized, fpr)
+        case .readFailed(let path):
+            return String(format: "fileTools.error.readFailed".localized, path)
+        case .writeFailed(let path):
+            return String(format: "fileTools.error.writeFailed".localized, path)
         }
     }
 }

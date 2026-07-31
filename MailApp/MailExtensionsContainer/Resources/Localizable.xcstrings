@@ -17129,6 +17129,248 @@
     "importForm.fromKeyring": {
       "extractionState": "manual",
       "localizations": {}
+    },
+    "fileTools.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encrypt & Decrypt Files"
+          }
+        }
+      }
+    },
+    "fileTools.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use your RNP for Mail keyring to protect any file."
+          }
+        }
+      }
+    },
+    "fileTools.windowTitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RNP for Mail — Files"
+          }
+        }
+      }
+    },
+    "fileTools.dropPrompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop a file here"
+          }
+        }
+      }
+    },
+    "fileTools.dropHint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop an unencrypted file to encrypt it for people in your keyring, or drop a .pgp / .gpg / .asc file to decrypt it."
+          }
+        }
+      }
+    },
+    "fileTools.browse": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose File…"
+          }
+        }
+      }
+    },
+    "fileTools.browseMessage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a file to encrypt or decrypt."
+          }
+        }
+      }
+    },
+    "fileTools.encryptTo": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encrypt to:"
+          }
+        }
+      }
+    },
+    "fileTools.encryptButton": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encrypt…"
+          }
+        }
+      }
+    },
+    "fileTools.decryptButton": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decrypt"
+          }
+        }
+      }
+    },
+    "fileTools.saveDecrypted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Decrypted File…"
+          }
+        }
+      }
+    },
+    "fileTools.working": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Working…"
+          }
+        }
+      }
+    },
+    "fileTools.noKeys": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No keys in your keyring yet. Import or generate a key first."
+          }
+        }
+      }
+    },
+    "fileTools.result.decrypted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decrypted successfully"
+          }
+        }
+      }
+    },
+    "fileTools.result.decryptedAndVerified": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decrypted and signature verified"
+          }
+        }
+      }
+    },
+    "fileTools.result.decryptedBadSignature": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decrypted, but signature is invalid"
+          }
+        }
+      }
+    },
+    "fileTools.error.noRecipients": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select at least one recipient."
+          }
+        }
+      }
+    },
+    "fileTools.error.recipientNotFound": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recipient key not found: %@"
+          }
+        }
+      }
+    },
+    "fileTools.error.readFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read file: %@"
+          }
+        }
+      }
+    },
+    "fileTools.error.writeFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not write file: %@"
+          }
+        }
+      }
+    },
+    "menu.fileTools": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encrypt & Decrypt Files…"
+          }
+        }
+      }
+    },
+    "nav.fileTools": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Files"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
