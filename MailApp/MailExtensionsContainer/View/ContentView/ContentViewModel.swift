@@ -61,6 +61,9 @@ final class ContentViewModel: ObservableObject {
     @Published var fetchedKey: FetchedKey?
     /// Clipboard-import sheet pending text.
     @Published var clipboardText = ""
+    /// Drives the post-onboarding Mail extension setup sheet. Distinct from
+    /// `currentSheet` because it isn't a tool-triggered sheet.
+    @Published var showMailExtensionSetup = false
 
     let manager: KeysManager
     private var lastClipboardHash: String?
@@ -173,6 +176,23 @@ final class ContentViewModel: ObservableObject {
         set { UserDefaults.standard.set(newValue, forKey: "hasCompletedOnboarding") }
     }
 
+    /// Whether the user has confirmed in the in-app UI that they enabled
+    /// "Mail" for RNP for Mail in System Settings → Extensions. Drives the
+    /// Tools hub banner. The flag is advisory (we can't query Mail's
+    /// permission directly); it just hides a banner the user has dismissed.
+    var mailExtensionEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: "mailExtensionEnabled") }
+        set { UserDefaults.standard.set(newValue, forKey: "mailExtensionEnabled") }
+    }
+
+    /// Whether the user has seen the Mail extension setup flow at least
+    /// once. Gates auto-presenting the sheet after onboarding so we don't
+    /// nag users who already skipped.
+    var hasShownMailExtensionSetup: Bool {
+        get { UserDefaults.standard.bool(forKey: "hasShownMailExtensionSetup") }
+        set { UserDefaults.standard.set(newValue, forKey: "hasShownMailExtensionSetup") }
+    }
+
     var autoDetectClipboard: Bool {
         // Launch arguments arrive as strings ("NO"), which `as? Bool` does
         // not bridge; `bool(forKey:)` parses them correctly, so only fall
@@ -223,6 +243,12 @@ final class ContentViewModel: ObservableObject {
     func checkOnboarding() {
         if !hasOnboarded && manager.keys.isEmpty {
             showOnboarding = true
+            return
+        }
+        // Returning users: surface Mail extension setup if they haven't seen
+        // it yet (covers users who onboarded before this sheet existed).
+        if !hasShownMailExtensionSetup && !mailExtensionEnabled {
+            showMailExtensionSetup = true
         }
     }
 
@@ -234,6 +260,29 @@ final class ContentViewModel: ObservableObject {
     func markOnboardingComplete() {
         hasOnboarded = true
         showOnboarding = false
+        if !hasShownMailExtensionSetup {
+            showMailExtensionSetup = true
+        }
+    }
+
+    /// User confirmed Mail is granted permission in System Settings.
+    func markMailExtensionEnabled() {
+        mailExtensionEnabled = true
+        hasShownMailExtensionSetup = true
+        showMailExtensionSetup = false
+        objectWillChange.send()
+    }
+
+    /// User dismissed the setup sheet without confirming (skip for now).
+    func skipMailExtensionSetup() {
+        hasShownMailExtensionSetup = true
+        showMailExtensionSetup = false
+    }
+
+    /// Reopen the Mail extension setup sheet (called from the Tools hub
+    /// banner).
+    func reopenMailExtensionSetup() {
+        showMailExtensionSetup = true
     }
 
     // MARK: - Keyring unlock (Touch ID)

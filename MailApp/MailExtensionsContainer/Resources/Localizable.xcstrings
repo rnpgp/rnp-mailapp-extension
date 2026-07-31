@@ -15731,6 +15731,138 @@
         }
       }
     },
+    "mailExtension.banner.title": {
+      "comment": "Tools hub banner: Mail extension not yet enabled in Mail.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RNP for Mail isn't enabled in Mail yet"
+          }
+        }
+      }
+    },
+    "mailExtension.banner.body": {
+      "comment": "Tools hub banner: how to enable.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open System Settings → Privacy & Security → Extensions, find RNP for Mail under Added Extensions, and toggle Mail on. Then restart Mail."
+          }
+        }
+      }
+    },
+    "mailExtension.banner.openSettings": {
+      "comment": "Tools hub banner button: deep-link into System Settings.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open System Settings"
+          }
+        }
+      }
+    },
+    "mailExtension.banner.enabled": {
+      "comment": "Tools hub banner dismiss button: user confirms Mail permission granted.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I've Enabled It"
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.title": {
+      "comment": "Post-onboarding sheet title: enable Mail extension.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable RNP for Mail in Apple Mail"
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.subtitle": {
+      "comment": "Post-onboarding sheet subtitle: why this step is needed.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RNP for Mail shows lock icons on encrypted and signed messages in Apple Mail. macOS requires you to grant Mail permission to use it."
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.step1": {
+      "comment": "Post-onboarding step 1.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open System Settings → Privacy & Security → Extensions."
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.step2": {
+      "comment": "Post-onboarding step 2.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Find RNP for Mail under Added Extensions."
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.step3": {
+      "comment": "Post-onboarding step 3.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toggle Mail on, then restart Mail."
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.openButton": {
+      "comment": "Post-onboarding deep-link button label.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open System Settings"
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.enabledButton": {
+      "comment": "Post-onboarding confirm button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I've Enabled It"
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.skip": {
+      "comment": "Post-onboarding skip button.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip for now"
+          }
+        }
+      }
+    },
     "toolbar.delete.help": {
       "comment": "Toolbar button help text.",
       "localizations": {
