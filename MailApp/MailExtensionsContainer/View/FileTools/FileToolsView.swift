@@ -1,11 +1,10 @@
 //
 //  FileToolsView.swift
-//  RNP for Mail
+//  RNP
 //
-//  Standalone window for encrypting and decrypting files with the
-//  shared OpenPGP keyring. Branding: this is part of "RNP for Mail" —
-//  the product — not a separate app. Window title and copy use that
-//  name consistently.
+//  Second window of the RNP app: encrypt and decrypt any file with
+//  the shared OpenPGP keyring. Part of RNP — the Mail extension is
+//  "RNP for Mail", this is the file-side of the same product.
 //
 
 import AppKit
