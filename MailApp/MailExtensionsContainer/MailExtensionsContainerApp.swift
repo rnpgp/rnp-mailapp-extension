@@ -1,15 +1,15 @@
 //
 //  MailExtensionsContainerApp.swift
-//  RNP for Mail
+//  RNP
 //
-//  Container app for the RNP for Mail product: manages the shared OpenPGP
-//  keyring, hosts the Mail extension, and provides File Tools for
-//  encrypting/decrypting files outside of Mail.
+//  RNP — OpenPGP for your Mac: key management, file encrypt/decrypt, and
+//  the RNP for Mail extension for Apple Mail.
 //
-//  Branding: the product is "RNP for Mail". Every user-visible window
-//  title, menu label, and DMG name uses that name. Bundle IDs stay
-//  com.rnpgp.RNPForMail (implementation detail). The RNP technology
-//  brand is reserved for librnp / the OpenPGP engine.
+//  Branding:
+//    RNP            = the product (this app)
+//    RNP for Mail   = the Apple Mail extension that ships inside it
+//    librnp         = the OpenPGP engine (Thunderbird's official E2EE backend)
+//  Bundle IDs stay com.rnpgp.RNPForMail* (implementation detail).
 //
 
 import SwiftUI
@@ -28,16 +28,13 @@ struct MailExtensionsContainerApp: App {
     }
 
     var body: some Scene {
-        // Primary window: key manager.
-        WindowGroup("RNP for Mail") {
+        WindowGroup("RNP") {
             ContentView(model: model)
                 .onAppear {
                     model.checkOnboarding()
                 }
                 .background(WindowOpener())
         }
-        // File Tools: standalone workspace. Same product brand, distinct
-        // window title so the two don't collide in the Window menu.
         WindowGroup("fileTools.windowTitle".localized, id: "file-tools") {
             FileToolsView(model: model)
         }
@@ -100,7 +97,7 @@ struct MailExtensionsContainerApp: App {
     }
 
     private static func runSelfTest() {
-        print("RNP for Mail self-test starting...")
+        print("RNP self-test starting...")
         print("librnp \(Rnp.versionStringFull)")
         do {
             let rnp = try Rnp(password: "self-test-password")
@@ -120,18 +117,14 @@ struct MailExtensionsContainerApp: App {
             fputs("self-test error: \(error.localizedDescription)\n", stderr)
             exit(1)
         }
-        print("RNP for Mail self-test passed")
+        print("RNP self-test passed")
     }
 }
 
 extension Notification.Name {
-    /// Posted to open (or focus) the File Tools window.
     static let openFileTools = Notification.Name("com.rnpgp.RNPForMail.openFileTools")
 }
 
-/// Invisible helper that holds the openWindow environment action so
-/// menu items (which live outside the View hierarchy) can open the
-/// File Tools WindowGroup by posting `.openFileTools`.
 private struct WindowOpener: View {
     @Environment(\.openWindow) private var openWindow
 

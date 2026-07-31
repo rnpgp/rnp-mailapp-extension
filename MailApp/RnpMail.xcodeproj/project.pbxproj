@@ -598,7 +598,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MailPlugin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
+				INFOPLIST_KEY_CFBundleDisplayName = "RNP for Mail";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;
@@ -888,7 +888,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MailPlugin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
+				INFOPLIST_KEY_CFBundleDisplayName = "RNP for Mail";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;
@@ -921,7 +921,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MailPlugin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
+				INFOPLIST_KEY_CFBundleDisplayName = "RNP for Mail";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;
@@ -1019,7 +1019,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MailPlugin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RNP OpenPGP";
+				INFOPLIST_KEY_CFBundleDisplayName = "RNP for Mail";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnpgp.RNPForMail.MailExtension;

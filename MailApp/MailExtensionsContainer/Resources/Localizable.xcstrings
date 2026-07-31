@@ -17147,7 +17147,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Use your RNP for Mail keyring to protect any file."
+            "value": "Use your RNP keyring to encrypt and decrypt any file."
           }
         }
       }
@@ -17158,7 +17158,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "RNP for Mail — Files"
+            "value": "RNP — Files"
           }
         }
       }
@@ -17356,7 +17356,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Encrypt & Decrypt Files…"
+            "value": "Files…"
           }
         }
       }

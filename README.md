@@ -1,8 +1,8 @@
-<p align="center"><img src="icon.png" width="120" alt="RNP for Mail"></p>
+<p align="center"><img src="icon.png" width="120" alt="RNP"></p>
 
-<h1 align="center">RNP for Mail</h1>
+<h1 align="center">RNP</h1>
 
-<p align="center">OpenPGP encryption and signing for macOS Mail — powered by <a href="https://github.com/rnpgp/rnp">librnp</a>.</p>
+<p align="center">OpenPGP for your Mac — keys, files, and Mail. <a href="https://github.com/rnpgp/rnp">librnp</a> also powers <a href="https://www.thunderbird.net">Thunderbird</a>'s end-to-end encryption.</p>
 
 <p align="center">
   <a href="https://github.com/rnpgp/rnp-mailapp-extension/releases/latest"><strong>Download the latest release →</strong></a>
@@ -10,27 +10,22 @@
 
 ---
 
-RNP for Mail is a native macOS Mail extension that brings OpenPGP
-encryption and signing directly into Apple Mail. No separate app to
-switch to, no browser plugin, no clunky proxy — your encrypted mail
-just works inside the Mail you already use.
+RNP is a native macOS app for OpenPGP key management, file encryption, and Apple Mail integration. The app is **RNP**; the Apple Mail extension that ships inside it is **RNP for Mail**.
 
-Built on [librnp](https://github.com/rnpgp/rnp) (the same engine
-used by [Ribose's RNP CLI](https://github.com/rnpgp/rnp)) and
-[swift-rnp](https://github.com/rnpgp/swift-rnp) (Swift bindings +
-MailKit integration).
+Under the hood: [librnp](https://github.com/rnpgp/rnp) (the same engine used by [Thunderbird](https://www.thunderbird.net) for end-to-end encryption) and [swift-rnp](https://github.com/rnpgp/swift-rnp) (Swift bindings + MailKit integration).
 
 ## Features
 
 - **Sign and encrypt** outgoing mail from the compose window — Mail
-  shows the lock icon automatically.
+  shows the lock icon automatically. Provided by the **RNP for Mail**
+  extension that ships inside RNP.
 - **Decrypt and verify** incoming PGP/MIME mail inline — the message
   body renders as readable text, signatures show green/red in Mail's
-  security banner.
-- **Encrypt and decrypt files** — open **File → Encrypt & Decrypt Files…**
-  (⌘⇧F) for a dedicated window. Drop any file to encrypt it for people
-  in your keyring, or drop a `.pgp`/`.gpg`/`.asc` file to decrypt it.
-  Same keyring Mail uses — no separate app, no GPG Suite.
+  security banner. (RNP for Mail.)
+- **Encrypt and decrypt files** — open **File → Files…** (⌘⇧F) for a
+  dedicated window. Drop any file to encrypt it for people in your
+  keyring, or drop a `.pgp`/`.gpg`/`.asc` file to decrypt it. Same
+  keyring RNP for Mail uses — no separate app, no GPG Suite.
 - **Auto-discover keys via WKD** — when you compose to a recipient
   whose key isn't in your keyring, RNP fetches it automatically from
   Web Key Directory (WKD) or keys.openpgp.org. No manual keyserver
@@ -139,7 +134,21 @@ The built app runs on macOS 14+ (Sonoma).
 their own licenses — see **About → Licenses** in the app or
 [Vendor/SOURCES.md](Vendor/SOURCES.md).
 
+## Related projects
+
+RNP sits at the top of the OpenPGP stack:
+
+- **[librnp](https://github.com/rnpgp/rnp)** — the C library that does
+  the actual OpenPGP work. **It is the official end-to-end encryption
+  engine of [Thunderbird](https://www.thunderbird.net).** The macOS app
+  here is one of its downstream consumers; Thunderbird is the largest.
+- **[swift-rnp](https://github.com/rnpgp/swift-rnp)** — Swift
+  bindings + MailKit integration that this app uses.
+- **[Thunderbird](https://www.thunderbird.net)** — for cross-platform
+  encrypted email outside Apple Mail, RNP itself recommends Thunderbird.
+  Same engine (librnp), same keys, different mail client.
+
 ## Credits
 
-RNP for Mail is developed by [Ribose Inc.](https://www.ribose.com)
-using the [librnp](https://github.com/rnpgp/rnp) OpenPGP library.
+RNP for Mail's host app and Mail extension are developed by
+[Ribose Inc.](https://www.ribose.com) using [librnp](https://github.com/rnpgp/rnp).
