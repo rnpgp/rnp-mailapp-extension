@@ -17371,6 +17371,28 @@
           }
         }
       }
+    },
+    "generateForm.algorithm.hybridPQ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hybrid PQ (ML-DSA + ML-KEM)"
+          }
+        }
+      }
+    },
+    "generateForm.algorithm.conservativePQ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conservative PQ (SLH-DSA)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -1231,7 +1231,7 @@
 			repositoryURL = "https://github.com/rnpgp/swift-rnp.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.6;
+				minimumVersion = 0.2.7;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
