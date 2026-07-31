@@ -40,6 +40,10 @@ struct ContentView: View {
                     },
                     onComplete: {
                         model.markOnboardingComplete()
+                    },
+                    onImportFromKeyring: {
+                        model.showOnboarding = false
+                        model.currentSheet = .importFromKeyring
                     }
                 )
             }
