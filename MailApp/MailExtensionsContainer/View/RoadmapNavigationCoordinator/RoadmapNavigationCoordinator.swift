@@ -21,6 +21,7 @@ import RnpMailUI
 public struct RoadmapNavigationCoordinator: View {
     @Environment(\.engine) private var engine
     @State private var presentedSheet: Sheet?
+    @AppStorage("mailExtensionEnabled") private var mailExtensionEnabled: Bool = false
 
     enum Sheet: Identifiable {
         case keyHealth
@@ -49,6 +50,9 @@ public struct RoadmapNavigationCoordinator: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: RnpSpacing.xl) {
+                if !mailExtensionEnabled {
+                    mailExtensionBanner
+                }
                 header
                 ToolSectionView(label: "Inspect", tools: inspectTools)
                 ToolSectionView(label: "Configure", tools: configureTools)
@@ -136,6 +140,55 @@ public struct RoadmapNavigationCoordinator: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // MARK: Mail extension banner
+
+    /// Persistent reminder that "RNP for Mail" still needs the user to flip
+    /// the Mail toggle in System Settings → Extensions. Hidden once the
+    /// user confirms they did it.
+    @ViewBuilder
+    private var mailExtensionBanner: some View {
+        HStack(alignment: .top, spacing: RnpSpacing.sm) {
+            Image(systemName: "envelope.badge")
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(RnpBrand.primary)
+                .font(.system(size: 22))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: RnpSpacing.xxs) {
+                Text("mailExtension.banner.title")
+                    .font(.callout.weight(.semibold))
+                Text("mailExtension.banner.body")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+            VStack(spacing: RnpSpacing.xxs) {
+                Button("mailExtension.banner.openSettings") {
+                    MailExtensionSetup.openSystemSettingsExtensionsPane()
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .accessibilityIdentifier("tools.mailextension.open-settings")
+                Button("mailExtension.banner.enabled") {
+                    mailExtensionEnabled = true
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityIdentifier("tools.mailextension.enabled")
+            }
+        }
+        .padding(RnpSpacing.sm)
+        .background(
+            RnpBrand.primary.opacity(0.08),
+            in: RoundedRectangle(cornerRadius: RnpRadius.card, style: .continuous)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: RnpRadius.card, style: .continuous)
+                .strokeBorder(RnpBrand.primary.opacity(0.22), lineWidth: 1)
+        )
+        .accessibilityIdentifier("tools.mailextension-banner")
     }
 
     // MARK: Tool groups

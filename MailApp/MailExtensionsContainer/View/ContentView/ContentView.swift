@@ -59,6 +59,9 @@ struct ContentView: View {
             )) {
                 ForeignPassphraseSheet(model: model)
             }
+            .sheet(isPresented: $model.showMailExtensionSetup) {
+                MailExtensionEnableView(model: model)
+            }
             .sheet(item: $model.currentSheet) { sheet in
                 sheetView(for: sheet)
             }
