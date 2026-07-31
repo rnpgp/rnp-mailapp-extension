@@ -1,368 +1,144 @@
-<p><img src="icon.png" width="120" alt="RNP logo"></p>
+<p align="center"><img src="icon.png" width="120" alt="RNP for Mail"></p>
 
-# swift-rnp
+<h1 align="center">RNP for Mail</h1>
 
-Swift bindings for [librnp](https://github.com/rnpgp/rnp), the OpenPGP
-(RFC 4880) library, built as a Swift Package Manager package.
+<p align="center">OpenPGP encryption and signing for macOS Mail — powered by <a href="https://github.com/rnpgp/rnp">librnp</a>.</p>
 
-The package exposes a small, safe, `Data`-based Swift API over the librnp C
-FFI: key generation, key import/export, encryption/decryption, embedded and
-detached signing/verification, and keyring save/load.
+<p align="center">
+  <a href="https://github.com/rnpgp/rnp-mailapp-extension/releases/latest"><strong>Download the latest release →</strong></a>
+</p>
 
-## Requirements
+---
 
-- **librnp ≥ 0.18.1.** Version 0.18.1 is a security release fixing
-  [CVE-2025-13470](https://github.com/rnpgp/rnp/security/advisories)
-  (PKESK session keys were generated without cryptographically random
-  values) — do not use older releases. The test suite also passes against
-  librnp built from the rnp `main` branch.
-- **Swift 5.9+** (Xcode 15 or a swift.org toolchain).
-- **macOS 12+** (other platforms are untested; see "Platform support").
+RNP for Mail is a native macOS Mail extension that brings OpenPGP
+encryption and signing directly into Apple Mail. No separate app to
+switch to, no browser plugin, no clunky proxy — your encrypted mail
+just works inside the Mail you already use.
 
-## Installing librnp
+Built on [librnp](https://github.com/rnpgp/rnp) (the same engine
+used by [Ribose's RNP CLI](https://github.com/rnpgp/rnp)) and
+[swift-rnp](https://github.com/rnpgp/swift-rnp) (Swift bindings +
+MailKit integration).
 
-Either install a prebuilt package:
+## Features
 
-```sh
-brew install rnp
+- **Sign and encrypt** outgoing mail from the compose window — Mail
+  shows the lock icon automatically.
+- **Decrypt and verify** incoming PGP/MIME mail inline — the message
+  body renders as readable text, signatures show green/red in Mail's
+  security banner.
+- **Encrypted attachments** — incoming `.pgp`/`.gpg` attachments are
+  decrypted automatically; outgoing attachments can be encrypted to
+  recipients.
+- **Auto-discover keys via WKD** — when you compose to a recipient
+  whose key isn't in your keyring, RNP fetches it automatically from
+  Web Key Directory (WKD) or keys.openpgp.org. No manual keyserver
+  lookup needed.
+- **Import from existing keyrings** — auto-detects `~/.gnupg` and
+  `~/.rnp`, lets you pick which keys to import. Read-only — never
+  touches your source keyring.
+- **Touch ID** — keyring passphrase stored in macOS Keychain with
+  biometric protection. Unlock once per session; no password typing
+  on every message.
+- **Trust-on-first-use (TOFU)** — records the first key seen for each
+  contact. If the key changes, RNP warns you before you encrypt to
+  the new one.
+- **Key lifecycle** — generate, rotate subkeys, extend expiry, revoke,
+  archive, and migrate to a new primary key — all from the Tools hub.
+- **Recovery** — export paper keys and revocation certificates for
+  offline disaster recovery.
+- **11 locales** — English, German, Spanish, French, Italian, Japanese,
+  Korean, Portuguese, Russian, Simplified Chinese, Traditional Chinese.
+- **macOS 14+** — runs on Sonoma and Sequoia. Universal binary (Apple
+  Silicon + Intel).
+
+## Install
+
+### From the DMG (recommended)
+
+1. Download the latest `RNP-X.Y.Z.dmg` from the
+   [Releases page](https://github.com/rnpgp/rnp-mailapp-extension/releases).
+2. Open the DMG and drag **RNP.app** to **Applications**.
+3. Launch RNP once to complete onboarding (generate or import a key).
+4. Open **Mail → Settings → General → Manage Plug-ins…** and tick
+   **RNP OpenPGP**. Mail will restart.
+5. Done. Encrypted mail now shows the lock icon; compose windows have
+   sign/encrypt toggles.
+
+### Verify the install
+
+```bash
+pluginkit -m -v -i com.rnpgp.RNPForMail.MailExtension
+# Should show a line starting with "+" (enabled).
 ```
 
-or build from source (this is what CI does; note that Homebrew's `botan`
-formula is Botan 3, hence `CRYPTO_BACKEND=botan3`):
+If the extension doesn't appear in Mail's plug-in list, see
+[docs/mail-icon-diagnostic.md](docs/mail-icon-diagnostic.md).
 
-```sh
-brew install botan json-c cmake pkg-config
-git clone --recurse-submodules https://github.com/rnpgp/rnp.git
-cmake -B rnp/build -DCRYPTO_BACKEND=botan3 -DBUILD_TESTING=OFF \
-      -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release rnp
-cmake --build rnp/build --parallel
-sudo cmake --install rnp/build   # installs into /usr/local
+## Build from source
+
+```bash
+git clone https://github.com/rnpgp/rnp-mailapp-extension.git
+cd rnp-mailapp-extension
+./scripts/build-rnp-framework.sh    # builds librnp xcframework (cached after first run)
+open MailApp/RnpMail.xcodeproj
+# In Xcode: select the "RNP" scheme, build (Cmd+B), run (Cmd+R).
 ```
 
-## Building and testing
+Requires **Xcode 16.4** and **macOS 15** (Sequoia) for building.
+The built app runs on macOS 14+ (Sonoma).
 
-The `CRnp` system-library target locates librnp via `pkg-config`
-(`librnp.pc`). When librnp is installed in a default prefix (`/usr/local`,
-Homebrew), no extra setup is needed:
+## Architecture
 
-```sh
-swift build
-swift test
+```
+┌─────────────────────────────────────────────────────┐
+│                   RNP.app (host)                     │
+│  ┌──────────┐  ┌────────────┐  ┌─────────────────┐ │
+│  │ Keyring  │  │ Tools Hub  │  │ Import from     │ │
+│  │ Manager  │  │ (Health,   │  │ ~/.gnupg/~/.rnp │ │
+│  │ (SwiftUI)│  │ Recovery)  │  │                 │ │
+│  └────┬─────┘  └─────┬──────┘  └────────┬────────┘ │
+│       │               │                   │          │
+│  ┌────▼───────────────▼───────────────────▼────────┐│
+│  │           swift-rnp (SPM package)               ││
+│  │  ┌──────────────┐ ┌───────────┐ ┌────────────┐ ││
+│  │  │ MailSecurity │ │ KeyServer │ │ TrustStore │ ││
+│  │  │ Engine       │ │ Client    │ │ (TOFU)     │ ││
+│  │  └──────┬───────┘ └─────┬─────┘ └────────────┘ ││
+│  │         │               │                        ││
+│  │  ┌──────▼───────────────▼────────────────────┐  ││
+│  │  │            Rnp (FFI → librnp)              │  ││
+│  │  └───────────────────────────────────────────┘  ││
+│  └──────────────────────────────────────────────────┘│
+│  ┌─────────────────────────────────────────────────┐│
+│  │          MailPlugin.appex (extension)            ││
+│  │  MEMessageSecurityHandler → MailSecurityEngine   ││
+│  └─────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────┘
 ```
 
-When librnp lives in a custom prefix, point `pkg-config` at it and make the
-dynamic linker find the library. Note that `DYLD_LIBRARY_PATH` is **not**
-honored by Xcode's hardened-runtime test runner, so pass an rpath instead:
+- **RNP.app** — the container app: keyring management, tools hub,
+  onboarding. Runs as a normal macOS app.
+- **MailPlugin.appex** — the Mail extension: intercepts incoming and
+  outgoing mail, delegates to `MailSecurityEngine`.
+- **swift-rnp** — the Swift library: everything crypto-related
+  ([separate repo](https://github.com/rnpgp/swift-rnp)).
 
-```sh
-export PKG_CONFIG_PATH=/path/to/librnp/lib/pkgconfig:$PKG_CONFIG_PATH
-swift build
-swift test -Xlinker -rpath -Xlinker /path/to/librnp/lib
-```
+## Contributing
 
-(If `pkg-config` wiring is unavailable, the equivalent explicit flags are
-`swift build -Xcc -I<prefix>/include -Xlinker -L<prefix>/lib -Xlinker -lrnp`.)
-
-## Usage
-
-```swift
-import Foundation
-import Rnp
-
-// Context with in-memory keyrings; all passphrase prompts get "password".
-let rnp = try Rnp(password: "password")
-
-// Generate an RSA-3072 key pair (librnp 0.18 default), password-protected.
-try rnp.generateKey(json: Rnp.rsaKeyGenJSON(userid: "Test <t@t>"))
-let key = try rnp.requireKey("Test <t@t>")
-
-// Encrypt and decrypt.
-let message = Data("hello OpenPGP".utf8)
-let encrypted = try rnp.encrypt(message, for: [key])
-let decrypted = try rnp.decrypt(encrypted)
-assert(decrypted == message)
-
-// Sign (embedded or detached) and verify.
-let signed = try rnp.sign(message, with: key)
-let verified = try rnp.verify(signed)
-let signature = try rnp.signDetached(message, with: key)
-try rnp.verifyDetached(signature: signature, data: message)
-```
-
-The API surface covers: version queries (`Rnp.versionString`,
-`Rnp.versionStringFull`), key generation from JSON
-(`Rnp.rsaKeyGenJSON` / `Rnp.ecdsaP256KeyGenJSON` or your own JSON),
-key lookup (`locateKey` / `requireKey` by userid, fingerprint, keyid or
-grip), key export (`RnpKey.exportKey`, armored public/secret) and import
-(`importKeys`), keyring save/load (`savePublicKeys`, `saveSecretKeys`,
-`loadKeys`), encryption (`encrypt` / `decrypt`) and signing
-(`sign` / `signDetached` / `verify` / `verifyDetached`). librnp errors are
-thrown as `RnpError`, carrying the `rnp_result_t` code and its
-`rnp_result_to_string()` description.
-
-## Platform support
-
-CI (`.github/workflows/test.yml`) runs on **macOS only**, against librnp
-`v0.18.1` and librnp from the rnp default branch. A Linux leg was considered,
-but GitHub's Ubuntu runners ship no Swift toolchain and the required install
-dance could not be validated reliably; the package itself has no
-macOS-specific code beyond Foundation/XCTest, so Linux support should be a
-matter of CI plumbing (contributions welcome).
-
-## Testing the Mail extension
-
-The automated test suite covers the engine, MIME parser, trust store, keyserver client, key lifecycle, banner UI, and container app basics:
-
-```sh
-# Swift package tests (engine, MIME, trust, keyserver, lifecycle, snapshot tests)
-PKG_CONFIG_PATH=/path/to/librnp/lib/pkgconfig \
-  swift test -Xlinker -rpath -Xlinker /path/to/librnp/lib
-
-# Xcode builds (container app + Mail extension)
-PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
-  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin build CODE_SIGNING_ALLOWED=NO
-PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
-  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP build CODE_SIGNING_ALLOWED=NO
-
-# Container app UI tests (onboarding, key generation, accessibility audits)
-PKG_CONFIG_PATH=$(pwd)/Vendor/pkgconfig \
-  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP test CODE_SIGNING_ALLOWED=NO
-
-# Sandbox / entitlement audit
-./scripts/sandbox-audit.sh
-
-# Release pipeline dry-run with a self-signed certificate
-./scripts/ci-release-dry-run.sh
-```
-
-Snapshot tests for the Mail banner live in `Tests/MailSecurityUITests/`. Reference PNGs are stored in `Tests/Fixtures/snapshots/` and are machine-specific (fonts/anti-aliasing); if they mismatch on a new machine, delete the affected PNGs and re-run the tests to re-record them, then review the new images before committing.
-
-For real Mail integration testing, a local IMAP/SMTP server harness is provided (`scripts/local-mail-server.sh` + `scripts/test-mail-e2e.sh`) and a CI workflow (`mail-e2e.yml`) for a self-hosted macOS runner with a development certificate.
-
-## Use with Apple Mail
-
-The `Swift-Rnp/` directory contains `Swift-Rnp.xcodeproj`, an Apple Mail
-OpenPGP extension plus its container app, built entirely on the SwiftPM
-package above:
-
-- **`MailSecurityEngine`** (SwiftPM target, `Sources/MailSecurityEngine`) —
-  all non-MailKit logic: PGP/MIME (RFC 3156) and inline-PGP encode/decode of
-  RFC 822 message data, and a `KeyManager` backed by a keyring directory
-  (`pubring.gpg` / `secring.gpg`) with generate/import/export/list/delete.
-  Fully covered by `swift test` — no Xcode required.
-- **`MailSecurityUI`** (SwiftPM target, `Sources/MailSecurityUI`) — the
-  AppKit security banner (`MailSecurityBannerView`) shown for signed
-  messages, kept free of MailKit so it can be unit- and snapshot-tested
-  without Mail.app.
-- **`MailPlugin`** (app extension target) — a thin MailKit shell
-  (`MEMessageSecurityHandler`) delegating all OpenPGP work to
-  `MailSecurityEngine` and rendering the banner via `MailSecurityUI`.
-- **RNP** (SwiftUI container app target; the Xcode target and scheme are
-  named `RNP`) — key manager UI (generate RSA/ECDSA keys,
-  import armored keys from clipboard or file, export the armored public key
-  to the clipboard, delete keys). Branded as **RNP** in the menu bar, window
-  title, and About panel.
-- **`Swift-Rnp`** (CLI target) — small `Rnp` demo: version print plus a
-  generate/encrypt/decrypt smoke roundtrip.
-
-The shared keyring lives in the app group container `group.com.rnpgp.RNPForMail`
-so both processes see the same keys; key passphrases are stored in the
-Keychain (access group `$(AppIdentifierPrefix)group.com.rnpgp.RNPForMail`), never
-in UserDefaults.
-
-### Install librnp
-
-Either `brew install rnp`, or build from source as shown in
-[Installing librnp](#installing-librnp). Version 0.18.1 or later is required.
-
-The Xcode project finds librnp the same way the package does: pkg-config
-(see `Swift-Rnp/librnp.xcconfig`). When librnp is not in a standard prefix,
-point pkg-config at it when invoking `xcodebuild`:
-
-```sh
-PKG_CONFIG_PATH=/path/to/librnp/lib/pkgconfig \
-  xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin build
-```
-
-(For a custom prefix also pass `LIBRNP_PREFIX=/path/to/librnp` so the
-runtime rpath is right; `/usr/local` and `/opt/homebrew` are covered by
-default.)
-
-### Build and run
-
-For a first local try-out no Apple Developer account is needed:
-
-1. Open `Swift-Rnp/Swift-Rnp.xcodeproj` in Xcode.
-2. Select the **RNP** scheme and build/run it
-   (Product → Run). Unsigned local builds work; Xcode simply embeds no
-   entitlements, and the keyring then lives in
-   `~/Library/Application Support/RNP for Mail` instead of the app
-   group container.
-3. In the app, generate a key pair (＋ menu → RSA-3072 or ECDSA P-256) with
-   a user ID matching your mail address ("Alice <alice@example.com>"), or
-   import an existing key (arrow-down menu → from clipboard or file).
-
-For Mail.app to actually load the extension you must sign both targets:
-
-4. In each target's **Signing & Capabilities** tab, set your
-   **DEVELOPMENT_TEAM** (the project deliberately ships with it empty).
-   The default bundle IDs are `com.rnpgp.RNPForMail` (container) and
-   `com.rnpgp.RNPForMail.MailExtension` (extension). IDs are single-sourced in
-   `Swift-Rnp/Shared/IDs.xcconfig` and injected into both targets' entitlements
-   and Info.plist at build time. If you change them, keep the extension ID
-   prefixed by the app ID, and update the app group `group.com.rnpgp.RNPForMail`
-   in `Swift-Rnp/Shared/IDs.xcconfig` to a group registered to your team.
-5. Run the **RNP** scheme once more so the signed extension is
-   embedded and registered, then enable it in
-   **Mail → Settings → Extensions** (check "RNP OpenPGP").
-6. Compose a message: the security button in the compose window now offers
-   sign and encrypt. Encrypting requires the recipients' public keys —
-   import them in the container app first. Incoming signed/encrypted mail
-   is decrypted and verified automatically, with the signature status shown
-   in the message banner.
-
-Command-line builds (as used in CI) work without signing configuration. The
-Xcode project consumes the SwiftPM package, whose `CRnp` system-library target
-resolves headers and linking via `pkg-config`. Point `PKG_CONFIG_PATH` at the
-vendored framework's `.pc` file:
-
-```sh
-export PKG_CONFIG_PATH="$(pwd)/Vendor/pkgconfig"
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme MailPlugin \
-    -configuration Direct build CODE_SIGNING_ALLOWED=NO
-xcodebuild -project Swift-Rnp/Swift-Rnp.xcodeproj -scheme RNP \
-    -configuration Direct build CODE_SIGNING_ALLOWED=NO
-```
-
-Two release-channel configurations are provided:
-- `Direct` — for Developer ID-signed, notarized direct downloads (default for
-  local builds).
-- `AppStore` — for Apple Distribution-signed Mac App Store uploads.
-
-Both share the same app group and sandboxing; only the signing identity differs.
-Use `-configuration AppStore` when archiving for App Store Connect.
-
-### Install (direct download)
-
-The latest signed and notarized DMG is attached to each [GitHub
-Release](https://github.com/rnpgp/rnp-mailapp-extension/releases).
-
-1. Download `RNP-<version>.dmg` and open it.
-2. Drag **RNP** into **Applications** (the app bundle is `RNP.app` on disk,
-   displayed as "RNP" by Finder and the Dock).
-3. Launch the app from Applications, generate or import your OpenPGP key.
-4. Open **Mail → Settings → Extensions**, check **RNP OpenPGP**, and click
-   **Done**.
-5. Compose a message; use the security button in the compose window to sign
-   and/or encrypt.
-
-> On first launch, macOS may show a Gatekeeper warning because the app is
-> distributed outside the Mac App Store. Control-click the app and choose
-> **Open** to approve it.
-
-### Install (Mac App Store)
-
-[![Download on the Mac App Store](TODO-badge-url)](TODO-app-store-link)
-
-RNP is also available on the Mac App Store. The App Store build uses the
-same sandbox and app group as the direct-download release, with Apple
-Distribution signing and App Store Connect upload handled by the
-[`.github/workflows/release-appstore.yml`](.github/workflows/release-appstore.yml)
-pipeline. See [`docs/app-store/metadata.md`](docs/app-store/metadata.md) for
-the submission metadata template and review notes.
-
-### Trust model
-
-RNP uses a deliberately simple trust model focused on clarity and
-actionable warnings:
-
-- **Trust on first use (TOFU).** The first time a public key is seen for an
-  email address, it is recorded as *unverified* and can be used normally. This
-  matches how most users actually behave: they install a key and start sending
-  mail.
-- **Manual fingerprint verification.** Users who want stronger assurance can
-  open a key's detail sheet, compare the fingerprint in person or over a
-  trusted channel (the sheet shows the full fingerprint and supports copying
-  it), and click **Mark as verified**. A verified key is shown with a green
-  badge in the key list and in Mail's signature banner.
-- **Key-change warnings and conflicts.** If a different fingerprint is later
-  imported or fetched for the same email address, the new key is marked
-  *problem* and a conflict is raised. The container app shows an orange banner
-  listing the affected address, and encryption to that address is blocked with
-  a `trustConflict` error until the user verifies the new fingerprint. This
-  prevents silent key-substitution attacks.
-- **No web-of-trust / ownertrust UI.** GnuPG-style ownertrust, trust
-  signatures, and the web-of-trust are intentionally out of scope. They add
-  significant UX complexity and are not required for the "verify the key once,
-  warn on change" model used here. This is a deliberate scope cut, not a
-  missing feature.
-
-The trust database is persisted as signed JSON (`trust.json` + detached
-Ed25519 signature `trust.json.sig`) in the shared app-group container. The
-signature is verified on load; if either file is tampered with, the store
-resets to empty (fail-closed to unverified) rather than trusting corrupted
-data.
-
-### Limitations
-
-- **MailKit requires proper signing.** Mail.app refuses to load extensions
-  that are ad-hoc signed or unsigned, so `CODE_SIGNING_ALLOWED=NO` builds
-  are for compile checks only. The Xcode project embeds a self-contained
-  `RNPFramework.xcframework` (built by `scripts/build-rnp-framework.sh`) in
-  both the container app and the Mail extension, so a signed deployment has
-  no dependency on `/usr/local` or `/opt/homebrew`.
-- **Inline PGP vs PGP/MIME.** The extension emits PGP/MIME (RFC 3156)
-  messages, which preserve attachments and non-ASCII content exactly; on
-  decode it accepts both PGP/MIME and inline-PGP (armored blocks in
-  text/plain parts, including inside multipart/mixed). Inline-PGP *encoding*
-  is available in the engine (`MessageFormat.inlinePGP`) for single-part
-  text messages only.
-- **No SmartCard/HSM support.** Only software keys in the local keyring can
-  be used; librnp's G10 keyring format is not used by the key manager.
-
-### Feature highlights
-
-Beyond the core sign/encrypt/decrypt/verify pipeline, RNP includes:
-
-- **[Disaster recovery](docs/disaster-recovery.md)** — paper-key export
-  with QR codes, iCloud Keychain sync, restore-from-backup in onboarding.
-- **[Key lifecycle](docs/key-lifecycle.md)** — subkey rotation, expiry
-  extension, revocation, key-transition wizard with certification, and
-  a Key Health dashboard with one-click recovery for every scenario.
-- **[Autocrypt](docs/autocrypt.md)** — level-1 header emit/parse, gossip
-  (1.1), per-account prefer-encrypt overrides.
-- **[Post-quantum](docs/post-quantum.md)** — hybrid ML-KEM-768+X25519
-  encryption and ML-DSA-65+ED25519 signing, opt-in key generation.
-- **[Trust model](docs/trust-model.md)** — TOFU + manual fingerprint
-  verification + hard stops on key changes; signed tamper-evident store.
-- **AEAD-OCB + v6 PKESK** — automatic envelope selection based on
-  recipient capability; force-AEAD and force-legacy policies.
-- **BCC protection** — refuses encrypted send when BCC would leak via
-  PKESK (RFC 3156 §6); offers send-separately, remove-encryption,
-  or remove-BCC paths.
-- **Typed decryption errors** — "Encrypted to a key you don't have
-  (key ID ABCDEF…). [Fetch]" instead of "undecryptable content."
-- **Multi-UID keys** — one key, multiple email addresses.
-- **Archive-key state** — revoked/retired keys remain decrypt-only so
-  historical mail stays readable.
-- **Compose diagnostics** — per-recipient status panel, recommended-action
-  banner, reply-context smart defaults.
-
-See [`docs/features.md`](docs/features.md) for the full feature list and
-[`docs/scenarios.md`](docs/scenarios.md) for step-by-step walkthroughs.
-
-### Next steps for the team
-
-All codeable work is complete across `TODO.impl/` and `TODO.roadmap/`.
-Remaining items are human-only (Apple account, manual testing, App Review)
-and are documented in [`TODO.human-work.md`](TODO.human-work.md).
-
-## Security
-
-For the security model, trust boundaries, memory hygiene notes, and vulnerability reporting instructions, see [`docs/SECURITY-MODEL.md`](docs/SECURITY-MODEL.md) and [`docs/SECURITY.md`](docs/SECURITY.md).
+- **Translations**: see [TRANSLATING.md](TRANSLATING.md).
+- **Bug reports**: include the diagnostics from
+  [docs/mail-icon-diagnostic.md](docs/mail-icon-diagnostic.md).
+- **Pull requests**: open against `main`. CI runs one job per PR
+  (`ci.yml`) with build + UI tests + release dry-run.
 
 ## License
 
-The repository currently ships no license file; the original sources carry
-no license headers either. Please contact the maintainers before reusing the
-code in ways that require an explicit license.
+[BSD-2-Clause](LICENSE) (same as librnp). Bundled dependencies retain
+their own licenses — see **About → Licenses** in the app or
+[Vendor/SOURCES.md](Vendor/SOURCES.md).
+
+## Credits
+
+RNP for Mail is developed by [Ribose Inc.](https://www.ribose.com)
+using the [librnp](https://github.com/rnpgp/rnp) OpenPGP library.
