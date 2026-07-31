@@ -74,7 +74,7 @@ struct RecipientEntity: AppEntity {
     var displayName: String  // primary user ID
 
     var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(displayName)", subtitle: "\(id.prefix(16))…")
+        DisplayRepresentation(title: "\(displayName)", subtitle: "\(String(id.prefix(16)))…")
     }
 }
 

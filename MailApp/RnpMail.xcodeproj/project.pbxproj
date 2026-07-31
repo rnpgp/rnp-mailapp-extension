@@ -284,6 +284,7 @@
 			children = (
 				AA3000000000000000000006 /* Model */,
 				AA3000000000000000000007 /* View */,
+				0A786852E497990EF1B7EC21 /* Intents */,
 				AA2000000000000000000008 /* MailExtensionsContainerApp.swift */,
 				AA200000000000000000000D /* Resources/RNP.icns */,
 				AA300000000000000000000A /* Preview Content */,
@@ -313,7 +314,6 @@
 				AA3000000000000000000009 /* KeysList */,
 				0A786852E497990EF1B7EC19 /* Import */,
 				0A786852E497990EF1B7EC1E /* FileTools */,
-				0A786852E497990EF1B7EC21 /* Intents */,
 				36AF7617F543DF15DF4C5336 /* Licenses */,
 				1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */,
 			);
