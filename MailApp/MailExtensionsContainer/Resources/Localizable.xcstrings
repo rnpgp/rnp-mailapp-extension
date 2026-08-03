@@ -6248,73 +6248,12 @@
       }
     },
     "error.keyringOpenFailed": {
-      "comment": "Error message.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Der Schlüsselring konnte nicht geöffnet werden."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Could not open the keyring."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "No se pudo abrir el llavero."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Impossible d’ouvrir le trousseau."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Impossibile aprire il portachiavi."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "キーリングを開けませんでした。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "키링을 열 수 없습니다."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Não foi possível abrir o porta-chaves."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Не удалось открыть связку ключей."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "无法打开密钥环。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "無法開啟金鑰環。"
+            "value": "Could not open the OpenPGP keyring."
           }
         }
       }
@@ -17731,6 +17670,556 @@
           "stringUnit": {
             "state": "translated",
             "value": "Conservative PQ (SLH-DSA)"
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.enabled.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RNP for Mail is ready"
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.enabled.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock icons will appear on encrypted messages in Apple Mail. Want to send yourself a test message to confirm everything works?"
+          }
+        }
+      }
+    },
+    "mailExtensionSetup.testMail": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send Test Encrypted Mail"
+          }
+        }
+      }
+    },
+    "menu.sendTestMail": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send Test Encrypted Mail…"
+          }
+        }
+      }
+    },
+    "tools.keyring.backup": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup keyring"
+          }
+        }
+      }
+    },
+    "tools.keyring.backup.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export a zip of your public and secret keys for safe-keeping."
+          }
+        }
+      }
+    },
+    "tools.keyring.restore": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore keyring"
+          }
+        }
+      }
+    },
+    "tools.keyring.restore.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merge keys from a backup zip into your current keyring."
+          }
+        }
+      }
+    },
+    "error.keyringUnavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenPGP keyring is unavailable. Restart RNP and try again."
+          }
+        }
+      }
+    },
+    "error.keyringLocked": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyring is locked. Unlock it from the banner at the top of the key list."
+          }
+        }
+      }
+    },
+    "error.keyringOpenFailed.withReason": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not open the OpenPGP keyring: %@."
+          }
+        }
+      }
+    },
+    "error.keyNotFound": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key %@ not found in keyring."
+          }
+        }
+      }
+    },
+    "error.recipientNotFound": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No public key for recipient %@."
+          }
+        }
+      }
+    },
+    "error.signingKeyNotFound": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing key %@ not found."
+          }
+        }
+      }
+    },
+    "error.noSigningKeyConfigured": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a signing key first."
+          }
+        }
+      }
+    },
+    "error.noRecipients": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select at least one recipient."
+          }
+        }
+      }
+    },
+    "error.encryptFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encryption failed."
+          }
+        }
+      }
+    },
+    "error.encryptFailed.withReason": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encryption failed: %@."
+          }
+        }
+      }
+    },
+    "error.decryptFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decryption failed."
+          }
+        }
+      }
+    },
+    "error.decryptFailed.withReason": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decryption failed: %@."
+          }
+        }
+      }
+    },
+    "error.signFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing failed."
+          }
+        }
+      }
+    },
+    "error.signFailed.withReason": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing failed: %@."
+          }
+        }
+      }
+    },
+    "error.verifyFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signature verification failed."
+          }
+        }
+      }
+    },
+    "error.verifyFailed.withReason": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signature verification failed: %@."
+          }
+        }
+      }
+    },
+    "error.readFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read file: %@"
+          }
+        }
+      }
+    },
+    "error.writeFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not write file: %@"
+          }
+        }
+      }
+    },
+    "error.invalidPassphrase": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrong passphrase."
+          }
+        }
+      }
+    },
+    "error.mailExtensionNotEnabled": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RNP for Mail isn't enabled in Mail yet. Open Tools to enable it."
+          }
+        }
+      }
+    },
+    "error.mailComposeCancelled": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compose cancelled."
+          }
+        }
+      }
+    },
+    "error.backupFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup failed."
+          }
+        }
+      }
+    },
+    "error.backupFailed.withReason": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup failed: %@."
+          }
+        }
+      }
+    },
+    "error.restoreFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore failed."
+          }
+        }
+      }
+    },
+    "error.restoreFailed.withReason": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore failed: %@."
+          }
+        }
+      }
+    },
+    "error.backup.sourceMissing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyring directory not found at %@."
+          }
+        }
+      }
+    },
+    "error.backup.archiveUnreadable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read backup archive: %@."
+          }
+        }
+      }
+    },
+    "error.backup.manifestMissing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup archive has no manifest — not a valid RNP backup."
+          }
+        }
+      }
+    },
+    "error.backup.unsupportedFormat": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup format version %1$ld is not supported (expected %2$ld)."
+          }
+        }
+      }
+    },
+    "error.backup.writeFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not write backup archive %1$@: %2$@"
+          }
+        }
+      }
+    },
+    "keyringBackup.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup your keyring"
+          }
+        }
+      }
+    },
+    "keyringBackup.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export a zip of every public and secret key in your keyring. The zip is unencrypted — your secret keys are already passphrase-protected. Store it somewhere safe."
+          }
+        }
+      }
+    },
+    "keyringBackup.chooseDestination": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Where to Save…"
+          }
+        }
+      }
+    },
+    "keyringBackup.working": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writing backup…"
+          }
+        }
+      }
+    },
+    "keyringBackup.panelMessage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick where to save the keyring backup"
+          }
+        }
+      }
+    },
+    "keyringBackup.summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backed up %1$d keys on %2$@.\n\n%3$@"
+          }
+        }
+      }
+    },
+    "keyringRestore.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore from backup"
+          }
+        }
+      }
+    },
+    "keyringRestore.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merge keys from a previously-created backup zip into your current keyring. Existing keys are skipped — your current keyring is never overwritten."
+          }
+        }
+      }
+    },
+    "keyringRestore.chooseArchive": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Backup to Restore…"
+          }
+        }
+      }
+    },
+    "keyringRestore.working": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoring…"
+          }
+        }
+      }
+    },
+    "keyringRestore.panelMessage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a rnp-keys zip to restore from"
+          }
+        }
+      }
+    },
+    "keyringRestore.summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imported %1$d new keys. Skipped %2$d already-present."
           }
         }
       }

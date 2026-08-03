@@ -25,9 +25,11 @@ import Rnp
 /// verb = adding a case here + a Strategy below.
 public enum FileSecurityOperation {
     case encrypt(EncryptRequest)
+    case encryptWithPassword(EncryptWithPasswordRequest)
     case decrypt(DecryptRequest)
     case sign(SignRequest)
     case signDetached(SignRequest)
+    case signCleartext(SignRequest)
     case verify(VerifyRequest)
     case verifyDetached(VerifyDetachedRequest)
 }
@@ -36,17 +38,37 @@ public struct EncryptRequest {
     public let plaintext: Data
     public let recipientFingerprints: [String]
     public let armored: Bool
+    /// AEAD-OCB instead of legacy CFB+MDC. Off by default for GnuPG interop.
+    public let aead: Bool
 
-    public init(plaintext: Data, recipientFingerprints: [String], armored: Bool = true) {
+    public init(plaintext: Data, recipientFingerprints: [String], armored: Bool = true, aead: Bool = false) {
         self.plaintext = plaintext
         self.recipientFingerprints = recipientFingerprints
         self.armored = armored
+        self.aead = aead
     }
 }
 
 public struct DecryptRequest {
     public let ciphertext: Data
     public init(ciphertext: Data) { self.ciphertext = ciphertext }
+}
+
+/// Symmetric (passphrase-only) encryption request. No recipients;
+/// anyone with the passphrase can decrypt.
+public struct EncryptWithPasswordRequest {
+    public let plaintext: Data
+    public let passphrase: String
+    public let armored: Bool
+    /// AEAD-OCB instead of legacy CFB+MDC. Off by default for GnuPG interop.
+    public let aead: Bool
+
+    public init(plaintext: Data, passphrase: String, armored: Bool = true, aead: Bool = false) {
+        self.plaintext = plaintext
+        self.passphrase = passphrase
+        self.armored = armored
+        self.aead = aead
+    }
 }
 
 public struct SignRequest {
@@ -163,9 +185,11 @@ public final class FileSecurityEngine {
         guard let keyManager else { throw FileSecurityError.keyringUnavailable }
         switch operation {
         case .encrypt(let req):      return try EncryptStrategy.perform(req, keyManager: keyManager)
+        case .encryptWithPassword(let req): return try EncryptWithPasswordStrategy.perform(req, keyManager: keyManager)
         case .decrypt(let req):      return try DecryptStrategy.perform(req, keyManager: keyManager)
         case .sign(let req):         return try SignStrategy.perform(req, detached: false, keyManager: keyManager)
         case .signDetached(let req): return try SignStrategy.perform(req, detached: true, keyManager: keyManager)
+        case .signCleartext(let req):        return try SignCleartextStrategy.perform(req, keyManager: keyManager)
         case .verify(let req):       return try VerifyStrategy.performInline(req, keyManager: keyManager)
         case .verifyDetached(let req): return try VerifyStrategy.performDetached(req, keyManager: keyManager)
         }
@@ -185,7 +209,12 @@ enum EncryptStrategy {
                 recipients.append(key)
             }
             guard !recipients.isEmpty else { throw FileSecurityError.noRecipients }
-            let ciphertext = try rnp.encrypt(req.plaintext, for: recipients, armored: req.armored)
+            let ciphertext: Data
+            if req.aead {
+                ciphertext = try rnp.encrypt(req.plaintext, for: recipients, aead: .ocb, pkeskVersion: .v3, armored: req.armored)
+            } else {
+                ciphertext = try rnp.encrypt(req.plaintext, for: recipients, armored: req.armored)
+            }
             return .ciphertext(ciphertext)
         }
     }
@@ -200,6 +229,31 @@ enum DecryptStrategy {
             }
             let verified = try rnp.verifyDetailed(req.ciphertext)
             return .plaintext(verified.payload ?? req.ciphertext, signatureValidity: verified.hasValidSignature)
+        }
+    }
+}
+
+enum EncryptWithPasswordStrategy {
+    static func perform(_ req: EncryptWithPasswordRequest, keyManager: KeyManager) throws -> FileSecurityResult {
+        try keyManager.withRnp { rnp in
+            let aead: Rnp.EncryptAEAD = req.aead ? .ocb : .none
+            let ciphertext = try rnp.encryptWithPassword(
+                req.plaintext,
+                password: req.passphrase,
+                aead: aead,
+                armored: req.armored
+            )
+            return .ciphertext(ciphertext)
+        }
+    }
+}
+
+enum SignCleartextStrategy {
+    static func perform(_ req: SignRequest, keyManager: KeyManager) throws -> FileSecurityResult {
+        try keyManager.withRnp { rnp in
+            let key = try rnp.requireKey(req.signingKeyFingerprint, type: .fingerprint)
+            let cleartext = try rnp.signCleartext(req.payload, with: key)
+            return .signedPayload(cleartext)
         }
     }
 }

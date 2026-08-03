@@ -31,6 +31,8 @@ public struct RoadmapNavigationCoordinator: View {
         case mailboxScan
         case mailboxScanConsent
         case transitionWizard(fingerprint: String, primaryUserID: String)
+        case keyringBackup
+        case keyringRestore
 
         var id: String {
             switch self {
@@ -41,6 +43,8 @@ public struct RoadmapNavigationCoordinator: View {
             case .mailboxScan: return "mailboxScan"
             case .mailboxScanConsent: return "mailboxScanConsent"
             case let .transitionWizard(fpr, _): return "transitionWizard-\(fpr)"
+            case .keyringBackup: return "keyringBackup"
+            case .keyringRestore: return "keyringRestore"
             }
         }
     }
@@ -61,6 +65,7 @@ public struct RoadmapNavigationCoordinator: View {
                 } else {
                     ToolSectionView(label: "Recover", tools: recoveryTools)
                 }
+                ToolSectionView(label: "Backup", tools: backupTools)
                 ToolSectionView(label: "Discover", tools: discoverTools)
             }
             .padding(.horizontal, RnpSpacing.xl)
@@ -116,8 +121,22 @@ public struct RoadmapNavigationCoordinator: View {
                         keyManager: engine.keyManager
                     ))
                 }
+            case .keyringBackup:
+                KeyringBackupSheet(keyringDirectory: keyringDirectory())
+            case .keyringRestore:
+                KeyringRestoreSheet(keyringDirectory: keyringDirectory())
             }
         }
+    }
+
+    /// Resolves the shared keyring directory. Lives here (not in the
+    /// service) so the sheets can be opened without a model reference.
+    private func keyringDirectory() -> URL {
+        let args = CommandLine.arguments
+        if let i = args.firstIndex(of: "--uitest-keyring-dir"), args.indices.contains(i + 1) {
+            return URL(fileURLWithPath: args[i + 1], isDirectory: true)
+        }
+        return AppGroup.keyringDirectory()
     }
 
     // MARK: Header
@@ -268,6 +287,25 @@ public struct RoadmapNavigationCoordinator: View {
                 systemImage: "envelope.open.badge",
                 identifier: "nav.mailbox-scan",
                 action: { presentedSheet = .mailboxScanConsent }
+            )
+        ]
+    }
+
+    private var backupTools: [Tool] {
+        [
+            Tool(
+                title: NSLocalizedString("tools.keyring.backup", comment: "Tools hub backup title"),
+                description: NSLocalizedString("tools.keyring.backup.desc", comment: "Tools hub backup description"),
+                systemImage: "icloud.and.arrow.up",
+                identifier: "nav.keyring-backup",
+                action: { presentedSheet = .keyringBackup }
+            ),
+            Tool(
+                title: NSLocalizedString("tools.keyring.restore", comment: "Tools hub restore title"),
+                description: NSLocalizedString("tools.keyring.restore.desc", comment: "Tools hub restore description"),
+                systemImage: "icloud.and.arrow.down",
+                identifier: "nav.keyring-restore",
+                action: { presentedSheet = .keyringRestore }
             )
         ]
     }
