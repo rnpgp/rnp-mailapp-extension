@@ -19,6 +19,7 @@ import RnpMailUI
 @main
 struct MailExtensionsContainerApp: App {
     @StateObject private var model = ContentViewModel(manager: KeysManager())
+    @StateObject private var updater = UpdaterController()
 
     init() {
         if CommandLine.arguments.contains("--self-test") {
@@ -31,6 +32,7 @@ struct MailExtensionsContainerApp: App {
         WindowGroup("RNP") {
             ContentView(model: model)
                 .onAppear {
+                    model.manager.bootstrap()
                     model.checkOnboarding()
                 }
         }
@@ -66,6 +68,12 @@ struct MailExtensionsContainerApp: App {
                     model.refresh()
                 }
                 .keyboardShortcut("r", modifiers: .command)
+            }
+            CommandGroup(after: .appSettings) {
+                Button("menu.checkForUpdates") {
+                    updater.checkForUpdates()
+                }
+                .keyboardShortcut("u", modifiers: .command)
             }
             CommandGroup(after: .help) {
                 Button("menu.showOnboarding") {

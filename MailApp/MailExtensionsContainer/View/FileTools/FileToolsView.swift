@@ -73,6 +73,10 @@ struct FileToolsView: View {
             encryptPanel(file: file)
         case .decrypt(let file, let result):
             decryptPanel(file: file, result: result)
+        case .sign(let file):
+            signPanel(file: file)
+        case .verify(let file, let result):
+            verifyPanel(file: file, result: result)
         case .working:
             VStack(spacing: RnpSpacing.md) {
                 ProgressView()
@@ -184,11 +188,165 @@ struct FileToolsView: View {
         .padding(RnpSpacing.xl)
     }
 
-    private enum FileKind { case plain, encrypted }
+    private func signPanel(file: FileToolsViewModel.LoadedFile) -> some View {
+        VStack(alignment: .leading, spacing: RnpSpacing.md) {
+            fileBanner(file: file, kind: .plain)
+            Text("fileTools.signWith")
+                .font(.headline)
+            signingKeyPicker
+            Toggle(isOn: $tools.signDetached) {
+                Text("fileTools.signDetached")
+            }
+            .toggleStyle(.checkbox)
+            .accessibilityIdentifier("filetools.sign.detached")
+            HStack {
+                Button("button.cancel") { tools.reset() }
+                    .keyboardShortcut(.cancelAction)
+                    .accessibilityIdentifier("filetools.sign.cancel")
+                Spacer()
+                Button("fileTools.signButton") {
+                    tools.sign()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(tools.signingKeyFingerprint == nil || tools.isWorking)
+                .keyboardShortcut(.defaultAction)
+                .accessibilityIdentifier("filetools.sign.run")
+            }
+        }
+        .padding(RnpSpacing.xl)
+    }
+
+    private func verifyPanel(file: FileToolsViewModel.LoadedFile, result: FileToolsViewModel.VerifyResult?) -> some View {
+        VStack(alignment: .leading, spacing: RnpSpacing.md) {
+            fileBanner(file: file, kind: .signed)
+            if let result {
+                verificationBanner(result)
+                if case .verification(_, let payload?) = result.kind {
+                    HStack {
+                        Text("fileTools.verify.payloadSize")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(ByteCountFormatter.string(fromByteCount: Int64(payload.count), countStyle: .file))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Button("fileTools.saveVerifiedPayload") {
+                            tools.saveVerifiedPayload(payload, original: file.url)
+                        }
+                        .accessibilityIdentifier("filetools.verify.save")
+                    }
+                }
+                HStack {
+                    Button("button.cancel") { tools.reset() }
+                        .keyboardShortcut(.cancelAction)
+                    Spacer()
+                    Button("button.done") { tools.reset() }
+                        .keyboardShortcut(.defaultAction)
+                        .accessibilityIdentifier("filetools.verify.done")
+                }
+            } else {
+                HStack {
+                    Button("button.cancel") { tools.reset() }
+                    Spacer()
+                    Button("fileTools.verifyButton") {
+                        tools.verify()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+                    .accessibilityIdentifier("filetools.verify.run")
+                }
+            }
+        }
+        .padding(RnpSpacing.xl)
+    }
+
+    private var signingKeyPicker: some View {
+        let signers = model.manager.keys.filter { $0.hasSecret }
+        return ScrollView {
+            signingKeyList(signers: signers)
+        }
+        .frame(maxHeight: 180)
+        .padding(RnpSpacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+                .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 1)
+        )
+    }
+
+    @ViewBuilder
+    private func signingKeyList(signers: [KeyInfo]) -> some View {
+        VStack(alignment: .leading, spacing: RnpSpacing.xxs) {
+            if signers.isEmpty {
+                Text("fileTools.noSigningKey")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .padding()
+            } else {
+                Picker(selection: Binding(
+                    get: { tools.signingKeyFingerprint ?? signers.first?.fingerprint ?? "" },
+                    set: { tools.signingKeyFingerprint = $0 }
+                )) {
+                    ForEach(signers) { key in
+                        signingKeyLabel(key: key).tag(key.fingerprint)
+                    }
+                } label: {
+                    EmptyView()
+                }
+                .pickerStyle(.radioGroup)
+                .labelsHidden()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func signingKeyLabel(key: KeyInfo) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(key.primaryUserID)
+                .font(.body)
+                .lineLimit(1)
+            Text(key.fingerprint.groupedFingerprintBlocks)
+                .font(.system(.caption2, design: .monospaced))
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func verificationBanner(_ result: FileToolsViewModel.VerifyResult) -> some View {
+        let isValid = result.verification.isValid
+        let signerLabel: String = {
+            if let fpr = result.verification.signerFingerprint {
+                let known = model.manager.keys.first { $0.fingerprint == fpr }?.primaryUserID
+                return known ?? String(fpr.prefix(16))
+            }
+            return "fileTools.verify.unknownSigner".localized
+        }()
+        return HStack(spacing: RnpSpacing.sm) {
+            Image(systemName: isValid ? "checkmark.seal.fill" : "xmark.seal.fill")
+                .font(.system(size: 22))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(isValid ? Color.green : Color.red)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(isValid ? "fileTools.verify.valid" : "fileTools.verify.invalid")
+                    .font(.callout.weight(.medium))
+                Text(signerLabel)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+            Spacer()
+        }
+        .padding(RnpSpacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: RnpRadius.panel, style: .continuous)
+                .fill((isValid ? Color.green : Color.red).opacity(0.08))
+        )
+    }
+
+    private enum FileKind { case plain, encrypted, signed }
 
     private func fileBanner(file: FileToolsViewModel.LoadedFile, kind: FileKind) -> some View {
         HStack(spacing: RnpSpacing.md) {
-            Image(systemName: kind == .encrypted ? "lock.doc.fill" : "doc")
+            Image(systemName: kind == .encrypted ? "lock.doc.fill" : (kind == .signed ? "signature" : "doc"))
                 .font(.system(size: 28))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(Color.accentColor)
@@ -301,6 +459,8 @@ final class FileToolsViewModel: ObservableObject {
         case idle
         case encrypt(LoadedFile)
         case decrypt(LoadedFile, DecryptResult?)
+        case sign(LoadedFile)
+        case verify(LoadedFile, VerifyResult?)
         case working
     }
 
@@ -330,9 +490,23 @@ final class FileToolsViewModel: ObservableObject {
         }
     }
 
+    /// Wraps the engine's `FileSecurityResult` for the verify panel. The
+    /// `.verification` case carries the signature check; `.plaintext`
+    /// covers the decrypt-with-signature path; other kinds aren't
+    /// reachable from this panel.
+    struct VerifyResult {
+        let kind: FileSecurityResult.Kind
+        var verification: SignatureVerification {
+            if case .verification(let v, _) = kind { return v }
+            return SignatureVerification(isValid: false, signerFingerprint: nil, signerUserID: nil, signedAt: nil)
+        }
+    }
+
     @Published var mode: Mode = .idle
     @Published var isDropTargeted = false
     @Published var selectedRecipientIDs: Set<String> = []
+    @Published var signingKeyFingerprint: String?
+    @Published var signDetached = false
     @Published var errorMessage: String?
     @Published var isWorking = false
 
@@ -340,6 +514,10 @@ final class FileToolsViewModel: ObservableObject {
 
     func attach(model: ContentViewModel) {
         self.model = model
+        // Default the signer picker to the user's first secret key.
+        if signingKeyFingerprint == nil {
+            signingKeyFingerprint = model.manager.keys.first(where: { $0.hasSecret })?.fingerprint
+        }
     }
 
     func reset() {
@@ -374,17 +552,145 @@ final class FileToolsViewModel: ObservableObject {
         do {
             let data = try Data(contentsOf: url)
             let file = LoadedFile(url: url, data: data)
-            if Self.looksEncrypted(data: data, filename: url.lastPathComponent) {
+            switch Self.classify(data: data, filename: url.lastPathComponent) {
+            case .encrypted:
                 mode = .decrypt(file, nil)
-            } else {
-                // Pre-select all public keys of contacts + own keys.
+            case .signed, .detachedSignature:
+                mode = .verify(file, nil)
+            case .plain:
                 if let model {
                     selectedRecipientIDs = Set(model.manager.keys.map(\.fingerprint))
+                    signingKeyFingerprint = model.manager.keys.first(where: { $0.hasSecret })?.fingerprint
                 }
                 mode = .encrypt(file)
             }
         } catch {
             errorMessage = FileToolsError.readFailed(url.path).errorDescription
+        }
+    }
+
+    func sign() {
+        guard case .sign(let file) = mode, let model else { return }
+        guard let fpr = signingKeyFingerprint else {
+            errorMessage = "error.fileSecurity.noSigningKeyConfigured".localized
+            return
+        }
+        isWorking = true
+        mode = .working
+        let detached = signDetached
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let signed = detached
+                    ? try model.manager.signFileDetached(file.data, withKeyFingerprint: fpr)
+                    : try model.manager.signFile(file.data, withKeyFingerprint: fpr)
+                DispatchQueue.main.async {
+                    self.isWorking = false
+                    self.saveSigned(signed, original: file.url, detached: detached)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.isWorking = false
+                    self.mode = .sign(file)
+                    self.errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    func verify() {
+        guard case .verify(let file, _) = mode, let model else { return }
+        isWorking = true
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let result: FileSecurityResult
+                if Self.looksLikeDetachedSignature(data: file.data) {
+                    // Detached signature file dropped alone: we have the
+                    // signature but not the payload. Ask the user.
+                    DispatchQueue.main.async {
+                        self.isWorking = false
+                        self.promptForDetachedPayload(signature: file)
+                    }
+                    return
+                }
+                let verified = try model.manager.verifyFile(file.data)
+                result = .plaintext(verified.payload, signatureValidity: verified.valid ? true : false)
+                DispatchQueue.main.async {
+                    self.isWorking = false
+                    self.mode = .verify(file, VerifyResult(kind: result.kind))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.isWorking = false
+                    self.errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    /// Detached-signature workflow: user dropped `signature`, now we
+    /// ask for the matching payload file and verify the pair.
+    private func promptForDetachedPayload(signature: LoadedFile) {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.message = "fileTools.verify.pickPayload".localized
+        guard panel.runModal() == .OK, let payloadURL = panel.url,
+              let payloadData = try? Data(contentsOf: payloadURL) else {
+            mode = .verify(signature, nil)
+            return
+        }
+        guard let model else { return }
+        isWorking = true
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let v = try model.manager.verifyDetachedSignature(signature.data, forPayload: payloadData)
+                let result = FileSecurityResult.verification(v, payload: payloadData)
+                DispatchQueue.main.async {
+                    self.isWorking = false
+                    self.mode = .verify(signature, VerifyResult(kind: result.kind))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.isWorking = false
+                    self.errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    func saveVerifiedPayload(_ payload: Data, original: URL) {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = original.lastPathComponent
+        panel.canCreateDirectories = true
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try payload.write(to: url, options: .atomic)
+            NSWorkspace.shared.activateFileViewerSelecting([url])
+        } catch {
+            errorMessage = FileToolsError.writeFailed(url.path).errorDescription
+        }
+    }
+
+    private func saveSigned(_ signed: Data, original: URL, detached: Bool) {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = detached
+            ? original.lastPathComponent + ".sig"
+            : original.lastPathComponent + ".pgp"
+        panel.canCreateDirectories = true
+        guard panel.runModal() == .OK, let url = panel.url else {
+            if let data = try? Data(contentsOf: original) {
+                mode = .sign(LoadedFile(url: original, data: data))
+            } else {
+                reset()
+            }
+            return
+        }
+        do {
+            try signed.write(to: url, options: .atomic)
+            reset()
+            NSWorkspace.shared.activateFileViewerSelecting([url])
+        } catch {
+            errorMessage = FileToolsError.writeFailed(url.path).errorDescription
         }
     }
 
@@ -482,17 +788,51 @@ final class FileToolsViewModel: ObservableObject {
         }
     }
 
-    private static func looksEncrypted(data: Data, filename: String) -> Bool {
+    private enum FileClass {
+        case plain
+        case encrypted
+        case signed
+        case detachedSignature
+    }
+
+    /// Classifies a dropped file by extension + content sniff. Each
+    /// branch is the minimal signal needed — order matters: detached
+    /// `.sig` before inline `.pgp`, and content sniff only when the
+    /// extension doesn't already tell us.
+    private static func classify(data: Data, filename: String) -> FileClass {
         let lower = filename.lowercased()
-        if lower.hasSuffix(".pgp") || lower.hasSuffix(".gpg") || lower.hasSuffix(".asc") {
-            return true
+        if lower.hasSuffix(".sig") || lower.hasSuffix(".asc") && !looksLikeInlineMessage(data: data) {
+            return .detachedSignature
         }
-        if let prefix = String(data: data.prefix(40), encoding: .utf8) {
-            if prefix.contains("BEGIN PGP MESSAGE") || prefix.contains("BEGIN PGP SIGNED MESSAGE") {
-                return true
-            }
+        if lower.hasSuffix(".pgp") || lower.hasSuffix(".gpg") {
+            return .encrypted
         }
-        return false
+        if lower.hasSuffix(".asc") {
+            // .asc can be either; we already handled detached above.
+            return .encrypted
+        }
+        guard let prefix = String(data: data.prefix(64), encoding: .utf8) else { return .plain }
+        if prefix.contains("BEGIN PGP MESSAGE") { return .encrypted }
+        if prefix.contains("BEGIN PGP SIGNED MESSAGE") { return .signed }
+        if prefix.contains("BEGIN PGP SIGNATURE") { return .detachedSignature }
+        return .plain
+    }
+
+    private static func looksLikeInlineMessage(data: Data) -> Bool {
+        guard let prefix = String(data: data.prefix(64), encoding: .utf8) else { return false }
+        return prefix.contains("BEGIN PGP MESSAGE") || prefix.contains("BEGIN PGP SIGNED MESSAGE")
+    }
+
+    private static func looksLikeDetachedSignature(data: Data) -> Bool {
+        guard let prefix = String(data: data.prefix(64), encoding: .utf8) else { return false }
+        return prefix.contains("BEGIN PGP SIGNATURE") && !prefix.contains("BEGIN PGP SIGNED MESSAGE")
+    }
+
+    private static func looksEncrypted(data: Data, filename: String) -> Bool {
+        switch classify(data: data, filename: filename) {
+        case .encrypted, .signed, .detachedSignature: return true
+        case .plain: return false
+        }
     }
 
     private static func suggestDecryptedFilename(from filename: String) -> String {

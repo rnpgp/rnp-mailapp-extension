@@ -239,14 +239,17 @@ final class ContentViewModel: ObservableObject {
         }
     }
 
-    /// Called on launch to decide whether to show onboarding.
+    /// Called on launch to decide whether to show onboarding. Safe to
+    /// call before `manager.bootstrap()` completes — it'll see an empty
+    /// key list and treat the user as new. The subsequent
+    /// `manager.$keys` combine listener below will re-evaluate once
+    /// bootstrap finishes and surface the Mail extension setup sheet if
+    /// the user turns out to be returning.
     func checkOnboarding() {
         if !hasOnboarded && manager.keys.isEmpty {
             showOnboarding = true
             return
         }
-        // Returning users: surface Mail extension setup if they haven't seen
-        // it yet (covers users who onboarded before this sheet existed).
         if !hasShownMailExtensionSetup && !mailExtensionEnabled {
             showMailExtensionSetup = true
         }

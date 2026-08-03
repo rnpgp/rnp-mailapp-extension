@@ -42,6 +42,8 @@
 		0A786852E497990EF1B7EC1C /* FileToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC1D /* FileToolsView.swift */; };
 		0A786852E497990EF1B7EC1F /* FileEncryptionIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */; };
 		0A786852E497990EF1B7EC23 /* MailExtensionEnableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */; };
+		0A786852E497990EF1B7EC28 /* FileSecurityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */; };
+		0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -126,6 +128,8 @@
 		0A786852E497990EF1B7EC1D /* FileToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileToolsView.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileEncryptionIntents.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtensionEnableView.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSecurityEngine.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkleBootstrap.swift; sourceTree = "<group>"; };
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
@@ -287,6 +291,7 @@
 				AA3000000000000000000006 /* Model */,
 				AA3000000000000000000007 /* View */,
 				0A786852E497990EF1B7EC21 /* Intents */,
+				0A786852E497990EF1B7EC2B /* Updater */,
 				AA2000000000000000000008 /* MailExtensionsContainerApp.swift */,
 				AA200000000000000000000D /* Resources/RNP.icns */,
 				AA300000000000000000000A /* Preview Content */,
@@ -305,8 +310,17 @@
 				AA2000000000000000000009 /* KeysManager.swift */,
 				AA2000000000000000000007 /* SharedKeyring.swift */,
 				0A786852E497990EF1B7EC16 /* KeyringScanner.swift */,
+				0A786852E497990EF1B7EC26 /* FileSecurity */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC26 /* FileSecurity */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */,
+			);
+			path = FileSecurity;
 			sourceTree = "<group>";
 		};
 		AA3000000000000000000007 /* View */ = {
@@ -345,6 +359,14 @@
 				0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */,
 			);
 			path = MailExtensionSetup;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC2B /* Updater */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */,
+			);
+			path = Updater;
 			sourceTree = "<group>";
 		};
 		0A786852E497990EF1B7EC19 /* Import */ = {
@@ -450,6 +472,7 @@
 				F7F139FFDED467A772241EBC /* RnpMailUI */,
 				AAC000000000000000000008 /* TrustStore */,
 				AAC000000000000000000009 /* KeyLifecycle */,
+				AAC00000000000000000000A /* Sparkle */,
 			);
 			productName = RNP;
 			productReference = AA5000000000000000000003 /* RNP.app */;
@@ -502,6 +525,7 @@
 			mainGroup = AA3000000000000000000001;
 			packageReferences = (
 				AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */,
+				AAB000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			productRefGroup = AA3000000000000000000002 /* Products */;
 			projectDirPath = "";
@@ -578,6 +602,8 @@
 				0A786852E497990EF1B7EC1C /* FileToolsView.swift in Sources */,
 				0A786852E497990EF1B7EC1F /* FileEncryptionIntents.swift in Sources */,
 				0A786852E497990EF1B7EC23 /* MailExtensionEnableView.swift in Sources */,
+				0A786852E497990EF1B7EC28 /* FileSecurityEngine.swift in Sources */,
+				0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
@@ -1258,6 +1284,14 @@
 				minimumVersion = 0.2.8;
 			};
 		};
+		AAB000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1300,6 +1334,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
 			productName = KeyLifecycle;
+		};
+		AAC00000000000000000000A /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAB000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 		F7F139FFDED467A772241EBC /* RnpMailUI */ = {
 			isa = XCSwiftPackageProductDependency;

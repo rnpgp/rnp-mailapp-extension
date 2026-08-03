@@ -4,6 +4,14 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>SUFeedURL</key>
+	<string>https://rnpgp.org/updates/appcast.xml</string>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>SUShowReleaseNotes</key>
+	<true/>
+	<key>SUAutomaticallyUpdate</key>
+	<false/>
 	<key>CFBundleDisplayName</key>
 	<string>RNP</string>
 	<key>CFBundleExecutable</key>

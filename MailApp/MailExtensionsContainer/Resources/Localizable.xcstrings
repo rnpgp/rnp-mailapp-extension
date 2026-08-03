@@ -17350,6 +17350,215 @@
         }
       }
     },
+    "fileTools.signWith": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign with:"
+          }
+        }
+      }
+    },
+    "fileTools.signButton": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign…"
+          }
+        }
+      }
+    },
+    "fileTools.signDetached": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detached signature (.sig)"
+          }
+        }
+      }
+    },
+    "fileTools.noSigningKey": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have no secret keys. Generate or import one to sign files."
+          }
+        }
+      }
+    },
+    "fileTools.verifyButton": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify"
+          }
+        }
+      }
+    },
+    "fileTools.verify.valid": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signature valid"
+          }
+        }
+      }
+    },
+    "fileTools.verify.invalid": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signature invalid or untrusted"
+          }
+        }
+      }
+    },
+    "fileTools.verify.unknownSigner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown signer"
+          }
+        }
+      }
+    },
+    "fileTools.verify.payloadSize": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payload:"
+          }
+        }
+      }
+    },
+    "fileTools.verify.pickPayload": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick the file this signature covers"
+          }
+        }
+      }
+    },
+    "fileTools.saveVerifiedPayload": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Payload…"
+          }
+        }
+      }
+    },
+    "intent.verifyFile.valid": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valid signature from"
+          }
+        }
+      }
+    },
+    "intent.verifyFile.invalid": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid signature from"
+          }
+        }
+      }
+    },
+    "error.fileSecurity.keyringUnavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenPGP keyring is unavailable. Open RNP to unlock it."
+          }
+        }
+      }
+    },
+    "error.fileSecurity.recipientNotFound": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No key found for recipient %@."
+          }
+        }
+      }
+    },
+    "error.fileSecurity.noRecipients": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select at least one recipient."
+          }
+        }
+      }
+    },
+    "error.fileSecurity.signingKeyNotFound": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing key %@ not found in keyring."
+          }
+        }
+      }
+    },
+    "error.fileSecurity.noSigningKeyConfigured": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a signing key first."
+          }
+        }
+      }
+    },
+    "error.fileSecurity.verificationFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verification failed."
+          }
+        }
+      }
+    },
     "fileTools.encryptButton": {
       "extractionState": "manual",
       "localizations": {

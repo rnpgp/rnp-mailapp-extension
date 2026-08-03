@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RNP — OpenPGP for your Mac</title>
+  <meta name="description" content="OpenPGP for your Mac — keys, files, and Mail. Powered by librnp, Thunderbird's official end-to-end encryption engine.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <a href="/" class="logo">🔒 RNP</a>
+      <nav>
+        <a href="/getting-started.html">Getting Started</a>
+        <a href="/security.html">Security</a>
+        <a href="https://github.com/rnpgp/rnp-mailapp-extension">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>OpenPGP for your Mac.<br><span class="accent">Keys, files, and Mail.</span></h1>
+      <p class="lead">
+        RNP brings OpenPGP encryption to macOS. Manage your keyring, encrypt and
+        decrypt files, and add lock icons to encrypted and signed email in
+        Apple Mail. Powered by librnp, Thunderbird's official end-to-end
+        encryption engine.
+      </p>
+      <a id="download" class="cta" href="https://github.com/rnpgp/rnp-mailapp-extension/releases/latest">
+        ⬇ Download for macOS
+      </a>
+      <div class="cta-meta">macOS 14 or later · Free · Open source · <code>brew install --cask rnp</code></div>
+    </div>
+  </section>
+
+  <section class="feature-grid">
+    <div class="container" style="display: contents;">
+      <div class="feature">
+        <div class="icon">🔑</div>
+        <h3>Key Management</h3>
+        <p>Generate, import, rotate, and revoke OpenPGP keys. Touch ID for keyring unlock. Hybrid post-quantum algorithms supported.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📄</div>
+        <h3>File Encrypt &amp; Sign</h3>
+        <p>Drag a file in, encrypt to recipients, sign with your key, or verify someone else's signature. Finder Quick Action included.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">✉️</div>
+        <h3>RNP for Mail</h3>
+        <p>Apple Mail extension shows lock icons on encrypted and signed messages. Autocrypt-aware. WKD key discovery built in.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔍</div>
+        <h3>Key Discovery</h3>
+        <p>Auto-fetch recipient keys via WKD (Web Key Directory) and keys.openpgp.org. Autocrypt headers honored inbound.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🛡</div>
+        <h3>Sandboxed</h3>
+        <p>Properly sandboxed with App Group keyring. Hardened Runtime. Ready for Mac App Store. No telemetry, ever.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🌐</div>
+        <h3>Standards-based</h3>
+        <p>OpenPGP, PGP/MIME (RFC 3156), Autocrypt, WKD, and the crypto-refresh. PQ hybrids (ML-DSA, ML-KEM) supported.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="powered-by">
+    <div class="container">
+      <div class="label">Powered by</div>
+      <div class="name">librnp</div>
+      <div class="desc">The same engine that powers Thunderbird's official end-to-end encryption. Battle-tested, audited, and actively maintained by the Ribose team.</div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div>© Ribose Inc. · RNP is open source under the BSD-2-Clause license.</div>
+      <div><a href="https://github.com/rnpgp/rnp-mailapp-extension/issues">Support</a> · <a href="/privacy.html">Privacy</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Resolve the download link to the latest release DMG.
+    (function () {
+      var fallback = 'https://github.com/rnpgp/rnp-mailapp-extension/releases/latest';
+      fetch('https://api.github.com/repos/rnpgp/rnp-mailapp-extension/releases/latest')
+        .then(function (r) { return r.json(); })
+        .then(function (release) {
+          var dmg = (release.assets || []).find(function (a) { return a.name.endsWith('.dmg'); });
+          if (dmg) {
+            document.getElementById('download').href = dmg.browser_download_url;
+          }
+        })
+        .catch(function () { /* leave fallback URL */ });
+    })();
+  </script>
+</body>
+</html>

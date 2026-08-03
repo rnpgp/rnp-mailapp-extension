@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getting Started — RNP</title>
+  <meta name="description" content="Install RNP on macOS, generate your first OpenPGP key, and start encrypting files and email in under 5 minutes.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <a href="/" class="logo">🔒 RNP</a>
+      <nav>
+        <a href="/getting-started.html">Getting Started</a>
+        <a href="/security.html">Security</a>
+        <a href="https://github.com/rnpgp/rnp-mailapp-extension">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="content">
+    <div class="container">
+      <h1>Getting Started</h1>
+      <p>You'll be encrypting files and email in under five minutes.</p>
+
+      <h2>1. Install</h2>
+      <p>Two ways to install RNP on macOS:</p>
+      <pre><code># Option A: Homebrew (recommended)
+brew install --cask rnp
+
+# Option B: Direct download
+# Download from https://github.com/rnpgp/rnp-mailapp-extension/releases/latest
+# Open the DMG, drag RNP to /Applications, eject, launch.</code></pre>
+      <p>macOS 14 or later. Both builds are signed and notarized.</p>
+
+      <h2>2. Generate a key</h2>
+      <p>On first launch, RNP walks you through creating your first key:</p>
+      <ol>
+        <li>Open RNP from Applications.</li>
+        <li>Pick <strong>Create a new key</strong>.</li>
+        <li>Enter your name and email. This is how others will find your key.</li>
+        <li>Choose a passphrase. Touch ID unlocks the keyring afterwards.</li>
+        <li>Pick an algorithm — <strong>Ed25519</strong> is the modern default. Pick <strong>Hybrid PQ</strong> for post-quantum readiness.</li>
+      </ol>
+
+      <h2>3. Enable RNP for Mail</h2>
+      <p>RNP for Mail adds lock icons to encrypted and signed messages in Apple Mail. After installing, you have to grant Mail permission:</p>
+      <ol>
+        <li>Open RNP at least once. (You just did.)</li>
+        <li>Open <strong>System Settings → Privacy &amp; Security → Extensions</strong>.</li>
+        <li>Find <strong>RNP for Mail</strong> under Added Extensions.</li>
+        <li>Toggle <strong>Mail</strong> on. Restart Mail.</li>
+      </ol>
+      <p>RNP shows this sheet automatically after onboarding, with a deep-link button to skip the navigation.</p>
+
+      <h2>4. Encrypt a file</h2>
+      <ol>
+        <li>Click <strong>File Tools</strong> in RNP's sidebar.</li>
+        <li>Drag a file in.</li>
+        <li>Pick the recipients (their public keys must be in your keyring — fetch via WKD if not).</li>
+        <li>Click <strong>Encrypt</strong>. Save the <code>.pgp</code> file.</li>
+      </ol>
+      <p>For a no-UI workflow, use the Finder Quick Action: right-click any file → Quick Actions → Encrypt File.</p>
+
+      <h2>5. Send an encrypted email</h2>
+      <ol>
+        <li>Make sure RNP for Mail is enabled (step 3).</li>
+        <li>Compose a message in Mail to someone whose key you have.</li>
+        <li>The lock icon in the compose toolbar toggles encryption.</li>
+        <li>Send. The recipient sees the lock icon on arrival.</li>
+      </ol>
+
+      <h2>Importing an existing key from GnuPG</h2>
+      <p>RNP can read keys from your existing GnuPG keyring at <code>~/.gnupg</code> read-only. From RNP:</p>
+      <ol>
+        <li>Toolbar → Import → From GnuPG or RNP keyring.</li>
+        <li>Pick the keys to import.</li>
+        <li>Confirm. The originals are not modified.</li>
+      </ol>
+
+      <h2>Next steps</h2>
+      <ul>
+        <li><a href="/security.html">Read the security model</a></li>
+        <li><a href="https://github.com/rnpgp/rnp-mailapp-extension/wiki">Browse the wiki</a></li>
+        <li><a href="https://github.com/rnpgp/rnp-mailapp-extension/issues">Report a problem</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div>© Ribose Inc. · RNP is open source under the BSD-2-Clause license.</div>
+      <div><a href="https://github.com/rnpgp/rnp-mailapp-extension/issues">Support</a> · <a href="/privacy.html">Privacy</a></div>
+    </div>
+  </footer>
+</body>
+</html>
