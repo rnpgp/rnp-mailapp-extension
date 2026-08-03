@@ -1,0 +1,18 @@
+title: RNP — OpenPGP for your Mac
+description: >-
+  OpenPGP for your Mac — keys, files, and Mail. Powered by librnp,
+  Thunderbird's official end-to-end encryption engine.
+url: https://rnpgp.github.io
+baseurl: /rnp-mailapp-extension
+theme: minima
+permalink: pretty
+markdown: kramdown
+kramdown:
+  input: GFM
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+gems:
+  - jekyll-seo-tag

@@ -26,8 +26,19 @@ final class KeysManager: ObservableObject {
     /// unlocked in this process yet. Secret-key operations fail while locked;
     /// the UI offers Touch ID and manual-passphrase unlock.
     @Published private(set) var keyringLocked = false
+    /// True between `init()` and the first successful `bootstrap()` call.
+    /// UI shows a `ProgressView` while true so the user doesn't see an empty
+    /// list flash before the keyring loads.
+    @Published private(set) var isLoading = true
 
-    private let keyManager: KeyManager?
+    private var _keyManager: KeyManager?
+    /// Resolves the underlying engine `KeyManager` on demand. The first
+    /// access after `bootstrap()` is cheap (cached); pre-bootstrap access
+    /// returns nil and is harmless — operations surface
+    /// `keyringUnavailable` errors which the UI maps to "loading…" state.
+    private var keyManager: KeyManager? {
+        _keyManager
+    }
     private var lifecycle: KeyLifecycle? {
         keyManager.map { KeyLifecycle(keyManager: $0) }
     }
@@ -40,21 +51,30 @@ final class KeysManager: ObservableObject {
     /// Whether the engine keyManager is available.
     var engineAvailable: Bool { keyManager != nil }
 
-    /// Opens the shared keyring (app group container), creating it on first
-    /// use. Falls back to a temporary directory if the keyring cannot be
-    /// read. If both locations fail, the manager is left in a failed state
-    /// and operations surface an error instead of crashing.
-    ///
-    /// UI tests can pass `--uitest-keyring-dir <path>` as a launch argument
-    /// to use an isolated keyring (and trust store) instead of the shared
-    /// app-group container.
-    init() {
-        keyManager = SharedKeyring.makeKeyManager(directory: Self.launchKeyringDirectory())
-        if keyManager == nil {
-            lastError = "error.keyringOpenFailed".localized
+    /// Lightweight initializer — does NOT touch the keyring. Call
+    /// `bootstrap()` from the view layer's `.onAppear` (or equivalent)
+    /// so cold-launch time isn't dominated by librnp load + keyring I/O.
+    init() {}
+
+    /// Loads the shared keyring off the main thread and publishes the
+    /// result. Safe to call multiple times; the second call is a no-op
+    /// once the first one completes.
+    func bootstrap() {
+        guard isLoading else { return }
+        let directory = Self.launchKeyringDirectory()
+        DispatchQueue.global(qos: .userInitiated).async {
+            let manager = SharedKeyring.makeKeyManager(directory: directory)
+            let locked = Self.computeKeyringLocked()
+            DispatchQueue.main.async {
+                self._keyManager = manager
+                self.keyringLocked = locked
+                self.isLoading = false
+                if manager == nil {
+                    self.lastError = "error.keyringOpenFailed".localized
+                }
+                self.reload()
+            }
         }
-        reload()
-        keyringLocked = Self.computeKeyringLocked()
     }
 
     /// Whether the keyring needs unlocking: the passphrase is stored with
@@ -340,50 +360,84 @@ final class KeysManager: ObservableObject {
         return try? keyManager.exportKey(fingerprint: fingerprint, secret: true)
     }
 
-    // MARK: - File encrypt / decrypt
+    // MARK: - File encrypt / decrypt / sign / verify
+    //
+    // All file operations are forwarded to `FileSecurityEngine`. The
+    // deep module owns the strategy dispatch; these are thin wrappers
+    // kept for the existing call sites in `FileToolsView` and the App
+    // Intents. New operations (e.g. encrypt-with-password) should be
+    // added to `FileSecurityOperation`, not here.
+
+    private lazy var fileSecurityEngine: FileSecurityEngine = {
+        FileSecurityEngine(keyManager: keyManager)
+    }()
 
     /// Encrypts `plaintext` for the given recipient fingerprints and returns
     /// the armored ciphertext. Used by the File Tools window.
     func encryptFile(_ plaintext: Data, for fingerprints: [String]) throws -> Data {
-        guard let keyManager else {
+        let result = try fileSecurityEngine.perform(.encrypt(.init(
+            plaintext: plaintext, recipientFingerprints: fingerprints, armored: true
+        )))
+        guard case .ciphertext(let data) = result.kind else {
             throw FileToolsError.keyringUnavailable
         }
-        return try keyManager.withRnp { rnp in
-            var recipients: [RnpKey] = []
-            for fpr in fingerprints {
-                guard let key = try? rnp.requireKey(fpr, type: .fingerprint) else {
-                    throw FileToolsError.recipientNotFound(fpr)
-                }
-                recipients.append(key)
-            }
-            guard !recipients.isEmpty else {
-                throw FileToolsError.noRecipients
-            }
-            return try rnp.encrypt(plaintext, for: recipients, armored: true)
-        }
+        return data
     }
 
     /// Decrypts OpenPGP-encrypted `ciphertext` and returns the plaintext.
     /// The keyring passphrase provider is consulted for protected secret keys.
     func decryptFile(_ ciphertext: Data) throws -> Data {
-        guard let keyManager else {
+        let result = try fileSecurityEngine.perform(.decrypt(.init(ciphertext: ciphertext)))
+        guard case .plaintext(let data, _) = result.kind else {
             throw FileToolsError.keyringUnavailable
         }
-        return try keyManager.withRnp { rnp in
-            try rnp.decrypt(ciphertext)
-        }
+        return data
     }
 
     /// Verifies a signed message and returns the recovered payload (or the
     /// original data when no payload was extracted).
     func verifyFile(_ signed: Data) throws -> (payload: Data, valid: Bool) {
-        guard let keyManager else {
+        let result = try fileSecurityEngine.perform(.verify(.init(signedPayload: signed)))
+        guard case .verification(let v, let payload) = result.kind else {
             throw FileToolsError.keyringUnavailable
         }
-        return try keyManager.withRnp { rnp in
-            let verification = try rnp.verifyDetailed(signed)
-            return (payload: verification.payload ?? signed, valid: verification.hasValidSignature)
+        return (payload: payload ?? signed, valid: v.isValid)
+    }
+
+    /// Signs `payload` inline (the signature is embedded in the output).
+    /// Used by the File Tools window's "Sign" mode and the SignFile App Intent.
+    func signFile(_ payload: Data, withKeyFingerprint fpr: String) throws -> Data {
+        let result = try fileSecurityEngine.perform(.sign(.init(
+            payload: payload, signingKeyFingerprint: fpr, armored: true
+        )))
+        guard case .signedPayload(let data) = result.kind else {
+            throw FileToolsError.keyringUnavailable
         }
+        return data
+    }
+
+    /// Produces a detached signature (a `.sig` file) for `payload`.
+    /// The original file stays unmodified; both are needed to verify.
+    func signFileDetached(_ payload: Data, withKeyFingerprint fpr: String) throws -> Data {
+        let result = try fileSecurityEngine.perform(.signDetached(.init(
+            payload: payload, signingKeyFingerprint: fpr, armored: true
+        )))
+        guard case .detachedSignature(let data) = result.kind else {
+            throw FileToolsError.keyringUnavailable
+        }
+        return data
+    }
+
+    /// Verifies a detached signature against the original payload.
+    /// Returns the verification metadata (signer, validity, signed-at).
+    func verifyDetachedSignature(_ signature: Data, forPayload payload: Data) throws -> SignatureVerification {
+        let result = try fileSecurityEngine.perform(.verifyDetached(.init(
+            payload: payload, detachedSignature: signature
+        )))
+        guard case .verification(let v, _) = result.kind else {
+            throw FileToolsError.keyringUnavailable
+        }
+        return v
     }
 
     func delete(_ key: KeyInfo) {

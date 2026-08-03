@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Security — RNP</title>
+  <meta name="description" content="RNP's security model, threat surface, and privacy stance.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <a href="/" class="logo">🔒 RNP</a>
+      <nav>
+        <a href="/getting-started.html">Getting Started</a>
+        <a href="/security.html">Security</a>
+        <a href="https://github.com/rnpgp/rnp-mailapp-extension">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="content">
+    <div class="container">
+      <h1>Security Model</h1>
+
+      <h2>What RNP protects</h2>
+      <ul>
+        <li><strong>Files at rest.</strong> Encrypt any file with OpenPGP; only recipients with the matching secret key can decrypt.</li>
+        <li><strong>Email content.</strong> RNP for Mail decrypts PGP/MIME messages in Apple Mail; signing confirms sender authenticity.</li>
+        <li><strong>Key material.</strong> Secret keys live in the macOS Keychain-protected keyring inside the App Group container. Touch ID gates keyring unlock when enabled.</li>
+      </ul>
+
+      <h2>What RNP does NOT protect</h2>
+      <ul>
+        <li><strong>Metadata.</strong> Email recipients, timestamps, and subject lines are visible to your mail server even when the body is encrypted.</li>
+        <li><strong>Plaintext content you keep outside RNP.</strong> If you save a decrypted file to disk, RNP doesn't manage it afterwards.</li>
+        <li><strong>Compromised endpoints.</strong> If your Mac is infected, the attacker sees plaintext the moment you decrypt.</li>
+      </ul>
+
+      <h2>Threat model</h2>
+      <p>RNP defends against:</p>
+      <ul>
+        <li>Network eavesdroppers (TLS is good, end-to-end is better)</li>
+        <li>Mail server operators who might be compelled to disclose content</li>
+        <li>File recipients forwarding or screenshotting content (we can't help here)</li>
+      </ul>
+      <p>RNP does NOT defend against:</p>
+      <ul>
+        <li>Malware on your Mac</li>
+        <li>Coerced passphrase disclosure (rubber-hose cryptanalysis)</li>
+        <li>Quantum adversaries with a working Cryptographically Relevant Quantum Computer (CRQC) — but our hybrid PQ keygen hedges this</li>
+      </ul>
+
+      <h2>Privacy</h2>
+      <p>RNP has <strong>no telemetry</strong>. No analytics. No crash reporting. No "phone home". The only outbound network requests are:</p>
+      <ul>
+        <li><strong>WKD lookups</strong> when you fetch a recipient's key (<code>https://openpgpkey.&lt;their-domain&gt;/...</code>)</li>
+        <li><strong>keys.openpgp.org</strong> when you search or upload a key (explicit; never automatic)</li>
+        <li><strong>Autocrypt header exchange</strong> in your normal email flow (part of the protocol)</li>
+        <li><strong>Sparkle update check</strong> against <code>rnpgp.org/updates/appcast.xml</code> (weekly, can be disabled)</li>
+      </ul>
+      <p>That's it. Read the <a href="/privacy.html">privacy policy</a>.</p>
+
+      <h2>Sandbox</h2>
+      <p>RNP runs in the macOS App Sandbox. The entitlements are:</p>
+      <ul>
+        <li><code>com.apple.security.app-sandbox</code> — required</li>
+        <li><code>com.apple.security.application-groups</code> — shared keyring between the host app and the Mail extension</li>
+        <li><code>com.apple.security.network.client</code> — for WKD / keyservers / Autocrypt</li>
+        <li><code>com.apple.security.keychain-access-groups</code> — for the Keychain-protected passphrase</li>
+        <li><code>com.apple.security.files.user-selected.read-write</code> — for File Tools</li>
+      </ul>
+
+      <h2>Engine: librnp</h2>
+      <p>The crypto engine is <a href="https://github.com/rnpgp/rnp">librnp</a> — the same engine that powers Thunderbird's end-to-end encryption. It's actively maintained by Ribose Inc. and audited. RNP the app is a thin Swift wrapper around librnp; we add zero custom crypto.</p>
+
+      <h2>Reporting a vulnerability</h2>
+      <p>Email <a href="mailto:security@ribose.com">security@ribose.com</a> with details. We respond within 48 hours. Please don't file security issues in the public GitHub tracker.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div>© Ribose Inc. · RNP is open source under the BSD-2-Clause license.</div>
+      <div><a href="https://github.com/rnpgp/rnp-mailapp-extension/issues">Support</a> · <a href="/privacy.html">Privacy</a></div>
+    </div>
+  </footer>
+</body>
+</html>
