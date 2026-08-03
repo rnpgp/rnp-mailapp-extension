@@ -384,6 +384,18 @@ final class KeysManager: ObservableObject {
         return data
     }
 
+    /// Symmetric encryption: produces ciphertext decryptable by anyone with
+    /// `passphrase`. No keyring recipients required.
+    func encryptFileWithPassword(_ plaintext: Data, passphrase: String) throws -> Data {
+        let result = try fileSecurityEngine.perform(.encryptWithPassword(.init(
+            plaintext: plaintext, passphrase: passphrase, armored: true
+        )))
+        guard case .ciphertext(let data) = result.kind else {
+            throw FileToolsError.keyringUnavailable
+        }
+        return data
+    }
+
     /// Decrypts OpenPGP-encrypted `ciphertext` and returns the plaintext.
     /// The keyring passphrase provider is consulted for protected secret keys.
     func decryptFile(_ ciphertext: Data) throws -> Data {
@@ -423,6 +435,18 @@ final class KeysManager: ObservableObject {
             payload: payload, signingKeyFingerprint: fpr, armored: true
         )))
         guard case .detachedSignature(let data) = result.kind else {
+            throw FileToolsError.keyringUnavailable
+        }
+        return data
+    }
+
+    /// Produces a cleartext-signed message (RFC 4880 §7): the original
+    /// text stays human-readable, with an ASCII-armored signature appended.
+    func signFileCleartext(_ payload: Data, withKeyFingerprint fpr: String) throws -> Data {
+        let result = try fileSecurityEngine.perform(.signCleartext(.init(
+            payload: payload, signingKeyFingerprint: fpr, armored: true
+        )))
+        guard case .signedPayload(let data) = result.kind else {
             throw FileToolsError.keyringUnavailable
         }
         return data

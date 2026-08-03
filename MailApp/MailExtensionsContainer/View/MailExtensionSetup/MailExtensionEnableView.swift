@@ -21,24 +21,64 @@ import SwiftUI
 struct MailExtensionEnableView: View {
     @ObservedObject var model: ContentViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var didEnable = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: RnpSpacing.lg) {
-            header
-
-            stepsList
-
-            deepLinkButton
-                .padding(.top, RnpSpacing.xs)
-
-            Divider()
-                .padding(.vertical, RnpSpacing.xxs)
-
-            footerButtons
+            if didEnable {
+                successState
+            } else {
+                header
+                stepsList
+                deepLinkButton
+                    .padding(.top, RnpSpacing.xs)
+                Divider()
+                    .padding(.vertical, RnpSpacing.xxs)
+                footerButtons
+            }
         }
         .padding(RnpSpacing.xl)
         .frame(width: 520)
         .accessibilityIdentifier("mailextension.view")
+    }
+
+    private var successState: some View {
+        VStack(spacing: RnpSpacing.md) {
+            Image(systemName: "checkmark.seal.fill")
+                .foregroundStyle(Color.green)
+                .font(.system(size: 44))
+                .symbolRenderingMode(.hierarchical)
+                .accessibilityHidden(true)
+            Text("mailExtensionSetup.enabled.title")
+                .font(.title3.weight(.semibold))
+            Text("mailExtensionSetup.enabled.body")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: 380)
+            testMailButton
+                .padding(.top, RnpSpacing.xs)
+            Button("button.done") { dismiss() }
+                .keyboardShortcut(.defaultAction)
+                .accessibilityIdentifier("mailextension.done")
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private var testMailButton: some View {
+        if let mailtoURL = Self.buildTestMailURL(for: model) {
+            Button {
+                NSWorkspace.shared.open(mailtoURL)
+            } label: {
+                Label("mailExtensionSetup.testMail", systemImage: "envelope")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .accessibilityIdentifier("mailextension.test-mail")
+        }
     }
 
     private var header: some View {
@@ -108,11 +148,38 @@ struct MailExtensionEnableView: View {
             Spacer()
             Button("mailExtensionSetup.enabledButton") {
                 model.markMailExtensionEnabled()
-                dismiss()
+                didEnable = true
             }
             .buttonStyle(.bordered)
             .accessibilityIdentifier("mailextension.enabled")
         }
+    }
+
+    /// Builds a `mailto:` URL prefilled with the user's primary email so
+    /// they can send themselves a test encrypted mail. Returns nil if no
+    /// secret key with a parseable email is found (the button just
+    /// doesn't appear).
+    static func buildTestMailURL(for model: ContentViewModel) -> URL? {
+        guard let primarySecret = model.manager.keys.first(where: { $0.hasSecret }) else {
+            return nil
+        }
+        let candidate = primarySecret.primaryUserID.isEmpty
+            ? (primarySecret.userIDs.first ?? "")
+            : primarySecret.primaryUserID
+        guard let ltIdx = candidate.lastIndex(of: "<"),
+              let gtIdx = candidate.lastIndex(of: ">"),
+              ltIdx < gtIdx else { return nil }
+        let email = String(candidate[candidate.index(after: ltIdx)..<gtIdx])
+        guard email.contains("@"), let atIdx = email.firstIndex(of: "@"),
+              atIdx != email.startIndex, atIdx != email.index(before: email.endIndex) else {
+            return nil
+        }
+        let subject = "RNP%20for%20Mail%20test"
+        let body = "This%20message%20is%20a%20test%20of%20RNP%20for%20Mail.%0A%0AIn%20Mail%27s%20compose%20toolbar%2C%20toggle%20the%20lock%20icon%20to%20encrypt%20and%20the%20signature%20icon%20to%20sign%20before%20sending.%0A%0AWhen%20you%20receive%20this%20message%2C%20you%20should%20see%20the%20lock%20icon%20in%20the%20message%20list%20and%20the%20banner%20confirming%20encryption."
+        guard let recipient = email.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            return nil
+        }
+        return URL(string: "mailto:\(recipient)?subject=\(subject)&body=\(body)")
     }
 }
 

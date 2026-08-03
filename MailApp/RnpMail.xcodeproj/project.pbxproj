@@ -44,6 +44,10 @@
 		0A786852E497990EF1B7EC23 /* MailExtensionEnableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */; };
 		0A786852E497990EF1B7EC28 /* FileSecurityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */; };
 		0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */; };
+		0A786852E497990EF1B7EC2C /* RnpMailAppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC2D /* RnpMailAppError.swift */; };
+		0A786852E497990EF1B7EC2E /* RnpLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC2F /* RnpLogger.swift */; };
+		0A786852E497990EF1B7EC30 /* KeyringBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */; };
+		0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -130,6 +134,10 @@
 		0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtensionEnableView.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSecurityEngine.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkleBootstrap.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC2D /* RnpMailAppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpMailAppError.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC2F /* RnpLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpLogger.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupService.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupSheet.swift; sourceTree = "<group>"; };
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
@@ -200,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */,
+				0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */,
 			);
 			path = RoadmapNavigationCoordinator;
 			sourceTree = "<group>";
@@ -310,6 +319,9 @@
 				AA2000000000000000000009 /* KeysManager.swift */,
 				AA2000000000000000000007 /* SharedKeyring.swift */,
 				0A786852E497990EF1B7EC16 /* KeyringScanner.swift */,
+				0A786852E497990EF1B7EC2D /* RnpMailAppError.swift */,
+				0A786852E497990EF1B7EC2F /* RnpLogger.swift */,
+				0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */,
 				0A786852E497990EF1B7EC26 /* FileSecurity */,
 			);
 			path = Model;
@@ -359,6 +371,14 @@
 				0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */,
 			);
 			path = MailExtensionSetup;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC2B /* Updater */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */,
+			);
+			path = Updater;
 			sourceTree = "<group>";
 		};
 		0A786852E497990EF1B7EC2B /* Updater */ = {
@@ -603,6 +623,11 @@
 				0A786852E497990EF1B7EC1F /* FileEncryptionIntents.swift in Sources */,
 				0A786852E497990EF1B7EC23 /* MailExtensionEnableView.swift in Sources */,
 				0A786852E497990EF1B7EC28 /* FileSecurityEngine.swift in Sources */,
+				0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */,
+				0A786852E497990EF1B7EC2C /* RnpMailAppError.swift in Sources */,
+				0A786852E497990EF1B7EC2E /* RnpLogger.swift in Sources */,
+				0A786852E497990EF1B7EC30 /* KeyringBackupService.swift in Sources */,
+				0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */,
 				0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
@@ -1281,7 +1306,7 @@
 			repositoryURL = "https://github.com/rnpgp/swift-rnp.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.8;
+				minimumVersion = 0.2.9;
 			};
 		};
 		AAB000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */ = {

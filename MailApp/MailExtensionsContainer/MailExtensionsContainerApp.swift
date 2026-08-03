@@ -88,6 +88,12 @@ struct MailExtensionsContainerApp: App {
                 Button("menu.licenses") {
                     model.currentSheet = .licenses
                 }
+                Button("menu.sendTestMail") {
+                    if let url = MailExtensionEnableView.buildTestMailURL(for: model) {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+                .disabled(model.manager.keys.first(where: { $0.hasSecret }) == nil)
             }
         }
     }
