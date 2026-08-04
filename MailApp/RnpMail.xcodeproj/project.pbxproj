@@ -48,6 +48,9 @@
 		0A786852E497990EF1B7EC2E /* RnpLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC2F /* RnpLogger.swift */; };
 		0A786852E497990EF1B7EC30 /* KeyringBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */; };
 		0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */; };
+		0A786852E497990EF1B7EC34 /* KeyringIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC35 /* KeyringIndex.swift */; };
+		0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */; };
+		0A786852E497990EF1B7EC38 /* DecryptedAttachmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -138,6 +141,9 @@
 		0A786852E497990EF1B7EC2F /* RnpLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpLogger.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupService.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC35 /* KeyringIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringIndex.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityMotion.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedAttachmentsView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
@@ -286,6 +292,7 @@
 				AA2000000000000000000003 /* MailExtension.swift */,
 				AA2000000000000000000004 /* MessageSecurityHandler.swift */,
 				AA2000000000000000000005 /* MessageSecurityViewController.swift */,
+				0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */,
 				AA2000000000000000000006 /* Info.plist */,
 				3EDEA75247AF59D64D6E4190 /* Direct.entitlements */,
 				EF97ABD297996C4EA5033642 /* AppStore.entitlements */,
@@ -322,6 +329,7 @@
 				0A786852E497990EF1B7EC2D /* RnpMailAppError.swift */,
 				0A786852E497990EF1B7EC2F /* RnpLogger.swift */,
 				0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */,
+				0A786852E497990EF1B7EC35 /* KeyringIndex.swift */,
 				0A786852E497990EF1B7EC26 /* FileSecurity */,
 			);
 			path = Model;
@@ -345,6 +353,7 @@
 				0A786852E497990EF1B7EC24 /* MailExtensionSetup */,
 				36AF7617F543DF15DF4C5336 /* Licenses */,
 				1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */,
+				0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -605,6 +614,7 @@
 				AA1000000000000000000002 /* MailExtension.swift in Sources */,
 				AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */,
 				AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */,
+				0A786852E497990EF1B7EC38 /* DecryptedAttachmentsView.swift in Sources */,
 				AA100000000000000000001B /* SharedKeyring.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -628,6 +638,8 @@
 				0A786852E497990EF1B7EC2E /* RnpLogger.swift in Sources */,
 				0A786852E497990EF1B7EC30 /* KeyringBackupService.swift in Sources */,
 				0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */,
+				0A786852E497990EF1B7EC34 /* KeyringIndex.swift in Sources */,
+				0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */,
 				0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,

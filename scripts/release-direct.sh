@@ -107,6 +107,16 @@ rm -rf "${ARCHIVE_PATH}" "${EXPORT_PATH}"
 # Don't override at command line — it caused conflicts on CI
 # (DVTPortal session validation, per-target override confusion).
 
+# Reproducible-build flags. SOURCE_DATE_EPOCH and ZERO_AR_DATE make
+# timestamps deterministic; the build still won't be byte-identical to
+# the published DMG because Apple's timestamp server signs the code
+# blob at notarization time, but the unsigned Mach-O becomes
+# reproducible. See TODO.complete/28-reproducible-builds.md.
+export SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-$(git log -1 --format=%ct)}"
+export ZERO_AR_DATE=1
+export TZ=UTC
+export LC_ALL=C
+
 xcodebuild \
     -project "${PROJECT}" \
     -scheme "${SCHEME}" \

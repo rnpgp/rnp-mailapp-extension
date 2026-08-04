@@ -295,7 +295,8 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
                 )
                 return .success(MessageSecurityViewController.RefreshedBannerContent(
                     signers: signers,
-                    encryption: encryption
+                    encryption: encryption,
+                    decryptedAttachments: []
                 ))
             }
         }

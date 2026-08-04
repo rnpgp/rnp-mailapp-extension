@@ -15161,145 +15161,23 @@
     },
     "Summary": {},
     "tab.myKeys": {
-      "comment": "Tab name.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Meine Schlüssel"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "My Keys"
           }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Mis claves"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Mes clés"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Le mie chiavi"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "自分の鍵"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "내 키"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "As minhas chaves"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Мои ключи"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "我的密钥"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "我的金鑰"
-          }
         }
       }
     },
     "tab.recipients": {
-      "comment": "Tab name.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Empfänger"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Recipients"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Destinatarios"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Destinataires"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Destinatari"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "受信者"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "수신자"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Destinatários"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Получатели"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "收件人"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "收件人"
           }
         }
       }
@@ -18220,6 +18098,61 @@
           "stringUnit": {
             "state": "translated",
             "value": "Imported %1$d new keys. Skipped %2$d already-present."
+          }
+        }
+      }
+    },
+    "decryptedAttachments.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decrypted attachments"
+          }
+        }
+      }
+    },
+    "decryptedAttachments.saveAll": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save All…"
+          }
+        }
+      }
+    },
+    "button.save": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save…"
+          }
+        }
+      }
+    },
+    "shortcut.tab.hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press ⌘1 for My Keys, ⌘2 for Recipients"
+          }
+        }
+      }
+    },
+    "shortcut.detail": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open detail"
           }
         }
       }

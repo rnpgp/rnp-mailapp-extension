@@ -151,15 +151,32 @@ final class ContentViewModel: ObservableObject {
         }
     }
 
+    /// Inverted index over the keyring. Rebuilt whenever `manager.keys`
+    /// changes. Used by `filteredKeys` for fast substring search on
+    /// large keyrings. Cheap enough that we always build it; small
+    /// keyrings cost nothing, large ones (1000+) need this.
+    private lazy var keyringIndex: KeyringIndex = KeyringIndex()
+
+    private func rebuildIndexIfNeeded() {
+        // Heuristic: rebuild when the fingerprint set changes.
+        let currentFprs = Set(manager.keys.map(\.fingerprint))
+        if currentFprs != lastIndexedFingerprints {
+            keyringIndex.rebuild(from: manager.keys.map {
+                KeyringIndex.IndexedKey(fingerprint: $0.fingerprint, userIDs: $0.userIDs)
+            })
+            lastIndexedFingerprints = currentFprs
+        }
+    }
+    private var lastIndexedFingerprints: Set<String> = []
+
     /// Keys shown in the sidebar: the current tab filtered by the search
     /// query (matched against user IDs and the fingerprint).
     var filteredKeys: [KeyInfo] {
         let query = searchText.trimmingCharacters(in: .whitespaces)
         guard !query.isEmpty else { return keys }
-        return keys.filter { key in
-            key.fingerprint.range(of: query, options: .caseInsensitive) != nil
-                || key.userIDs.contains { $0.range(of: query, options: .caseInsensitive) != nil }
-        }
+        rebuildIndexIfNeeded()
+        let matchingFprs = Set(keyringIndex.search(query))
+        return keys.filter { matchingFprs.contains($0.fingerprint) }
     }
 
     /// Whether the sidebar search is active and matched nothing.
