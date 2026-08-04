@@ -212,6 +212,11 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     /// "Fetch signer key" action can re-decode the message after importing
     /// the key. Same decode-before-indicator guarantee as above.
     private var lastDecodedRawData: Data?
+    /// Attachments the decoder found encrypted and successfully
+    /// decrypted on the most recent `decodedMessage` call. Cached so
+    /// `extensionViewController(signers:)` can render the
+    /// decrypted-attachments panel without re-decoding.
+    private var lastDecryptedAttachments: [DecryptedAttachment] = []
     private let lastDecodedEncryptionLock = NSLock()
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
@@ -224,6 +229,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
             decoded.securityInformation.encryptionError?.localizedDescription
         )
         lastDecodedRawData = data
+        lastDecryptedAttachments = decoded.securityInformation.decryptedAttachments
         lastDecodedEncryptionLock.unlock()
         let signers = decoded.securityInformation.signers.map { info in
             MEMessageSigner(
@@ -256,12 +262,14 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         }
         lastDecodedEncryptionLock.lock()
         let rawData = lastDecodedRawData
+        let attachments = lastDecryptedAttachments
         lastDecodedEncryptionLock.unlock()
         return MessageSecurityViewController(
             signers: messageSigners,
             contexts: contexts,
             trustStore: core.trustStore,
             encryption: encryptionInfo(for: contexts),
+            decryptedAttachments: attachments,
             fetchSignerKey: makeSignerKeyFetch(core: core, rawData: rawData)
         )
     }
@@ -296,7 +304,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
                 return .success(MessageSecurityViewController.RefreshedBannerContent(
                     signers: signers,
                     encryption: encryption,
-                    decryptedAttachments: []
+                    decryptedAttachments: decoded.securityInformation.decryptedAttachments
                 ))
             }
         }
