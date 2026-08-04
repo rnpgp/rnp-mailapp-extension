@@ -74,6 +74,11 @@ struct MailExtensionsContainerApp: App {
                     updater.checkForUpdates()
                 }
                 .keyboardShortcut("u", modifiers: .command)
+                Divider()
+                Button("menu.keyboardShortcuts") {
+                    showKeyboardShortcutsHelp()
+                }
+                .keyboardShortcut("?", modifiers: [.command, .shift])
             }
             CommandGroup(after: .help) {
                 Button("menu.showOnboarding") {
@@ -96,6 +101,30 @@ struct MailExtensionsContainerApp: App {
                 .disabled(model.manager.keys.first(where: { $0.hasSecret }) == nil)
             }
         }
+    }
+
+    /// Opens a sheet showing all keyboard shortcuts. Helps discoverability —
+    /// shortcuts are useless if users don't know they exist.
+    @MainActor
+    private func showKeyboardShortcutsHelp() {
+        let alert = NSAlert()
+        alert.messageText = NSLocalizedString("keyboard.help.title", comment: "")
+        alert.informativeText = """
+            ⌘N — New key
+            ⌘I — Import key
+            ⌘E — Export public key
+            ⌘D — Delete key
+            ⌘R — Refresh keyring
+            ⌘U — Check for updates
+            ⌘1 — My Keys tab
+            ⌘2 — Recipients tab
+            Return — Open key detail
+            ⌘W — Close window
+            ⌘? — This help
+            """
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: NSLocalizedString("button.ok", comment: ""))
+        alert.runModal()
     }
 
     private static func runSelfTest() {

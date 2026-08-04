@@ -18156,6 +18156,28 @@
           }
         }
       }
+    },
+    "menu.keyboardShortcuts": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard Shortcuts"
+          }
+        }
+      }
+    },
+    "keyboard.help.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard Shortcuts"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
