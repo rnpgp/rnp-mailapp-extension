@@ -220,6 +220,12 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     private let lastDecodedEncryptionLock = NSLock()
 
     func decodedMessage(forMessageData data: Data) -> MEDecodedMessage? {
+        // Cache hit short-circuits the whole decode path. Mail calls
+        // us multiple times for the same message (list + preview + open);
+        // the second call should be instant.
+        if let cached = decodeCacheHit(for: data) {
+            return cached
+        }
         guard let core = core, let decoded = core.decodedMessage(forMessageData: data) else {
             return nil
         }
@@ -231,6 +237,22 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         lastDecodedRawData = data
         lastDecryptedAttachments = decoded.securityInformation.decryptedAttachments
         lastDecodedEncryptionLock.unlock()
+        let result = makeMEDecodedMessage(from: decoded)
+        // Cache the decoded result so the next call for this message
+        // hits the fast path. Storing the MEDecodedMessage wrapper
+        // directly avoids re-constructing it on hit.
+        MessageDecodeCacheStore.shared.store(data, medecoded: result)
+        return result
+    }
+
+    /// Cache-fast path: returns the previously-stored MEDecodedMessage
+    /// if we've seen this exact byte sequence this session. Returns
+    /// nil on miss.
+    private func decodeCacheHit(for data: Data) -> MEDecodedMessage? {
+        MessageDecodeCacheStore.shared.lookup(data)
+    }
+
+    private func makeMEDecodedMessage(from decoded: HandlerDecodedMessage) -> MEDecodedMessage {
         let signers = decoded.securityInformation.signers.map { info in
             MEMessageSigner(
                 emailAddresses: info.emailAddresses.map { MEEmailAddress(rawString: $0) },

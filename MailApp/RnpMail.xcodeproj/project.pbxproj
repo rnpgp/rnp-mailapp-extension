@@ -51,6 +51,9 @@
 		0A786852E497990EF1B7EC34 /* KeyringIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC35 /* KeyringIndex.swift */; };
 		0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */; };
 		0A786852E497990EF1B7EC38 /* DecryptedAttachmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */; };
+		0A786852E497990EF1B7EC6E /* MessageDecodeCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */; };
+		0A786852E497990EF1B7EC70 /* SnapshotHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */; };
+		0A786852E497990EF1B7EC74 /* PseudoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */; };
 		0A786852E497990EF1B7EC40 /* BannerStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC41 /* BannerStack.swift */; };
 		0A786852E497990EF1B7EC42 /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC43 /* BannerView.swift */; };
 		0A786852E497990EF1B7EC44 /* ClipboardImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC45 /* ClipboardImportSheet.swift */; };
@@ -158,6 +161,9 @@
 		0A786852E497990EF1B7EC35 /* KeyringIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringIndex.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityMotion.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedAttachmentsView.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDecodeCache.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHarness.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PseudoLocalization.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC41 /* BannerStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerStack.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC43 /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC45 /* ClipboardImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardImportSheet.swift; sourceTree = "<group>"; };
@@ -321,7 +327,7 @@
 				AA2000000000000000000004 /* MessageSecurityHandler.swift */,
 				AA2000000000000000000005 /* MessageSecurityViewController.swift */,
 				0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */,
-				AA2000000000000000000006 /* Info.plist */,
+				0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */,				AA2000000000000000000006 /* Info.plist */,
 				3EDEA75247AF59D64D6E4190 /* Direct.entitlements */,
 				EF97ABD297996C4EA5033642 /* AppStore.entitlements */,
 				8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */,
@@ -382,6 +388,7 @@
 				36AF7617F543DF15DF4C5336 /* Licenses */,
 				1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */,
 				0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */,
+				0A786852E497990EF1B7EC72 /* SnapshotTesting */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -410,6 +417,15 @@
 			path = MailExtensionSetup;
 			sourceTree = "<group>";
 		};
+		0A786852E497990EF1B7EC72 /* SnapshotTesting */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */,
+				0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */,			);
+			path = SnapshotTesting;
+			sourceTree = "<group>";
+		};
+
 		0A786852E497990EF1B7EC2B /* Updater */ = {
 			isa = PBXGroup;
 			children = (
@@ -418,6 +434,15 @@
 			path = Updater;
 			sourceTree = "<group>";
 		};
+		0A786852E497990EF1B7EC72 /* SnapshotTesting */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */,
+				0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */,			);
+			path = SnapshotTesting;
+			sourceTree = "<group>";
+		};
+
 		0A786852E497990EF1B7EC2B /* Updater */ = {
 			isa = PBXGroup;
 			children = (
@@ -673,6 +698,8 @@
 				89D5174051747C352D8BE078 /* Ribose_containerUITests.swift in Sources */,
 				0A786852E497990EF1B7EC13 /* LocalizationContractTests.swift in Sources */,
 				0A786852E497990EF1B7EC1A /* LocalizationAuditTests.swift in Sources */,
+				0A786852E497990EF1B7EC70 /* SnapshotHarness.swift in Sources */,
+				0A786852E497990EF1B7EC74 /* PseudoLocalization.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,7 +711,7 @@
 				AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */,
 				AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */,
 				0A786852E497990EF1B7EC38 /* DecryptedAttachmentsView.swift in Sources */,
-				AA100000000000000000001B /* SharedKeyring.swift in Sources */,
+				0A786852E497990EF1B7EC6E /* MessageDecodeCache.swift in Sources */,				AA100000000000000000001B /* SharedKeyring.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -723,7 +750,6 @@
 				0A786852E497990EF1B7EC56 /* SecuritySettingsSheet.swift in Sources */,
 				0A786852E497990EF1B7EC58 /* ContentViewToolbar.swift in Sources */,
 				0A786852E497990EF1B7EC5A /* KeyListDropHandler.swift in Sources */,
-				0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
 				AA100000000000000000000A /* ContentViewModel.swift in Sources */,
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
