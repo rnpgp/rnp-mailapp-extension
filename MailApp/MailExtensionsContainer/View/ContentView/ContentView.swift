@@ -215,9 +215,9 @@ struct ContentView: View {
             keyList
         }
         .padding()
-        .animation(.default, value: model.trustConflicts.count)
-        .animation(.default, value: model.expiryReport().count)
-        .animation(.default, value: model.importError)
+        .rnpAnimation(value: model.trustConflicts.count)
+        .rnpAnimation(value: model.expiryReport().count)
+        .rnpAnimation(value: model.importError)
         .navigationTitle(Text("title.keysManager"))
     }
 
@@ -232,6 +232,14 @@ struct ContentView: View {
                 accessibilityIdentifier: "contentview.search-field"
             )
             .padding(.horizontal, RnpSpacing.sm)
+            // Return opens the detail sheet for the selected key.
+            // ⌘F focusing the search field requires modifying RnpSearchField
+            // in swift-rnp — deferred.
+            .background {
+                Button("shortcut.detail") { if model.selectedKey != nil { model.currentSheet = .detail } }
+                    .keyboardShortcut(.return, modifiers: [])
+                    .hidden()
+            }
             bannerStack
                 .padding(.horizontal, RnpSpacing.sm)
             sectionHeader
@@ -272,9 +280,9 @@ struct ContentView: View {
             }
             .accessibilityIdentifier("contentview.tools-link")
         }
-        .animation(.default, value: model.trustConflicts.count)
-        .animation(.default, value: model.expiryReport().count)
-        .animation(.default, value: model.importError)
+        .rnpAnimation(value: model.trustConflicts.count)
+        .rnpAnimation(value: model.expiryReport().count)
+        .rnpAnimation(value: model.importError)
     }
 
     /// "MY KEYS — 3" style header above the list.
@@ -304,7 +312,7 @@ struct ContentView: View {
                     .transition(.opacity)
             }
         }
-        .animation(.default, value: model.selection)
+        .rnpAnimation(value: model.selection)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
@@ -337,6 +345,20 @@ struct ContentView: View {
         }
         .pickerStyle(.segmented)
         .accessibilityIdentifier("contentview.tab-picker")
+        // Keyboard shortcuts: ⌘1 = My Keys, ⌘2 = Recipients. Hidden
+        // buttons are the standard SwiftUI pattern for global shortcuts
+        // that don't belong to a specific control.
+        .background {
+            Group {
+                Button("tab.myKeys") { model.selectedTab = .myKeys }
+                    .keyboardShortcut("1", modifiers: .command)
+                    .hidden()
+                Button("tab.recipients") { model.selectedTab = .recipients }
+                    .keyboardShortcut("2", modifiers: .command)
+                    .hidden()
+            }
+        }
+        .accessibilityHint("shortcut.tab.hint")
     }
 
     private var keyList: some View {
@@ -353,7 +375,7 @@ struct ContentView: View {
             onRefresh: { model.refresh() }
         )
         .overlay { emptyStateOverlay }
-        .animation(.default, value: model.filteredKeys)
+        .rnpAnimation(value: model.filteredKeys)
         .onDrop(of: [.fileURL, .data, .plainText], isTargeted: .constant(false)) { providers in
             handleDrop(providers: providers)
         }

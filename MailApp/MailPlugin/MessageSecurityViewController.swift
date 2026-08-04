@@ -17,6 +17,7 @@ import AppKit
 import MailKit
 import MailSecurityEngine
 import MailSecurityUI
+import SwiftUI
 import TrustStore
 
 class MessageSecurityViewController: MEExtensionViewController {
@@ -26,6 +27,7 @@ class MessageSecurityViewController: MEExtensionViewController {
     struct RefreshedBannerContent {
         let signers: [MailSecurityBannerView.Signer]
         let encryption: MailSecurityBannerView.EncryptionInfo?
+        let decryptedAttachments: [DecryptedAttachment]
     }
 
     /// Fetch-and-redecode operation supplied by the handler: looks the
@@ -37,6 +39,7 @@ class MessageSecurityViewController: MEExtensionViewController {
     private let signerContexts: [SignerContext?]
     private let trustStore: TrustStore?
     private let encryption: MailSecurityBannerView.EncryptionInfo?
+    private let decryptedAttachments: [DecryptedAttachment]
     private let fetchSignerKey: SignerKeyFetch?
 
     init(
@@ -44,12 +47,14 @@ class MessageSecurityViewController: MEExtensionViewController {
         contexts: [SignerContext?],
         trustStore: TrustStore?,
         encryption: MailSecurityBannerView.EncryptionInfo? = nil,
+        decryptedAttachments: [DecryptedAttachment] = [],
         fetchSignerKey: SignerKeyFetch? = nil
     ) {
         self.messageSigners = signers
         self.signerContexts = contexts
         self.trustStore = trustStore
         self.encryption = encryption
+        self.decryptedAttachments = decryptedAttachments
         self.fetchSignerKey = fetchSignerKey
         super.init(nibName: nil, bundle: nil)
     }
@@ -63,7 +68,45 @@ class MessageSecurityViewController: MEExtensionViewController {
         let signers = zip(messageSigners, signerContexts).map { signer, context in
             MailSecurityBannerView.Signer(label: signer.label, context: context)
         }
-        view = makeBanner(signers: signers, encryption: encryption)
+        view = makeRootView(signers: signers, encryption: encryption)
+    }
+
+    /// Composes the security banner with the decrypted-attachments
+    /// panel below. The two are siblings under a single ScrollView so
+    /// the user can scroll through long attachment lists without the
+    /// banner scrolling out of view.
+    private func makeRootView(
+        signers: [MailSecurityBannerView.Signer],
+        encryption: MailSecurityBannerView.EncryptionInfo?
+    ) -> NSView {
+        let banner = makeBanner(signers: signers, encryption: encryption)
+        if decryptedAttachments.isEmpty {
+            return banner
+        }
+        let stack = NSStackView()
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.addArrangedSubview(banner)
+
+        let attachmentsHost = NSHostingController(
+            rootView: DecryptedAttachmentsView(attachments: decryptedAttachments)
+        )
+        let attachmentsView = attachmentsHost.view
+        attachmentsView.translatesAutoresizingMaskIntoConstraints = false
+        stack.addArrangedSubview(attachmentsView)
+
+        let container = NSView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 12),
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
+            stack.bottomAnchor.constraint(lessThanOrEqualTo: container.bottomAnchor, constant: -12)
+        ])
+        return container
     }
 
     private func makeBanner(

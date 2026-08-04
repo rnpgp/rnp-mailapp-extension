@@ -157,6 +157,19 @@ jobs:
         ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
       run: ./scripts/release-direct.sh
 
+    - name: Generate SBOM (CycloneDX)
+      # Produces sbom.cyclonedx.json enumerating every dependency +
+      # version + license. Attached to the GitHub release so users can
+      # audit the supply chain. Uses syft (Anchore).
+      run: |
+        set -euo pipefail
+        # syft emits both SPDX and CycloneDX; CycloneDX is more
+        # consumable by tooling.
+        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
+          | sh -s -- -b /usr/local/bin
+        syft dir:. -o cyclonedx-json > dist/sbom.cyclonedx.json
+        echo "::notice::SBOM written to dist/sbom.cyclonedx.json"
+
     - name: Create or update GitHub Release
       uses: softprops/action-gh-release@v3
       with:
