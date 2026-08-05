@@ -2,18 +2,18 @@
 //  LocalFileKeyringBackend.swift
 //  RNP
 //
-//  Concrete `KeyringBackend` backed by a local directory. This is
-//  the current behavior — App Group container on macOS — now behind
-//  the protocol so we can swap in a CloudKit-backed store without
-//  touching the call sites.
+//  Concrete `KeyringBackend` backed by a local directory. Wraps the
+//  existing `SharedKeyring` factory + `KeyManager.listKeys()` — same
+//  data shape as before, now behind the protocol so the Sync UI can
+//  swap in alternates (CloudKit, per-key dir) without touching call
+//  sites.
 //
-//  Cross-platform: works on both macOS and iOS. The App Group path
-//  resolves differently per platform but FileManager calls work
-//  identically.
+//  Phase 1.5 refactor (TODO.complete/33).
 //
 
 import Combine
 import Foundation
+import MailSecurityEngine
 
 public final class LocalFileKeyringBackend: KeyringBackend {
 
@@ -21,40 +21,68 @@ public final class LocalFileKeyringBackend: KeyringBackend {
     public let displayName = "Local RNP keyring"
     public var availability: BackendAvailability { .available }
 
-    private let directory: URL
-    private let fileManager: FileManager
-    private let subject: CurrentValueSubject<[KeyringKeyRecord], Never>
+    public let directory: URL
+    private let subject = CurrentValueSubject<[KeyringKeyRecord], Never>([])
+    private var observer: AnyCancellable?
 
-    public init(directory: URL, fileManager: FileManager = .default) {
+    public init(directory: URL) {
         self.directory = directory
-        self.fileManager = fileManager
-        self.subject = CurrentValueSubject([])
+        reload()
     }
 
     public func load() throws -> [KeyringKeyRecord] {
-        // Local file keyring doesn't currently keep per-key records;
-        // it stores pubring/secring as binary blobs. The Phase 1
-        // refactor of SharedKeyring will populate this with parsed
-        // records via KeyManager.listKeys(). For now, return empty —
-        // callers continue to use SharedKeyring directly.
-        return []
+        subject.value
     }
 
+    /// Local-file backend doesn't keep per-key records separate from
+    /// the binary keyring. The full keyring is rewritten through the
+    /// existing KeysManager.import path. Upsert here is a no-op for
+    /// now; new keys land via KeysManager.importData(_:) which calls
+    /// into the underlying KeyManager. The protocol surface exists
+    /// so the Sync UI can list this backend as an option.
     public func upsert(_ record: KeyringKeyRecord) throws {
-        // Phase 1 refactor will route this through KeyManager's import
-        // path. For now, no-op — callers use SharedKeyring directly.
+        // No-op for back-compat. Callers continue to use
+        // KeysManager.importData(_:) which writes to the same
+        // directory this backend reads from.
     }
 
     public func delete(fingerprint: String) throws {
-        // Phase 1 refactor will route this through KeyManager's
-        // delete path. For now, no-op.
+        // No-op — same reason as upsert. Callers use the
+        // DeletionConfirmationState + KeysManager.delete flow which
+        // already saves an encrypted backup (PR #191).
     }
 
     public func observeChanges(_ handler: @escaping ([KeyringKeyRecord]) -> Void) -> AnyCancellable {
         subject.sink(receiveValue: handler)
     }
 
-    /// Back-compat: existing code reads the keyring directory directly.
-    /// This accessor preserves that path during the Phase 1 migration.
-    public var keyringDirectory: URL { directory }
+    /// Refreshes the cached snapshot by reading the directory via
+    /// SharedKeyring's KeyManager. Called on init and (in future)
+    /// when a file-watch notification fires.
+    public func reload() {
+        guard let km = SharedKeyring.makeKeyManager(directory: directory) else {
+            subject.send([])
+            return
+        }
+        let keys = (try? km.listKeys()) ?? []
+        let records = keys.map(Self.record(from:))
+        subject.send(records)
+    }
+
+    /// Translates the engine-layer `KeyInfo` into the protocol-layer
+    /// `KeyringKeyRecord`. Same data shape; the protocol version is
+    /// storage-agnostic.
+    private static func record(from key: KeyInfo) -> KeyringKeyRecord {
+        KeyringKeyRecord(
+            id: key.fingerprint,
+            primaryUserID: key.primaryUserID,
+            allUserIDs: key.userIDs,
+            keyBytes: Data(),  // bytes fetched on demand at export/import time
+            hasSecret: key.hasSecret,
+            keyCreationDate: key.creationDate,
+            keyExpirationDate: key.expirationDate,
+            modifiedAt: Date(),
+            modifiedBy: "local"
+        )
+    }
 }
