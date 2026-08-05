@@ -18392,6 +18392,193 @@
           }
         }
       }
+    },
+    "sync.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync"
+          }
+        }
+      }
+    },
+    "sync.canonical.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where RNP stores your keys"
+          }
+        }
+      }
+    },
+    "sync.canonical.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick the canonical store. RNP writes here. Import sources are read-only — RNP never modifies them."
+          }
+        }
+      }
+    },
+    "sync.canonical.ascDirPath": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Directory path:"
+          }
+        }
+      }
+    },
+    "sync.canonical.ascDirPlaceholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/Sync/rnp-keys"
+          }
+        }
+      }
+    },
+    "sync.canonical.browse": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browse…"
+          }
+        }
+      }
+    },
+    "sync.canonical.browseMessage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a directory for per-key .asc files"
+          }
+        }
+      }
+    },
+    "sync.passphrase.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passphrase store"
+          }
+        }
+      }
+    },
+    "sync.passphrase.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where RNP keeps per-key passphrases. iCloud Keychain syncs them to your iPhone."
+          }
+        }
+      }
+    },
+    "sync.sources.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import sources"
+          }
+        }
+      }
+    },
+    "sync.sources.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read-only sources RNP can pull keys from. Toggling on adds them to the Import menu."
+          }
+        }
+      }
+    },
+    "sync.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unavailable"
+          }
+        }
+      }
+    },
+    "sync.notice.neverDelete": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RNP never deletes keys without three-step confirmation + encrypted backup."
+          }
+        }
+      }
+    },
+    "sync.notice.importsReadOnly": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import sources are read-only. RNP never writes to ~/.gnupg or external sources."
+          }
+        }
+      }
+    },
+    "sync.notice.cloudKitStub": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CloudKit sync is a stub — full impl coming in TODO 35."
+          }
+        }
+      }
+    },
+    "tools.sync.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync settings"
+          }
+        }
+      }
+    },
+    "tools.sync.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose where RNP keeps keys, which import sources to enable, and how passphrases sync."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -56,6 +56,9 @@
 		0A786852E497990EF1B7EC9D /* KeyBackupArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */; };
 		0A786852E497990EF1B7EC9F /* DeletionConfirmationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */; };
 		0A786852E497990EF1B7ECA1 /* DeleteKeySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */; };
+		0A786852E497990EF1B7ECA4 /* PerKeyDirectoryKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */; };
+		0A786852E497990EF1B7ECA6 /* SyncConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */; };
+		0A786852E497990EF1B7ECA8 /* SyncSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */; };
 		0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */; };
 		0A786852E497990EF1B7EC34 /* KeyringIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC35 /* KeyringIndex.swift */; };
 		0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */; };
@@ -175,6 +178,9 @@
 		0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupArchive.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionConfirmationState.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteKeySheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerKeyDirectoryKeyringBackend.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncConfiguration.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSettingsSheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupSheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC35 /* KeyringIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringIndex.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityMotion.swift; sourceTree = "<group>"; };
@@ -384,6 +390,7 @@
 				0A786852E497990EF1B7EC35 /* KeyringIndex.swift */,
 				0A786852E497990EF1B7EC96 /* KeyringSync */,
 				0A786852E497990EF1B7ECA3 /* KeyDeletionSafety */,
+				0A786852E497990EF1B7ECAA /* SyncSettings */,
 				0A786852E497990EF1B7EC26 /* FileSecurity */,
 			);
 			path = Model;
@@ -407,7 +414,9 @@
 				0A786852E497990EF1B7EC95 /* SynchronizablePassphraseStore.swift */,
 				0A786852E497990EF1B7EC98 /* KeyImportSource.swift */,
 				0A786852E497990EF1B7EC9A /* GnuPGImportSource.swift */,
-				0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */,			);
+				0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */,
+				0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */,
+			);
 			path = KeyringSync;
 			sourceTree = "<group>";
 		};
@@ -431,6 +440,7 @@
 				36AF7617F543DF15DF4C5336 /* Licenses */,
 				1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */,
 				0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */,
+				0A786852E497990EF1B7ECAC /* SyncSettings */,
 				0A786852E497990EF1B7EC72 /* SnapshotTesting */,
 			);
 			path = View;
@@ -460,12 +470,30 @@
 			path = MailExtensionSetup;
 			sourceTree = "<group>";
 		};
+		0A786852E497990EF1B7ECAC /* SyncSettings */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */,
+			);
+			path = SyncSettings;
+			sourceTree = "<group>";
+		};
+
 		0A786852E497990EF1B7EC72 /* SnapshotTesting */ = {
 			isa = PBXGroup;
 			children = (
 				0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */,
 				0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */,			);
 			path = SnapshotTesting;
+			sourceTree = "<group>";
+		};
+
+		0A786852E497990EF1B7ECAA /* SyncSettings (Model) */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */,
+			);
+			path = SyncSettings;
 			sourceTree = "<group>";
 		};
 
@@ -477,12 +505,30 @@
 			path = Updater;
 			sourceTree = "<group>";
 		};
+		0A786852E497990EF1B7ECAC /* SyncSettings */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */,
+			);
+			path = SyncSettings;
+			sourceTree = "<group>";
+		};
+
 		0A786852E497990EF1B7EC72 /* SnapshotTesting */ = {
 			isa = PBXGroup;
 			children = (
 				0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */,
 				0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */,			);
 			path = SnapshotTesting;
+			sourceTree = "<group>";
+		};
+
+		0A786852E497990EF1B7ECAA /* SyncSettings (Model) */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */,
+			);
+			path = SyncSettings;
 			sourceTree = "<group>";
 		};
 
@@ -801,6 +847,9 @@
 				0A786852E497990EF1B7EC54 /* RotateSheet.swift in Sources */,
 				0A786852E497990EF1B7EC56 /* SecuritySettingsSheet.swift in Sources */,
 				0A786852E497990EF1B7ECA1 /* DeleteKeySheet.swift in Sources */,
+				0A786852E497990EF1B7ECA4 /* PerKeyDirectoryKeyringBackend.swift in Sources */,
+				0A786852E497990EF1B7ECA6 /* SyncConfiguration.swift in Sources */,
+				0A786852E497990EF1B7ECA8 /* SyncSettingsSheet.swift in Sources */,
 				0A786852E497990EF1B7EC58 /* ContentViewToolbar.swift in Sources */,
 				0A786852E497990EF1B7EC5A /* KeyListDropHandler.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,

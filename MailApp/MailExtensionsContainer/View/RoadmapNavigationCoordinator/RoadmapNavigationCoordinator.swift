@@ -33,6 +33,7 @@ public struct RoadmapNavigationCoordinator: View {
         case transitionWizard(fingerprint: String, primaryUserID: String)
         case keyringBackup
         case keyringRestore
+        case syncSettings
 
         var id: String {
             switch self {
@@ -45,6 +46,7 @@ public struct RoadmapNavigationCoordinator: View {
             case let .transitionWizard(fpr, _): return "transitionWizard-\(fpr)"
             case .keyringBackup: return "keyringBackup"
             case .keyringRestore: return "keyringRestore"
+            case .syncSettings: return "syncSettings"
             }
         }
     }
@@ -66,6 +68,7 @@ public struct RoadmapNavigationCoordinator: View {
                     ToolSectionView(label: "Recover", tools: recoveryTools)
                 }
                 ToolSectionView(label: "Backup", tools: backupTools)
+                ToolSectionView(label: "Sync", tools: syncTools)
                 ToolSectionView(label: "Discover", tools: discoverTools)
             }
             .padding(.horizontal, RnpSpacing.xl)
@@ -125,6 +128,8 @@ public struct RoadmapNavigationCoordinator: View {
                 KeyringBackupSheet(keyringDirectory: keyringDirectory())
             case .keyringRestore:
                 KeyringRestoreSheet(keyringDirectory: keyringDirectory())
+            case .syncSettings:
+                SyncSettingsSheet()
             }
         }
     }
@@ -306,6 +311,18 @@ public struct RoadmapNavigationCoordinator: View {
                 systemImage: "icloud.and.arrow.down",
                 identifier: "nav.keyring-restore",
                 action: { presentedSheet = .keyringRestore }
+            )
+        ]
+    }
+
+    private var syncTools: [Tool] {
+        [
+            Tool(
+                title: NSLocalizedString("tools.sync.title", comment: "Tools hub sync title"),
+                description: NSLocalizedString("tools.sync.desc", comment: "Tools hub sync description"),
+                systemImage: "arrow.triangle.2.circlepath.icloud",
+                identifier: "nav.sync-settings",
+                action: { presentedSheet = .syncSettings }
             )
         ]
     }
