@@ -660,73 +660,12 @@
       }
     },
     "button.back": {
-      "comment": "Back button.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Zurück"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Back"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Atrás"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Retour"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Indietro"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "戻る"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "뒤로"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Voltar"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Назад"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "返回"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "返回"
           }
         }
       }
@@ -18175,6 +18114,281 @@
           "stringUnit": {
             "state": "translated",
             "value": "Keyboard Shortcuts"
+          }
+        }
+      }
+    },
+    "deleteKey.sheet.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete key"
+          }
+        }
+      }
+    },
+    "deleteKey.step1.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're about to remove this key from RNP's keyring. The original key in any external source (GnuPG, file you imported from, etc.) is NOT touched — only RNP's copy is removed."
+          }
+        }
+      }
+    },
+    "deleteKey.step1.recoverable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before the key is deleted, RNP will save an encrypted backup you can re-import later if you change your mind."
+          }
+        }
+      }
+    },
+    "deleteKey.step1.continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        }
+      }
+    },
+    "deleteKey.step2.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type the confirmation below to make sure this is intentional."
+          }
+        }
+      }
+    },
+    "deleteKey.step2.continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        }
+      }
+    },
+    "deleteKey.step3.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last step. Choose where the encrypted backup will be saved, and choose a passphrase you'll remember. Without this passphrase, the backup cannot be recovered."
+          }
+        }
+      }
+    },
+    "deleteKey.step3.backupWillBeSaved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup will be saved as an OpenPGP-encrypted file. You'll need the passphrase + any OpenPGP tool (RNP, GnuPG) to recover the keys."
+          }
+        }
+      }
+    },
+    "deleteKey.step3.backupPath": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup path:"
+          }
+        }
+      }
+    },
+    "deleteKey.step3.choosePath": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose…"
+          }
+        }
+      }
+    },
+    "deleteKey.step3.passphrase": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup passphrase"
+          }
+        }
+      }
+    },
+    "deleteKey.step3.confirmPassphrase": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm passphrase"
+          }
+        }
+      }
+    },
+    "deleteKey.step3.passphraseMismatch": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passphrases don't match."
+          }
+        }
+      }
+    },
+    "deleteKey.step3.deleteForever": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Forever"
+          }
+        }
+      }
+    },
+    "deleteKey.step3.panelMessage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where should the encrypted backup be saved?"
+          }
+        }
+      }
+    },
+    "deleteKey.working": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encrypting backup…"
+          }
+        }
+      }
+    },
+    "deleteKey.done.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key deleted; backup saved"
+          }
+        }
+      }
+    },
+    "deleteKey.done.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your key has been removed from RNP's keyring. The encrypted backup is at:"
+          }
+        }
+      }
+    },
+    "deleteKey.done.summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$d keys backed up · %2$@ encrypted"
+          }
+        }
+      }
+    },
+    "deleteKey.done.reveal": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reveal in Finder"
+          }
+        }
+      }
+    },
+    "deleteKey.failed.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete failed — key NOT removed"
+          }
+        }
+      }
+    },
+    "deleteKey.failed.notDeleted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing was deleted. Your key is still in RNP's keyring."
+          }
+        }
+      }
+    },
+    "error.deleteBackup.keyringUnavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenPGP keyring is unavailable. Restart RNP and try again."
+          }
+        }
+      }
+    },
+    "error.deleteBackup.encryptionFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encryption failed: %@"
+          }
+        }
+      }
+    },
+    "error.deleteBackup.writeFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not write %1$@: %2$@"
           }
         }
       }

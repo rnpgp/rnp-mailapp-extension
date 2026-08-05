@@ -65,11 +65,14 @@ struct ContentView: View {
             .sheet(item: $model.currentSheet) { sheet in
                 sheetView(for: sheet)
             }
-            .alert("deleteKey.title", isPresented: $model.showDeleteConfirmation) {
-                Button("button.delete", role: .destructive) { model.deleteSelected() }
-                Button("button.cancel", role: .cancel) {}
-            } message: {
-                Text("deleteKey.message")
+            .sheet(isPresented: $model.showDeleteConfirmation) {
+                if let key = model.selectedKey {
+                    DeleteKeySheet(
+                        model: model,
+                        fingerprints: [key.fingerprint],
+                        primaryUserIDs: [key.primaryUserID]
+                    )
+                }
             }
             .alert(
                 "error.operation.title",
