@@ -1,7 +1,7 @@
 # 35 — CloudKit canonical store
 
 **Priority**: P1
-**Status**: not started
+**Status**: shipped
 **Effort**: L
 **Dependencies**: 33 (Phase 1.5 refactor)
 

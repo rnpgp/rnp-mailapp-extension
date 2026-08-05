@@ -1,7 +1,7 @@
 # 31 — Getting Started: choose canonical store
 
 **Priority**: P0
-**Status**: in progress
+**Status**: shipped
 **Effort**: M
 **Dependencies**: 33 (Phase 1.5 refactor)
 

@@ -1,7 +1,7 @@
 # 36 — GnuPG agent passphrase store (lookup-only)
 
 **Priority**: P2
-**Status**: not started
+**Status**: shipped
 **Effort**: M
 **Dependencies**: 33 (Phase 1.5 refactor)
 

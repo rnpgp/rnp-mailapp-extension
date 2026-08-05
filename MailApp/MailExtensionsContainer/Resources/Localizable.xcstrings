@@ -18553,7 +18553,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "CloudKit sync is a stub — full impl coming in TODO 35."
+            "value": "CloudKit syncs to your iPhone. Requires iCloud sign-in."
           }
         }
       }
@@ -18576,6 +18576,160 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choose where RNP keeps keys, which import sources to enable, and how passphrases sync."
+          }
+        }
+      }
+    },
+    "storageChoice.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where should RNP keep your keys?"
+          }
+        }
+      }
+    },
+    "storageChoice.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick the canonical store. RNP writes here. Import sources are read-only — RNP never modifies them."
+          }
+        }
+      }
+    },
+    "storageChoice.ascDirPrompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Directory path (e.g. ~/Sync/rnp-keys):"
+          }
+        }
+      }
+    },
+    "storageChoice.browse": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browse…"
+          }
+        }
+      }
+    },
+    "storageChoice.continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        }
+      }
+    },
+    "storageChoice.skip": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip — use default"
+          }
+        }
+      }
+    },
+    "storageChoice.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unavailable"
+          }
+        }
+      }
+    },
+    "storageChoice.notice.neverDelete": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RNP never deletes keys without three-step confirmation + encrypted backup."
+          }
+        }
+      }
+    },
+    "storageChoice.notice.readOnlyImports": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import sources are read-only. RNP never writes to ~/.gnupg or external sources."
+          }
+        }
+      }
+    },
+    "storageChoice.notice.changeLater": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can change this later in Tools → Sync."
+          }
+        }
+      }
+    },
+    "error.localBackend.managerUnavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KeysManager not connected to this backend."
+          }
+        }
+      }
+    },
+    "error.localBackend.keyringUnavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenPGP keyring is unavailable."
+          }
+        }
+      }
+    },
+    "error.gnupgAgent.notFound": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gpg not installed"
+          }
+        }
+      }
+    },
+    "error.gnupgAgent.lookupFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gpg-agent lookup failed: %@"
           }
         }
       }

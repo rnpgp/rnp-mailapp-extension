@@ -23,6 +23,11 @@ struct ContentView: View {
         rootContent
             .frame(minWidth: 760, minHeight: 480)
             .toolbar { toolbarItems }
+            .sheet(isPresented: $model.showStorageChoice) {
+                StorageChoiceSheet(config: SyncConfiguration()) {
+                    model.storageChoiceComplete()
+                }
+            }
             .sheet(isPresented: $model.showOnboarding) {
                 OnboardingView(
                     isPresented: $model.showOnboarding,

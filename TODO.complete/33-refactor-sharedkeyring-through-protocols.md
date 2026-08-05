@@ -1,7 +1,7 @@
 # 33 — Phase 1.5 refactor: route existing code through protocols
 
 **Priority**: P0
-**Status**: in progress
+**Status**: shipped
 **Effort**: M
 **Dependencies**: none (this UNBLOCKS 31, 32, 34)
 

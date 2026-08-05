@@ -1,7 +1,7 @@
 # 37 — Sync UI sheet (concrete impl of TODO 32)
 
 **Priority**: P0
-**Status**: in progress
+**Status**: shipped
 **Effort**: M
 **Dependencies**: 33 (Phase 1.5 refactor)
 
