@@ -8,13 +8,21 @@
 	<array>
 		<string>group.com.rnpgp.RNPForMail</string>
 	</array>
-	<key>com.apple.security.files.user-selected.read-write</key>
-	<true/>
 	<key>com.apple.security.keychain-access-groups</key>
 	<array>
 		<string>$(RNPMAIL_KEYCHAIN_ACCESS_GROUP)</string>
 	</array>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	<key>com.apple.developer.icloud-container-identifiers</key>
+	<array>
+		<string>iCloud.com.rnpgp.RNPForMail</string>
+	</array>
+	<key>com.apple.developer.icloud-services</key>
+	<array>
+		<string>CloudKit</string>
+	</array>
 </dict>
 </plist>

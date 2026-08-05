@@ -197,8 +197,7 @@ struct SyncSettingsSheet: View {
 
     // MARK: Helpers
 
-    /// CloudKit now implemented (TODO 35). Available iff signed into
-    /// iCloud. Otherwise greyed out with a reason.
+    /// CloudKit is fully implemented. Available iff signed into iCloud.
     private func isAvailable(_ id: String) -> Bool {
         if id == "rnp-cloudkit" {
             return CloudKitKeyringBackend().availability == .available
