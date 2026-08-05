@@ -1,7 +1,7 @@
 # 34 — Per-key .asc directory backend
 
 **Priority**: P1
-**Status**: in progress
+**Status**: shipped
 **Effort**: S
 **Dependencies**: 33 (Phase 1.5 refactor)
 

@@ -1,7 +1,7 @@
 # 32 — Settings UI: Sync sheet
 
 **Priority**: P0
-**Status**: in progress
+**Status**: shipped
 **Effort**: M
 **Dependencies**: 33 (Phase 1.5 refactor)
 

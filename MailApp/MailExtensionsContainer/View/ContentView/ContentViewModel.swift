@@ -34,6 +34,9 @@ final class ContentViewModel: ObservableObject {
     @Published var currentSheet: Sheet?
     @Published var showDeleteConfirmation = false
     @Published var showOnboarding = false
+    /// Drives the storage-choice sheet shown before onboarding on
+    /// first launch only. Persisted so it never shows again.
+    @Published var showStorageChoice = false
     @Published var errorMessage: String?
     @Published var warningMessage: String?
     @Published private(set) var generateAlgorithm: KeyAlgorithm = .ed25519
@@ -264,12 +267,25 @@ final class ContentViewModel: ObservableObject {
     /// the user turns out to be returning.
     func checkOnboarding() {
         if !hasOnboarded && manager.keys.isEmpty {
-            showOnboarding = true
+            // First launch: show storage choice first, then onboarding.
+            if !UserDefaults.standard.bool(forKey: "hasShownStorageChoice") {
+                showStorageChoice = true
+            } else {
+                showOnboarding = true
+            }
             return
         }
         if !hasShownMailExtensionSetup && !mailExtensionEnabled {
             showMailExtensionSetup = true
         }
+    }
+
+    /// Called when the user finishes the storage-choice sheet (either
+    /// Continue or Skip). Marks it as seen and proceeds to onboarding.
+    func storageChoiceComplete() {
+        UserDefaults.standard.set(true, forKey: "hasShownStorageChoice")
+        showStorageChoice = false
+        showOnboarding = true
     }
 
     /// Manually reopen the onboarding flow from the Help menu.

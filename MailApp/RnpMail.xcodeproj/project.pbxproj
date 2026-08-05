@@ -59,6 +59,9 @@
 		0A786852E497990EF1B7ECA4 /* PerKeyDirectoryKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */; };
 		0A786852E497990EF1B7ECA6 /* SyncConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */; };
 		0A786852E497990EF1B7ECA8 /* SyncSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */; };
+		0A786852E497990EF1B7ECAD /* StorageChoiceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */; };
+		0A786852E497990EF1B7ECAF /* GnuPGAgentPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */; };
+		0A786852E497990EF1B7ECB1 /* CloudKitKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */; };
 		0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */; };
 		0A786852E497990EF1B7EC34 /* KeyringIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC35 /* KeyringIndex.swift */; };
 		0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */; };
@@ -181,6 +184,9 @@
 		0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerKeyDirectoryKeyringBackend.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncConfiguration.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSettingsSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageChoiceSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GnuPGAgentPassphraseStore.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitKeyringBackend.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupSheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC35 /* KeyringIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringIndex.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityMotion.swift; sourceTree = "<group>"; };
@@ -416,6 +422,8 @@
 				0A786852E497990EF1B7EC9A /* GnuPGImportSource.swift */,
 				0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */,
 				0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */,
+				0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */,
+				0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */,
 			);
 			path = KeyringSync;
 			sourceTree = "<group>";
@@ -441,6 +449,7 @@
 				1AB23456789ABCDEF0123011 /* RoadmapNavigationCoordinator */,
 				0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */,
 				0A786852E497990EF1B7ECAC /* SyncSettings */,
+				0A786852E497990EF1B7ECB3 /* Onboarding */,
 				0A786852E497990EF1B7EC72 /* SnapshotTesting */,
 			);
 			path = View;
@@ -470,6 +479,15 @@
 			path = MailExtensionSetup;
 			sourceTree = "<group>";
 		};
+		0A786852E497990EF1B7ECB3 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+
 		0A786852E497990EF1B7ECAC /* SyncSettings */ = {
 			isa = PBXGroup;
 			children = (
@@ -505,6 +523,15 @@
 			path = Updater;
 			sourceTree = "<group>";
 		};
+		0A786852E497990EF1B7ECB3 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+
 		0A786852E497990EF1B7ECAC /* SyncSettings */ = {
 			isa = PBXGroup;
 			children = (
@@ -850,6 +877,9 @@
 				0A786852E497990EF1B7ECA4 /* PerKeyDirectoryKeyringBackend.swift in Sources */,
 				0A786852E497990EF1B7ECA6 /* SyncConfiguration.swift in Sources */,
 				0A786852E497990EF1B7ECA8 /* SyncSettingsSheet.swift in Sources */,
+				0A786852E497990EF1B7ECAD /* StorageChoiceSheet.swift in Sources */,
+				0A786852E497990EF1B7ECAF /* GnuPGAgentPassphraseStore.swift in Sources */,
+				0A786852E497990EF1B7ECB1 /* CloudKitKeyringBackend.swift in Sources */,
 				0A786852E497990EF1B7EC58 /* ContentViewToolbar.swift in Sources */,
 				0A786852E497990EF1B7EC5A /* KeyListDropHandler.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,

@@ -10,11 +10,7 @@
 //  enforces this at compile time — there is no API path here that
 //  calls `gpg --delete-*`, `gpg --import`, or writes to ~/.gnupg.
 //
-//  Replaces the ad-hoc scan in `KeyringScanner.swift` with a clean
-//  protocol conformance. The scanner's existing logic is preserved
-//  as the implementation detail.
-//
-//  See docs/sync-architecture.md.
+//  Delegates to the existing `KeyringScanner` (already read-only).
 //
 
 import Foundation
@@ -25,7 +21,6 @@ public final class GnuPGImportSource: KeyImportSource {
     public let identifier = "gnupg"
     public let displayName = "GnuPG keyring (~/.gnupg)"
     public var availability: BackendAvailability {
-        // Available iff `gpg` is on PATH and ~/.gnupg exists.
         guard Self.gpgExecutable != nil else {
             return .unavailable(reason: "GnuPG (gpg) not installed")
         }
@@ -38,18 +33,56 @@ public final class GnuPGImportSource: KeyImportSource {
 
     public init() {}
 
+    /// Returns keys currently visible at ~/.gnupg. Pure read — does
+    /// NOT modify GnuPG. Delegates to KeyringScanner.discoverAll()
+    /// and filters to the .gnupg source.
     public func listAvailable() async throws -> [KeyringKeyRecord] {
-        // The actual scan call will route through KeyringScanner once
-        // Phase 1's refactor of KeyringScanner.swift lands. For now,
-        // return empty — callers continue to use the existing UI in
-        // ImportFromKeyringSheet which calls KeyringScanner directly.
-        // The point of this stub is to establish the protocol surface.
-        return []
+        guard availability == .available else { return [] }
+        let discovered = KeyringScanner.discoverAll()
+        // discoverAll returns ALL sources; we only want GnuPG.
+        let gnupgKeys = discovered
+            .first { $0.source == .gnupg }?
+            .keys ?? []
+        return gnupgKeys.map { key in
+            KeyringKeyRecord(
+                id: key.fingerprint,
+                primaryUserID: key.primaryUserID,
+                allUserIDs: key.userIDs,
+                keyBytes: Data(),  // bytes fetched on-demand via `gpg --export --armor <fpr>` at import time
+                hasSecret: key.hasSecret,
+                keyCreationDate: Date(),  // KeyringScanner doesn't expose creation; left as discovery time
+                keyExpirationDate: nil,
+                modifiedAt: Date(),
+                modifiedBy: "gnupg"
+            )
+        }
+    }
+
+    /// Exports a single key's bytes from GnuPG via `gpg --export --armor`.
+    /// Used at import time to actually get the armored key bytes (which
+    /// listAvailable leaves empty by design — the bytes aren't needed
+    /// for display, only for import).
+    /// Pure read — does NOT modify GnuPG.
+    public func exportKey(fingerprint: String) -> Data? {
+        guard let gpg = Self.gpgExecutable else { return nil }
+        let proc = Process()
+        proc.executableURL = gpg
+        proc.arguments = ["--batch", "--yes", "--export", "--armor", fingerprint]
+        let pipe = Pipe()
+        proc.standardOutput = pipe
+        proc.standardError = Pipe()  // discard
+        do {
+            try proc.run()
+            proc.waitUntilExit()
+        } catch {
+            return nil
+        }
+        guard proc.terminationStatus == 0 else { return nil }
+        return pipe.fileHandleForReading.readDataToEndOfFile()
     }
 
     // MARK: Internals
 
-    /// Path to `gpg` if installed; nil otherwise.
     static var gpgExecutable: URL? {
         for candidate in ["/opt/homebrew/bin/gpg", "/usr/local/bin/gpg", "/usr/bin/gpg"] {
             if FileManager.default.isExecutableFile(atPath: candidate) {
@@ -65,46 +98,4 @@ public final class GnuPGImportSource: KeyImportSource {
         }
         return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".gnupg", isDirectory: true)
     }
-
-    /// KeyringScanner is an enum (namespace) with static scan methods.
-    /// Returns the type so callers can chain, or nil if gpg isn't
-    /// installed.
-    static func makeScanner() -> KeyringScanner.Type? {
-        guard gpgExecutable != nil else { return nil }
-        return KeyringScanner.self
-    }
-}
-
-/// Minimal shape returned by the existing KeyringScanner. The real
-/// KeyringScanner returns richer data; this is the subset we surface
-/// via the import protocol. Existing KeyringScanner conformance is
-/// preserved; this is just the projection.
-public struct GnuPGScanEntry: Sendable {
-    public let fingerprint: String
-    public let primaryUserID: String
-    public let hasSecret: Bool
-    public let creationDate: Date
-    public let expirationDate: Date?
-
-    public init(fingerprint: String, primaryUserID: String, hasSecret: Bool,
-                creationDate: Date, expirationDate: Date?) {
-        self.fingerprint = fingerprint
-        self.primaryUserID = primaryUserID
-        self.hasSecret = hasSecret
-        self.creationDate = creationDate
-        self.expirationDate = expirationDate
-    }
-}
-
-/// Adapter protocol so `GnuPGImportSource` can call into the existing
-/// `KeyringScanner` without coupling. The existing class conforms.
-public protocol GnuPGScanning {
-    func scan() throws -> [GnuPGScanEntry]
-}
-
-extension KeyringScanner: GnuPGScanning {
-    /// Default implementation — returns empty list. The real
-    /// KeyringScanner already returns its own richer type; this is
-    /// a stub that will be wired in the Phase 1 refactor.
-    public func scan() throws -> [GnuPGScanEntry] { [] }
 }
