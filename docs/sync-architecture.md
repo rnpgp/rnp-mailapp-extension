@@ -179,6 +179,57 @@ no binary merge conflicts.
 - iCloud is the easy path
 - File-based sync is the explicit-control path
 
+## Critical: delete safety
+
+RNP NEVER deletes user keys without multi-step confirmation AND a
+recovery archive. The flow is:
+
+### Three-step confirmation
+
+| Step | What |
+|------|------|
+| 1 — Warning | "You're about to remove this key from RNP's keyring. The original key in any external source is NOT touched — only RNP's copy." [Continue] / [Cancel] |
+| 2 — Type to confirm | Single key: type the fingerprint (or last 16 chars). Multiple keys: type `DELETE`. Prevents misclicks. [Continue] / [Cancel] |
+| 3 — Final warning | Choose backup path + passphrase. "Last chance. A backup will be saved to <path>. Without the passphrase, the backup cannot be recovered." [Delete Forever] / [Cancel] |
+
+### Encrypted backup before every delete
+
+Before any key is removed from RNP's canonical store, RNP produces
+an OpenPGP-encrypted archive of the key bytes:
+
+- **Format**: standard PGP message (`rnp-keys-deleted-YYYY-MM-DD-HHMMSS.pgp`)
+- **Encryption**: symmetric, with a passphrase the user types at delete time
+- **Why symmetric, not encrypted-to-self**: the user is deleting the key. Encrypting the backup to the key being deleted would be circular — if they could decrypt the backup, they wouldn't need it.
+- **Recovery**: any OpenPGP tool can decrypt. `rnp decrypt backup.pgp` or `gpg -d backup.pgp` recovers the armored key bytes, which can then be re-imported.
+- **Default location**: `~/Documents/RNP Backups/`. User can override via NSSavePanel.
+
+### What this protects against
+
+1. **Misclicks** — three explicit confirmations before any deletion.
+2. **Wrong key** — step 2 requires typing the fingerprint, so the user knows exactly what they're deleting.
+3. **Lost keys** — encrypted backup is always saved before delete.
+4. **Forgotten passphrases** — backup is recoverable from any OpenPGP tool, not just RNP.
+5. **Source keyrings** — external sources (`~/.gnupg/`, WKD, etc.) are NEVER touched by delete. Delete only ever removes from RNP's canonical store.
+
+### Order of operations
+
+1. User clicks "Delete" in UI
+2. `confirmDelete(key)` opens `DeleteKeySheet` (was `.alert`, now `.sheet`)
+3. Sheet drives `DeletionConfirmationState` through three steps
+4. On step 3 "Delete Forever":
+   - `KeyBackupArchive.write(...)` produces the encrypted `.pgp`
+   - If write succeeds: delete from RNP's canonical store
+   - If write fails: surface error, **do NOT delete**, key stays
+5. Show success with backup path + "Reveal in Finder"
+
+### No mass delete
+
+Bulk delete of multiple keys at once is intentionally NOT supported in
+the UI. The three-step flow + per-key fingerprint-typing is too
+cumbersome for bulk; for bulk, the user can use `rnp` CLI's `delete`
+command (which also saves a backup) or use Tools hub's "Backup
+keyring" then delete via CLI.
+
 ## Critical: never modify import sources
 
 This is enforced by:

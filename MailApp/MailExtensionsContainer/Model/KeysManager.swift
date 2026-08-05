@@ -360,6 +360,16 @@ final class KeysManager: ObservableObject {
         return try? keyManager.exportKey(fingerprint: fingerprint, secret: true)
     }
 
+    /// Encrypts `plaintext` symmetrically with `passphrase` using the
+    /// keyring's Rnp instance. Used by the delete-backup flow.
+    /// Returns nil if the keyring is unavailable or encryption fails.
+    func encryptWithPassword(_ plaintext: Data, passphrase: String) -> Data? {
+        guard let keyManager else { return nil }
+        return try? keyManager.withRnp { rnp in
+            try rnp.encryptWithPassword(plaintext, password: passphrase, armored: true)
+        }
+    }
+
     // MARK: - File encrypt / decrypt / sign / verify
     //
     // All file operations are forwarded to `FileSecurityEngine`. The

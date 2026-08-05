@@ -53,6 +53,9 @@
 		0A786852E497990EF1B7EC97 /* KeyImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC98 /* KeyImportSource.swift */; };
 		0A786852E497990EF1B7EC99 /* GnuPGImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9A /* GnuPGImportSource.swift */; };
 		0A786852E497990EF1B7EC9B /* CompositeKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */; };
+		0A786852E497990EF1B7EC9D /* KeyBackupArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */; };
+		0A786852E497990EF1B7EC9F /* DeletionConfirmationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */; };
+		0A786852E497990EF1B7ECA1 /* DeleteKeySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */; };
 		0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */; };
 		0A786852E497990EF1B7EC34 /* KeyringIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC35 /* KeyringIndex.swift */; };
 		0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */; };
@@ -169,6 +172,9 @@
 		0A786852E497990EF1B7EC98 /* KeyImportSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyImportSource.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC9A /* GnuPGImportSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GnuPGImportSource.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeKeyringBackend.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupArchive.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionConfirmationState.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteKeySheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupSheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC35 /* KeyringIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringIndex.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityMotion.swift; sourceTree = "<group>"; };
@@ -377,11 +383,22 @@
 				0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */,
 				0A786852E497990EF1B7EC35 /* KeyringIndex.swift */,
 				0A786852E497990EF1B7EC96 /* KeyringSync */,
+				0A786852E497990EF1B7ECA3 /* KeyDeletionSafety */,
 				0A786852E497990EF1B7EC26 /* FileSecurity */,
 			);
 			path = Model;
 			sourceTree = "<group>";
 		};
+		0A786852E497990EF1B7ECA3 /* KeyDeletionSafety */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */,
+				0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */,
+			);
+			path = KeyDeletionSafety;
+			sourceTree = "<group>";
+		};
+
 		0A786852E497990EF1B7EC96 /* KeyringSync */ = {
 			isa = PBXGroup;
 			children = (
@@ -513,6 +530,7 @@
 				0A786852E497990EF1B7EC53 /* RevokeSheet.swift */,
 				0A786852E497990EF1B7EC55 /* RotateSheet.swift */,
 				0A786852E497990EF1B7EC57 /* SecuritySettingsSheet.swift */,
+				0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -767,6 +785,8 @@
 				0A786852E497990EF1B7EC97 /* KeyImportSource.swift in Sources */,
 				0A786852E497990EF1B7EC99 /* GnuPGImportSource.swift in Sources */,
 				0A786852E497990EF1B7EC9B /* CompositeKeyringBackend.swift in Sources */,
+				0A786852E497990EF1B7EC9D /* KeyBackupArchive.swift in Sources */,
+				0A786852E497990EF1B7EC9F /* DeletionConfirmationState.swift in Sources */,
 				0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */,
 				0A786852E497990EF1B7EC40 /* BannerStack.swift in Sources */,
 				0A786852E497990EF1B7EC42 /* BannerView.swift in Sources */,
@@ -780,6 +800,7 @@
 				0A786852E497990EF1B7EC52 /* RevokeSheet.swift in Sources */,
 				0A786852E497990EF1B7EC54 /* RotateSheet.swift in Sources */,
 				0A786852E497990EF1B7EC56 /* SecuritySettingsSheet.swift in Sources */,
+				0A786852E497990EF1B7ECA1 /* DeleteKeySheet.swift in Sources */,
 				0A786852E497990EF1B7EC58 /* ContentViewToolbar.swift in Sources */,
 				0A786852E497990EF1B7EC5A /* KeyListDropHandler.swift in Sources */,
 				AA1000000000000000000009 /* ContentView.swift in Sources */,
