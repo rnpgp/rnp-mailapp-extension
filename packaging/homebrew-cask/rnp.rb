@@ -15,8 +15,8 @@
 # Check first at: https://github.com/Homebrew/homebrew-cask/tree/master/Casks/r
 
 cask "rnp" do
-  version "0.9.6"
-  verified_version "0.9.6"
+  version "0.9.7"
+  verified_version "0.9.7"
 
   # Signed + notarized DMG from the project's GitHub releases. Don't
   # change this URL pattern — `brew audit` requires it to be the
@@ -29,6 +29,10 @@ cask "rnp" do
   # SHA256 of the released DMG. Generate with:
   #   shasum -a 256 RNP-<version>.dmg
   # Update on every release. CI's release.yml emits this in SHA256SUMS.
+  #
+  # TODO(0.9.7): regenerate from the published DMG before pushing to any
+  # Homebrew tap. The value below is the 0.9.6 SHA and will fail brew audit
+  # against the 0.9.7 URL until it is replaced.
   sha256 "97b00e9621b009fdd9831023a3d2d601afcd376b9b91712527338757c261d4ea"
 
   name "RNP"

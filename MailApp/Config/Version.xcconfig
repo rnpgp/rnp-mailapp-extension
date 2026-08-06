@@ -1,4 +1,4 @@
 // Single source of truth for the container app + extension version.
 
-MARKETING_VERSION = 0.9.6
+MARKETING_VERSION = 0.9.7
 CURRENT_PROJECT_VERSION = 1

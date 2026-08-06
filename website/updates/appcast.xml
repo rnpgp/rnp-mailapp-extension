@@ -17,6 +17,33 @@
     <language>en</language>
 
     <item>
+      <title>Version 0.9.7</title>
+      <pubDate>Wed, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <sparkle:version>9070</sparkle:version>
+      <sparkle:shortVersionString>0.9.7</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <!--
+        TODO(0.9.7): after the DMG is built, run
+          sign_update RNP-0.9.7.dmg
+        and paste the printed edDSA + length here. Until then Sparkle
+        will not offer this version to installed clients.
+      -->
+      <description><![CDATA[
+        <h2>What's new</h2>
+        <ul>
+          <li>CloudKit sync enabled (canonical keyring mirrors to iCloud private DB)</li>
+          <li>Deprecated KeyManager removed from project code — builds clean</li>
+          <li>Manual signing restored + RNPUnitTests target wired in</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/rnpgp/rnp-mailapp-extension/releases/download/v0.9.7/RNP-0.9.7.dmg"
+        sparkle:edDSA=""
+        length="0"
+        type="application/octet-stream" />
+    </item>
+
+    <item>
       <title>Version 0.9.6</title>
       <pubDate>Sun, 03 Aug 2026 00:00:00 +0000</pubDate>
       <sparkle:version>9060</sparkle:version>
