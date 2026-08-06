@@ -33,7 +33,7 @@ struct EncryptFileIntent: AppIntent {
         let plaintext = file.data
         let keysManager = KeysManager()
         let ciphertext = try keysManager.encryptFile(plaintext, for: recipientFingerprints)
-        let originalName = file.filename ?? "file"
+        let originalName = file.filename
         let encrypted = IntentFile(data: ciphertext, filename: "\(originalName).pgp")
         return .result(value: encrypted)
     }
@@ -53,7 +53,7 @@ struct DecryptFileIntent: AppIntent {
         let ciphertext = file.data
         let keysManager = KeysManager()
         let plaintext = try keysManager.decryptFile(ciphertext)
-        let originalName = file.filename ?? "file.pgp"
+        let originalName = file.filename
         let stripped = originalName
             .replacingOccurrences(of: ".pgp", with: "", options: .caseInsensitive)
             .replacingOccurrences(of: ".gpg", with: "", options: .caseInsensitive)
@@ -86,7 +86,7 @@ struct SignFileIntent: AppIntent {
         let signed = detached
             ? try manager.signFileDetached(payload, withKeyFingerprint: signingKey.id)
             : try manager.signFile(payload, withKeyFingerprint: signingKey.id)
-        let originalName = file.filename ?? "file"
+        let originalName = file.filename
         let suffix = detached ? ".sig" : ".pgp"
         return .result(value: IntentFile(data: signed, filename: "\(originalName)\(suffix)"))
     }

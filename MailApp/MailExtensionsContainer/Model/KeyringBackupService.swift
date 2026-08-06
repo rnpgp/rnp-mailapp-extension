@@ -225,8 +225,8 @@ public enum KeyringBackupService {
         guard process.terminationStatus == 0 else {
             let errData = try stderr.fileHandleForReading.readToEnd() ?? Data()
             let message = String(data: errData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
+            RnpLogger.backup.error("unzip failed for \(archive.path, privacy: .public): \(message ?? "unknown", privacy: .public)")
             throw KeyringBackupError.archiveUnreadable(archive)
-            _ = message  // logged by caller
         }
     }
 }

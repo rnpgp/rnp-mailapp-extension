@@ -721,24 +721,25 @@ final class FileToolsViewModel: ObservableObject {
         isWorking = true
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                // Try decrypt first; if that fails, try verify (cleartext-signed).
                 let plaintext: Data
-                var signatureValid: Bool? = nil
+                let signatureValid: Bool?
                 if let decrypted = try? model.manager.decryptFile(file.data) {
                     plaintext = decrypted
+                    signatureValid = nil
                 } else {
                     let verified = try model.manager.verifyFile(file.data)
                     plaintext = verified.payload
                     signatureValid = verified.valid
                 }
                 let suggested = Self.suggestDecryptedFilename(from: file.url.lastPathComponent)
+                let result = DecryptResult(
+                    plaintext: plaintext,
+                    signatureValid: signatureValid,
+                    suggestedFilename: suggested
+                )
                 DispatchQueue.main.async {
                     self.isWorking = false
-                    self.mode = .decrypt(file, DecryptResult(
-                        plaintext: plaintext,
-                        signatureValid: signatureValid,
-                        suggestedFilename: suggested
-                    ))
+                    self.mode = .decrypt(file, result)
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -799,7 +800,7 @@ final class FileToolsViewModel: ObservableObject {
     /// branch is the minimal signal needed — order matters: detached
     /// `.sig` before inline `.pgp`, and content sniff only when the
     /// extension doesn't already tell us.
-    private static func classify(data: Data, filename: String) -> FileClass {
+    nonisolated private static func classify(data: Data, filename: String) -> FileClass {
         let lower = filename.lowercased()
         if lower.hasSuffix(".sig") || lower.hasSuffix(".asc") && !looksLikeInlineMessage(data: data) {
             return .detachedSignature
@@ -818,24 +819,24 @@ final class FileToolsViewModel: ObservableObject {
         return .plain
     }
 
-    private static func looksLikeInlineMessage(data: Data) -> Bool {
+    nonisolated private static func looksLikeInlineMessage(data: Data) -> Bool {
         guard let prefix = String(data: data.prefix(64), encoding: .utf8) else { return false }
         return prefix.contains("BEGIN PGP MESSAGE") || prefix.contains("BEGIN PGP SIGNED MESSAGE")
     }
 
-    private static func looksLikeDetachedSignature(data: Data) -> Bool {
+    nonisolated private static func looksLikeDetachedSignature(data: Data) -> Bool {
         guard let prefix = String(data: data.prefix(64), encoding: .utf8) else { return false }
         return prefix.contains("BEGIN PGP SIGNATURE") && !prefix.contains("BEGIN PGP SIGNED MESSAGE")
     }
 
-    private static func looksEncrypted(data: Data, filename: String) -> Bool {
+    nonisolated private static func looksEncrypted(data: Data, filename: String) -> Bool {
         switch classify(data: data, filename: filename) {
         case .encrypted, .signed, .detachedSignature: return true
         case .plain: return false
         }
     }
 
-    private static func suggestDecryptedFilename(from filename: String) -> String {
+    nonisolated private static func suggestDecryptedFilename(from filename: String) -> String {
         let lower = filename.lowercased()
         for ext in [".pgp", ".gpg", ".asc"] {
             if lower.hasSuffix(ext) {
