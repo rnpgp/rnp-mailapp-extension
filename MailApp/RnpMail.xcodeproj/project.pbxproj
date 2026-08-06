@@ -9,8 +9,59 @@
 /* Begin PBXBuildFile section */
 		0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F15FAC74F11C17A481229F /* LicensesView.swift */; };
 		0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */; };
+		0A786852E497990EF1B7EC11 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC12 /* Sheet.swift */; };
+		0A786852E497990EF1B7EC13 /* LocalizationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC14 /* LocalizationContractTests.swift */; };
+		0A786852E497990EF1B7EC15 /* KeyringScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC16 /* KeyringScanner.swift */; };
+		0A786852E497990EF1B7EC17 /* ImportFromKeyringSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */; };
+		0A786852E497990EF1B7EC1A /* LocalizationAuditTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC1B /* LocalizationAuditTests.swift */; };
+		0A786852E497990EF1B7EC1C /* FileToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC1D /* FileToolsView.swift */; };
+		0A786852E497990EF1B7EC1F /* FileEncryptionIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */; };
+		0A786852E497990EF1B7EC23 /* MailExtensionEnableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */; };
+		0A786852E497990EF1B7EC28 /* FileSecurityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */; };
+		0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */; };
+		0A786852E497990EF1B7EC2C /* RnpMailAppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC2D /* RnpMailAppError.swift */; };
+		0A786852E497990EF1B7EC2E /* RnpLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC2F /* RnpLogger.swift */; };
+		0A786852E497990EF1B7EC30 /* KeyringBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */; };
+		0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */; };
+		0A786852E497990EF1B7EC34 /* KeyringIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC35 /* KeyringIndex.swift */; };
+		0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */; };
+		0A786852E497990EF1B7EC38 /* DecryptedAttachmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */; };
+		0A786852E497990EF1B7EC40 /* BannerStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC41 /* BannerStack.swift */; };
+		0A786852E497990EF1B7EC42 /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC43 /* BannerView.swift */; };
+		0A786852E497990EF1B7EC44 /* ClipboardImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC45 /* ClipboardImportSheet.swift */; };
+		0A786852E497990EF1B7EC46 /* ExtendExpirySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC47 /* ExtendExpirySheet.swift */; };
+		0A786852E497990EF1B7EC48 /* FetchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC49 /* FetchSheet.swift */; };
+		0A786852E497990EF1B7EC4A /* ForeignPassphraseSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC4B /* ForeignPassphraseSheet.swift */; };
+		0A786852E497990EF1B7EC4C /* GenerateKeySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC4D /* GenerateKeySheet.swift */; };
+		0A786852E497990EF1B7EC4E /* KeyringUnlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC4F /* KeyringUnlockSheet.swift */; };
+		0A786852E497990EF1B7EC50 /* PublishSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC51 /* PublishSheet.swift */; };
+		0A786852E497990EF1B7EC52 /* RevokeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC53 /* RevokeSheet.swift */; };
+		0A786852E497990EF1B7EC54 /* RotateSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC55 /* RotateSheet.swift */; };
+		0A786852E497990EF1B7EC56 /* SecuritySettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC57 /* SecuritySettingsSheet.swift */; };
+		0A786852E497990EF1B7EC58 /* ContentViewToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC59 /* ContentViewToolbar.swift */; };
+		0A786852E497990EF1B7EC5A /* KeyListDropHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC5B /* KeyListDropHandler.swift */; };
+		0A786852E497990EF1B7EC6E /* MessageDecodeCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */; };
+		0A786852E497990EF1B7EC70 /* SnapshotHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */; };
+		0A786852E497990EF1B7EC74 /* PseudoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */; };
+		0A786852E497990EF1B7EC90 /* KeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC91 /* KeyringBackend.swift */; };
+		0A786852E497990EF1B7EC92 /* LocalFileKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC93 /* LocalFileKeyringBackend.swift */; };
+		0A786852E497990EF1B7EC94 /* SynchronizablePassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC95 /* SynchronizablePassphraseStore.swift */; };
+		0A786852E497990EF1B7EC97 /* KeyImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC98 /* KeyImportSource.swift */; };
+		0A786852E497990EF1B7EC99 /* GnuPGImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9A /* GnuPGImportSource.swift */; };
+		0A786852E497990EF1B7EC9B /* CompositeKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */; };
+		0A786852E497990EF1B7EC9D /* KeyBackupArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */; };
+		0A786852E497990EF1B7EC9F /* DeletionConfirmationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */; };
+		0A786852E497990EF1B7ECA1 /* DeleteKeySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */; };
+		0A786852E497990EF1B7ECA4 /* PerKeyDirectoryKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */; };
+		0A786852E497990EF1B7ECA6 /* SyncConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */; };
+		0A786852E497990EF1B7ECA8 /* SyncSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */; };
+		0A786852E497990EF1B7ECAD /* StorageChoiceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */; };
+		0A786852E497990EF1B7ECAF /* GnuPGAgentPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */; };
+		0A786852E497990EF1B7ECB1 /* CloudKitKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */; };
 		1EA4CD8D67D36E8FCC08669A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */; };
 		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
+		4F6CB08A30243834003384BA /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = AAC00000000000000000000A /* Sparkle */; };
+		4F6CB0923024387D003384BA /* RNPUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6CB0913024387D003384BA /* RNPUnitTests.swift */; };
 		73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */; };
 		89D5174051747C352D8BE078 /* Ribose_containerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8C3F584EC5EDB6BF983F76 /* Ribose_containerUITests.swift */; };
 		8FA94A049D51D12E96C274DF /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAFFEC46C22FE2A0FBFA3E4E /* Cocoa.framework */; };
@@ -34,55 +85,6 @@
 		AA1000000000000000000019 /* KeyLifecycle in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000009 /* KeyLifecycle */; };
 		AA100000000000000000001A /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
 		AA100000000000000000001B /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
-		0A786852E497990EF1B7EC11 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC12 /* Sheet.swift */; };
-		0A786852E497990EF1B7EC13 /* LocalizationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC14 /* LocalizationContractTests.swift */; };
-		0A786852E497990EF1B7EC15 /* KeyringScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC16 /* KeyringScanner.swift */; };
-		0A786852E497990EF1B7EC17 /* ImportFromKeyringSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */; };
-		0A786852E497990EF1B7EC1A /* LocalizationAuditTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC1B /* LocalizationAuditTests.swift */; };
-		0A786852E497990EF1B7EC1C /* FileToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC1D /* FileToolsView.swift */; };
-		0A786852E497990EF1B7EC1F /* FileEncryptionIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */; };
-		0A786852E497990EF1B7EC23 /* MailExtensionEnableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */; };
-		0A786852E497990EF1B7EC28 /* FileSecurityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */; };
-		0A786852E497990EF1B7EC2A /* SparkleBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */; };
-		0A786852E497990EF1B7EC2C /* RnpMailAppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC2D /* RnpMailAppError.swift */; };
-		0A786852E497990EF1B7EC2E /* RnpLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC2F /* RnpLogger.swift */; };
-		0A786852E497990EF1B7EC30 /* KeyringBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */; };
-		0A786852E497990EF1B7EC90 /* KeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC91 /* KeyringBackend.swift */; };
-		0A786852E497990EF1B7EC92 /* LocalFileKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC93 /* LocalFileKeyringBackend.swift */; };
-		0A786852E497990EF1B7EC94 /* SynchronizablePassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC95 /* SynchronizablePassphraseStore.swift */; };
-		0A786852E497990EF1B7EC97 /* KeyImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC98 /* KeyImportSource.swift */; };
-		0A786852E497990EF1B7EC99 /* GnuPGImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9A /* GnuPGImportSource.swift */; };
-		0A786852E497990EF1B7EC9B /* CompositeKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */; };
-		0A786852E497990EF1B7EC9D /* KeyBackupArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */; };
-		0A786852E497990EF1B7EC9F /* DeletionConfirmationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */; };
-		0A786852E497990EF1B7ECA1 /* DeleteKeySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */; };
-		0A786852E497990EF1B7ECA4 /* PerKeyDirectoryKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */; };
-		0A786852E497990EF1B7ECA6 /* SyncConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */; };
-		0A786852E497990EF1B7ECA8 /* SyncSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */; };
-		0A786852E497990EF1B7ECAD /* StorageChoiceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */; };
-		0A786852E497990EF1B7ECAF /* GnuPGAgentPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */; };
-		0A786852E497990EF1B7ECB1 /* CloudKitKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */; };
-		0A786852E497990EF1B7EC32 /* KeyringBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */; };
-		0A786852E497990EF1B7EC34 /* KeyringIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC35 /* KeyringIndex.swift */; };
-		0A786852E497990EF1B7EC36 /* AccessibilityMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */; };
-		0A786852E497990EF1B7EC38 /* DecryptedAttachmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */; };
-		0A786852E497990EF1B7EC6E /* MessageDecodeCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */; };
-		0A786852E497990EF1B7EC70 /* SnapshotHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */; };
-		0A786852E497990EF1B7EC74 /* PseudoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */; };
-		0A786852E497990EF1B7EC40 /* BannerStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC41 /* BannerStack.swift */; };
-		0A786852E497990EF1B7EC42 /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC43 /* BannerView.swift */; };
-		0A786852E497990EF1B7EC44 /* ClipboardImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC45 /* ClipboardImportSheet.swift */; };
-		0A786852E497990EF1B7EC46 /* ExtendExpirySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC47 /* ExtendExpirySheet.swift */; };
-		0A786852E497990EF1B7EC48 /* FetchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC49 /* FetchSheet.swift */; };
-		0A786852E497990EF1B7EC4A /* ForeignPassphraseSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC4B /* ForeignPassphraseSheet.swift */; };
-		0A786852E497990EF1B7EC4C /* GenerateKeySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC4D /* GenerateKeySheet.swift */; };
-		0A786852E497990EF1B7EC4E /* KeyringUnlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC4F /* KeyringUnlockSheet.swift */; };
-		0A786852E497990EF1B7EC50 /* PublishSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC51 /* PublishSheet.swift */; };
-		0A786852E497990EF1B7EC52 /* RevokeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC53 /* RevokeSheet.swift */; };
-		0A786852E497990EF1B7EC54 /* RotateSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC55 /* RotateSheet.swift */; };
-		0A786852E497990EF1B7EC56 /* SecuritySettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC57 /* SecuritySettingsSheet.swift */; };
-		0A786852E497990EF1B7EC58 /* ContentViewToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC59 /* ContentViewToolbar.swift */; };
-		0A786852E497990EF1B7EC5A /* KeyListDropHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC5B /* KeyListDropHandler.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -142,23 +144,6 @@
 /* Begin PBXFileReference section */
 		08B0CCA210850092A9DCB536 /* Direct.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Direct.xcconfig; path = Config/Direct.xcconfig; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapNavigationCoordinator.swift; sourceTree = "<group>"; };
-		218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
-		2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UniformTypeIdentifiers.framework; sourceTree = "<group>"; };
-		3EDEA75247AF59D64D6E4190 /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
-		5A5F6629466BFE8ADAFAD979 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
-		87CD88529F4C4270DBA7A051 /* SOURCES.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = SOURCES.md; path = ../../Vendor/SOURCES.md; sourceTree = "<group>"; };
-		8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		AA2000000000000000000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		AA2000000000000000000002 /* librnp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = librnp.xcconfig; sourceTree = "<group>"; };
-		AA2000000000000000000003 /* MailExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtension.swift; sourceTree = "<group>"; };
-		AA2000000000000000000004 /* MessageSecurityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityHandler.swift; sourceTree = "<group>"; };
-		AA2000000000000000000005 /* MessageSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityViewController.swift; sourceTree = "<group>"; };
-		AA2000000000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AA2000000000000000000008 /* MailExtensionsContainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtensionsContainerApp.swift; sourceTree = "<group>"; };
-		AA2000000000000000000009 /* KeysManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysManager.swift; sourceTree = "<group>"; };
-		AA2000000000000000000007 /* SharedKeyring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedKeyring.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC12 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC14 /* LocalizationContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationContractTests.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC16 /* KeyringScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringScanner.swift; sourceTree = "<group>"; };
@@ -172,6 +157,27 @@
 		0A786852E497990EF1B7EC2D /* RnpMailAppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpMailAppError.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC2F /* RnpLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RnpLogger.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC31 /* KeyringBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupService.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC35 /* KeyringIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringIndex.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityMotion.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedAttachmentsView.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC41 /* BannerStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerStack.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC43 /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC45 /* ClipboardImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardImportSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC47 /* ExtendExpirySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendExpirySheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC49 /* FetchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC4B /* ForeignPassphraseSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForeignPassphraseSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC4D /* GenerateKeySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateKeySheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC4F /* KeyringUnlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringUnlockSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC51 /* PublishSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC53 /* RevokeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevokeSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC55 /* RotateSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotateSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC57 /* SecuritySettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuritySettingsSheet.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC59 /* ContentViewToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewToolbar.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC5B /* KeyListDropHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyListDropHandler.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDecodeCache.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHarness.swift; sourceTree = "<group>"; };
+		0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PseudoLocalization.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC91 /* KeyringBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackend.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC93 /* LocalFileKeyringBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileKeyringBackend.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7EC95 /* SynchronizablePassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizablePassphraseStore.swift; sourceTree = "<group>"; };
@@ -187,27 +193,23 @@
 		0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageChoiceSheet.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GnuPGAgentPassphraseStore.swift; sourceTree = "<group>"; };
 		0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitKeyringBackend.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC33 /* KeyringBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringBackupSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC35 /* KeyringIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringIndex.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC37 /* AccessibilityMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityMotion.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedAttachmentsView.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDecodeCache.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHarness.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PseudoLocalization.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC41 /* BannerStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerStack.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC43 /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC45 /* ClipboardImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardImportSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC47 /* ExtendExpirySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendExpirySheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC49 /* FetchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC4B /* ForeignPassphraseSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForeignPassphraseSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC4D /* GenerateKeySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateKeySheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC4F /* KeyringUnlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyringUnlockSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC51 /* PublishSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC53 /* RevokeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevokeSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC55 /* RotateSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotateSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC57 /* SecuritySettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuritySettingsSheet.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC59 /* ContentViewToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewToolbar.swift; sourceTree = "<group>"; };
-		0A786852E497990EF1B7EC5B /* KeyListDropHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyListDropHandler.swift; sourceTree = "<group>"; };
+		218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
+		2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UniformTypeIdentifiers.framework; sourceTree = "<group>"; };
+		3EDEA75247AF59D64D6E4190 /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
+		4F6CB08F3024387D003384BA /* RNPUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F6CB0913024387D003384BA /* RNPUnitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNPUnitTests.swift; sourceTree = "<group>"; };
+		5A5F6629466BFE8ADAFAD979 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
+		87CD88529F4C4270DBA7A051 /* SOURCES.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = SOURCES.md; path = ../../Vendor/SOURCES.md; sourceTree = "<group>"; };
+		8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AA2000000000000000000003 /* MailExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtension.swift; sourceTree = "<group>"; };
+		AA2000000000000000000004 /* MessageSecurityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityHandler.swift; sourceTree = "<group>"; };
+		AA2000000000000000000005 /* MessageSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityViewController.swift; sourceTree = "<group>"; };
+		AA2000000000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA2000000000000000000007 /* SharedKeyring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedKeyring.swift; sourceTree = "<group>"; };
+		AA2000000000000000000008 /* MailExtensionsContainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtensionsContainerApp.swift; sourceTree = "<group>"; };
+		AA2000000000000000000009 /* KeysManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysManager.swift; sourceTree = "<group>"; };
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
@@ -237,6 +239,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4F6CB08C3024387D003384BA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA6000000000000000000004 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -252,6 +261,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F6CB08A30243834003384BA /* Sparkle in Frameworks */,
 				AA1000000000000000000014 /* Rnp in Frameworks */,
 				AA1000000000000000000015 /* MailSecurityEngine in Frameworks */,
 				C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */,
@@ -264,6 +274,147 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A786852E497990EF1B7EC19 /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */,
+			);
+			path = Import;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC1E /* FileTools */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC1D /* FileToolsView.swift */,
+			);
+			path = FileTools;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC21 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC24 /* MailExtensionSetup */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */,
+			);
+			path = MailExtensionSetup;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC26 /* FileSecurity */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */,
+			);
+			path = FileSecurity;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC2B /* Updater */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */,
+			);
+			path = Updater;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC60 /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC45 /* ClipboardImportSheet.swift */,
+				0A786852E497990EF1B7EC47 /* ExtendExpirySheet.swift */,
+				0A786852E497990EF1B7EC49 /* FetchSheet.swift */,
+				0A786852E497990EF1B7EC4B /* ForeignPassphraseSheet.swift */,
+				0A786852E497990EF1B7EC4D /* GenerateKeySheet.swift */,
+				0A786852E497990EF1B7EC4F /* KeyringUnlockSheet.swift */,
+				0A786852E497990EF1B7EC51 /* PublishSheet.swift */,
+				0A786852E497990EF1B7EC53 /* RevokeSheet.swift */,
+				0A786852E497990EF1B7EC55 /* RotateSheet.swift */,
+				0A786852E497990EF1B7EC57 /* SecuritySettingsSheet.swift */,
+				0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */,
+			);
+			path = Sheets;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC62 /* Banners */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC41 /* BannerStack.swift */,
+				0A786852E497990EF1B7EC43 /* BannerView.swift */,
+			);
+			path = Banners;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC64 /* Toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC59 /* ContentViewToolbar.swift */,
+			);
+			path = Toolbar;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC72 /* SnapshotTesting */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */,
+				0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */,
+			);
+			path = SnapshotTesting;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7EC96 /* KeyringSync */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC91 /* KeyringBackend.swift */,
+				0A786852E497990EF1B7EC93 /* LocalFileKeyringBackend.swift */,
+				0A786852E497990EF1B7EC95 /* SynchronizablePassphraseStore.swift */,
+				0A786852E497990EF1B7EC98 /* KeyImportSource.swift */,
+				0A786852E497990EF1B7EC9A /* GnuPGImportSource.swift */,
+				0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */,
+				0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */,
+				0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */,
+				0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */,
+			);
+			path = KeyringSync;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7ECA3 /* KeyDeletionSafety */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */,
+				0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */,
+			);
+			path = KeyDeletionSafety;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7ECAA /* SyncSettings */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */,
+			);
+			path = SyncSettings;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7ECAC /* SyncSettings */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */,
+			);
+			path = SyncSettings;
+			sourceTree = "<group>";
+		};
+		0A786852E497990EF1B7ECB3 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		1568869A2FB764000596C6B8 /* Ribose containerUITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -289,6 +440,14 @@
 				D7F15FAC74F11C17A481229F /* LicensesView.swift */,
 			);
 			name = Licenses;
+			sourceTree = "<group>";
+		};
+		4F6CB0903024387D003384BA /* RNPUnitTests */ = {
+			isa = PBXGroup;
+			children = (
+				4F6CB0913024387D003384BA /* RNPUnitTests.swift */,
+			);
+			path = RNPUnitTests;
 			sourceTree = "<group>";
 		};
 		51FB8105ABEB26CD98FCDC6E /* Resources */ = {
@@ -320,11 +479,10 @@
 		AA3000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
-				AA2000000000000000000002 /* librnp.xcconfig */,
 				AA300000000000000000000B /* Shared */,
-				AA3000000000000000000003 /* Swift-Rnp */,
 				AA3000000000000000000004 /* MailPlugin */,
 				AA3000000000000000000005 /* MailExtensionsContainer */,
+				4F6CB0903024387D003384BA /* RNPUnitTests */,
 				AA3000000000000000000002 /* Products */,
 				D1FD6E190D06FD101DB4D932 /* Config */,
 				83D422EEE84562769B515115 /* Frameworks */,
@@ -338,16 +496,9 @@
 				AA5000000000000000000002 /* MailPlugin.appex */,
 				AA5000000000000000000003 /* RNP.app */,
 				B0DF31866344739AFF3A2A9D /* Ribose containerUITests.xctest */,
+				4F6CB08F3024387D003384BA /* RNPUnitTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		AA3000000000000000000003 /* Swift-Rnp */ = {
-			isa = PBXGroup;
-			children = (
-				AA2000000000000000000001 /* main.swift */,
-			);
-			path = "Swift-Rnp";
 			sourceTree = "<group>";
 		};
 		AA3000000000000000000004 /* MailPlugin */ = {
@@ -357,7 +508,8 @@
 				AA2000000000000000000004 /* MessageSecurityHandler.swift */,
 				AA2000000000000000000005 /* MessageSecurityViewController.swift */,
 				0A786852E497990EF1B7EC39 /* DecryptedAttachmentsView.swift */,
-				0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */,				AA2000000000000000000006 /* Info.plist */,
+				0A786852E497990EF1B7EC6F /* MessageDecodeCache.swift */,
+				AA2000000000000000000006 /* Info.plist */,
 				3EDEA75247AF59D64D6E4190 /* Direct.entitlements */,
 				EF97ABD297996C4EA5033642 /* AppStore.entitlements */,
 				8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */,
@@ -402,41 +554,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		0A786852E497990EF1B7ECA3 /* KeyDeletionSafety */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC9E /* KeyBackupArchive.swift */,
-				0A786852E497990EF1B7ECA0 /* DeletionConfirmationState.swift */,
-			);
-			path = KeyDeletionSafety;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC96 /* KeyringSync */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC91 /* KeyringBackend.swift */,
-				0A786852E497990EF1B7EC93 /* LocalFileKeyringBackend.swift */,
-				0A786852E497990EF1B7EC95 /* SynchronizablePassphraseStore.swift */,
-				0A786852E497990EF1B7EC98 /* KeyImportSource.swift */,
-				0A786852E497990EF1B7EC9A /* GnuPGImportSource.swift */,
-				0A786852E497990EF1B7EC9C /* CompositeKeyringBackend.swift */,
-				0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */,
-				0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */,
-				0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */,
-			);
-			path = KeyringSync;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC26 /* FileSecurity */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC27 /* FileSecurityEngine.swift */,
-			);
-			path = FileSecurity;
-			sourceTree = "<group>";
-		};
 		AA3000000000000000000007 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -455,126 +572,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		0A786852E497990EF1B7EC21 /* Intents */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC20 /* FileEncryptionIntents.swift */,
-			);
-			path = Intents;
-			sourceTree = "<group>";
-		};
-		0A786852E497990EF1B7EC1E /* FileTools */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC1D /* FileToolsView.swift */,
-			);
-			path = FileTools;
-			sourceTree = "<group>";
-		};
-		0A786852E497990EF1B7EC24 /* MailExtensionSetup */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC22 /* MailExtensionEnableView.swift */,
-			);
-			path = MailExtensionSetup;
-			sourceTree = "<group>";
-		};
-		0A786852E497990EF1B7ECB3 /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7ECAC /* SyncSettings */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */,
-			);
-			path = SyncSettings;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC72 /* SnapshotTesting */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */,
-				0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */,			);
-			path = SnapshotTesting;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7ECAA /* SyncSettings (Model) */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */,
-			);
-			path = SyncSettings;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC2B /* Updater */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */,
-			);
-			path = Updater;
-			sourceTree = "<group>";
-		};
-		0A786852E497990EF1B7ECB3 /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7ECAC /* SyncSettings */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */,
-			);
-			path = SyncSettings;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC72 /* SnapshotTesting */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC71 /* SnapshotHarness.swift */,
-				0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */,			);
-			path = SnapshotTesting;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7ECAA /* SyncSettings (Model) */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7ECA7 /* SyncConfiguration.swift */,
-			);
-			path = SyncSettings;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC2B /* Updater */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC29 /* SparkleBootstrap.swift */,
-			);
-			path = Updater;
-			sourceTree = "<group>";
-		};
-		0A786852E497990EF1B7EC19 /* Import */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC18 /* ImportFromKeyringSheet.swift */,
-			);
-			path = Import;
-			sourceTree = "<group>";
-		};
 		AA3000000000000000000008 /* ContentView */ = {
 			isa = PBXGroup;
 			children = (
@@ -587,44 +584,6 @@
 				0A786852E497990EF1B7EC64 /* Toolbar */,
 			);
 			path = ContentView;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC60 /* Sheets */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC45 /* ClipboardImportSheet.swift */,
-				0A786852E497990EF1B7EC47 /* ExtendExpirySheet.swift */,
-				0A786852E497990EF1B7EC49 /* FetchSheet.swift */,
-				0A786852E497990EF1B7EC4B /* ForeignPassphraseSheet.swift */,
-				0A786852E497990EF1B7EC4D /* GenerateKeySheet.swift */,
-				0A786852E497990EF1B7EC4F /* KeyringUnlockSheet.swift */,
-				0A786852E497990EF1B7EC51 /* PublishSheet.swift */,
-				0A786852E497990EF1B7EC53 /* RevokeSheet.swift */,
-				0A786852E497990EF1B7EC55 /* RotateSheet.swift */,
-				0A786852E497990EF1B7EC57 /* SecuritySettingsSheet.swift */,
-				0A786852E497990EF1B7ECA2 /* DeleteKeySheet.swift */,
-			);
-			path = Sheets;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC62 /* Banners */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC41 /* BannerStack.swift */,
-				0A786852E497990EF1B7EC43 /* BannerView.swift */,
-			);
-			path = Banners;
-			sourceTree = "<group>";
-		};
-
-		0A786852E497990EF1B7EC64 /* Toolbar */ = {
-			isa = PBXGroup;
-			children = (
-				0A786852E497990EF1B7EC59 /* ContentViewToolbar.swift */,
-			);
-			path = Toolbar;
 			sourceTree = "<group>";
 		};
 		AA3000000000000000000009 /* KeysList */ = {
@@ -666,6 +625,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4F6CB08E3024387D003384BA /* RNPUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F6CB0973024387D003384BA /* Build configuration list for PBXNativeTarget "RNPUnitTests" */;
+			buildPhases = (
+				4F6CB08B3024387D003384BA /* Sources */,
+				4F6CB08C3024387D003384BA /* Frameworks */,
+				4F6CB08D3024387D003384BA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNPUnitTests;
+			productName = RNPUnitTests;
+			productReference = 4F6CB08F3024387D003384BA /* RNPUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		AA4000000000000000000002 /* MailPlugin */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA9000000000000000000003 /* Build configuration list for PBXNativeTarget "MailPlugin" */;
@@ -746,6 +722,9 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 2660;
 				TargetAttributes = {
+					4F6CB08E3024387D003384BA = {
+						CreatedOnToolsVersion = 15.0.1;
+					};
 					AA4000000000000000000002 = {
 						CreatedOnToolsVersion = 13.1;
 					};
@@ -774,11 +753,19 @@
 				AA4000000000000000000002 /* MailPlugin */,
 				AA4000000000000000000003 /* RNP */,
 				C11C7952369D291DC9FDE728 /* Ribose containerUITests */,
+				4F6CB08E3024387D003384BA /* RNPUnitTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4F6CB08D3024387D003384BA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		83F3B756581461D380F5A946 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -820,6 +807,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4F6CB08B3024387D003384BA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F6CB0923024387D003384BA /* RNPUnitTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AA6000000000000000000003 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -828,7 +823,8 @@
 				AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */,
 				AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */,
 				0A786852E497990EF1B7EC38 /* DecryptedAttachmentsView.swift in Sources */,
-				0A786852E497990EF1B7EC6E /* MessageDecodeCache.swift in Sources */,				AA100000000000000000001B /* SharedKeyring.swift in Sources */,
+				0A786852E497990EF1B7EC6E /* MessageDecodeCache.swift in Sources */,
+				AA100000000000000000001B /* SharedKeyring.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -973,6 +969,106 @@
 			};
 			name = Direct;
 		};
+		4F6CB0933024387D003384BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/RNP.app/Contents/MacOS/RNP";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XX7DG778PN;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.RNPUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNP.app/Contents/MacOS/RNP";
+			};
+			name = Debug;
+		};
+		4F6CB0943024387D003384BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/RNP.app/Contents/MacOS/RNP";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XX7DG778PN;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.RNPUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNP.app/Contents/MacOS/RNP";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4F6CB0953024387D003384BA /* Direct */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/RNP.app/Contents/MacOS/RNP";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XX7DG778PN;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.RNPUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNP.app/Contents/MacOS/RNP";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Direct;
+		};
+		4F6CB0963024387D003384BA /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/RNP.app/Contents/MacOS/RNP";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XX7DG778PN;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ribose.RNPUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNP.app/Contents/MacOS/RNP";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = AppStore;
+		};
 		51AF907481105A1AE23C17DA /* Direct */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 08B0CCA210850092A9DCB536 /* Direct.xcconfig */;
@@ -1038,7 +1134,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = XX7DG778PN;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1059,7 +1155,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = XX7DG778PN;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1367,7 +1463,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = XX7DG778PN;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1489,7 +1585,7 @@
 				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = XX7DG778PN;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1507,6 +1603,17 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4F6CB0973024387D003384BA /* Build configuration list for PBXNativeTarget "RNPUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F6CB0933024387D003384BA /* Debug */,
+				4F6CB0943024387D003384BA /* Release */,
+				4F6CB0953024387D003384BA /* Direct */,
+				4F6CB0963024387D003384BA /* AppStore */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AA9000000000000000000001 /* Build configuration list for PBXProject "RnpMail" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
