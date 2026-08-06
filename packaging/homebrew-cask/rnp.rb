@@ -29,11 +29,7 @@ cask "rnp" do
   # SHA256 of the released DMG. Generate with:
   #   shasum -a 256 RNP-<version>.dmg
   # Update on every release. CI's release.yml emits this in SHA256SUMS.
-  #
-  # TODO(0.9.7): regenerate from the published DMG before pushing to any
-  # Homebrew tap. The value below is the 0.9.6 SHA and will fail brew audit
-  # against the 0.9.7 URL until it is replaced.
-  sha256 "97b00e9621b009fdd9831023a3d2d601afcd376b9b91712527338757c261d4ea"
+  sha256 "6f03047850f3febbf966fd02bca19cbfe7d5a313959bbd9686406962e2bbda7e"
 
   name "RNP"
   desc "OpenPGP for your Mac — keys, files, and Mail"
