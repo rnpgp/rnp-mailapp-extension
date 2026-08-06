@@ -12,6 +12,7 @@ import SwiftUI
 struct SyncSettingsSheet: View {
     @StateObject private var config: SyncConfiguration
     @Environment(\.dismiss) private var dismiss
+    @State private var migrationResult: MigrationResult?
 
     init(config: SyncConfiguration = SyncConfiguration()) {
         _config = StateObject(wrappedValue: config)
@@ -186,13 +187,56 @@ struct SyncSettingsSheet: View {
     // MARK: Actions
 
     private var actionButtons: some View {
-        HStack {
-            Spacer()
-            Button("button.done") { dismiss() }
-                .keyboardShortcut(.defaultAction)
-                .buttonStyle(.borderedProminent)
-                .accessibilityIdentifier("sync.done")
+        VStack(alignment: .trailing, spacing: RnpSpacing.xs) {
+            if let result = migrationResult {
+                Text(result.message)
+                    .font(.caption)
+                    .foregroundStyle(result.success ? Color.secondary : Color.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            HStack {
+                Spacer()
+                Button("button.done") { commitAndDismiss() }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("sync.done")
+            }
         }
+    }
+
+    /// If the user changed the canonical store, run the migration
+    /// (copies all local keys into the new backend, then flips the
+    /// active reference). On success, dismiss. On failure, surface
+    /// the message inline so the user can retry or pick a different
+    /// store; don't dismiss.
+    private func commitAndDismiss() {
+        let targetID = config.canonicalStoreID
+        guard let coordinator = KeyringCoordinator.shared else {
+            migrationResult = MigrationResult(success: false,
+                                              message: NSLocalizedString("sync.migration.noCoordinator", comment: ""))
+            return
+        }
+        // Per-key .asc dir requires a non-empty path before we can migrate.
+        if targetID == "rnp-asc-dir" && config.perKeyDirectoryPath.isEmpty {
+            migrationResult = MigrationResult(success: false,
+                                              message: NSLocalizedString("sync.migration.noAscPath", comment: ""))
+            return
+        }
+        do {
+            let copied = try coordinator.migrate(to: targetID)
+            migrationResult = MigrationResult(
+                success: true,
+                message: String(format: NSLocalizedString("sync.migration.success", comment: ""), copied)
+            )
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { dismiss() }
+        } catch {
+            migrationResult = MigrationResult(success: false, message: error.localizedDescription)
+        }
+    }
+
+    private struct MigrationResult {
+        let success: Bool
+        let message: String
     }
 
     // MARK: Helpers

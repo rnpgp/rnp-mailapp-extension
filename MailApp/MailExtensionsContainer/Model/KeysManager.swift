@@ -43,6 +43,16 @@ final class KeysManager: ObservableObject {
         keyringStore.map { KeyLifecycle(keyringStore: $0) }
     }
 
+    /// Coordinator that mirrors local mutations to the user's chosen
+    /// canonical backend (local file, per-key `.asc` dir, or — Phase 3 —
+    /// CloudKit). `nil` until `bootstrap()` completes, or permanently
+    /// `nil` if the keyring directory can't be opened.
+    private var coordinator: KeyringCoordinator?
+
+    /// The active canonical backend. Exposed so the Sync UI can call
+    /// `migrate(to:)` when the user flips the radio button.
+    var syncCoordinator: KeyringCoordinator? { coordinator }
+
     /// Archived (decrypt-only) keys for the Archived section.
     var archivedKeys: [KeyInfo] {
         (try? keyringStore?.archivedKeys()) ?? []
@@ -63,13 +73,15 @@ final class KeysManager: ObservableObject {
         guard isLoading else { return }
         let directory = Self.launchKeyringDirectory()
         DispatchQueue.global(qos: .userInitiated).async {
-            let manager = SharedKeyring.makeKeyringStore(directory: directory)
+            let coordinator = KeyringCoordinator.make(directory: directory)
             let locked = Self.computeKeyringLocked()
             DispatchQueue.main.async {
-                self._keyringStore = manager
+                self.coordinator = coordinator
+                KeyringCoordinator.setShared(coordinator)
+                self._keyringStore = coordinator?.localCache
                 self.keyringLocked = locked
                 self.isLoading = false
-                if manager == nil {
+                if coordinator == nil {
                     self.lastError = "error.keyringOpenFailed".localized
                 }
                 self.reload()
@@ -691,9 +703,12 @@ final class KeysManager: ObservableObject {
 
     private func perform(_ operation: () throws -> Void) {
         lastError = nil
+        let before = Set(keys.map(\.fingerprint))
         do {
             try operation()
             reload()
+            let after = Set(keys.map(\.fingerprint))
+            coordinator?.propagate(before: before, after: after)
         } catch {
             lastError = error.localizedDescription
         }

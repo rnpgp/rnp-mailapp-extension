@@ -2,19 +2,21 @@
 //  LocalFileKeyringBackend.swift
 //  RNP
 //
-//  Concrete `KeyringBackend` backed by a local directory. Wraps the
-//  existing `KeysManager` — same data shape as before, now behind the
-//  protocol so the Sync UI can swap in alternates without touching
-//  call sites.
+//  Concrete `KeyringBackend` backed by a local file on disk. Wraps a
+//  `KeyringStore` directly — same librnp keyring file RNP has always
+//  used, now behind the protocol so the Sync UI can swap in alternates
+//  without touching call sites.
 //
-//  Phase 1.5 refactor (TODO.complete/33) — actually done this time:
-//  upsert + delete route through KeysManager's import/delete methods,
-//  so the protocol surface is live end-to-end, not stubbed.
+//  This is the default canonical store. When the user switches to the
+//  per-key `.asc` directory or CloudKit, the new backend becomes the
+//  canonical sink and the local file becomes a materialized cache
+//  librnp still reads from; see `KeyringCoordinator`.
 //
 
 import Combine
 import Foundation
 import MailSecurityEngine
+import Rnp
 
 public final class LocalFileKeyringBackend: KeyringBackend {
 
@@ -23,12 +25,17 @@ public final class LocalFileKeyringBackend: KeyringBackend {
     public var availability: BackendAvailability { .available }
 
     public let directory: URL
-    private weak var manager: KeysManager?
+    private let cache: KeyringStore?
     private let subject = CurrentValueSubject<[KeyringKeyRecord], Never>([])
 
-    init(directory: URL, manager: KeysManager? = nil) {
+    /// - Parameter cache: the `KeyringStore` librarp uses for the same
+    ///   file. When non-nil, reads + exports go through it so the
+    ///   backend and the engine always see the same in-memory state.
+    ///   When nil (e.g. the App Group directory cannot be opened), the
+    ///   backend reports an empty keyring.
+    public init(directory: URL, cache: KeyringStore? = nil) {
         self.directory = directory
-        self.manager = manager
+        self.cache = cache ?? SharedKeyring.makeKeyringStore(directory: directory)
         reload()
     }
 
@@ -36,31 +43,31 @@ public final class LocalFileKeyringBackend: KeyringBackend {
         subject.value
     }
 
-    /// Adds or updates one key. Routed through `KeysManager.importKeys`,
-    /// which writes the key bytes to the live keyring.
+    /// Imports the armored key bytes via the underlying `KeyringStore`.
+    /// Used by `KeyringCoordinator` to mirror remote changes back into
+    /// the local cache, and by tests that want to seed the backend.
     public func upsert(_ record: KeyringKeyRecord) throws {
-        guard let manager else {
-            throw LocalBackendError.managerUnavailable
-        }
-        guard !record.keyBytes.isEmpty else { return }
-        let imported = manager.importKeys(record.keyBytes)
-        guard !imported.isEmpty else {
+        guard let cache else {
             throw LocalBackendError.keyringUnavailable
         }
+        guard !record.keyBytes.isEmpty else { return }
+        _ = try cache.importKeys(record.keyBytes)
         reload()
     }
 
-    /// Deletes one key. Routed through `KeysManager.delete(_:)`, which
-    /// is wrapped by the three-step delete confirmation + encrypted
-    /// backup (PR #191) when invoked via the UI.
+    /// Deletes one key by fingerprint. Idempotent — returns silently if
+    /// the fingerprint is no longer present.
     public func delete(fingerprint: String) throws {
-        guard let manager else {
+        guard let cache else {
             throw LocalBackendError.keyringUnavailable
         }
-        guard let key = manager.keys.first(where: { $0.fingerprint == fingerprint }) else {
-            return  // already gone
+        do {
+            try cache.deleteKey(fingerprint: fingerprint)
+        } catch let error as RnpError {
+            // `.keyNotFound` is a no-op for delete; anything else re-throws.
+            if case .keyNotFound = error { return }
+            throw error
         }
-        manager.delete(key)
         reload()
     }
 
@@ -68,23 +75,33 @@ public final class LocalFileKeyringBackend: KeyringBackend {
         subject.sink(receiveValue: handler)
     }
 
-    /// Refreshes the cached snapshot by reading the directory via
-    /// `SharedKeyring`'s `KeyManager`. Call after any mutation.
+    /// Refreshes the cached snapshot from the local file. Reads every
+    /// fingerprint, exports its current bytes (public, or secret when
+    /// available), and emits the result.
     public func reload() {
-        guard let km = SharedKeyring.makeKeyringStore(directory: directory) else {
+        guard let cache else {
             subject.send([])
             return
         }
-        let keys = (try? km.listKeys()) ?? []
-        subject.send(keys.map(Self.record(from:)))
+        let infos = (try? cache.listKeys()) ?? []
+        let records = infos.compactMap { Self.record(from: $0, cache: cache) }
+        subject.send(records)
     }
 
-    private static func record(from key: KeyInfo) -> KeyringKeyRecord {
-        KeyringKeyRecord(
+    private static func record(from key: KeyInfo, cache: KeyringStore) -> KeyringKeyRecord? {
+        let bytes: Data
+        if key.hasSecret, let secret = try? cache.exportKey(fingerprint: key.fingerprint, secret: true) {
+            bytes = secret
+        } else if let pub = try? cache.exportKey(fingerprint: key.fingerprint) {
+            bytes = pub
+        } else {
+            return nil
+        }
+        return KeyringKeyRecord(
             id: key.fingerprint,
             primaryUserID: key.primaryUserID,
             allUserIDs: key.userIDs,
-            keyBytes: Data(),
+            keyBytes: bytes,
             hasSecret: key.hasSecret,
             keyCreationDate: key.creationDate,
             keyExpirationDate: key.expirationDate,
@@ -95,13 +112,11 @@ public final class LocalFileKeyringBackend: KeyringBackend {
 }
 
 public enum LocalBackendError: Error, LocalizedError {
-    case managerUnavailable
     case keyringUnavailable
 
     public var errorDescription: String? {
         switch self {
-        case .managerUnavailable:  return "error.localBackend.managerUnavailable".localized
-        case .keyringUnavailable:  return "error.localBackend.keyringUnavailable".localized
+        case .keyringUnavailable: return "error.localBackend.keyringUnavailable".localized
         }
     }
 }

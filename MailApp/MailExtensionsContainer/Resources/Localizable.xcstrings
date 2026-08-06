@@ -17092,6 +17092,39 @@
         }
       }
     },
+    "sync.migration.noAscPath" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick a directory for the .asc files first."
+          }
+        }
+      }
+    },
+    "sync.migration.noCoordinator" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No sync coordinator available. Try restarting the app."
+          }
+        }
+      }
+    },
+    "sync.migration.success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Migration complete. Copied %d keys to the new store."
+          }
+        }
+      }
+    },
     "sync.notice.cloudKitStub" : {
       "extractionState" : "manual",
       "localizations" : {

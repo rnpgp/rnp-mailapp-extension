@@ -75,7 +75,7 @@
 		AA1000000000000000000009 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000A /* ContentView.swift */; };
 		AA100000000000000000000A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000B /* ContentViewModel.swift */; };
 		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
-		AA100000000000000000000E /* Resources/RNP.icns in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* Resources/RNP.icns */; };
+		AA100000000000000000000E /* RNP.icns in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* RNP.icns */; };
 		AA1000000000000000000010 /* MailPlugin.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA1000000000000000000012 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000002 /* Rnp */; };
 		AA1000000000000000000013 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000003 /* MailSecurityEngine */; };
@@ -89,6 +89,7 @@
 		AA100000000000000000001B /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
+		CD50CAE0B7CECDE0EBBA164E /* KeyringCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA5A3000656990E8209D336 /* KeyringCoordinator.swift */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
 /* End PBXBuildFile section */
 
@@ -204,6 +205,7 @@
 		4F6CB08F3024387D003384BA /* RNPUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F6CB0913024387D003384BA /* RNPUnitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNPUnitTests.swift; sourceTree = "<group>"; };
 		5A5F6629466BFE8ADAFAD979 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5AA5A3000656990E8209D336 /* KeyringCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyringCoordinator.swift; sourceTree = "<group>"; };
 		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
 		87CD88529F4C4270DBA7A051 /* SOURCES.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = SOURCES.md; path = ../../Vendor/SOURCES.md; sourceTree = "<group>"; };
 		8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -217,7 +219,7 @@
 		AA200000000000000000000A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA200000000000000000000B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		AA200000000000000000000C /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
-		AA200000000000000000000D /* Resources/RNP.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Resources/RNP.icns; sourceTree = "<group>"; };
+		AA200000000000000000000D /* RNP.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Resources/RNP.icns; sourceTree = "<group>"; };
 		AA2000000000000000000010 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppGroup.swift; path = ../../Sources/MailSecurityEngine/AppGroup.swift; sourceTree = "<group>"; };
 		AA2000000000000000000011 /* KeychainPassphraseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainPassphraseStore.swift; path = ../../Sources/MailSecurityEngine/KeychainPassphraseStore.swift; sourceTree = "<group>"; };
 		AA5000000000000000000002 /* MailPlugin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MailPlugin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -382,6 +384,7 @@
 				0A786852E497990EF1B7ECA5 /* PerKeyDirectoryKeyringBackend.swift */,
 				0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */,
 				0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */,
+				5AA5A3000656990E8209D336 /* KeyringCoordinator.swift */,
 			);
 			path = KeyringSync;
 			sourceTree = "<group>";
@@ -531,7 +534,7 @@
 				0A786852E497990EF1B7EC21 /* Intents */,
 				0A786852E497990EF1B7EC2B /* Updater */,
 				AA2000000000000000000008 /* MailExtensionsContainerApp.swift */,
-				AA200000000000000000000D /* Resources/RNP.icns */,
+				AA200000000000000000000D /* RNP.icns */,
 				AA300000000000000000000A /* Preview Content */,
 				F1B5C106AE83671ABFEEFD4A /* Direct.entitlements */,
 				218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */,
@@ -791,7 +794,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA100000000000000000000E /* Resources/RNP.icns in Resources */,
+				AA100000000000000000000E /* RNP.icns in Resources */,
 				4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */,
 				BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */,
 				FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */,
@@ -891,6 +894,7 @@
 				AA100000000000000000000B /* KeysListView.swift in Sources */,
 				0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */,
 				0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */,
+				CD50CAE0B7CECDE0EBBA164E /* KeyringCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
