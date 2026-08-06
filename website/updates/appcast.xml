@@ -23,10 +23,19 @@
       <sparkle:shortVersionString>0.9.7</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
       <!--
-        TODO(0.9.7): after the DMG is built, run
-          sign_update RNP-0.9.7.dmg
-        and paste the printed edDSA + length here. Until then Sparkle
-        will not offer this version to installed clients.
+        TODO(0.9.7): edDSA is empty because the project has not yet
+        generated an Ed25519 Sparkle signing key. Steps to land in a
+        follow-up "Sparkle key" PR:
+          1. Generate the keypair: Sparkle's `generate_keys` tool
+             (private key goes to Keychain, public key is printed).
+          2. Add SUPublicEDKey=<public key> to the app's Info.plist
+             so Sparkle knows what to verify against.
+          3. Export the private key and store it as the GitHub secret
+             SPARKLE_EDDSA_PRIVATE_KEY so CI can sign future DMGs.
+          4. Re-run `sign_update RNP-0.9.7.dmg` and paste the output
+             into sparkle:edDSA below.
+        Until edDSA is filled in, Sparkle will refuse to auto-update
+        installed clients to 0.9.7 — they must download manually.
       -->
       <description><![CDATA[
         <h2>What's new</h2>
@@ -39,7 +48,7 @@
       <enclosure
         url="https://github.com/rnpgp/rnp-mailapp-extension/releases/download/v0.9.7/RNP-0.9.7.dmg"
         sparkle:edDSA=""
-        length="0"
+        length="11484324"
         type="application/octet-stream" />
     </item>
 
