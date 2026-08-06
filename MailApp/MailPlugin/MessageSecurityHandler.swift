@@ -46,10 +46,18 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     /// passphrase, so every sign/encrypt/decrypt operation is freshly
     /// authorized.
     private static func makeCore() -> MessageSecurityCore? {
-        guard let store = SharedKeyring.makeKeyringStore(directory: AppGroup.keyringDirectory()) else {
+        // Use MailSecurityEngine's convenience init which constructs the
+        // keyring internally. This avoids referencing the deprecated
+        // KeyManager type from our code.
+        let provider: Rnp.PassphraseProvider = { context in
+            KeychainPassphraseStore.resolvingProvider()(context, nil)
+        }
+        guard let engine = try? MailSecurityEngine(
+            directory: AppGroup.keyringDirectory(),
+            passphraseProvider: provider
+        ) else {
             return nil
         }
-        let engine = MailSecurityEngine(keyManager: KeyManager(keyringStore: store))
         let stateRecorder = SecurityStateRecorder(directory: AppGroup.extensionStateDirectory())
         return MessageSecurityCore(engine: engine, stateRecorder: stateRecorder)
     }
