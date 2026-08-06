@@ -26,13 +26,13 @@ enum SharedKeyring {
     /// - Container app (KeysManager): surfaces `error.keyringOpenFailed`.
     /// - Mail extension (MessageSecurityHandler): returns nil core so
     ///   Mail launches and degrades to plaintext.
-    static func makeKeyManager(directory: URL) -> KeyManager? {
+    static func makeKeyringStore(directory: URL) -> KeyringStore? {
         let provider: Rnp.KeyedPassphraseProvider = KeychainPassphraseStore.resolvingProvider()
-        if let manager = try? KeyManager(directory: directory, keyedPassphraseProvider: provider) {
+        if let manager = try? KeyringStore(directory: directory, keyedPassphraseProvider: provider) {
             return manager
         }
         let fallback = FileManager.default.temporaryDirectory
             .appendingPathComponent("rnp-mail-extension-fallback")
-        return try? KeyManager(directory: fallback, keyedPassphraseProvider: provider)
+        return try? KeyringStore(directory: fallback, keyedPassphraseProvider: provider)
     }
 }

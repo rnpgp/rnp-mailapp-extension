@@ -31,25 +31,25 @@ final class KeysManager: ObservableObject {
     /// list flash before the keyring loads.
     @Published private(set) var isLoading = true
 
-    private var _keyManager: KeyManager?
+    private var _keyringStore: KeyringStore?
     /// Resolves the underlying engine `KeyManager` on demand. The first
     /// access after `bootstrap()` is cheap (cached); pre-bootstrap access
     /// returns nil and is harmless — operations surface
     /// `keyringUnavailable` errors which the UI maps to "loading…" state.
-    private var keyManager: KeyManager? {
-        _keyManager
+    private var keyringStore: KeyringStore? {
+        _keyringStore
     }
     private var lifecycle: KeyLifecycle? {
-        keyManager.map { KeyLifecycle(keyManager: $0) }
+        keyringStore.map { KeyLifecycle(keyringStore: $0) }
     }
 
     /// Archived (decrypt-only) keys for the Archived section.
     var archivedKeys: [KeyInfo] {
-        (try? keyManager?.archivedKeys()) ?? []
+        (try? keyringStore?.archivedKeys()) ?? []
     }
 
     /// Whether the engine keyManager is available.
-    var engineAvailable: Bool { keyManager != nil }
+    var engineAvailable: Bool { keyringStore != nil }
 
     /// Lightweight initializer — does NOT touch the keyring. Call
     /// `bootstrap()` from the view layer's `.onAppear` (or equivalent)
@@ -63,10 +63,10 @@ final class KeysManager: ObservableObject {
         guard isLoading else { return }
         let directory = Self.launchKeyringDirectory()
         DispatchQueue.global(qos: .userInitiated).async {
-            let manager = SharedKeyring.makeKeyManager(directory: directory)
+            let manager = SharedKeyring.makeKeyringStore(directory: directory)
             let locked = Self.computeKeyringLocked()
             DispatchQueue.main.async {
-                self._keyManager = manager
+                self._keyringStore = manager
                 self.keyringLocked = locked
                 self.isLoading = false
                 if manager == nil {
@@ -124,11 +124,11 @@ final class KeysManager: ObservableObject {
     /// - Returns: `true` when the passphrase was accepted.
     @discardableResult
     func unlockKeyringManually(passphrase: String) -> Bool {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return false
         }
-        guard !passphrase.isEmpty, verifyKeyringPassphrase(passphrase, keyManager: keyManager) else {
+        guard !passphrase.isEmpty, verifyKeyringPassphrase(passphrase, keyringStore: keyringStore) else {
             return false
         }
         if KeychainPassphraseStore.isBiometricProtectionEnabled {
@@ -145,13 +145,13 @@ final class KeysManager: ObservableObject {
     /// keys with it. Passing requires at least one secret key to unlock (a
     /// keyring without secret keys has nothing to verify against, so the
     /// passphrase is accepted).
-    private func verifyKeyringPassphrase(_ passphrase: String, keyManager: KeyManager) -> Bool {
+    private func verifyKeyringPassphrase(_ passphrase: String, keyringStore: KeyringStore) -> Bool {
         let secretFingerprints = keys.filter(\.hasSecret).map(\.fingerprint)
         guard !secretFingerprints.isEmpty else {
             return true
         }
         for fingerprint in secretFingerprints {
-            if let unlocked = try? keyManager.unlockSecretKey(fingerprint: fingerprint, passphrase: passphrase),
+            if let unlocked = try? keyringStore.unlockSecretKey(fingerprint: fingerprint, passphrase: passphrase),
                unlocked
             {
                 return true
@@ -172,13 +172,13 @@ final class KeysManager: ObservableObject {
     }
 
     func reload() {
-        guard let keyManager else {
+        guard let keyringStore else {
             keys = []
             lastError = "error.keyringOpenFailed".localized
             return
         }
         do {
-            keys = try keyManager.listKeys()
+            keys = try keyringStore.listKeys()
         } catch {
             keys = []
             lastError = error.localizedDescription
@@ -192,7 +192,7 @@ final class KeysManager: ObservableObject {
         expirationSeconds: UInt32 = 0,
         useTouchID: Bool = false
     ) {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return
         }
@@ -211,12 +211,12 @@ final class KeysManager: ObservableObject {
         }
 
         perform {
-            let info = try keyManager.generateKey(
+            let info = try keyringStore.generateKey(
                 userID: userID,
                 algorithm: algorithm,
                 expirationSeconds: expirationSeconds
             )
-            lastRevocationCertificateURL = try keyManager.saveRevocationCertificate(fingerprint: info.fingerprint)
+            lastRevocationCertificateURL = try keyringStore.saveRevocationCertificate(fingerprint: info.fingerprint)
         }
     }
 
@@ -226,16 +226,16 @@ final class KeysManager: ObservableObject {
     /// UI can ask the user to unlock them.
     @discardableResult
     func importKeys(_ data: Data) -> [KeyInfo] {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return []
         }
         var imported: [KeyInfo] = []
         perform {
-            imported = try keyManager.importKeys(data)
+            imported = try keyringStore.importKeys(data)
         }
         if !imported.isEmpty {
-            detectForeignPassphraseKeys(among: imported, keyManager: keyManager)
+            detectForeignPassphraseKeys(among: imported, keyringStore: keyringStore)
         }
         return imported
     }
@@ -250,7 +250,7 @@ final class KeysManager: ObservableObject {
     /// Queues unlock prompts for imported secret keys the keyring passphrase
     /// cannot unlock. Keys that already have a stored per-key passphrase or
     /// a pending request are skipped.
-    private func detectForeignPassphraseKeys(among imported: [KeyInfo], keyManager: KeyManager) {
+    private func detectForeignPassphraseKeys(among imported: [KeyInfo], keyringStore: KeyringStore) {
         let fingerprints = imported.filter(\.hasSecret).map(\.fingerprint)
         guard !fingerprints.isEmpty else {
             return
@@ -262,7 +262,7 @@ final class KeysManager: ObservableObject {
         guard !keyringPassphrase.isEmpty else {
             return
         }
-        let locked = (try? keyManager.lockedSecretKeys(
+        let locked = (try? keyringStore.lockedSecretKeys(
             keyringPassphrase: keyringPassphrase,
             among: fingerprints
         )) ?? []
@@ -278,12 +278,12 @@ final class KeysManager: ObservableObject {
     ///
     /// - Returns: `true` when the passphrase unlocked the key and was stored.
     func storeForeignPassphrase(_ passphrase: String, for request: LockedSecretKeyInfo) -> Bool {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return false
         }
         do {
-            guard try keyManager.unlockSecretKey(fingerprint: request.fingerprint, passphrase: passphrase) else {
+            guard try keyringStore.unlockSecretKey(fingerprint: request.fingerprint, passphrase: passphrase) else {
                 return false
             }
             if let warning = KeychainPassphraseStore.setPassphrase(passphrase, forKeyFingerprint: request.fingerprint) {
@@ -304,7 +304,7 @@ final class KeysManager: ObservableObject {
     /// - Returns: `true` when the passphrase unlocked the key and the key
     ///   was re-protected.
     func reprotectForeignKey(_ passphrase: String, for request: LockedSecretKeyInfo) -> Bool {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return false
         }
@@ -316,7 +316,7 @@ final class KeysManager: ObservableObject {
             return false
         }
         do {
-            try keyManager.reprotectSecretKey(
+            try keyringStore.reprotectSecretKey(
                 fingerprint: request.fingerprint,
                 currentPassphrase: passphrase,
                 newPassphrase: keyringPassphrase
@@ -344,28 +344,28 @@ final class KeysManager: ObservableObject {
 
     /// Armored public key export for the given fingerprint.
     func exportKey(fingerprint: String) -> Data? {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return nil
         }
-        return try? keyManager.exportKey(fingerprint: fingerprint)
+        return try? keyringStore.exportKey(fingerprint: fingerprint)
     }
 
     /// Armored secret key export for the given fingerprint.
     func exportSecretKey(fingerprint: String) -> Data? {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return nil
         }
-        return try? keyManager.exportKey(fingerprint: fingerprint, secret: true)
+        return try? keyringStore.exportKey(fingerprint: fingerprint, secret: true)
     }
 
     /// Encrypts `plaintext` symmetrically with `passphrase` using the
     /// keyring's Rnp instance. Used by the delete-backup flow.
     /// Returns nil if the keyring is unavailable or encryption fails.
     func encryptWithPassword(_ plaintext: Data, passphrase: String) -> Data? {
-        guard let keyManager else { return nil }
-        return try? keyManager.withRnp { rnp in
+        guard let keyringStore else { return nil }
+        return try? keyringStore.withRnp { rnp in
             try rnp.encryptWithPassword(plaintext, password: passphrase, armored: true)
         }
     }
@@ -379,7 +379,7 @@ final class KeysManager: ObservableObject {
     // added to `FileSecurityOperation`, not here.
 
     private lazy var fileSecurityEngine: FileSecurityEngine = {
-        FileSecurityEngine(keyManager: keyManager)
+        FileSecurityEngine(keyringStore: keyringStore)
     }()
 
     /// Encrypts `plaintext` for the given recipient fingerprints and returns
@@ -475,30 +475,30 @@ final class KeysManager: ObservableObject {
     }
 
     func delete(_ key: KeyInfo) {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return
         }
         perform {
-            try keyManager.deleteKey(fingerprint: key.fingerprint)
+            try keyringStore.deleteKey(fingerprint: key.fingerprint)
             KeychainPassphraseStore.removePassphrase(forKeyFingerprint: key.fingerprint)
         }
     }
 
     /// Restores an archived key to active state.
     func restoreArchivedKey(fingerprint: String) throws {
-        guard let keyManager else { return }
-        try keyManager.setUsageState(.active, forFingerprint: fingerprint, reason: "user restored from archive")
+        guard let keyringStore else { return }
+        try keyringStore.setUsageState(.active, forFingerprint: fingerprint, reason: "user restored from archive")
     }
 
     /// Deletes a key from the keyring permanently (after the user has
     /// confirmed via `DeleteForeverConfirmation`). Also clears the
     /// usage-state record and any per-key passphrase.
     func deleteKeyForever(fingerprint: String) {
-        guard let keyManager else { return }
+        guard let keyringStore else { return }
         perform {
-            try keyManager.deleteKey(fingerprint: fingerprint)
-            try? keyManager.removeUsageRecord(forFingerprint: fingerprint)
+            try keyringStore.deleteKey(fingerprint: fingerprint)
+            try? keyringStore.removeUsageRecord(forFingerprint: fingerprint)
             KeychainPassphraseStore.removePassphrase(forKeyFingerprint: fingerprint)
         }
     }
@@ -558,10 +558,10 @@ final class KeysManager: ObservableObject {
 
     /// Publishes the armored public key of the given key to the default keyserver.
     func publish(key: KeyInfo) async -> Result<UploadReceipt, KeyServerError> {
-        guard let keyManager else {
+        guard let keyringStore else {
             return .failure(.network(underlying: "error.keyringOpenFailed".localized))
         }
-        guard let armored = try? keyManager.exportKey(fingerprint: key.fingerprint) else {
+        guard let armored = try? keyringStore.exportKey(fingerprint: key.fingerprint) else {
             return .failure(.malformedKey)
         }
         let service = KeyServerService()
@@ -597,36 +597,36 @@ final class KeysManager: ObservableObject {
 
     /// Subkey metadata for the given fingerprint.
     func subkeys(for key: KeyInfo) -> [SubkeyInfo] {
-        guard let keyManager else {
+        guard let keyringStore else {
             return []
         }
-        return (try? keyManager.subkeys(for: key.fingerprint)) ?? []
+        return (try? keyringStore.subkeys(for: key.fingerprint)) ?? []
     }
 
     /// Trust state for the given fingerprint.
     func trustState(forFpr fingerprint: String) -> TrustState {
-        guard let keyManager else {
+        guard let keyringStore else {
             return .unverified
         }
-        return keyManager.trustStore.state(forFpr: fingerprint)
+        return keyringStore.trustStore.state(forFpr: fingerprint)
     }
 
     /// All unresolved key-change conflicts.
     func trustConflicts() -> [TrustConflict] {
-        guard let keyManager else {
+        guard let keyringStore else {
             return []
         }
-        return keyManager.trustStore.conflicts()
+        return keyringStore.trustStore.conflicts()
     }
 
     /// Marks the fingerprint as verified and resolves any related conflict.
     func markVerified(fingerprint: String) {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return
         }
         do {
-            try keyManager.trustStore.markVerified(fingerprint: fingerprint)
+            try keyringStore.trustStore.markVerified(fingerprint: fingerprint)
             reload()
         } catch {
             lastError = error.localizedDescription
@@ -636,12 +636,12 @@ final class KeysManager: ObservableObject {
     /// Rejects the newly seen key of a key-change conflict, keeping the old
     /// binding for the address.
     func rejectConflict(email: String, newFingerprint: String) {
-        guard let keyManager else {
+        guard let keyringStore else {
             lastError = "error.keyringOpenFailed".localized
             return
         }
         do {
-            try keyManager.trustStore.rejectConflict(email: email, newFpr: newFingerprint)
+            try keyringStore.trustStore.rejectConflict(email: email, newFpr: newFingerprint)
             reload()
         } catch {
             lastError = error.localizedDescription
@@ -650,20 +650,20 @@ final class KeysManager: ObservableObject {
 
     /// The unresolved conflict whose new key has the given fingerprint.
     func trustConflict(forNewFingerprint fingerprint: String) -> TrustConflict? {
-        guard let keyManager else {
+        guard let keyringStore else {
             return nil
         }
-        return keyManager.trustStore.conflicts().first {
+        return keyringStore.trustStore.conflicts().first {
             $0.newFingerprint.caseInsensitiveCompare(fingerprint) == .orderedSame
         }
     }
 
     /// Trust history recorded for an address, most recent first.
     func trustHistory(forEmail email: String) -> [TrustRecord] {
-        guard let keyManager else {
+        guard let keyringStore else {
             return []
         }
-        return keyManager.trustStore.history(forEmail: email)
+        return keyringStore.trustStore.history(forEmail: email)
     }
 
     /// First email address found in the key's user IDs.

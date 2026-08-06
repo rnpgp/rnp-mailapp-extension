@@ -46,10 +46,10 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     /// passphrase, so every sign/encrypt/decrypt operation is freshly
     /// authorized.
     private static func makeCore() -> MessageSecurityCore? {
-        guard let keyManager = SharedKeyring.makeKeyManager(directory: AppGroup.keyringDirectory()) else {
+        guard let store = SharedKeyring.makeKeyringStore(directory: AppGroup.keyringDirectory()) else {
             return nil
         }
-        let engine = MailSecurityEngine(keyManager: keyManager)
+        let engine = MailSecurityEngine(keyManager: KeyManager(keyringStore: store))
         let stateRecorder = SecurityStateRecorder(directory: AppGroup.extensionStateDirectory())
         return MessageSecurityCore(engine: engine, stateRecorder: stateRecorder)
     }

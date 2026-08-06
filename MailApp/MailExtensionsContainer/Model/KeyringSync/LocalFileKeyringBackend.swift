@@ -71,7 +71,7 @@ public final class LocalFileKeyringBackend: KeyringBackend {
     /// Refreshes the cached snapshot by reading the directory via
     /// `SharedKeyring`'s `KeyManager`. Call after any mutation.
     public func reload() {
-        guard let km = SharedKeyring.makeKeyManager(directory: directory) else {
+        guard let km = SharedKeyring.makeKeyringStore(directory: directory) else {
             subject.send([])
             return
         }

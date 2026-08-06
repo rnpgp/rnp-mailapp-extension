@@ -172,26 +172,26 @@ public enum FileSecurityError: Error, LocalizedError {
 /// Single entry point for all OpenPGP file operations. Construct one
 /// per `KeysManager` and call `perform(_:)` with the operation you want.
 public final class FileSecurityEngine {
-    private let keyManager: KeyManager?
+    private let keyringStore: KeyringStore?
 
-    public init(keyManager: KeyManager?) {
-        self.keyManager = keyManager
+    public init(keyringStore: KeyringStore?) {
+        self.keyringStore = keyringStore
     }
 
     /// Routes an operation to its strategy. This is the only switch in
     /// the file — adding a new operation means adding one case here plus
     /// a Strategy implementation below.
     public func perform(_ operation: FileSecurityOperation) throws -> FileSecurityResult {
-        guard let keyManager else { throw FileSecurityError.keyringUnavailable }
+        guard let keyringStore else { throw FileSecurityError.keyringUnavailable }
         switch operation {
-        case .encrypt(let req):      return try EncryptStrategy.perform(req, keyManager: keyManager)
-        case .encryptWithPassword(let req): return try EncryptWithPasswordStrategy.perform(req, keyManager: keyManager)
-        case .decrypt(let req):      return try DecryptStrategy.perform(req, keyManager: keyManager)
-        case .sign(let req):         return try SignStrategy.perform(req, detached: false, keyManager: keyManager)
-        case .signDetached(let req): return try SignStrategy.perform(req, detached: true, keyManager: keyManager)
-        case .signCleartext(let req):        return try SignCleartextStrategy.perform(req, keyManager: keyManager)
-        case .verify(let req):       return try VerifyStrategy.performInline(req, keyManager: keyManager)
-        case .verifyDetached(let req): return try VerifyStrategy.performDetached(req, keyManager: keyManager)
+        case .encrypt(let req):      return try EncryptStrategy.perform(req, keyringStore: keyringStore)
+        case .encryptWithPassword(let req): return try EncryptWithPasswordStrategy.perform(req, keyringStore: keyringStore)
+        case .decrypt(let req):      return try DecryptStrategy.perform(req, keyringStore: keyringStore)
+        case .sign(let req):         return try SignStrategy.perform(req, detached: false, keyringStore: keyringStore)
+        case .signDetached(let req): return try SignStrategy.perform(req, detached: true, keyringStore: keyringStore)
+        case .signCleartext(let req):        return try SignCleartextStrategy.perform(req, keyringStore: keyringStore)
+        case .verify(let req):       return try VerifyStrategy.performInline(req, keyringStore: keyringStore)
+        case .verifyDetached(let req): return try VerifyStrategy.performDetached(req, keyringStore: keyringStore)
         }
     }
 }
@@ -199,8 +199,8 @@ public final class FileSecurityEngine {
 // MARK: - Strategies (one per operation; OCP — add new operations here)
 
 enum EncryptStrategy {
-    static func perform(_ req: EncryptRequest, keyManager: KeyManager) throws -> FileSecurityResult {
-        try keyManager.withRnp { rnp in
+    static func perform(_ req: EncryptRequest, keyringStore: KeyringStore) throws -> FileSecurityResult {
+        try keyringStore.withRnp { rnp in
             var recipients: [RnpKey] = []
             for fpr in req.recipientFingerprints {
                 guard let key = try? rnp.requireKey(fpr, type: .fingerprint) else {
@@ -221,8 +221,8 @@ enum EncryptStrategy {
 }
 
 enum DecryptStrategy {
-    static func perform(_ req: DecryptRequest, keyManager: KeyManager) throws -> FileSecurityResult {
-        try keyManager.withRnp { rnp in
+    static func perform(_ req: DecryptRequest, keyringStore: KeyringStore) throws -> FileSecurityResult {
+        try keyringStore.withRnp { rnp in
             // Try decrypt first; fall back to verify for cleartext-signed payloads.
             if let decrypted = try? rnp.decrypt(req.ciphertext) {
                 return .plaintext(decrypted, signatureValidity: nil)
@@ -234,8 +234,8 @@ enum DecryptStrategy {
 }
 
 enum EncryptWithPasswordStrategy {
-    static func perform(_ req: EncryptWithPasswordRequest, keyManager: KeyManager) throws -> FileSecurityResult {
-        try keyManager.withRnp { rnp in
+    static func perform(_ req: EncryptWithPasswordRequest, keyringStore: KeyringStore) throws -> FileSecurityResult {
+        try keyringStore.withRnp { rnp in
             let aead: Rnp.EncryptAEAD = req.aead ? .ocb : .none
             let ciphertext = try rnp.encryptWithPassword(
                 req.plaintext,
@@ -249,8 +249,8 @@ enum EncryptWithPasswordStrategy {
 }
 
 enum SignCleartextStrategy {
-    static func perform(_ req: SignRequest, keyManager: KeyManager) throws -> FileSecurityResult {
-        try keyManager.withRnp { rnp in
+    static func perform(_ req: SignRequest, keyringStore: KeyringStore) throws -> FileSecurityResult {
+        try keyringStore.withRnp { rnp in
             let key = try rnp.requireKey(req.signingKeyFingerprint, type: .fingerprint)
             let cleartext = try rnp.signCleartext(req.payload, with: key)
             return .signedPayload(cleartext)
@@ -262,8 +262,8 @@ enum SignStrategy {
     /// `detached == false` produces an inline signed payload (the
     /// original bytes plus the signature). `detached == true` produces
     /// a standalone `.sig` the user keeps alongside the original.
-    static func perform(_ req: SignRequest, detached: Bool, keyManager: KeyManager) throws -> FileSecurityResult {
-        try keyManager.withRnp { rnp in
+    static func perform(_ req: SignRequest, detached: Bool, keyringStore: KeyringStore) throws -> FileSecurityResult {
+        try keyringStore.withRnp { rnp in
             let key = try rnp.requireKey(req.signingKeyFingerprint, type: .fingerprint)
             if detached {
                 let sig = try rnp.signDetached(req.payload, with: key, armored: req.armored)
@@ -277,15 +277,15 @@ enum SignStrategy {
 }
 
 enum VerifyStrategy {
-    static func performInline(_ req: VerifyRequest, keyManager: KeyManager) throws -> FileSecurityResult {
-        try keyManager.withRnp { rnp in
+    static func performInline(_ req: VerifyRequest, keyringStore: KeyringStore) throws -> FileSecurityResult {
+        try keyringStore.withRnp { rnp in
             let v = try rnp.verifyDetailed(req.signedPayload)
             return makeVerificationResult(from: v, fallbackPayload: req.signedPayload)
         }
     }
 
-    static func performDetached(_ req: VerifyDetachedRequest, keyManager: KeyManager) throws -> FileSecurityResult {
-        try keyManager.withRnp { rnp in
+    static func performDetached(_ req: VerifyDetachedRequest, keyringStore: KeyringStore) throws -> FileSecurityResult {
+        try keyringStore.withRnp { rnp in
             let v = try rnp.verifyDetachedDetailed(signature: req.detachedSignature, data: req.payload)
             return makeVerificationResult(from: v, fallbackPayload: req.payload)
         }
