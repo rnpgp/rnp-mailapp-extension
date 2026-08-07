@@ -17092,6 +17092,160 @@
         }
       }
     },
+    "sync.conflicts.count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d conflicts waiting for review"
+          }
+        }
+      }
+    },
+    "sync.conflicts.none" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No conflicts."
+          }
+        }
+      }
+    },
+    "sync.conflicts.review" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review…"
+          }
+        }
+      }
+    },
+    "sync.conflicts.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conflicts"
+          }
+        }
+      }
+    },
+    "conflictReview.detectedAt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detected %1$@ · %2$d bytes"
+          }
+        }
+      }
+    },
+    "conflictReview.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No conflicts to review"
+          }
+        }
+      }
+    },
+    "conflictReview.emptyDetail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When another device writes a key whose bytes differ from what's on this Mac, the older version is stashed here for review."
+          }
+        }
+      }
+    },
+    "conflictReview.keepLocal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep local"
+          }
+        }
+      }
+    },
+    "conflictReview.keepRemote" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep incoming"
+          }
+        }
+      }
+    },
+    "conflictReview.refresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh"
+          }
+        }
+      }
+    },
+    "conflictReview.reveal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show in Finder"
+          }
+        }
+      }
+    },
+    "conflictReview.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick which version to keep for each fingerprint. The other is discarded."
+          }
+        }
+      }
+    },
+    "conflictReview.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review sync conflicts"
+          }
+        }
+      }
+    },
+    "conflictReview.wrongBackend" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conflicts are only tracked when the per-key .asc directory is the active canonical store."
+          }
+        }
+      }
+    },
     "sync.migration.noAscPath" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17131,7 +17285,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "CloudKit syncs to your iPhone. Requires iCloud sign-in."
+            "value" : "CloudKit mirrors your keyring to iCloud private DB and pushes changes between signed-in Macs. Requires iCloud sign-in. Passphrases stay in iCloud Keychain, not CloudKit."
           }
         }
       }

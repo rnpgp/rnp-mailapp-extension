@@ -90,6 +90,7 @@
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		CD50CAE0B7CECDE0EBBA164E /* KeyringCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA5A3000656990E8209D336 /* KeyringCoordinator.swift */; };
+		F015A90D8E5550A84D47A313 /* ConflictReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903DD82C6669558E9E81096D /* ConflictReviewSheet.swift */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
 /* End PBXBuildFile section */
 
@@ -209,6 +210,7 @@
 		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
 		87CD88529F4C4270DBA7A051 /* SOURCES.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = SOURCES.md; path = ../../Vendor/SOURCES.md; sourceTree = "<group>"; };
 		8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		903DD82C6669558E9E81096D /* ConflictReviewSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConflictReviewSheet.swift; sourceTree = "<group>"; };
 		AA2000000000000000000003 /* MailExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtension.swift; sourceTree = "<group>"; };
 		AA2000000000000000000004 /* MessageSecurityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityHandler.swift; sourceTree = "<group>"; };
 		AA2000000000000000000005 /* MessageSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityViewController.swift; sourceTree = "<group>"; };
@@ -410,6 +412,7 @@
 			isa = PBXGroup;
 			children = (
 				0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */,
+				903DD82C6669558E9E81096D /* ConflictReviewSheet.swift */,
 			);
 			path = SyncSettings;
 			sourceTree = "<group>";
@@ -895,6 +898,7 @@
 				0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */,
 				0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */,
 				CD50CAE0B7CECDE0EBBA164E /* KeyringCoordinator.swift in Sources */,
+				F015A90D8E5550A84D47A313 /* ConflictReviewSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

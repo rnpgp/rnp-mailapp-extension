@@ -17,6 +17,27 @@
 import Combine
 import Foundation
 
+/// One `<fpr>.asc.conflict-<timestamp>` file produced by
+/// `PerKeyDirectoryKeyringBackend.upsert` when an incoming write
+/// diverged from the bytes already on disk. The review sheet shows
+/// these and asks the user which version to keep.
+public struct ConflictFile: Identifiable, Equatable {
+    /// The fingerprint the conflict is for.
+    public let fingerprint: String
+    /// Conflict timestamp as embedded in the filename (UTC, ISO-ish).
+    public let conflictTimestamp: String
+    /// Filesystem modification time of the conflict file.
+    public let detectedAt: Date
+    /// Size of the conflict file in bytes — useful to spot empty
+    /// partial writes.
+    public let byteCount: Int
+    /// URL of the conflict file on disk.
+    public let url: URL
+
+    public var id: String { "\(fingerprint)-\(conflictTimestamp)" }
+}
+
+
 public final class PerKeyDirectoryKeyringBackend: KeyringBackend {
 
     public let identifier: String
@@ -76,6 +97,59 @@ public final class PerKeyDirectoryKeyringBackend: KeyringBackend {
 
     public func observeChanges(_ handler: @escaping ([KeyringKeyRecord]) -> Void) -> AnyCancellable {
         subject.sink(receiveValue: handler)
+    }
+
+    /// Lists every conflict file currently in the directory. Each
+    /// entry corresponds to a previous upsert where the incoming bytes
+    /// differed from what was already there — the older version was
+    /// renamed to `<fpr>.asc.conflict-<timestamp>` and is waiting for
+    /// the user to review. The list is sorted newest-first so the
+    /// review sheet shows the most recent conflict at the top.
+    public func listConflicts() -> [ConflictFile] {
+        guard let entries = try? FileManager.default.contentsOfDirectory(
+            at: directory, includingPropertiesForKeys: [.contentModificationDateKey]
+        ) else { return [] }
+        var out: [ConflictFile] = []
+        for entry in entries {
+            let name = entry.lastPathComponent
+            guard name.hasSuffix(".asc"), name.contains(".conflict-") else { continue }
+            // Filename format: <fpr>.asc.conflict-<timestamp>
+            let base = name.replacingOccurrences(of: ".asc.conflict-", with: ".asc||")
+            let parts = base.components(separatedBy: "||")
+            guard parts.count == 2 else { continue }
+            let fpr = String(parts[0].dropLast(".asc".count))
+            let ts = parts[1]
+            let attrs = try? FileManager.default.attributesOfItem(atPath: entry.path)
+            let modified = (attrs?[.modificationDate] as? Date) ?? Date()
+            let size = (attrs?[.size] as? NSNumber)?.intValue ?? 0
+            out.append(ConflictFile(
+                fingerprint: fpr,
+                conflictTimestamp: ts,
+                detectedAt: modified,
+                byteCount: size,
+                url: entry
+            ))
+        }
+        return out.sorted { $0.detectedAt > $1.detectedAt }
+    }
+
+    /// Resolves a conflict by keeping the local (currently-active)
+    /// bytes: just removes the conflict file. The main `.asc` file is
+    /// untouched.
+    public func resolveConflictKeepLocal(_ conflict: ConflictFile) throws {
+        try? FileManager.default.removeItem(at: conflict.url)
+        reload()
+    }
+
+    /// Resolves a conflict by keeping the remote (conflict) bytes:
+    /// replaces the main `.asc` file with the conflict file's bytes
+    /// and removes the conflict file. Used when the user decides the
+    /// incoming version was the right one.
+    public func resolveConflictKeepRemote(_ conflict: ConflictFile) throws {
+        let main = url(for: conflict.fingerprint)
+        try? FileManager.default.removeItem(at: main)
+        try FileManager.default.moveItem(at: conflict.url, to: main)
+        reload()
     }
 
     // MARK: Internals
