@@ -58,6 +58,7 @@
 		0A786852E497990EF1B7ECAD /* StorageChoiceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECAE /* StorageChoiceSheet.swift */; };
 		0A786852E497990EF1B7ECAF /* GnuPGAgentPassphraseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */; };
 		0A786852E497990EF1B7ECB1 /* CloudKitKeyringBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */; };
+		1BECA81AAD0F4CDCBD7411E2 /* RemoteDeletionReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DD098103C0A60D272F7EF88 /* RemoteDeletionReviewSheet.swift */; };
 		1EA4CD8D67D36E8FCC08669A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */; };
 		4154CB77A5FAA4E0A86D6020 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */; };
 		4F2EF14A30245FD60079B4AF /* KeyringIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2EF14930245FD60079B4AF /* KeyringIndexTests.swift */; };
@@ -67,6 +68,7 @@
 		73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */; };
 		89D5174051747C352D8BE078 /* Ribose_containerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8C3F584EC5EDB6BF983F76 /* Ribose_containerUITests.swift */; };
 		8FA94A049D51D12E96C274DF /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAFFEC46C22FE2A0FBFA3E4E /* Cocoa.framework */; };
+		9A402BB256781FE0F0A3ABC1 /* PassphraseStoreRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B2D96B8994339BD7CC04947 /* PassphraseStoreRouter.swift */; };
 		AA1000000000000000000002 /* MailExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000003 /* MailExtension.swift */; };
 		AA1000000000000000000003 /* MessageSecurityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000004 /* MessageSecurityHandler.swift */; };
 		AA1000000000000000000004 /* MessageSecurityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000005 /* MessageSecurityViewController.swift */; };
@@ -200,6 +202,7 @@
 		218F37638DBA8A9CAFF9CC2B /* AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
 		2DE025D99CCB37F3A7B57444 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UniformTypeIdentifiers.framework; sourceTree = "<group>"; };
+		3B2D96B8994339BD7CC04947 /* PassphraseStoreRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PassphraseStoreRouter.swift; sourceTree = "<group>"; };
 		3EDEA75247AF59D64D6E4190 /* Direct.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Direct.entitlements; sourceTree = "<group>"; };
 		4F2EF14930245FD60079B4AF /* KeyringIndexTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyringIndexTests.swift; sourceTree = "<group>"; };
 		4F2EF14B30245FEB0079B4AF /* PseudoLocalizationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PseudoLocalizationTests.swift; sourceTree = "<group>"; };
@@ -211,6 +214,7 @@
 		87CD88529F4C4270DBA7A051 /* SOURCES.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = SOURCES.md; path = ../../Vendor/SOURCES.md; sourceTree = "<group>"; };
 		8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		903DD82C6669558E9E81096D /* ConflictReviewSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConflictReviewSheet.swift; sourceTree = "<group>"; };
+		9DD098103C0A60D272F7EF88 /* RemoteDeletionReviewSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoteDeletionReviewSheet.swift; sourceTree = "<group>"; };
 		AA2000000000000000000003 /* MailExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailExtension.swift; sourceTree = "<group>"; };
 		AA2000000000000000000004 /* MessageSecurityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityHandler.swift; sourceTree = "<group>"; };
 		AA2000000000000000000005 /* MessageSecurityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSecurityViewController.swift; sourceTree = "<group>"; };
@@ -387,6 +391,7 @@
 				0A786852E497990EF1B7ECB0 /* GnuPGAgentPassphraseStore.swift */,
 				0A786852E497990EF1B7ECB2 /* CloudKitKeyringBackend.swift */,
 				5AA5A3000656990E8209D336 /* KeyringCoordinator.swift */,
+				3B2D96B8994339BD7CC04947 /* PassphraseStoreRouter.swift */,
 			);
 			path = KeyringSync;
 			sourceTree = "<group>";
@@ -413,6 +418,7 @@
 			children = (
 				0A786852E497990EF1B7ECA9 /* SyncSettingsSheet.swift */,
 				903DD82C6669558E9E81096D /* ConflictReviewSheet.swift */,
+				9DD098103C0A60D272F7EF88 /* RemoteDeletionReviewSheet.swift */,
 			);
 			path = SyncSettings;
 			sourceTree = "<group>";
@@ -899,6 +905,8 @@
 				0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */,
 				CD50CAE0B7CECDE0EBBA164E /* KeyringCoordinator.swift in Sources */,
 				F015A90D8E5550A84D47A313 /* ConflictReviewSheet.swift in Sources */,
+				1BECA81AAD0F4CDCBD7411E2 /* RemoteDeletionReviewSheet.swift in Sources */,
+				9A402BB256781FE0F0A3ABC1 /* PassphraseStoreRouter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

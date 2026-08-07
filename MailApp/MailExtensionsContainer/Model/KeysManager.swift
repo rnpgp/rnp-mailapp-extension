@@ -278,7 +278,7 @@ final class KeysManager: ObservableObject {
             keyringPassphrase: keyringPassphrase,
             among: fingerprints
         )) ?? []
-        for info in locked where KeychainPassphraseStore.passphrase(forKeyFingerprint: info.fingerprint) == nil {
+        for info in locked where PassphraseStoreRouter.passphrase(forKeyFingerprint: info.fingerprint) == nil {
             if !foreignPassphraseRequests.contains(info) {
                 foreignPassphraseRequests.append(info)
             }
@@ -298,7 +298,7 @@ final class KeysManager: ObservableObject {
             guard try keyringStore.unlockSecretKey(fingerprint: request.fingerprint, passphrase: passphrase) else {
                 return false
             }
-            if let warning = KeychainPassphraseStore.setPassphrase(passphrase, forKeyFingerprint: request.fingerprint) {
+            if let warning = PassphraseStoreRouter.setPassphrase(passphrase, forKeyFingerprint: request.fingerprint) {
                 lastError = warning.message
                 return false
             }
@@ -335,7 +335,7 @@ final class KeysManager: ObservableObject {
             )
             // Re-protected with the keyring passphrase: a stale per-key entry
             // for this fingerprint must not shadow it.
-            KeychainPassphraseStore.removePassphrase(forKeyFingerprint: request.fingerprint)
+            PassphraseStoreRouter.removePassphrase(forKeyFingerprint: request.fingerprint)
             foreignPassphraseRequests.removeAll { $0 == request }
             reload()
             return true
@@ -493,7 +493,7 @@ final class KeysManager: ObservableObject {
         }
         perform {
             try keyringStore.deleteKey(fingerprint: key.fingerprint)
-            KeychainPassphraseStore.removePassphrase(forKeyFingerprint: key.fingerprint)
+            PassphraseStoreRouter.removePassphrase(forKeyFingerprint: key.fingerprint)
         }
     }
 
@@ -511,7 +511,7 @@ final class KeysManager: ObservableObject {
         perform {
             try keyringStore.deleteKey(fingerprint: fingerprint)
             try? keyringStore.removeUsageRecord(forFingerprint: fingerprint)
-            KeychainPassphraseStore.removePassphrase(forKeyFingerprint: fingerprint)
+            PassphraseStoreRouter.removePassphrase(forKeyFingerprint: fingerprint)
         }
     }
 

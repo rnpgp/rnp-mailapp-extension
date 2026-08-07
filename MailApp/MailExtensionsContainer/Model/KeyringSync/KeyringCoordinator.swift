@@ -29,6 +29,7 @@
 import Combine
 import Foundation
 import MailSecurityEngine
+import Rnp
 
 public final class KeyringCoordinator {
 
@@ -60,6 +61,16 @@ public final class KeyringCoordinator {
 
     private var observer: AnyCancellable?
     private let propagateSubject = PassthroughSubject<PropagationEvent, Never>()
+
+    /// Fingerprints the backend reported the last time we saw a
+    /// non-empty remote snapshot. Used by `reconcileLocalCache` to
+    /// detect deletions without flagging every key on a transient
+    /// empty read (network blip, iCloud briefly unavailable).
+    private var lastNonEmptyRemoteFprs: Set<String> = []
+    /// Fingerprints the user has not yet decided about. Populated when
+    /// the backend reports a snapshot missing a key it previously had.
+    /// Cleared per-fingerprint by `resolveRemoteDeletion`.
+    @Published public private(set) var pendingRemoteDeletions: Set<String> = []
 
     /// Stream of propagate attempts (success + failure). UI surfaces
     /// failures as a non-blocking banner; tests use it for assertions.
@@ -232,12 +243,10 @@ public final class KeyringCoordinator {
     /// keys into the local cache when a remote change arrives (push
     /// from another device, file-sync tool rewrote the .asc dir).
     ///
-    /// For PR 1+2 we keep this additive only — keys added remotely
-    /// appear locally, but keys deleted remotely are NOT removed
-    /// from the local cache. That matches the "never wipe user keys"
-    /// rule and gives the user a chance to review deletions before
-    /// they propagate. A follow-up will add a review sheet for
-    /// remote deletions.
+    /// Additive for new keys; deletions are flagged in
+    /// `pendingRemoteDeletions` for the review sheet — they are NOT
+    /// auto-applied to the local cache. That matches the "never wipe
+    /// user keys" rule.
     private func startObservingBackend() {
         observer = backend.observeChanges { [weak self] records in
             guard let self else { return }
@@ -250,13 +259,48 @@ public final class KeyringCoordinator {
     private func reconcileLocalCache(with records: [KeyringKeyRecord]) {
         // rnp-local: backend and cache are the same file. Nothing to do.
         if backend.identifier == "rnp-local" { return }
+        let remoteFprs = Set(records.map(\.id))
         let localFprs = Set(((try? localCache.listKeys()) ?? []).map(\.fingerprint))
+
+        // Additive: import any new remote keys.
         for record in records where !localFprs.contains(record.id) {
             do {
                 _ = try localCache.importKeys(record.keyBytes)
             } catch {
                 propagateSubject.send(.failed(fingerprint: record.id, message: error.localizedDescription))
             }
+        }
+
+        // Deletion detection: only flag fingerprints that the backend
+        // *previously* had and now doesn't. An empty remote snapshot
+        // (network blip, iCloud offline) doesn't trigger false
+        // positives because `lastNonEmptyRemoteFprs` was non-empty
+        // before — we just don't update it on empty reads.
+        if remoteFprs.isEmpty {
+            return
+        }
+        let disappeared = lastNonEmptyRemoteFprs.subtracting(remoteFprs)
+        for fpr in disappeared where localFprs.contains(fpr) {
+            pendingRemoteDeletions.insert(fpr)
+        }
+        lastNonEmptyRemoteFprs = remoteFprs
+    }
+
+    /// User resolved a remote-deletion prompt. `deleteLocally == true`
+    /// removes the key from the local cache (and from any rnp-local
+    /// backend); `false` just dismisses the prompt — the key stays
+    /// locally and will be re-propagated to the backend on the next
+    /// mutation that touches it.
+    public func resolveRemoteDeletion(_ fingerprint: String, deleteLocally: Bool) {
+        pendingRemoteDeletions.remove(fingerprint)
+        guard deleteLocally else { return }
+        do {
+            try localCache.deleteKey(fingerprint: fingerprint)
+        } catch let error as RnpError {
+            if case .keyNotFound = error { return }
+            propagateSubject.send(.failed(fingerprint: fingerprint, message: error.localizedDescription))
+        } catch {
+            propagateSubject.send(.failed(fingerprint: fingerprint, message: error.localizedDescription))
         }
     }
 
