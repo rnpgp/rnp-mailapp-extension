@@ -32,6 +32,16 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4F6CB08E3024387D003384BA"
+               BuildableName = "RNPUnitTests.xctest"
+               BlueprintName = "RNPUnitTests"
+               ReferencedContainer = "container:RnpMail.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "C11C7952369D291DC9FDE728"
                BuildableName = "Ribose containerUITests.xctest"
                BlueprintName = "Ribose containerUITests"
