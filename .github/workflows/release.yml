@@ -179,6 +179,88 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Sign DMG with Sparkle and update appcast
+      # Runs Sparkle's sign_update against the built DMG using the
+      # project's Ed25519 private key (stored as a secret), then
+      # commits the resulting signature + length into
+      # website/updates/appcast.xml on main so the auto-update feed
+      # is current. Skipped when the secret is absent (e.g. fork).
+      env:
+        SPARKLE_EDDSA_PRIVATE_KEY: ${{ secrets.SPARKLE_EDDSA_PRIVATE_KEY }}
+        RELEASE_TAG: ${{ steps.ver.outputs.tag }}
+        VERSION: ${{ steps.ver.outputs.version }}
+      run: |
+        set -euo pipefail
+        if [[ -z "${SPARKLE_EDDSA_PRIVATE_KEY}" ]]; then
+          echo "::warning::SPARKLE_EDDSA_PRIVATE_KEY secret not set; skipping appcast update"
+          exit 0
+        fi
+        DMG="$(find dist -name 'RNP-*.dmg' | head -n1)"
+        KEY_FILE="$(mktemp)"
+        printf '%s' "${SPARKLE_EDDSA_PRIVATE_KEY}" > "${KEY_FILE}"
+        trap 'rm -f "${KEY_FILE}"' EXIT
+
+        # Locate the sign_update binary bundled with Sparkle via SPM.
+        SIGN_UPDATE="$(find ~/Library/Developer/Xcode/DerivedData -name sign_update -type f -print -quit 2>/dev/null || true)"
+        if [[ -z "${SIGN_update}" ]] && ! command -v sign_update >/dev/null 2>&1; then
+          # Fall back: Sparkle is checked out via SPM in SourcePackages.
+          SIGN_UPDATE="$(find . -path '*/artifacts/sparkle/Sparkle/bin/sign_update' -type f 2>/dev/null | head -n1)"
+        fi
+        if [[ -z "${SIGN_UPDATE}" ]]; then
+          echo "ERROR: sign_update binary not found" >&2
+          exit 1
+        fi
+        echo "Using sign_update at: ${SIGN_UPDATE}"
+
+        # sign_update prints: sparkle:edSignature="..." length="12345"
+        SIG_OUTPUT="$("${SIGN_UPDATE}" "${DMG}" --ed-key-file "${KEY_FILE}")"
+        echo "sign_update output: ${SIG_OUTPUT}"
+        ED_SIG="$(printf '%s' "${SIG_OUTPUT}" | sed -nE 's/.*edSignature="([^"]+)".*/\1/p')"
+        LENGTH="$(printf '%s' "${SIG_OUTPUT}" | sed -nE 's/.*length="([0-9]+)".*/\1/p')"
+        if [[ -z "${ED_SIG}" || -z "${LENGTH}" ]]; then
+          echo "ERROR: could not parse sign_update output" >&2
+          exit 1
+        fi
+        echo "Parsed: edSignature=${ED_SIG:0:32}... length=${LENGTH}"
+
+        # Checkout main to update the live appcast (not the tag).
+        git fetch origin main
+        git checkout main
+        APPCAST="website/updates/appcast.xml"
+
+        # Replace the enclosure for this version. Two attribute swaps:
+        # the legacy sparkle:edDSA="" entries are migrated to the
+        # current sparkle:edSignature name.
+        python3 - <<PY
+        import re, sys
+        path = "${APPCAST}"
+        tag = "${RELEASE_TAG}"
+        version = "${VERSION}"
+        ed_sig = "${ED_SIG}"
+        length = "${LENGTH}"
+        with open(path) as f:
+            xml = f.read()
+        # Match the enclosure for this tag.
+        pattern = re.compile(
+            r'(<enclosure\s+url="[^"]*releases/download/' + re.escape(tag) + r'/[^"]*"[^>]*?)\s+sparkle:ed(?:DSA|Signature)="[^"]*"\s+length="[0-9]*"([^>]*>)',
+            re.DOTALL,
+        )
+        new_attrs = f' sparkle:edSignature="{ed_sig}" length="{length}"'
+        new_xml, n = pattern.subn(lambda m: m.group(1) + new_attrs + m.group(2), xml)
+        if n == 0:
+            print(f"ERROR: no enclosure found for tag {tag}", file=sys.stderr)
+            sys.exit(1)
+        with open(path, "w") as f:
+            f.write(new_xml)
+        print(f"Updated appcast entry for {tag} ({n} match)")
+        PY
+
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add "${APPCAST}"
+        git commit -m "chore(appcast): sign ${RELEASE_TAG} DMG with Sparkle EdDSA"
+        git push origin main
+
   smoke-test:
     needs: build-and-release
     runs-on: macos-15
