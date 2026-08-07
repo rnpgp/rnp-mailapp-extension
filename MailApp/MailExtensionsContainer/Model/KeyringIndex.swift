@@ -56,8 +56,15 @@ public struct KeyringIndex {
     /// Removes a key from the index. No-op if the key wasn't present.
     public mutating func remove(fingerprint: String) {
         guard knownFingerprints.remove(fingerprint) != nil else { return }
-        for var entry in tokenToKeys.values { entry.remove(fingerprint) }
-        for var entry in fingerprintChunks.values { entry.remove(fingerprint) }
+        // Iterating dictionary values with `var entry` only mutates the
+        // local copy of each Set, not the value stored in the dict.
+        // Mutate in place via subscript to actually remove the key.
+        for token in tokenToKeys.keys {
+            tokenToKeys[token]?.remove(fingerprint)
+        }
+        for chunk in fingerprintChunks.keys {
+            fingerprintChunks[chunk]?.remove(fingerprint)
+        }
         tokenToKeys = tokenToKeys.filter { !$0.value.isEmpty }
         fingerprintChunks = fingerprintChunks.filter { !$0.value.isEmpty }
     }
