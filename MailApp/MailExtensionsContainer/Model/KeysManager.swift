@@ -9,7 +9,7 @@
 import Foundation
 import KeyLifecycle
 import MailSecurityEngine
-import Rnp
+import Librnp
 import RnpMailUI
 import TrustStore
 

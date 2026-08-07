@@ -29,7 +29,7 @@
 import Combine
 import Foundation
 import MailSecurityEngine
-import Rnp
+import Librnp
 
 public final class KeyringCoordinator {
 
@@ -215,7 +215,12 @@ public final class KeyringCoordinator {
             return 0
         }
 
-        let records = (try? oldBackend.load()) ?? localRecords()
+        // Always read from the local cache (authoritative) rather than
+        // oldBackend.load() — LocalFileKeyringBackend caches a snapshot
+        // at init time and doesn't auto-refresh when the underlying
+        // keyring changes, so it would return stale (possibly empty)
+        // data here.
+        let records = localRecords()
         var copied = 0
         for record in records {
             // Never lose data on migration — wrap each upsert in try?.

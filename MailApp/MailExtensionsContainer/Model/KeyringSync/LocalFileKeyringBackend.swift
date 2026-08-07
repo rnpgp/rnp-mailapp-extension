@@ -16,7 +16,7 @@
 import Combine
 import Foundation
 import MailSecurityEngine
-import Rnp
+import Librnp
 
 public final class LocalFileKeyringBackend: KeyringBackend {
 

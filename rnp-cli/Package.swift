@@ -18,19 +18,19 @@ let package = Package(
         .executable(name: "rnp", targets: ["rnp-cli"]),
     ],
     dependencies: [
-        // swift-rnp exposes MailSecurityEngine, Rnp, KeyringStore.
+        // swift-librnp exposes MailSecurityEngine, Librnp, KeyringStore.
         // The CLI shares the same engine as the GUI app — one source
         // of truth for OpenPGP behavior.
-        .package(url: "https://github.com/rnpgp/swift-rnp.git", from: "0.2.10"),
+        .package(url: "https://github.com/rnpgp/swift-librnp.git", from: "0.3.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
     ],
     targets: [
         .executableTarget(
             name: "rnp-cli",
             dependencies: [
-                .product(name: "MailSecurityEngine", package: "swift-rnp"),
-                .product(name: "Rnp", package: "swift-rnp"),
-                .product(name: "KeyringStore", package: "swift-rnp"),
+                .product(name: "MailSecurityEngine", package: "swift-librnp"),
+                .product(name: "Librnp", package: "swift-librnp"),
+                .product(name: "KeyringStore", package: "swift-librnp"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ],
             path: "Sources/rnp-cli"

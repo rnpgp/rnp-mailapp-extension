@@ -8,7 +8,7 @@
 import ArgumentParser
 import Foundation
 import MailSecurityEngine
-import Rnp
+import Librnp
 
 struct KeygenCommand: ParsableCommand {
     static let configuration = CommandConfiguration(

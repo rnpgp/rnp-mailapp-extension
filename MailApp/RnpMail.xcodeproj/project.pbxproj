@@ -81,9 +81,9 @@
 		AA100000000000000000000B /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000C /* KeysListView.swift */; };
 		AA100000000000000000000E /* RNP.icns in Resources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000000D /* RNP.icns */; };
 		AA1000000000000000000010 /* MailPlugin.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA5000000000000000000002 /* MailPlugin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		AA1000000000000000000012 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000002 /* Rnp */; };
+		AA1000000000000000000012 /* Librnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000002 /* Librnp */; };
 		AA1000000000000000000013 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000003 /* MailSecurityEngine */; };
-		AA1000000000000000000014 /* Rnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Rnp */; };
+		AA1000000000000000000014 /* Librnp in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000004 /* Librnp */; };
 		AA1000000000000000000015 /* MailSecurityEngine in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000005 /* MailSecurityEngine */; };
 		AA1000000000000000000016 /* MailSecurityUI in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000006 /* MailSecurityUI */; };
 		AA1000000000000000000017 /* TrustStore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC000000000000000000007 /* TrustStore */; };
@@ -94,6 +94,7 @@
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
 		C3D7945A86BED3BE2480F77D /* info.txt in Resources */ = {isa = PBXBuildFile; fileRef = B29821EF6AEFBD0D1DA420AE /* info.txt */; };
+		C5AD2A8F31F3F7EB1C215262 /* PseudoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC75 /* PseudoLocalization.swift */; };
 		CD50CAE0B7CECDE0EBBA164E /* KeyringCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA5A3000656990E8209D336 /* KeyringCoordinator.swift */; };
 		F015A90D8E5550A84D47A313 /* ConflictReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903DD82C6669558E9E81096D /* ConflictReviewSheet.swift */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
@@ -275,7 +276,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA1000000000000000000012 /* Rnp in Frameworks */,
+				AA1000000000000000000012 /* Librnp in Frameworks */,
 				AA1000000000000000000013 /* MailSecurityEngine in Frameworks */,
 				AA1000000000000000000016 /* MailSecurityUI in Frameworks */,
 				AA1000000000000000000017 /* TrustStore in Frameworks */,
@@ -287,7 +288,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F6CB08A30243834003384BA /* Sparkle in Frameworks */,
-				AA1000000000000000000014 /* Rnp in Frameworks */,
+				AA1000000000000000000014 /* Librnp in Frameworks */,
 				AA1000000000000000000015 /* MailSecurityEngine in Frameworks */,
 				C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */,
 				AA1000000000000000000018 /* TrustStore in Frameworks */,
@@ -710,7 +711,7 @@
 			);
 			name = MailPlugin;
 			packageProductDependencies = (
-				AAC000000000000000000002 /* Rnp */,
+				AAC000000000000000000002 /* Librnp */,
 				AAC000000000000000000003 /* MailSecurityEngine */,
 				AAC000000000000000000006 /* MailSecurityUI */,
 				AAC000000000000000000007 /* TrustStore */,
@@ -736,7 +737,7 @@
 			);
 			name = RNP;
 			packageProductDependencies = (
-				AAC000000000000000000004 /* Rnp */,
+				AAC000000000000000000004 /* Librnp */,
 				AAC000000000000000000005 /* MailSecurityEngine */,
 				F7F139FFDED467A772241EBC /* RnpMailUI */,
 				AAC000000000000000000008 /* TrustStore */,
@@ -796,7 +797,7 @@
 			);
 			mainGroup = AA3000000000000000000001;
 			packageReferences = (
-				AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */,
+				AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */,
 				AAB000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			productRefGroup = AA3000000000000000000002 /* Products */;
@@ -945,6 +946,7 @@
 				F015A90D8E5550A84D47A313 /* ConflictReviewSheet.swift in Sources */,
 				1BECA81AAD0F4CDCBD7411E2 /* RemoteDeletionReviewSheet.swift in Sources */,
 				9A402BB256781FE0F0A3ABC1 /* PassphraseStoreRouter.swift in Sources */,
+				C5AD2A8F31F3F7EB1C215262 /* PseudoLocalization.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1741,12 +1743,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */ = {
+		AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/rnpgp/swift-rnp.git";
+			repositoryURL = "https://github.com/rnpgp/swift-librnp.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.10;
+				minimumVersion = 0.3.0;
 			};
 		};
 		AAB000000000000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
@@ -1760,44 +1762,44 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		AAC000000000000000000002 /* Rnp */ = {
+		AAC000000000000000000002 /* Librnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
-			productName = Rnp;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
+			productName = Librnp;
 		};
 		AAC000000000000000000003 /* MailSecurityEngine */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
 			productName = MailSecurityEngine;
 		};
-		AAC000000000000000000004 /* Rnp */ = {
+		AAC000000000000000000004 /* Librnp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
-			productName = Rnp;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
+			productName = Librnp;
 		};
 		AAC000000000000000000005 /* MailSecurityEngine */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
 			productName = MailSecurityEngine;
 		};
 		AAC000000000000000000006 /* MailSecurityUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
 			productName = MailSecurityUI;
 		};
 		AAC000000000000000000007 /* TrustStore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
 			productName = TrustStore;
 		};
 		AAC000000000000000000008 /* TrustStore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
 			productName = TrustStore;
 		};
 		AAC000000000000000000009 /* KeyLifecycle */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
 			productName = KeyLifecycle;
 		};
 		AAC00000000000000000000A /* Sparkle */ = {
@@ -1807,7 +1809,7 @@
 		};
 		F7F139FFDED467A772241EBC /* RnpMailUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-rnp" */;
+			package = AAB000000000000000000001 /* XCRemoteSwiftPackageReference "swift-librnp" */;
 			productName = RnpMailUI;
 		};
 /* End XCSwiftPackageProductDependency section */
