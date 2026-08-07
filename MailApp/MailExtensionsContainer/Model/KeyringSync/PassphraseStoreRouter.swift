@@ -93,7 +93,7 @@ public enum PassphraseStoreRouter {
     public static func removePassphrase(forKeyFingerprint fingerprint: String) {
         KeychainPassphraseStore.removePassphrase(forKeyFingerprint: fingerprint)
         if syncEnabled {
-            try? SynchronizablePassphraseStore.delete(fingerprint: fingerprint)
+            _ = try? SynchronizablePassphraseStore.delete(fingerprint: fingerprint)
         }
     }
 }
