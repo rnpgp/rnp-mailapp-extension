@@ -14,7 +14,9 @@ struct SyncSettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var migrationResult: MigrationResult?
     @State private var conflictCount: Int = 0
+    @State private var deletionCount: Int = 0
     @State private var showConflictReview = false
+    @State private var showDeletionReview = false
 
     init(config: SyncConfiguration = SyncConfiguration()) {
         _config = StateObject(wrappedValue: config)
@@ -27,6 +29,7 @@ struct SyncSettingsSheet: View {
                 passphraseSection
                 importSourcesSection
                 conflictsSection
+                deletionsSection
                 noticesSection
                 actionButtons
             }
@@ -38,7 +41,13 @@ struct SyncSettingsSheet: View {
         .sheet(isPresented: $showConflictReview) {
             ConflictReviewSheet()
         }
-        .onAppear { refreshConflictCount() }
+        .sheet(isPresented: $showDeletionReview) {
+            RemoteDeletionReviewSheet()
+        }
+        .onAppear {
+            refreshConflictCount()
+            refreshDeletionCount()
+        }
     }
 
     // MARK: Canonical store
@@ -210,6 +219,36 @@ struct SyncSettingsSheet: View {
         } else {
             conflictCount = 0
         }
+    }
+
+    // MARK: Remote deletions
+
+    /// Shown only when the active backend is not rnp-local — local
+    /// backends never produce pending remote deletions.
+    @ViewBuilder
+    private var deletionsSection: some View {
+        if config.canonicalStoreID != "rnp-local" {
+            VStack(alignment: .leading, spacing: RnpSpacing.xs) {
+                HStack {
+                    Text("sync.deletions.title").font(.headline)
+                    Spacer()
+                    Button("sync.deletions.review") { showDeletionReview = true }
+                        .accessibilityIdentifier("sync.deletions.review")
+                }
+                if deletionCount > 0 {
+                    Label(String(format: NSLocalizedString("sync.deletions.count", comment: ""), deletionCount),
+                          systemImage: "trash")
+                        .font(.caption).foregroundStyle(.orange)
+                } else {
+                    Label("sync.deletions.none", systemImage: "checkmark.circle")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private func refreshDeletionCount() {
+        deletionCount = KeyringCoordinator.shared?.pendingRemoteDeletions.count ?? 0
     }
 
     // MARK: Notices

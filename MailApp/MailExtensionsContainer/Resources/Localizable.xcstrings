@@ -17081,6 +17081,83 @@
         }
       }
     },
+    "remoteDeletion.deleteLocal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete locally"
+          }
+        }
+      }
+    },
+    "remoteDeletion.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing to review"
+          }
+        }
+      }
+    },
+    "remoteDeletion.emptyDetail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When another device removes a key from the shared backend, it shows up here so you can decide whether to also remove it on this Mac."
+          }
+        }
+      }
+    },
+    "remoteDeletion.keep" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep on this Mac"
+          }
+        }
+      }
+    },
+    "remoteDeletion.refresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh"
+          }
+        }
+      }
+    },
+    "remoteDeletion.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another device removed these from the shared backend. Decide for each whether to follow suit on this Mac."
+          }
+        }
+      }
+    },
+    "remoteDeletion.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review remote deletions"
+          }
+        }
+      }
+    },
     "sync.canonical.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17132,6 +17209,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conflicts"
+          }
+        }
+      }
+    },
+    "sync.deletions.count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d remote deletions waiting for review"
+          }
+        }
+      }
+    },
+    "sync.deletions.none" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No deletions to review."
+          }
+        }
+      }
+    },
+    "sync.deletions.review" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review…"
+          }
+        }
+      }
+    },
+    "sync.deletions.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remote deletions"
           }
         }
       }
