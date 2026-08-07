@@ -11,7 +11,7 @@ import Foundation
 import MailKit
 import MailSecurityEngine
 import MailSecurityUI
-import Rnp
+import Librnp
 
 class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 

@@ -13,7 +13,7 @@
 //
 
 import SwiftUI
-import Rnp
+import Librnp
 import RnpMailUI
 
 @main

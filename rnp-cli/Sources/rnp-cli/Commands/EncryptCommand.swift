@@ -9,7 +9,7 @@
 import ArgumentParser
 import Foundation
 import MailSecurityEngine
-import Rnp
+import Librnp
 
 struct EncryptCommand: ParsableCommand {
     static let configuration = CommandConfiguration(

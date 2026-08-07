@@ -6,7 +6,7 @@
 import ArgumentParser
 import Foundation
 import MailSecurityEngine
-import Rnp
+import Librnp
 
 struct VerifyCommand: ParsableCommand {
     static let configuration = CommandConfiguration(

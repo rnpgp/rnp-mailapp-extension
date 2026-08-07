@@ -17,7 +17,7 @@
 
 import Foundation
 import MailSecurityEngine
-import Rnp
+import Librnp
 
 // MARK: - Operations
 

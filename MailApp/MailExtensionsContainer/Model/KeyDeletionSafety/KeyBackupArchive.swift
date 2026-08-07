@@ -26,7 +26,7 @@
 
 import Foundation
 import MailSecurityEngine
-import Rnp
+import Librnp
 
 public enum KeyBackupArchiveError: Error, LocalizedError {
     case keyManagerUnavailable
