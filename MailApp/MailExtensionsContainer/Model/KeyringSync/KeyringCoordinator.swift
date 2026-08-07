@@ -89,16 +89,17 @@ public final class KeyringCoordinator {
     }
 
     /// Maps the user's `canonicalStoreID` to a concrete backend.
-    /// Phase-1+2 wires `rnp-local` and `rnp-asc-dir`. `rnp-cloudkit`
-    /// falls back to local until Phase 3 lands.
+    /// All three options are wired: local file (default), per-key
+    /// `.asc` directory, and CloudKit. The CloudKit backend reads
+    /// `CKContainer.default()` so iCloud sign-in must be active on
+    /// the user's Mac for it to be `.available`.
     public static func makeBackend(for config: SyncConfiguration, cache: KeyringStore) -> KeyringBackend {
         switch config.canonicalStoreID {
         case "rnp-asc-dir":
             let url = URL(fileURLWithPath: config.perKeyDirectoryPath, isDirectory: true)
             return PerKeyDirectoryKeyringBackend(directory: url)
         case "rnp-cloudkit":
-            // Phase 3 — defer. Local stays canonical.
-            return LocalFileKeyringBackend(directory: AppGroup.keyringDirectory(), cache: cache)
+            return CloudKitKeyringBackend()
         default:
             return LocalFileKeyringBackend(directory: AppGroup.keyringDirectory(), cache: cache)
         }
@@ -193,9 +194,7 @@ public final class KeyringCoordinator {
             let url = URL(fileURLWithPath: config.perKeyDirectoryPath, isDirectory: true)
             newBackend = PerKeyDirectoryKeyringBackend(directory: url)
         case "rnp-cloudkit":
-            // Phase 3 — fall back to local so the radio button still
-            // "does something" instead of crashing.
-            newBackend = LocalFileKeyringBackend(directory: AppGroup.keyringDirectory(), cache: localCache)
+            newBackend = CloudKitKeyringBackend()
         default:
             newBackend = LocalFileKeyringBackend(directory: AppGroup.keyringDirectory(), cache: localCache)
         }

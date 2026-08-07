@@ -13,6 +13,8 @@ struct SyncSettingsSheet: View {
     @StateObject private var config: SyncConfiguration
     @Environment(\.dismiss) private var dismiss
     @State private var migrationResult: MigrationResult?
+    @State private var conflictCount: Int = 0
+    @State private var showConflictReview = false
 
     init(config: SyncConfiguration = SyncConfiguration()) {
         _config = StateObject(wrappedValue: config)
@@ -24,6 +26,7 @@ struct SyncSettingsSheet: View {
                 canonicalSection
                 passphraseSection
                 importSourcesSection
+                conflictsSection
                 noticesSection
                 actionButtons
             }
@@ -32,6 +35,10 @@ struct SyncSettingsSheet: View {
         }
         .navigationTitle("sync.title")
         .accessibilityIdentifier("sync.sheet")
+        .sheet(isPresented: $showConflictReview) {
+            ConflictReviewSheet()
+        }
+        .onAppear { refreshConflictCount() }
     }
 
     // MARK: Canonical store
@@ -168,6 +175,41 @@ struct SyncSettingsSheet: View {
         }
         .toggleStyle(.checkbox)
         .accessibilityIdentifier("sync.sources.\(option.id)")
+    }
+
+    // MARK: Conflicts
+
+    /// Shown only when the active backend is the per-key `.asc`
+    /// directory (the only backend that surfaces conflicts). For
+    /// local-only and CloudKit, this section is hidden.
+    @ViewBuilder
+    private var conflictsSection: some View {
+        if config.canonicalStoreID == "rnp-asc-dir" {
+            VStack(alignment: .leading, spacing: RnpSpacing.xs) {
+                HStack {
+                    Text("sync.conflicts.title").font(.headline)
+                    Spacer()
+                    Button("sync.conflicts.review") { showConflictReview = true }
+                        .accessibilityIdentifier("sync.conflicts.review")
+                }
+                if conflictCount > 0 {
+                    Label(String(format: NSLocalizedString("sync.conflicts.count", comment: ""), conflictCount),
+                          systemImage: "exclamationmark.triangle")
+                        .font(.caption).foregroundStyle(.orange)
+                } else {
+                    Label("sync.conflicts.none", systemImage: "checkmark.circle")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private func refreshConflictCount() {
+        if let backend = KeyringCoordinator.shared?.backend as? PerKeyDirectoryKeyringBackend {
+            conflictCount = backend.listConflicts().count
+        } else {
+            conflictCount = 0
+        }
     }
 
     // MARK: Notices
