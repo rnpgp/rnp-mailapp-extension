@@ -6,6 +6,8 @@
 	<string>en</string>
 	<key>SUFeedURL</key>
 	<string>https://rnpgp.org/updates/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>ztCWJ8vuSq1R391hQ9skoMQttnWctGPAPCGfBZxWtDQ=</string>
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUShowReleaseNotes</key>
