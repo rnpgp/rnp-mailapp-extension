@@ -24,6 +24,16 @@ final class KeyringCoordinatorTests: XCTestCase {
         tempRoot = FileManager.default.temporaryDirectory
             .appendingPathComponent("rnp-coordinator-tests-\(UUID().uuidString)", isDirectory: true)
         try? FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        // Reset UserDefaults so SyncConfiguration() in each test starts
+        // from the canonical "rnp-local" default rather than a value
+        // left over from a previous test run. Without this, test_migrate
+        // ends up constructing a coordinator whose self.backend is
+        // already rnp-asc-dir, the no-op check in migrate fires, and
+        // copied is incorrectly returned as 0.
+        let store = UserDefaults.standard
+        for key in ["sync.canonicalStore", "sync.perKeyDirPath", "sync.importSources", "sync.passphraseStore"] {
+            store.removeObject(forKey: key)
+        }
     }
 
     override func tearDown() {

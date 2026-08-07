@@ -66,6 +66,19 @@ jobs:
         env:
           PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
 
+      - name: Run container app unit tests
+        # RNPUnitTests hosts inside the RNP.app bundle. The
+        # `build-for-testing` action compiles the test bundle against
+        # the host app and the swift-librnp SPM package; the `test`
+        # action runs them in-process. CODE_SIGNING_ALLOWED=NO skips
+        # the developer ID requirement on CI runners.
+        run: >
+          xcodebuild -project MailApp/RnpMail.xcodeproj
+          -scheme RNP -configuration Debug -destination 'platform=macOS'
+          build-for-testing test-without-building CODE_SIGNING_ALLOWED=NO
+        env:
+          PKG_CONFIG_PATH: ${{ github.workspace }}/Vendor/pkgconfig
+
       - name: Run container app UI tests
         continue-on-error: true
         run: >
