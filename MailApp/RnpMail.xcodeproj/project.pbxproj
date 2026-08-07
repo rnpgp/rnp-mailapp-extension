@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01F621C7C4389197E57DD703 /* KeyringCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5172AA5DA6F118597806DEF9 /* KeyringCoordinatorTests.swift */; };
 		0A786852E497990EF1B7EC0D /* LicensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F15FAC74F11C17A481229F /* LicensesView.swift */; };
 		0A786852E497990EF1B7EC0E /* RoadmapNavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC0F /* RoadmapNavigationCoordinator.swift */; };
 		0A786852E497990EF1B7EC11 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A786852E497990EF1B7EC12 /* Sheet.swift */; };
@@ -66,6 +67,7 @@
 		4F6CB08A30243834003384BA /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = AAC00000000000000000000A /* Sparkle */; };
 		4F6CB0923024387D003384BA /* RNPUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6CB0913024387D003384BA /* RNPUnitTests.swift */; };
 		73B34FF249AAE87BFD5C4BE6 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E9DEABC233D4FE30C5A5150 /* UniformTypeIdentifiers.framework */; };
+		832F3DC2C15D489FFF46F7BC /* pubring.gpg.asc in Resources */ = {isa = PBXBuildFile; fileRef = 5C3CB1EB783C9E077CFA5956 /* pubring.gpg.asc */; };
 		89D5174051747C352D8BE078 /* Ribose_containerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8C3F584EC5EDB6BF983F76 /* Ribose_containerUITests.swift */; };
 		8FA94A049D51D12E96C274DF /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAFFEC46C22FE2A0FBFA3E4E /* Cocoa.framework */; };
 		9A402BB256781FE0F0A3ABC1 /* PassphraseStoreRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B2D96B8994339BD7CC04947 /* PassphraseStoreRouter.swift */; };
@@ -91,12 +93,20 @@
 		AA100000000000000000001B /* SharedKeyring.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2000000000000000000007 /* SharedKeyring.swift */; };
 		BCE9DEEC1A8574B8FB8ED852 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = DFB75871C424635C7D11D05F /* Localizable.xcstrings */; };
 		C064BE73C1FFFC3D228D25F0 /* RnpMailUI in Frameworks */ = {isa = PBXBuildFile; productRef = F7F139FFDED467A772241EBC /* RnpMailUI */; };
+		C3D7945A86BED3BE2480F77D /* info.txt in Resources */ = {isa = PBXBuildFile; fileRef = B29821EF6AEFBD0D1DA420AE /* info.txt */; };
 		CD50CAE0B7CECDE0EBBA164E /* KeyringCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA5A3000656990E8209D336 /* KeyringCoordinator.swift */; };
 		F015A90D8E5550A84D47A313 /* ConflictReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903DD82C6669558E9E81096D /* ConflictReviewSheet.swift */; };
 		FF2EA18F19C918877853D1FF /* SOURCES.md in Resources */ = {isa = PBXBuildFile; fileRef = 87CD88529F4C4270DBA7A051 /* SOURCES.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		95151BDCDAC91DF2C3158A40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA787CCB0000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA4000000000000000000003;
+			remoteInfo = RNP;
+		};
 		AA7000000000000000000001 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AA787CCB0000000000000001 /* Project object */;
@@ -208,8 +218,10 @@
 		4F2EF14B30245FEB0079B4AF /* PseudoLocalizationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PseudoLocalizationTests.swift; sourceTree = "<group>"; };
 		4F6CB08F3024387D003384BA /* RNPUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F6CB0913024387D003384BA /* RNPUnitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNPUnitTests.swift; sourceTree = "<group>"; };
+		5172AA5DA6F118597806DEF9 /* KeyringCoordinatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyringCoordinatorTests.swift; sourceTree = "<group>"; };
 		5A5F6629466BFE8ADAFAD979 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5AA5A3000656990E8209D336 /* KeyringCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyringCoordinator.swift; sourceTree = "<group>"; };
+		5C3CB1EB783C9E077CFA5956 /* pubring.gpg.asc */ = {isa = PBXFileReference; includeInIndex = 1; path = pubring.gpg.asc; sourceTree = "<group>"; };
 		77171E1123EB570168AF4541 /* IDs.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IDs.xcconfig; sourceTree = "<group>"; };
 		87CD88529F4C4270DBA7A051 /* SOURCES.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = SOURCES.md; path = ../../Vendor/SOURCES.md; sourceTree = "<group>"; };
 		8E4B1A2E2A5E3AC27E295006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -232,6 +244,7 @@
 		AA5000000000000000000003 /* RNP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD1480B5CAD3FF9C8EC9FB44 /* Version.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Version.xcconfig; path = Config/Version.xcconfig; sourceTree = "<group>"; };
 		B0DF31866344739AFF3A2A9D /* Ribose containerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Ribose containerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B29821EF6AEFBD0D1DA420AE /* info.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = info.txt; sourceTree = "<group>"; };
 		B7393B9F8268ACF79B23A289 /* AppStore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = AppStore.xcconfig; path = Config/AppStore.xcconfig; sourceTree = "<group>"; };
 		BD8C3F584EC5EDB6BF983F76 /* Ribose_containerUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Ribose_containerUITests.swift; sourceTree = "<group>"; };
 		CE6C0C248289BC53D25EB04C /* RNPFramework.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNPFramework.xcconfig; sourceTree = "<group>"; };
@@ -464,6 +477,8 @@
 				4F2EF14B30245FEB0079B4AF /* PseudoLocalizationTests.swift */,
 				4F2EF14930245FD60079B4AF /* KeyringIndexTests.swift */,
 				4F6CB0913024387D003384BA /* RNPUnitTests.swift */,
+				5172AA5DA6F118597806DEF9 /* KeyringCoordinatorTests.swift */,
+				5A1360BF31816EB30F5B46A2 /* Fixtures */,
 			);
 			path = RNPUnitTests;
 			sourceTree = "<group>";
@@ -475,6 +490,15 @@
 				87CD88529F4C4270DBA7A051 /* SOURCES.md */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		5A1360BF31816EB30F5B46A2 /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				E33B61F405882015458431F2 /* keyring-1 */,
+			);
+			name = Fixtures;
+			path = Fixtures;
 			sourceTree = "<group>";
 		};
 		6ED18A7A336EF9F552F5B902 /* OS X */ = {
@@ -640,6 +664,16 @@
 			name = Config;
 			sourceTree = "<group>";
 		};
+		E33B61F405882015458431F2 /* keyring-1 */ = {
+			isa = PBXGroup;
+			children = (
+				5C3CB1EB783C9E077CFA5956 /* pubring.gpg.asc */,
+				B29821EF6AEFBD0D1DA420AE /* info.txt */,
+			);
+			name = "keyring-1";
+			path = "keyring-1";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -654,6 +688,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3117C5EBF4F30E3F4E5C67AC /* PBXTargetDependency */,
 			);
 			name = RNPUnitTests;
 			productName = RNPUnitTests;
@@ -781,6 +816,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				832F3DC2C15D489FFF46F7BC /* pubring.gpg.asc in Resources */,
+				C3D7945A86BED3BE2480F77D /* info.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -832,6 +869,7 @@
 				4F2EF14A30245FD60079B4AF /* KeyringIndexTests.swift in Sources */,
 				4F6CB0923024387D003384BA /* RNPUnitTests.swift in Sources */,
 				4F2EF14C30245FEB0079B4AF /* PseudoLocalizationTests.swift in Sources */,
+				01F621C7C4389197E57DD703 /* KeyringCoordinatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -913,6 +951,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3117C5EBF4F30E3F4E5C67AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RNP;
+			target = AA4000000000000000000003 /* RNP */;
+			targetProxy = 95151BDCDAC91DF2C3158A40 /* PBXContainerItemProxy */;
+		};
 		5E712690EADF3649661F8F54 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RNP;
