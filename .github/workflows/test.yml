@@ -21,7 +21,7 @@ jobs:
     - run: echo "noop"
 
   xcodebuild:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
     - name: Checkout rnp-mailapp-extension
       uses: actions/checkout@v7
